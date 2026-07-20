@@ -1,0 +1,58 @@
+generated: '2026-07-18'
+method: searched
+source: https://developer.conga.com/platform/reference/authentication
+docs: https://developer.conga.com/platform/reference/authentication
+summary:
+  types: [oauth2]
+  primary: OAuth 2.0 bearer token
+  token_style: Authorization Bearer
+  oauth2_flows: [clientCredentials, authorizationCode, implicit]
+  identity_provider: >-
+    Conga login services (Auth0-backed for the developer portal / platform UI);
+    end users may federate through an external OAuth 2.0 identity provider.
+description: >-
+  Conga's REST API requires an OAuth 2.0 bearer token. Machine-to-machine access
+  uses the client_credentials grant with a client_id/client_secret issued to an
+  Integration User or an API-to-API connection. The token is obtained from a
+  region-specific Conga login endpoint and passed as an Authorization: Bearer
+  header on subsequent API calls. When using the API-to-API flow, callers also
+  send a `user-id` header carrying the platform user ID so the API can apply the
+  correct permissions.
+schemes:
+- name: OAuth2ClientCredentials
+  type: oauth2
+  flow: clientCredentials
+  grant_type: client_credentials
+  token_content_type: application/x-www-form-urlencoded
+  token_endpoints:
+  - region: NA
+    url: https://login-rls.congacloud.com/api/v1/auth/connect/token
+  - region: EU
+    url: https://login.congacloud.eu/api/v1/auth/connect/token
+  - region: AU
+    url: https://login.congacloud.au/api/v1/auth/connect/token
+  post_body: [grant_type, client_id, client_secret]
+  extra_headers:
+  - name: user-id
+    required_for: API-to-API connection tokens
+    description: Platform user ID used to identify the caller and apply permissions.
+- name: DeveloperPortalOIDC
+  type: openIdConnect
+  openid_configuration: https://login.conga.com/.well-known/openid-configuration
+  issuer: https://login.conga.com/
+  authorization_endpoint: https://login.conga.com/authorize
+  token_endpoint: https://login.conga.com/oauth/token
+  device_authorization_endpoint: https://login.conga.com/oauth/device/code
+  grant_types:
+  - client_credentials
+  - authorization_code
+  - refresh_token
+  - urn:ietf:params:oauth:grant-type:device_code
+  - urn:ietf:params:oauth:grant-type:token-exchange
+prerequisites:
+- Create an Integration User and generate a client ID and client secret (Conga
+  Advantage Platform administration).
+- Or generate an API-to-API connection client ID/secret via Conga API Connections.
+references:
+- https://documentation.conga.com/en/advantage-platform-administration/current/conga-advantage-platform-for-administrators/managing-users/adding-users
+- https://documentation.conga.com/en/advantage-platform-administration/current/conga-advantage-platform-for-administrators/managing-organization/conga-api-connections
