@@ -1,0 +1,70 @@
+generated: '2026-07-18'
+method: searched
+source: https://developer.conga.com/revenue/docs
+docs:
+  pagination: https://developer.conga.com/revenue/docs/pagination
+  filtering: https://developer.conga.com/revenue/docs/filtering
+  sorting: https://developer.conga.com/revenue/docs/sorting
+  includes: https://developer.conga.com/revenue/docs/includes
+  content_type: https://developer.conga.com/revenue/docs/content-type
+  errors: https://developer.conga.com/revenue/docs/status-and-error-codes
+  rate_limits: https://developer.conga.com/revenue/docs/rate-limits
+authentication:
+  style: "OAuth 2.0 bearer token (Authorization: Bearer)"
+  detail: authentication/conga-authentication.yml
+media_types:
+  request: application/json
+  oauth_token_request: application/x-www-form-urlencoded
+  file_upload: multipart/form-data
+  response: application/json (including errors)
+pagination:
+  style: page-number
+  params:
+    page:
+      type: integer
+      default: 1
+      max: 1000
+      note: page cannot be used without also setting limit
+    limit:
+      type: integer
+      default: 1000
+      max: 10000
+  empty_result_status: 204
+  response_headers:
+  - name: Content-Range
+    describes: resource name, first item index, last item index, total record count
+    example: "Products 1-10 / 200"
+filtering:
+  style: URI query filter functions
+  param: filter
+  combine: multiple filter params combined with logical AND
+  operators: [eq, like, gt, ge, lt, le]
+  example: "/products?filter=eq(ConfigurationType:'Standalone')&filter=eq(Active:true)"
+  limitation: only base object attributes can be filtered
+sorting:
+  param: sort
+  style: sort=asc(Field) / sort=desc(Field); multiple sort params supported
+  example: "/categories?sort=asc(Name)&sort=asc(ProductCount)"
+field_expansion:
+  param: includes
+  style: retrieve related resources inline (e.g. includes=prices&includes=categories)
+  create: related resources can be created inline with parent in a single POST
+  note: no hard limit, but heavy includes degrade performance; page beyond ~100 related records
+idempotency:
+  supported: false
+  note: No idempotency-key header/contract is documented in the Conga developer docs.
+error_envelope:
+  format: json:api-style
+  spec: http://jsonapi.org/format/#error-objects
+  shape: '{ "errors": [ { "Source", "Title", "Detail", "Link" } ] }'
+  detail: errors/conga-problem-types.yml
+rate_limiting:
+  default_production: 100 requests/second
+  default_development: 25 requests/second
+  exceeded_status: 429
+  detail: rate-limits/conga-rate-limits.yml
+versioning:
+  scheme: uri-path
+  pattern: /api/{service}/v1/...
+  current: v1
+  detail: lifecycle/conga-lifecycle.yml

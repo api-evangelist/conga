@@ -1,0 +1,33 @@
+generated: '2026-07-18'
+method: searched
+source: probed /.well-known/ across Conga hosts
+notes: >-
+  The developer portal (developer.conga.com) is ReadMe-hosted and returns a
+  200 SPA shell for arbitrary /.well-known/ paths, so security.txt / ai-plugin.json
+  / openapi.json on that host are false positives (Content-Type text/html) and
+  are NOT recorded as real documents. The OIDC discovery document below is a real
+  application/json response served by Conga's Auth0-backed login service.
+hosts:
+- host: https://login.conga.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: conga-openid-configuration.json
+- host: https://developer.conga.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html
+    real: false
+    note: ReadMe SPA catch-all, not a real security.txt
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+- host: https://www.conga.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
