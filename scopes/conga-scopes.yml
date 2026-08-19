@@ -1,18 +1,44 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
-source: https://login.conga.com/.well-known/openid-configuration
+source: https://login-rls.congacloud.com/api/v1/auth/.well-known/openid-configuration
 docs: https://developer.conga.com/platform/reference/authentication
 notes: >-
-  Conga's REST API authorizes machine-to-machine calls with the OAuth 2.0
-  client_credentials grant; access is governed by the Integration User's platform
-  permissions rather than by fine-grained API scopes documented per operation.
-  The scopes below are the OIDC/identity scopes advertised by Conga's login
-  service (login.conga.com) discovery document. No per-resource API scope
-  reference is published in the developer docs.
+  Conga's developer documentation does not publish a scopes or permissions
+  reference page - it describes the client_credentials flow and says access is
+  governed by the Integration User's platform permissions. The platform's own
+  OAuth authorization servers, however, advertise a full scope set in their OIDC
+  discovery documents, and those scopes map cleanly onto the services in
+  openapi/. The api.* scopes below are Conga's own published strings, read
+  verbatim from the discovery documents of all three production regions. They
+  are undocumented in prose, so the service mapping in `covers:` is our
+  derivation from the matching OpenAPI document, marked as such.
 schemes:
+- name: CongaPlatformOAuth
+  source: https://login-rls.congacloud.com/api/v1/auth/.well-known/openid-configuration
+  issuer: https://login-rls.congacloud.com/api/v1/auth
+  regions:
+  - region: NA
+    issuer: https://login-rls.congacloud.com/api/v1/auth
+  - region: EU
+    issuer: https://login.congacloud.eu/api/v1/auth
+  - region: AU
+    issuer: https://login.congacloud.au/api/v1/auth
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://login-rls.congacloud.com/api/v1/auth/connect/authorize
+    tokenUrl: https://login-rls.congacloud.com/api/v1/auth/connect/token
+  - flow: clientCredentials
+    tokenUrl: https://login-rls.congacloud.com/api/v1/auth/connect/token
+  grant_types_supported: [authorization_code, client_credentials, refresh_token, implicit,
+    password, 'urn:ietf:params:oauth:grant-type:device_code', 'urn:openid:params:grant-type:ciba',
+    'urn:ietf:params:oauth:grant-type:token-exchange']
+  pkce: [S256, plain]
+  introspection_endpoint: https://login-rls.congacloud.com/api/v1/auth/connect/introspect
+  revocation_endpoint: https://login-rls.congacloud.com/api/v1/auth/connect/revocation
 - name: DeveloperPortalOIDC
   source: https://login.conga.com/.well-known/openid-configuration
   issuer: https://login.conga.com/
+  note: Auth0 tenant behind the developer portal login, not the platform API.
   flows:
   - flow: authorizationCode
     authorizationUrl: https://login.conga.com/authorize
@@ -20,25 +46,141 @@ schemes:
   - flow: clientCredentials
     tokenUrl: https://login.conga.com/oauth/token
 scopes:
+- scope: api.cart
+  kind: api
+  description: CPQ cart operations - configuration, pricing and cart actions.
+  covers: openapi/conga-cart-v1.json
+  covers_method: derived
+- scope: api.catalog
+  kind: api
+  description: Product catalog - products, categories, price lists, product groups.
+  covers: openapi/conga-catalog.json
+  covers_method: derived
+- scope: api.quote
+  kind: api
+  description: Quote/proposal objects.
+  covers: openapi/conga-quote.json
+  covers_method: derived
+- scope: api.order
+  kind: api
+  description: Order objects.
+  covers: openapi/conga-order.json
+  covers_method: derived
+- scope: api.document-management
+  kind: api
+  description: Document storage, retrieval and metadata.
+  covers: openapi/conga-document-management.json
+  covers_method: derived
+- scope: api.user-management
+  kind: api
+  description: Users, user groups, roles, permission groups and organization info.
+  covers: openapi/conga-user-management.json
+  covers_method: derived
+- scope: api.metadata
+  kind: api
+  description: Platform metadata / schema definitions.
+  covers: openapi/conga-schema-manager.json
+  covers_method: derived
+- scope: api.data
+  kind: api
+  description: Generic platform data access over business objects.
+  covers: openapi/conga-data.json
+  covers_method: derived
+- scope: api.localization
+  kind: api
+  description: Localization - languages, translations, locale settings.
+  covers: openapi/conga-localization.json
+  covers_method: derived
+- scope: api.revenue-admin
+  kind: api
+  description: Revenue administration - the largest service in the catalogue (583 operations).
+  covers: openapi/conga-administration.json
+  covers_method: derived
+- scope: api.custom-api
+  kind: api
+  description: Customer-authored extensibility endpoints.
+  covers: openapi/conga-extensibility.json
+  covers_method: derived
+- scope: api.email
+  kind: api
+  description: Platform email service.
+  covers: openapi/conga-email.json
+  covers_method: derived
+- scope: doc-gen.composer
+  kind: api
+  description: Conga Composer document generation.
+  covers: null
+  covers_method: derived
+- scope: sign
+  kind: api
+  description: Conga Sign e-signature.
+  covers: openapi/conga-conga-sign.json
+  covers_method: derived
+- scope: sign.provisioning
+  kind: api
+  description: Conga Sign account/tenant provisioning.
+  covers: null
+  covers_method: derived
+- scope: Auth.Api.Read
+  kind: api
+  description: Read access to the authorization service's own API.
+  covers: null
+  covers_method: derived
+- scope: IngressIbis
+  kind: api
+  description: Ingress service (document ingestion pipeline).
+  covers: openapi/conga-ingress.json
+  covers_method: derived
+- scope: EUF-Reference-App
+  kind: application
+  description: Reference-application client registration; not a general API scope.
+- scope: CCI-Prod-RLS-PREVIEW
+  kind: application
+  region: NA only
+  description: Preview environment client registration; not a general API scope.
+- scope: https://rls-preview.congacloud.au/mcp
+  kind: resource
+  region: AU only
+  description: >-
+    RFC 8707 resource indicator for Conga's MCP server. Present only in the AU
+    discovery document; this string is how the otherwise-undocumented MCP surface
+    was found. See mcp/conga-mcp.yml.
 - scope: openid
+  kind: oidc
   description: OpenID Connect authentication; issue an ID token.
 - scope: profile
+  kind: oidc
   description: Access to the user's default profile claims.
 - scope: email
+  kind: oidc
   description: Access to the user's email and email_verified claims.
-- scope: offline_access
-  description: Issue a refresh token for long-lived access.
-- scope: name
-  description: User's full name claim.
-- scope: given_name
-  description: User's given (first) name claim.
-- scope: family_name
-  description: User's family (last) name claim.
-- scope: nickname
-  description: User's nickname claim.
-- scope: picture
-  description: User's profile picture claim.
-- scope: phone
-  description: User's phone number claim.
 - scope: address
-  description: User's address claim.
+  kind: oidc
+  description: Access to the user's address claim.
+- scope: phone
+  kind: oidc
+  description: Access to the user's phone_number claims.
+- scope: external_claims
+  kind: oidc
+  description: Claims federated from an external identity provider.
+- scope: force_login
+  kind: oidc
+  description: Force re-authentication rather than reusing an existing session.
+- scope: offline_access
+  kind: oidc
+  description: Issue a refresh token for long-lived access.
+regional_differences:
+  note: >-
+    The three production regions publish nearly identical scope sets. NA
+    additionally advertises CCI-Prod-RLS-PREVIEW; AU additionally advertises the
+    MCP resource indicator. EU advertises neither.
+spec_declared_scopes:
+  count: 0
+  note: >-
+    None of the 31 OpenAPI documents declare an oauth2 securityScheme - every one
+    declares a single apiKey scheme named "Bearer" in the Authorization header
+    ("Please insert JWT with Bearer into field"). The specs therefore carry no
+    per-operation scope requirements, and the authorization surface is only
+    visible from the OIDC discovery documents above. That mismatch is recorded in
+    conformance/conga-conformance.yml.
+checked: '2026-08-13'

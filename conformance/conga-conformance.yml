@@ -1,34 +1,145 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://developer.conga.com/revenue/docs
+evidence_base: >-
+  openapi/ (31 assembled specs, 2,136 operations), the three regional OIDC
+  discovery documents in well-known/, the probed MCP resource metadata, and
+  Conga's Trust & Compliance Center.
 standards:
 - id: oauth2
   conforms: true
   evidence: >-
-    REST API secured with OAuth 2.0 bearer tokens; client_credentials, authorization_code
-    and implicit flows documented (authentication reference + login OIDC discovery).
+    REST API secured with OAuth 2.0 bearer tokens. All three regional
+    authorization servers publish discovery documents advertising
+    authorization_code, client_credentials, refresh_token, implicit, password,
+    device_code, CIBA and token-exchange grants.
 - id: oidc
   conforms: true
   evidence: >-
-    login.conga.com publishes a /.well-known/openid-configuration OIDC discovery
-    document (issuer, authorization/token/jwks endpoints, PKCE support).
-- id: jsonapi-errors
+    login-rls.congacloud.com, login.congacloud.eu and login.congacloud.au each
+    serve /api/v1/auth/.well-known/openid-configuration with issuer,
+    authorization/token/jwks/userinfo/endsession/introspection/revocation
+    endpoints. login.conga.com (Auth0, developer portal) also serves discovery.
+- id: oauth2-pkce
+  conforms: true
+  evidence: 'code_challenge_methods_supported: [plain, S256] in all three regions.'
+- id: rfc7662-introspection
+  conforms: true
+  evidence: introspection_endpoint published at /api/v1/auth/connect/introspect.
+- id: rfc7009-revocation
+  conforms: true
+  evidence: revocation_endpoint published at /api/v1/auth/connect/revocation.
+- id: rfc7591-dynamic-client-registration
+  conforms: false
+  evidence: >-
+    No registration_endpoint in any discovery document, despite the MCP server's
+    error text telling clients they "should automatically re-register".
+- id: rfc9728-oauth-protected-resource-metadata
   conforms: true
   evidence: >-
-    Error responses returned inline with the JSON:API error-object specification
-    (errors[] with Source/Title/Detail/Link).
+    https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp returns
+    200 with resource, authorization_servers and bearer_methods_supported. Served
+    in all four probed regions/environments.
+- id: rfc6750-bearer-token
+  conforms: true
+  evidence: >-
+    The MCP endpoint returns a conformant WWW-Authenticate Bearer challenge with
+    error, error_description and resource_metadata.
+- id: mcp
+  conforms: true
+  version: unknown
+  evidence: >-
+    Live Streamable-HTTP MCP servers at /mcp on rls.congacloud.com,
+    rls.congacloud.eu, rls.congacloud.au and rls-preview.congacloud.au. Protocol
+    version could not be read without a token. See mcp/conga-mcp.yml.
+- id: graphql
+  conforms: true
+  evidence: >-
+    A per-tenant GraphQL API with Relay-style connections, cursor pagination and
+    SSE subscriptions, evidenced by Conga's own first-party @conga-cloud/graphql
+    npm client. Undocumented on the developer portal. See graphql/conga-graphql.yml.
+- id: openapi
+  conforms: true
+  version: 3.0.1
+  evidence: >-
+    Conga publishes a complete OpenAPI 3.0.1 definition per operation on its
+    developer portal. 2,136 operations across 31 service documents were captured
+    verbatim into openapi/.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No AsyncAPI document is published, despite a real event surface (Conga Hooks
+    data-change and schedule rules, Conga Sign callbacks). See
+    asyncapi/conga-webhooks.yml.
+- id: jsonapi-errors
+  conforms: partial
+  evidence: >-
+    The prose documentation specifies JSON:API error objects
+    (errors[] with Source/Title/Detail/Link), but the specs show five different
+    error envelopes across the 31 services - ErrorDetail {Message} in 17,
+    ProblemDetails in 9, a service-local CatalogError with a numeric code in 1,
+    and assorted wrappers elsewhere. Documented contract and shipped contract
+    disagree.
 - id: rfc9457-problem-details
   conforms: false
-  evidence: Errors use JSON:API error objects, not application/problem+json.
+  evidence: >-
+    Nine specs carry an RFC 7807-shaped ProblemDetails schema, but ZERO
+    operations declare application/problem+json - every response is
+    application/json, text/json or text/plain. Shape without media type is not
+    conformance.
 - id: rfc8594-sunset
   conforms: false
-  evidence: No documented Sunset/Deprecation header policy.
+  evidence: >-
+    No Sunset or Deprecation header policy, and no response headers are declared
+    on any of the 2,136 operations. 20 operations carry `deprecated: true` in the
+    specs, only one of which names a replacement and none of which carries a
+    removal date.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: >-
+    No /.well-known/security.txt on any Conga host, despite a published
+    vulnerability-disclosure program at conga.com/vulnerability-disclosure.
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404 on every host.
+- id: a2a-agent-card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on
+    www.conga.com and on the API gateway; the ReadMe portal answers with an SPA
+    shell for any path and is not a hit.
 - id: pagination
   conforms: true
-  evidence: page/limit query parameters with Content-Range response header.
+  evidence: >-
+    page/limit query parameters with a Content-Range response header
+    (documented in prose; the header is not declared in any spec). A NextCursor
+    field also appears in the generic platform response envelope, so two
+    pagination models coexist.
 - id: idempotency
   conforms: false
-  evidence: No idempotency-key contract documented.
+  evidence: >-
+    No Idempotency-Key header or equivalent contract. Safe retry is available
+    only through dedicated bulk-upsert endpoints keyed on the caller's own
+    identifier - real, but not idempotency-key semantics. See
+    conventions/conga-conventions.yml.
+- id: rate-limit-headers
+  conforms: false
+  evidence: >-
+    Limits are documented in prose (100 req/s production, 25 req/s development)
+    but no RateLimit-*, X-RateLimit-* or Retry-After header is documented or
+    declared. Clients must infer backoff from the 429 alone.
+- id: http-semantics
+  conforms: partial
+  evidence: >-
+    Correct use of 204 for empty collections, 202 for async work (41 operations)
+    and 207 for partial bulk success (38 operations). Undercut by CLM using
+    POST .../query for reads and by text/json appearing as a response media type.
+- id: llms-txt
+  conforms: true
+  evidence: >-
+    developer.conga.com/llms.txt returns 200 text/plain (546 KB) indexing 2,186
+    pages, and every documentation page has a machine-readable .md twin. This is
+    the strongest agent-facing artifact Conga publishes.
 compliance_certifications:
 - SOC 1 Type 2
 - SOC 2 Type 2
@@ -39,4 +150,4 @@ compliance_certifications:
 - CCPA
 - PCI
 compliance_source: https://conga.com/trust-compliance-center
-compliance_auditor: Coalfire Controls, LLC
+checked: '2026-08-13'

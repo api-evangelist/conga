@@ -1,0 +1,84 @@
+generated: '2026-08-13'
+method: searched
+source: https://www.npmjs.com/package/@conga-cloud/graphql
+status: gated
+description: >-
+  Conga operates a GraphQL API alongside its REST surface. It is not documented
+  anywhere on developer.conga.com, conga.com or documentation.conga.com - the
+  only public evidence is Conga's own first-party npm client,
+  @conga-cloud/graphql (author "Conga", maintainers chmoyle and cchong-conga),
+  whose README and compiled sources describe the surface in detail.
+endpoint:
+  fixed_url: null
+  resolution: >-
+    There is no fixed public GraphQL URL. The SDK authenticates via OIDC against
+    the regional Conga login service, decodes the resulting access token, and
+    reads the tenant's own instance URL out of the JWT `c_org_iurl` claim; the
+    GraphQL path `/api/graphql/` is then appended to that per-tenant host.
+  path: /api/graphql/
+  auth_environments:
+  - name: Production
+    auth_url: https://login-rls.congacloud.com/api/v1/auth
+    client_id: conga-next-ui
+  - name: QA
+    auth_url: https://login-rlsqa.congacloud.io/api/v1/auth
+    client_id: conga-next-ui
+  - name: Staging
+    auth_url: https://login-rlsqa.congacloud.io/api/v1/auth
+    client_id: conga-next-ui
+  - name: Development
+    auth_url: https://login-rlsdev.congacloud.io/api/v1/auth
+    client_id: conga-next-ui
+  oidc_scope: openid profile offline_access
+  response_type: code
+schema:
+  captured: false
+  sdl_file: null
+  reason: >-
+    The schema is MULTI-TENANT and per-tenant by design - Conga's own README
+    states "Each tenant has its own GraphQL schema based on the authentication
+    token", and the SDK's `generate` CLI exists precisely to code-generate
+    TypeScript types from the caller's tenant schema at build time. There is no
+    tenant-independent schema to introspect and no anonymous endpoint to
+    introspect it against, so no SDL was captured. Nothing was inferred.
+  introspection_attempted: false
+  introspection_blocked_by: no anonymous endpoint exists to introspect
+conventions:
+  style: Relay-style connections
+  shape: >-
+    Queries are rooted at a `Data` field containing per-object connections with
+    edges/node. Documented objects in Conga's own example include Account (Id,
+    Name, AccountNumber, Type, Industry, Status).
+  pagination: cursor - first/last with before/after, plus pageInfo
+  filtering: '.where(condition) taking a SOQL-like predicate string, e.g. "Status = ''Active''"'
+  sorting: .orderBy(field, Ascending|Descending)
+  subscriptions:
+    supported: true
+    transport: graphql-sse (Server-Sent Events)
+    note: Real-time cart subscriptions are packaged separately as @conga-cloud/graphql-cart.
+  mutations:
+    supported: true
+    note: The SDK advertises mutation execution; no mutation names are published.
+client:
+  package: '@conga-cloud/graphql'
+  version: 1.0.25
+  published: '2026-07-07'
+  url: https://www.npmjs.com/package/@conga-cloud/graphql
+  cli: npx @conga-cloud/graphql generate
+evidence:
+- url: https://registry.npmjs.org/@conga-cloud%2fgraphql
+  http_status: 200
+  note: Package metadata - author "Conga", latest 1.0.25 published 2026-07-07.
+- url: https://registry.npmjs.org/@conga-cloud/graphql/-/graphql-1.0.25.tgz
+  http_status: 200
+  note: >-
+    Tarball inspected. package/README.md documents the query builder and
+    subscriptions; package/cjs/bin/oidc-environment.js carries the four
+    environment auth URLs verbatim; package/cjs/environment.js reads the
+    endpoint from the `c_org_iurl` JWT claim; package/cjs/client-manager.js
+    carries the "/api/graphql/" path.
+documentation_gap: >-
+  Conga ships a maintained, actively released GraphQL client and does not
+  document the API it talks to on any public developer surface. A developer who
+  never searches npm cannot discover that Conga has a GraphQL API at all.
+checked: '2026-08-13'

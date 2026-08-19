@@ -1,0 +1,119 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Conga Advantage Platform OpenAPIs
+  version: 1.0.0
+extends: ../openapi/
+x-provenance:
+  generated: '2026-08-13'
+  method: generated
+  source: >-
+    Applies to every document in openapi/. Each target below is grounded in a
+    fact verified during the 2026-08-13 enrichment pass - the OIDC discovery
+    documents at login-rls.congacloud.com, login.congacloud.eu and
+    login.congacloud.au, the probed MCP resource metadata, and Conga's own
+    published documentation URLs. Nothing here is invented; the specs themselves
+    are left unmodified.
+  applies_to: openapi/conga-*.json (31 documents)
+actions:
+- target: $.info
+  description: >-
+    Conga's per-operation specs carry only title and version. Add the contact,
+    licence-free terms and documentation pointers Conga publishes elsewhere so a
+    consumer of the spec alone can find support and terms.
+  update:
+    contact:
+      name: Conga Developer Support
+      url: https://conga.com/support
+    termsOfService: https://conga.com/legal/terms-and-conditions
+    x-privacy-policy: https://conga.com/privacy
+    x-status-page: https://status.conga.com/
+    x-changelog: https://developer.conga.com/platform/changelog
+- target: $
+  description: >-
+    Add externalDocs pointing at the developer portal reference, which the
+    generated specs omit entirely.
+  update:
+    externalDocs:
+      description: Conga Developer Portal - API Reference
+      url: https://developer.conga.com/platform/reference
+- target: $.components.securitySchemes.Bearer
+  description: >-
+    The generated specs describe authentication as an apiKey scheme named
+    "Bearer" with the description "Please insert JWT with Bearer into field",
+    which tells a client nothing about how to obtain the token. Record the real
+    OAuth 2.0 authorization servers and the published API scopes read from the
+    regional OIDC discovery documents.
+  update:
+    description: >-
+      OAuth 2.0 bearer token. Obtain it from the Conga login service for the
+      tenant's region (NA https://login-rls.congacloud.com/api/v1/auth, EU
+      https://login.congacloud.eu/api/v1/auth, AU
+      https://login.congacloud.au/api/v1/auth) using the client_credentials grant
+      with an Integration User's client_id/client_secret. On API-to-API
+      connections also send a `user-id` header carrying the platform user ID.
+      Tokens are not portable across regions.
+    x-oauth2-authorization-servers:
+    - https://login-rls.congacloud.com/api/v1/auth
+    - https://login.congacloud.eu/api/v1/auth
+    - https://login.congacloud.au/api/v1/auth
+    x-oauth2-token-endpoint: https://login-rls.congacloud.com/api/v1/auth/connect/token
+    x-oauth2-scopes-published:
+    - api.cart
+    - api.catalog
+    - api.quote
+    - api.order
+    - api.document-management
+    - api.user-management
+    - api.metadata
+    - api.data
+    - api.localization
+    - api.revenue-admin
+    - api.custom-api
+    - api.email
+    - doc-gen.composer
+    - sign
+    - sign.provisioning
+    x-scopes-detail: scopes/conga-scopes.yml
+- target: $
+  description: >-
+    Record the runtime semantics Conga documents in prose but declares nowhere in
+    the specs - the rate limits, the pagination contract, the Content-Range
+    response header and the error envelope - so a spec-only consumer sees them.
+  update:
+    x-rate-limits:
+      production: 100 requests/second
+      development: 25 requests/second
+      exceeded_status: 429
+      headers_published: false
+      detail: rate-limits/conga-rate-limits.yml
+    x-pagination:
+      style: page-number
+      params: [page, limit]
+      defaults: {page: 1, limit: 1000}
+      max_limit: 10000
+      constraint: page cannot be sent without limit
+      response_header: Content-Range
+      empty_result_status: 204
+      detail: conventions/conga-conventions.yml
+    x-error-envelope:
+      documented_format: json:api error objects
+      shipped_shapes: 5
+      problem_json: false
+      detail: errors/conga-problem-types.yml
+- target: $
+  description: >-
+    Record the sibling machine surfaces so an agent reading one Conga spec learns
+    the other two exist. Both are authentication-gated and neither is documented
+    on the developer portal.
+  update:
+    x-mcp-server:
+      url: https://rls.congacloud.com/mcp
+      auth: oauth
+      resource_metadata: https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp
+      documented_by_provider: false
+      detail: mcp/conga-mcp.yml
+    x-graphql:
+      endpoint: per-tenant, resolved from the c_org_iurl JWT claim + /api/graphql/
+      client: '@conga-cloud/graphql'
+      documented_by_provider: false
+      detail: graphql/conga-graphql.yml

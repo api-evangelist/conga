@@ -1,6 +1,7 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://developer.conga.com/revenue/docs
+enriched_from: openapi/ (31 assembled specs, 2,136 operations)
 docs:
   pagination: https://developer.conga.com/revenue/docs/pagination
   filtering: https://developer.conga.com/revenue/docs/filtering
@@ -68,3 +69,69 @@ versioning:
   pattern: /api/{service}/v1/...
   current: v1
   detail: lifecycle/conga-lifecycle.yml
+upsert_semantics:
+  supported: true
+  style: dedicated bulk-upsert endpoints keyed on a customer identifier
+  examples:
+  - PUT /api/user-management/v1/users/bulk-upsert
+  - PUT /api/user-management/v1/users/bulk-upsert-sync
+  - PUT /api/user-management/v1/user-groups/bulk-upsert-usergroups
+  external_id_field: ExternalId
+  note: >-
+    Conga has no Idempotency-Key header, but it does offer a real safe-retry
+    path: upsert endpoints keyed on the caller's own record identifier. Where a
+    resource has a bulk-upsert form, use it instead of POST-and-catch-duplicate.
+    ExternalId is the most common cross-reference field in the catalogue
+    (150 occurrences across the specs).
+partial_success:
+  status: 207
+  operations_declaring_it: 38
+  note: >-
+    Bulk endpoints return 207 Multi-Status with per-record outcomes - created ids
+    plus an error list for the records that failed validation. A client that
+    treats 2xx as success will silently drop records.
+async_operations:
+  supported: true
+  pattern: correlation id
+  example: GET /v1/async-operation-status/{correlationId}  # Approvals service
+  status_code: 202
+  operations_declaring_202: 41
+  note: >-
+    Long-running work returns 202 with a correlation id; poll the service's
+    async-operation-status endpoint. The pattern is not consistent across all 31
+    services.
+response_envelope:
+  name: APIResponse
+  shape: '{ Success, RecordCount, Data, Errors[], Warnings[], Profile, TotalTime, StatusCode, HasMoreRecords, NextCursor }'
+  note: >-
+    Several services wrap payloads in a generic platform envelope carrying both a
+    HTTP-mirroring StatusCode and a Success boolean, plus a NextCursor field -
+    cursor pagination exists in the envelope even though the documented pagination
+    contract is page/limit. Not applied uniformly across services.
+request_id_tracing:
+  client_header: null
+  response_header: null
+  note: >-
+    No request-id or correlation header is documented and none is declared in any
+    of the 2,136 operations. The Kong gateway does return a `request_id` in its own
+    404 bodies, but that is gateway-level, not an API contract.
+response_headers_declared:
+  count: 0
+  note: >-
+    Not one operation in the entire catalogue declares a response header - not
+    Content-Range (which the prose docs document for pagination), not a rate-limit
+    header, not Retry-After. Runtime signalling is invisible to any tool that
+    reads only the specs.
+media_type_inconsistency:
+  note: >-
+    Responses are declared as application/json (2,974), text/plain (629) and
+    text/json (629). text/json is a .NET serialization artifact, not a registered
+    media type; a strict client negotiating on Accept can miss those responses.
+cross_links:
+  authentication: authentication/conga-authentication.yml
+  scopes: scopes/conga-scopes.yml
+  errors: errors/conga-problem-types.yml
+  rate_limits: rate-limits/conga-rate-limits.yml
+  lifecycle: lifecycle/conga-lifecycle.yml
+  data_model: data-model/conga-data-model.yml
+  events: asyncapi/conga-webhooks.yml

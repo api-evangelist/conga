@@ -1,0 +1,279 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/ (31 assembled Conga OpenAPI documents, 2,136 operations, 1,546 distinct schemas)
+description: >-
+  The entity graph of the Conga Advantage Platform, derived from the resource
+  paths and nested sub-resource paths of Conga's own published OpenAPI documents.
+  Relationships below are read off real path shapes (/parent/{id}/child) and real
+  id-reference fields in request/response schemas - nothing is inferred from
+  product marketing. Conga's model is a classic quote-to-cash core (Account ->
+  Opportunity -> Quote -> Cart -> Order -> Asset -> Invoice) wrapped by a
+  contract lifecycle (Contract -> Clause/Obligation/Review) and a document
+  pipeline (Template -> Document -> Signature Package), all sitting on a
+  metadata-driven object layer (Schema Manager) that lets customers define their
+  own business objects.
+id_convention:
+  style: opaque string identifiers
+  primary_field: Id (PascalCase) in platform/admin services, id (camelCase) in
+    newer services
+  external_id:
+    field: ExternalId
+    occurrences: 150
+    note: >-
+      The most common cross-reference field in the whole catalogue. Conga's
+      upsert endpoints (users, user groups, products) key on an external
+      identifier so a customer's system of record can drive the platform.
+  prefixed_ids: false
+  note: No typed id-prefix scheme (no "acct_"/"cus_" style prefixes) is published.
+domains:
+- domain: identity
+  spec: openapi/conga-user-management.json
+  entities: [User, UserGroup, UserGroupMember, Role, PermissionGroup, AdminPermission,
+    Organization]
+- domain: metadata
+  spec: openapi/conga-schema-manager.json
+  entities: [Object, Field, Picklist, PicklistEntry, BusinessObject]
+  note: >-
+    The customer-extensible object layer. Because customers define objects here,
+    the GraphQL schema is per-tenant (see graphql/conga-graphql.yml) and the
+    Data service is generic over business objects.
+- domain: catalog
+  spec: openapi/conga-catalog.json + openapi/conga-administration.json
+  entities: [Product, Category, ProductGroup, PriceList, PriceListItem, OptionGroup,
+    Feature, FeatureSet, Attribute, AttributeGroup, Hierarchy, Favorite]
+- domain: configuration-and-pricing
+  spec: openapi/conga-cart-v1.json
+  entities: [Cart, CartItem, SummaryGroup, CollaborationRequest, ConstraintRule,
+    AttributeRule, DealGuidanceRule]
+- domain: transaction
+  spec: openapi/conga-quote.json + openapi/conga-order.json + openapi/conga-asset.json
+  entities: [Quote, Order, Asset]
+- domain: billing
+  spec: openapi/conga-billing-management.json + openapi/conga-invoice-management.json
+  entities: [BillingSchedule, Milestone, Invoice]
+- domain: incentives
+  spec: openapi/conga-incentive-administration.json + openapi/conga-rebate-administration.json
+  entities: [Incentive, IncentiveRule, Coupon, Rebate, PriceProgram]
+- domain: contracts
+  spec: openapi/conga-contracts.json + openapi/conga-review.json
+  entities: [Contract, Request, Clause, Obligation, Fulfillment, Review, Reviewer,
+    TeamMember, ContractDocument, ContractRelationship]
+- domain: authoring
+  spec: openapi/conga-x-author.json
+  entities: [Document, Playbook, PlaybookRule, ContentControl, Clause, DocumentVersion]
+- domain: documents
+  spec: openapi/conga-document-management.json + openapi/conga-file-store.json + openapi/conga-conversion-management.json + openapi/conga-ingress.json
+  entities: [Document, File, Attachment, ConversionJob, IngressDocument, Template]
+- domain: signature
+  spec: openapi/conga-conga-sign.json + openapi/conga-esignature.json
+  entities: [Package, PackageDocument, PackageRole, Approval, ApprovalField, ImprintField,
+    VirtualRoom, AuditTrail, SignAccount, SignReport]
+- domain: process
+  spec: openapi/conga-approvals.json + openapi/conga-scheduler.json
+  entities: [Process, ProcessStep, ApprovalRequest, ApprovalRule, RuleEntry, ScheduledJob]
+- domain: extensibility
+  spec: openapi/conga-extensibility.json + openapi/conga-externalendpointconfiguration.json
+  entities: [CustomCode, CustomSetting, ExternalEndpointConfiguration, CustomApi]
+relationships:
+- from: Package
+  to: PackageDocument
+  type: has_many
+  via: /api/sign/.../cs-packages/{id}/documents
+  evidence: 23 operations
+- from: Contract
+  to: Document
+  type: has_many
+  via: /xauthor/contracts/{id}/documents
+  evidence: 16 operations
+- from: Cart
+  to: CartItem
+  type: has_many
+  via: /cart/.../carts/{id}/items
+  evidence: 12 operations
+- from: Contract
+  to: Obligation
+  type: has_many
+  via: /clm/contracts/{id}/obligations
+  evidence: 10 operations
+- from: Contract
+  to: ContractDocument
+  type: has_many
+  via: /clm/contracts/{id}/documents
+  evidence: 9 operations
+- from: Contract
+  to: Playbook
+  type: has_many
+  via: /xauthor/contracts/{id}/playbooks
+  evidence: 9 operations
+- from: Package
+  to: PackageRole
+  type: has_many
+  via: /api/sign/.../cs-packages/{id}/roles
+  evidence: 8 operations
+- from: Object
+  to: Field
+  type: has_many
+  via: /schema/objects/{id}/fields
+  evidence: 8 operations
+- from: Package
+  to: Attachment
+  type: has_many
+  via: /api/sign/.../cs-packages/{id}/attachment
+  evidence: 7 operations
+- from: Contract
+  to: Review
+  type: has_many
+  via: /clm/contracts/{id}/reviews
+  evidence: 7 operations
+- from: Document
+  to: Approval
+  type: has_many
+  via: /api/sign/.../documents/{id}/approvals
+  evidence: 6 operations
+- from: Object
+  to: Picklist
+  type: has_many
+  via: /schema/objects/{id}/picklists
+  evidence: 6 operations
+- from: Process
+  to: ProcessStep
+  type: has_many
+  via: /api/approvals/process/{id}/process-steps
+  evidence: 5 operations
+- from: Playbook
+  to: PlaybookRule
+  type: has_many
+  via: /xauthor/playbooks/{id}/rules
+  evidence: 5 operations
+- from: Obligation
+  to: Fulfillment
+  type: has_many
+  via: /clm/obligations/{id}/fulfillments
+  evidence: 4 operations
+- from: Contract
+  to: ContractRelationship
+  type: has_many
+  via: /clm/contracts/{id}/relationships
+  evidence: 4 operations
+- from: Contract
+  to: TeamMember
+  type: has_many
+  via: /clm/contracts/{id}/teammembers
+  evidence: 4 operations
+- from: Request
+  to: TeamMember
+  type: has_many
+  via: /clm/requests/{id}/teammembers
+  evidence: 4 operations
+- from: Product
+  to: OptionGroup
+  type: has_many
+  via: /products/{id}/option-groups
+  evidence: 4 operations
+- from: Product
+  to: PriceListItem
+  type: has_many
+  via: /products/{id}/price-list-items
+  evidence: 3 operations
+- from: PriceList
+  to: PriceListItem
+  type: has_many
+  via: /price-lists/{id}/price-list-items
+  evidence: 3 operations
+- from: Cart
+  to: SummaryGroup
+  type: has_many
+  via: /cart/.../carts/{id}/summarygroups
+  evidence: 4 operations
+- from: BusinessObject
+  to: Cart
+  type: has_many
+  via: /cart/.../business-objects/{id}/carts
+  evidence: 3 operations
+  note: A cart is always created in the context of a business object (typically a Quote).
+- from: Contract
+  to: Clause
+  type: has_many
+  via: /clm/contracts/{id}/clauses
+  evidence: 3 operations
+- from: Clause
+  to: Obligation
+  type: has_many
+  via: /clm/clauses/{id}/obligations
+  evidence: 3 operations
+- from: Review
+  to: Reviewer
+  type: has_many
+  via: /clm/reviews/{id}/reviewers
+  evidence: 3 operations
+- from: User
+  to: Role
+  type: has_one
+  via: /user-management/v1/users/{userId}/roles
+  evidence: 3 operations
+- from: User
+  to: PermissionGroup
+  type: has_many
+  via: /user-management/v1/users/{userId}/permissiongroups
+  evidence: 2 operations
+- from: Role
+  to: PermissionGroup
+  type: has_many
+  via: /user-management/v1/roles/{roleId}/permissiongroups
+  evidence: 2 operations
+- from: UserGroup
+  to: UserGroupMember
+  type: has_many
+  via: /user-management/v1/user-groups/{id}/members
+  evidence: 5 operations
+- from: Picklist
+  to: PicklistEntry
+  type: has_many
+  via: /schema/picklists/{id}/picklist-entries
+  evidence: 3 operations
+- from: Document
+  to: Clause
+  type: has_many
+  via: /xauthor/documents/{id}/clauses
+  evidence: 3 operations
+- from: Document
+  to: DocumentVersion
+  type: has_many
+  via: documentVersionId reference field
+  evidence: 7 schema references
+- from: Incentive
+  to: Coupon
+  type: has_many
+  via: /incentives/{id}/coupons
+  evidence: 3 operations
+- from: FeatureSet
+  to: Feature
+  type: has_many
+  via: /feature-sets/{id}/features
+  evidence: 2 operations
+- from: AttributeGroup
+  to: Attribute
+  type: has_many
+  via: /attribute-groups/{id}/attributes
+  evidence: 2 operations
+- from: ConstraintRule
+  to: ConstraintRuleAction
+  type: has_many
+  via: /constraint-rules/{id}/actions
+  evidence: 2 operations
+top_reference_fields:
+- {field: ExternalId, occurrences: 150}
+- {field: productId, occurrences: 20}
+- {field: attachmentId, occurrences: 19}
+- {field: agreementId, occurrences: 18}
+- {field: DocumentId, occurrences: 16}
+- {field: ProductId, occurrences: 15}
+- {field: ObjectId, occurrences: 13}
+- {field: templateId, occurrences: 13}
+- {field: referenceId, occurrences: 12}
+- {field: JobId, occurrences: 10}
+- {field: contentControlId, occurrences: 10}
+- {field: clauseId, occurrences: 9}
+- {field: BusinessObjectId, occurrences: 8}
+render: null
+render_note: No subway/ diagram exists for this provider yet.

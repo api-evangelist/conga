@@ -1,6 +1,7 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://developer.conga.com/
+enriched_from: openapi/ (31 assembled specs, 2,136 operations)
 versioning:
   scheme: uri-path
   pattern: /api/{service}/v1/...
@@ -24,3 +25,48 @@ sla:
 references:
 - https://conga.com/legal-center/master-services-agreement
 - https://conga.com/legal-center/data-security-exhibit
+deprecated_operations:
+  source: "openapi/ - `deprecated: true` flags in Conga's own published specs"
+  count: 20
+  plus_prose: 2
+  note: >-
+    Conga has no published deprecation POLICY and sends no RFC 8594
+    Sunset/Deprecation headers, but it does flag deprecated operations in the
+    specs themselves. Only one of the 20 names its replacement. No removal date
+    is given for any of them, so a consumer cannot plan a migration.
+  operations:
+  - {spec: openapi/conga-cart-v1.json, op: 'POST /api/cart/v1/business-objects/{businessObjectId}/reactivate',
+     replacement: 'POST /api/cart/v1/business-objects/{businessObjectId}/carts/reactivate',
+     note: The only deprecation in the catalogue that names its successor.}
+  - {spec: openapi/conga-catalog.json, group: Favorites, count: 9,
+     ops: '/favorites, /favorites/{Id}, /favorites/{Id}/items, /favorites/{Id}/preview, /favorites/{Id}/publish, /favorites/{Id}/addtocart/{cartId}',
+     replacement: null, note: The entire Favorites resource is deprecated with no successor named.}
+  - {spec: openapi/conga-rebate-administration.json, group: Rebate Programs, count: 7,
+     ops: '/programs, /programs/{Id}', replacement: null,
+     note: The whole Rebate Programs resource is deprecated with no successor named.}
+  - {spec: openapi/conga-administration.json, count: 2,
+     ops: 'POST /categories/{id}/add, POST /option-groups/{optionGroup}/add', replacement: null}
+  - {spec: openapi/conga-asset.json, count: 1, ops: 'GET /api/asset/v1/assets/{cartId}', replacement: null}
+tenant_deprecation_tooling:
+  note: >-
+    Conga exposes deprecation as a first-class operation on customer metadata -
+    PATCH /api/schema/v1/objects/{objectName}/deprecate and
+    PATCH /api/schema/v1/objects/{objectName}/fields/{fieldName}/deprecate let a
+    tenant deprecate its own objects and fields. Conga gives its customers a
+    deprecation mechanism it does not use for its own public API.
+environments:
+  production:
+  - {region: NA, api: 'https://rls.congacloud.com', auth: 'https://login-rls.congacloud.com/api/v1/auth'}
+  - {region: EU, api: 'https://rls.congacloud.eu', auth: 'https://login.congacloud.eu/api/v1/auth'}
+  - {region: AU, api: 'https://rls.congacloud.au', auth: 'https://login.congacloud.au/api/v1/auth'}
+  preview:
+  - {host: 'https://preview-rls09.congacloud.com', note: 'appears in servers[] of 6 specs'}
+  - {host: 'https://rls-preview.congacloud.au'}
+  xauthor:
+  - {host: 'https://xauthor-prod-rls10.congacloud.com'}
+  - {host: 'https://xauthor-preview-rls09.congacloud.com'}
+  development:
+  - {host: 'https://rlp-dev.congacloud.io', note: 'documented dev host; not resolvable to a live TLS endpoint on probe 2026-08-13'}
+status_page_api: https://status.conga.com/api/v2/summary.json
+status_page_components_include:
+- Document Automation - North America (NA)

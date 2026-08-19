@@ -1,0 +1,105 @@
+generated: '2026-08-13'
+method: probed
+source: https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp
+name: Conga Advantage Platform MCP Server
+status: live
+description: >-
+  Conga runs a hosted, remote Model Context Protocol server at /mcp on every
+  regional Conga Advantage Platform gateway. It is undocumented on
+  developer.conga.com and does not appear on conga.com, but it is unambiguously
+  real and correctly implemented: the endpoint answers MCP JSON-RPC over HTTP,
+  rejects anonymous calls with an RFC 6750 WWW-Authenticate challenge carrying a
+  resource_metadata pointer, and serves RFC 9728 OAuth Protected Resource
+  Metadata at /.well-known/oauth-protected-resource/mcp naming the region's own
+  Conga login service as the authorization server. The tool list therefore
+  requires an authenticated MCP client; it could not be enumerated anonymously
+  and is NOT reproduced here.
+discovery:
+  found_via: >-
+    The Australian Conga login service advertises the MCP resource as an OAuth
+    scope in its OIDC discovery document
+    (https://login.congacloud.au/api/v1/auth/.well-known/openid-configuration
+    lists the scope "https://rls-preview.congacloud.au/mcp"), which led to
+    probing /mcp on every regional gateway.
+  documented_by_provider: false
+deployment:
+  mode: remote
+  endpoint: https://rls.congacloud.com/mcp
+  auth: oauth
+  verified: probed
+endpoints:
+- region: NA
+  url: https://rls.congacloud.com/mcp
+  authorization_server: https://login-rls.congacloud.com/api/v1/auth
+  resource_metadata: https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp
+  status: 200 (resource metadata), 401 invalid_token (tools/list)
+- region: EU
+  url: https://rls.congacloud.eu/mcp
+  authorization_server: https://login.congacloud.eu/api/v1/auth
+  resource_metadata: https://rls.congacloud.eu/.well-known/oauth-protected-resource/mcp
+  status: 200 (resource metadata), 401 invalid_token (tools/list)
+- region: AU
+  url: https://rls.congacloud.au/mcp
+  authorization_server: https://login.congacloud.au/api/v1/auth
+  resource_metadata: https://rls.congacloud.au/.well-known/oauth-protected-resource/mcp
+  status: 200 (resource metadata), 401 invalid_token (tools/list)
+- region: AU-preview
+  url: https://rls-preview.congacloud.au/mcp
+  authorization_server: https://login-preview.congacloud.au/api/v1/auth
+  resource_metadata: https://rls-preview.congacloud.au/.well-known/oauth-protected-resource/mcp
+  status: 200 (resource metadata), 401 invalid_token (tools/list)
+transport:
+  protocol: Streamable HTTP (JSON-RPC 2.0 over POST)
+  accept: application/json, text/event-stream
+  get_method: 405 Method Not Allowed (POST-only)
+authorization:
+  scheme: OAuth 2.1 bearer
+  bearer_methods_supported: [header]
+  scopes_supported_on_resource: []
+  dynamic_client_registration: >-
+    Implied by the server's own error text - "Your client should automatically
+    re-register and obtain new tokens" - but the authorization server publishes
+    no registration_endpoint in its OIDC discovery document, so DCR could not be
+    confirmed.
+  authorization_server_metadata: https://login-rls.congacloud.com/api/v1/auth/.well-known/openid-configuration
+  grant_types_supported: [authorization_code, client_credentials, refresh_token, implicit,
+    password, 'urn:ietf:params:oauth:grant-type:device_code', 'urn:openid:params:grant-type:ciba',
+    'urn:ietf:params:oauth:grant-type:token-exchange']
+  pkce: [S256, plain]
+tools:
+  enumerated: false
+  reason: >-
+    tools/list returns HTTP 401 invalid_token without a bearer token. Conga
+    publishes no llms.txt tool list, no MCP documentation page and no client
+    config snippet, so there is no published fallback list either. Tool names and
+    inputSchemas require authenticated introspection with a Conga tenant token.
+  do_not_infer: >-
+    A candidate tool list was deliberately NOT derived from the 2,136 OpenAPI
+    operations - the MCP surface is a curated projection, not a 1:1 REST mirror,
+    and inventing tool names would misrepresent what an agent can actually call.
+evidence:
+- url: https://rls.congacloud.com/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 401
+  content_type: application/json
+  www_authenticate: >-
+    Bearer error="invalid_token", error_description="Authentication failed. The
+    provided bearer token is invalid, expired, or no longer recognized by the
+    server...", resource_metadata="https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp"
+- url: https://rls.congacloud.com/.well-known/oauth-protected-resource/mcp
+  method: GET
+  http_status: 200
+  content_type: application/json
+  body: '{"resource":"https://rls.congacloud.com/mcp","authorization_servers":["https://login-rls.congacloud.com/api/v1/auth"],"scopes_supported":[],"bearer_methods_supported":["header"]}'
+- url: https://rls.congacloud.com/nonsense-path-xyz123
+  method: GET
+  http_status: 200
+  content_type: text/html
+  note: >-
+    Host discrimination check. An unknown path on the same host returns a generic
+    SPA shell and /.well-known/security.txt returns a Kong "no Route matched"
+    404, while /mcp returns an MCP-specific 401 JSON-RPC error and its
+    resource-metadata path returns real RFC 9728 JSON. The MCP surface is
+    therefore genuinely routed, not a catch-all false positive.
+checked: '2026-08-13'

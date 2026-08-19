@@ -1,0 +1,3410 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "eSignature",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://rls.congacloud.com"
+    },
+    {
+      "url": "https://preview-rls09.congacloud.com"
+    }
+  ],
+  "paths": {
+    "/api/esign/v1/adobe/{transactionId}/audittrail": {
+      "get": {
+        "tags": [
+          "AdobeSign"
+        ],
+        "summary": "Get Adobe sign events by esign transaction",
+        "description": "Retrieves list of events from Adobe based on the transaction ID provided in the parameters. The transaction ID is the esign ID generated during envelope creation.\r\n            This API returns events details as the agreement events happened during transaction, from esign transaction id will get the external id which is agreement id in Adobe.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "The unique transaction ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "d717a075-9cbf-480c-b230-837e0e6dee75"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementEventListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Name": "Envelope",
+                    "ExternalESignId": "30f428ae-6f49-423a-a130-2e399ca348dc",
+                    "ParentObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ParentObjectType": "Agreement",
+                    "ESignProvider": "DocuSign",
+                    "DocumentIds": "077fc471-ad8c-4c74-b6c2-0094d76e7287",
+                    "Id": "3a742f32-c61f-4a1e-9c66-a88bf6a821df",
+                    "CreatedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "CreatedDate": "2023-01-13T12:50:38",
+                    "ModifiedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "ModifiedDate": "2023-01-15T12:50:38",
+                    "DateSigned": "2023-01-15T12:50:38",
+                    "Status": "Signed",
+                    "RecallReason": null,
+                    "DateSent": "2023-01-13T12:50:38",
+                    "FullySignedDocumentId": "fd25d4d9-a597-4b66-aece-bacc637de514"
+                  },
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/agreement/{agreementId}/signing-cycle": {
+      "get": {
+        "tags": [
+          "AgreementSigningCycle"
+        ],
+        "summary": "Retrieves a list of agreement signing cycles based on the specified signing provider type and agreement ID.",
+        "parameters": [
+          {
+            "name": "agreementId",
+            "in": "path",
+            "description": "The unique identifier of the agreement.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "Sign provider",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementSigningCyclesResponseListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/authorize/refresh": {
+      "post": {
+        "tags": [
+          "Authorization"
+        ],
+        "summary": "Get refresh token",
+        "description": "Gets a refresh token using an authentication code.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/authorize/token": {
+      "get": {
+        "tags": [
+          "Authorization"
+        ],
+        "summary": "Get access token",
+        "description": "Retrieves an access token for an eSignature service provider.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "Select an eSignature service provider from the list.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/congasign/send": {
+      "post": {
+        "tags": [
+          "CongaSign"
+        ],
+        "summary": "Create and send a transaction",
+        "description": "Creates a package for Conga Sign\r\n            You can use the package ID to get such transaction details as envelope status, signed date, and declined reason. \r\n            You can use the tag URL to open the document inside the Conga Sign console, add signature tags and additional fields, and send the document to Conga Sign.",
+        "requestBody": {
+          "description": "Envelope data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CongaSignRequest"
+              },
+              "examples": {
+                "CongaSign": {
+                  "value": {
+                    "Name": "Conga Sign Transaction",
+                    "Description": "Sample Description",
+                    "Message": "Sample Message",
+                    "TransactionType": "ESIGNING",
+                    "Settings": {
+                      "SigningOrder": "SEQUENTIAL",
+                      "SignedDocumentDeliveryOptions": "DESIGNER_PAGE",
+                      "Language": "EnglishUS",
+                      "TimezoneId": "GMT",
+                      "Reminder": {
+                        "IntervalInDays": 2,
+                        "RepetitionsCount": 3,
+                        "StartInDaysDelay": 1
+                      },
+                      "ExpireDate": "2026-09-13T00:04:52.3383702Z"
+                    },
+                    "Recipients": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Title": "Mr.",
+                        "Company": "Conga",
+                        "MobileNumber": "1234567890",
+                        "AcceptOnly": false,
+                        "Authentication": "NONE",
+                        "Message": "Sample Message"
+                      }
+                    ],
+                    "Sender": {
+                      "Email": "test@conga.com",
+                      "FirstName": "Abc",
+                      "LastName": "A",
+                      "Title": null,
+                      "Company": null
+                    },
+                    "DocumentIds": [
+                      "077fc471-ad8c-4c74-b6c2-0094d76e7287"
+                    ],
+                    "TemplateId": null,
+                    "MergeFields": [
+                      {
+                        "Name": "Field1",
+                        "Value": "Value1"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CongaSignResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "PackageId": "T-B_kYRfOlQNSK3fv7jlNPuXF_w=",
+                    "TagUrl": "https://coreapps.rlsprod.congacloud.com/sign/?packageId=T-B_kYRfOlQNSK3fv7jlNPuXF_w=&signerId=5b26e628-cdc3-458e-a8c9-88d53fb9e3c5&senderDesignerToken=5b26e628-cdc3-458e-a8c9-88d53fb9e3c5",
+                    "EsignTransactionId": "5b26e628-cdc3-458e-a8c9-88d53fb9e3c5",
+                    "Status": false,
+                    "SigningUrl": null,
+                    "Errors": null
+                  },
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures": {
+      "post": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Create an envelope",
+        "description": "Creates an envelope for DocuSign, an agreement for Adobe Sign, or a package for Conga Sign based on the eSignature service provider in the signProviderType parameter. \r\n            You can use the package ID to get such transaction details as envelope status, signed date, and declined reason. \r\n            You can use the tag URL to open the document inside the eSignature service provider console, add signature tags and additional fields, and send the document for eSignature.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "Select an eSignature service provider from the list.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Envelope data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignRequest"
+              },
+              "examples": {
+                "DocuSign": {
+                  "value": {
+                    "ObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ObjectType": "Agreement",
+                    "Name": "Envelope",
+                    "Email": {
+                      "EmailSubject": "DocuSign Sample Envelope",
+                      "EmailContent": "Sample Envelope."
+                    },
+                    "Recipients": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "Signer",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      },
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "CarbonCopy",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      }
+                    ],
+                    "Cc": null,
+                    "Bcc": null,
+                    "DocumentIds": [
+                      "077fc471-ad8c-4c74-b6c2-0094d76e7287"
+                    ],
+                    "AdditionalAttachments": null,
+                    "IsPasswordProtected": false,
+                    "DocumentPassword": null,
+                    "ReciepentIdentityVerification": null,
+                    "Reminder": null,
+                    "Expiration": null,
+                    "ReturnUrl": "https://localhost:44373/api/esign/swagger/index.html",
+                    "UserDefinedProtectionLevels": null,
+                    "TemplateId": null,
+                    "Status": null,
+                    "IsBackgroundMode": false,
+                    "DocProtectionSettings": null,
+                    "DeliveryMethod": "EMAIL",
+                    "Language": null,
+                    "TimeZone": null
+                  }
+                },
+                "CongaSign": {
+                  "value": {
+                    "ObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ObjectType": "Agreement",
+                    "Name": "CongaSign",
+                    "Email": {
+                      "EmailSubject": "Conga Sign Sample Envelope",
+                      "EmailContent": "Sample Envelope."
+                    },
+                    "Recipients": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "Signer",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": "VP Legal",
+                        "RecipientCompany": "Conga"
+                      },
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "Signer",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": "Director",
+                        "RecipientCompany": "Conga"
+                      }
+                    ],
+                    "Cc": null,
+                    "Bcc": null,
+                    "DocumentIds": [
+                      "077fc471-ad8c-4c74-b6c2-0094d76e7287"
+                    ],
+                    "AdditionalAttachments": null,
+                    "IsPasswordProtected": false,
+                    "DocumentPassword": null,
+                    "ReciepentIdentityVerification": null,
+                    "Reminder": null,
+                    "Expiration": null,
+                    "ReturnUrl": null,
+                    "UserDefinedProtectionLevels": null,
+                    "TemplateId": null,
+                    "Status": null,
+                    "IsBackgroundMode": false,
+                    "DocProtectionSettings": null,
+                    "DeliveryMethod": "EMAIL",
+                    "Language": null,
+                    "TimeZone": null
+                  }
+                },
+                "AdobeSign": {
+                  "value": {
+                    "ObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ObjectType": "Agreement",
+                    "Name": "AdobeSign",
+                    "Email": {
+                      "EmailSubject": "Adobe Sign Sample Envelope",
+                      "EmailContent": "Sample Envelope."
+                    },
+                    "Recipients": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "Signer",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      },
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": "CarbonCopy",
+                        "RoutingOrder": 1,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      }
+                    ],
+                    "Cc": null,
+                    "Bcc": null,
+                    "DocumentIds": [
+                      "077fc471-ad8c-4c74-b6c2-0094d76e7287"
+                    ],
+                    "AdditionalAttachments": null,
+                    "IsPasswordProtected": false,
+                    "DocumentPassword": null,
+                    "ReciepentIdentityVerification": null,
+                    "Reminder": null,
+                    "Expiration": null,
+                    "ReturnUrl": null,
+                    "UserDefinedProtectionLevels": null,
+                    "TemplateId": null,
+                    "Status": null,
+                    "IsBackgroundMode": false,
+                    "DocProtectionSettings": null,
+                    "DeliveryMethod": "EMAIL",
+                    "Language": null,
+                    "TimeZone": null
+                  }
+                },
+                "WetSign": {
+                  "value": {
+                    "ObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ObjectType": "Agreement",
+                    "Name": "WetSign",
+                    "Email": {
+                      "EmailSubject": "Adobe Sign Sample Envelope",
+                      "EmailContent": "Sample Envelope."
+                    },
+                    "Recipients": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "Xyz",
+                        "Role": null,
+                        "RoutingOrder": 0,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      }
+                    ],
+                    "Cc": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "Xyz",
+                        "Role": null,
+                        "RoutingOrder": 0,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      }
+                    ],
+                    "Bcc": [
+                      {
+                        "Email": "abc@conga.com",
+                        "FirstName": "Abc",
+                        "LastName": "A",
+                        "Role": null,
+                        "RoutingOrder": 0,
+                        "ReciepentIdentityVerification": null,
+                        "RecipientTitle": null,
+                        "RecipientCompany": null
+                      }
+                    ],
+                    "DocumentIds": [
+                      "077fc471-ad8c-4c74-b6c2-0094d76e7287"
+                    ],
+                    "AdditionalAttachments": null,
+                    "IsPasswordProtected": false,
+                    "DocumentPassword": null,
+                    "ReciepentIdentityVerification": null,
+                    "Reminder": null,
+                    "Expiration": null,
+                    "ReturnUrl": null,
+                    "UserDefinedProtectionLevels": null,
+                    "TemplateId": null,
+                    "Status": null,
+                    "IsBackgroundMode": false,
+                    "DocProtectionSettings": null,
+                    "DeliveryMethod": "EMAIL",
+                    "Language": null,
+                    "TimeZone": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "PackageId": "590a79ce-0fe0-4486-b5d5-3b3af8fff0d2",
+                    "TagUrl": "https://appdemo.docusign.com/auth-from-console?code=361107f5-84a2-42a3-8732-1242947b4158&t=88245e3e-d469-4fba-8418-bd3f042f5bf4&from=https%3A%2F%2Fdemo.docusign.net&r=https%3A%2F%2Flocalhost%3A44373%2Fapi%2Fesign%2Fswagger%2Findex.html&view=true&DocuEnvelope=590a79ce-0fe0-4486-b5d5-3b3af8fff0d2&e=590a79ce-0fe0-4486-b5d5-3b3af8fff0d2&send=1&accountId=30045fe5-642e-40f9-b11a-36484b3dd92a&a=tag",
+                    "EsignTransactionId": "5b26e628-cdc3-458e-a8c9-88d53fb9e3c5",
+                    "Status": null,
+                    "SigningUrl": null
+                  },
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/configuration": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Get sign configuration",
+        "description": "Retrieves the sign configuration for the specified provider type.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "The type of the sign provider (optional).",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SignProviderResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update the sign configuration",
+        "description": "Saves or updates the sign configuration and returns either consentUrl (for Docusign and AdobeSign) or a success message (for Conga Sign).",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "Select an eSignature service provider from the list.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/configuration/activate": {
+      "post": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Activate a sign provider",
+        "description": "Activates the specified sign provider type, allowing it to be used for eSignature operations.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "The type of the sign provider to activate.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/configuration/default": {
+      "post": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Set the default sign provider",
+        "description": "Sets the specified sign provider as the default for all new eSignature transactions.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "The type of sign provider to set as the default.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/eventlogs": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get all event logs with pagination",
+        "description": "Retrieves all event logs from the ESignEventLogsFromListener table with pagination support. \r\n            Use 'from' and 'to' as 1-based record numbers (e.g., from=1, to=25 returns the first 25 records).",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start record number (1-based, default: 1)",
+            "schema": {
+              "type": "string",
+              "default": "1"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End record number (default: 25)",
+            "schema": {
+              "type": "string",
+              "default": "25"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/eventlogs/{packageId}": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get event logs by package ID",
+        "description": "Retrieves all event logs from the ESignEventLogsFromListener table for the specified package ID.",
+        "parameters": [
+          {
+            "name": "packageId",
+            "in": "path",
+            "description": "The unique package identifier.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringObjectDictionaryListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/signertypes": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "List allowed signer types",
+        "description": "Retrieves the allowed signer types for a given eSignature service provider. When creating the envelope, the signer type is provided in the Role field.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "Select an eSignature service provider from the list.",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    "SignerTypes"
+                  ],
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/templates": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get sign provider templates",
+        "description": "Retrieves a list of templates from the specified eSignature service provider.",
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/transaction/{objectId}/latestSignTransaction": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get the latest sign provider",
+        "description": "Retrieves the latest eSign transaction sign provider for the specified object ID.",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignProviderTypeAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/transactionByObjectId/{objectId}": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get transaction details by object ID",
+        "description": "Retrieves transaction details based on the object ID. Use the same object ID used to create the envelope.",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "Provide the unique object ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "a65544f2-b4cb-400c-a014-1fd6b04861c9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringObjectDictionaryAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Name": "Envelope",
+                    "ExternalESignId": "30f428ae-6f49-423a-a130-2e399ca348dc",
+                    "ParentObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ParentObjectType": "Agreement",
+                    "ESignProvider": "DocuSign",
+                    "DocumentIds": "077fc471-ad8c-4c74-b6c2-0094d76e7287",
+                    "Id": "3a742f32-c61f-4a1e-9c66-a88bf6a821df",
+                    "CreatedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "CreatedDate": "2023-01-13T12:50:38",
+                    "ModifiedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "ModifiedDate": "2023-01-15T12:50:38",
+                    "DateSigned": "2023-01-15T12:50:38",
+                    "Status": "Signed",
+                    "RecallReason": null,
+                    "DateSent": "2023-01-13T12:50:38",
+                    "FullySignedDocumentId": "fd25d4d9-a597-4b66-aece-bacc637de514"
+                  },
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/usersearch/{searchString}": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "List users",
+        "description": "Retrieves a list of users based on the given user and contact object search criteria. In the search text, provide the user name or letters from the user name.",
+        "parameters": [
+          {
+            "name": "searchString",
+            "in": "path",
+            "description": "search text",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "John"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipientInfoListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "Id": "31562d74-2b58-4747-b117-843f0a8d870e",
+                      "Name": "Test User",
+                      "FirstName": "Test",
+                      "LastName": "User",
+                      "Email": "testuser@conga.com",
+                      "RecipientType": "Contact",
+                      "Title": null,
+                      "Company": null,
+                      "Role": null
+                    }
+                  ],
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/void/{objectId}": {
+      "post": {
+        "tags": [
+          "Sign"
+        ],
+        "parameters": [
+          {
+            "name": "signProviderType",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SignProviderType"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidReason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "notifyOthers",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/wetsign/{transactionId}/end": {
+      "post": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "End wet-sign flow",
+        "description": "Marks the given transactionId's wet-sign flow as ended and uploads the given document as a signed document.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "The unique transaction ID of any wet signature",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/esign/v1/esignatures/{transactionId}": {
+      "get": {
+        "tags": [
+          "Sign"
+        ],
+        "summary": "Get transaction details by transaction",
+        "description": "Retrieves transaction details based on the transaction ID provided in the parameters. The transaction ID is the package ID obtained during envelope creation.\r\n            This API returns such transaction details as the envelope status, the dates the envelope was sent and signed, and, if the recipient declined, their reason for declining.",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "The unique transaction ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "d717a075-9cbf-480c-b230-837e0e6dee75"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringObjectDictionaryAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Name": "Envelope",
+                    "ExternalESignId": "30f428ae-6f49-423a-a130-2e399ca348dc",
+                    "ParentObjectId": "ffd6b894-e2c9-46dc-b59b-266a2f567f4c",
+                    "ParentObjectType": "Agreement",
+                    "ESignProvider": "DocuSign",
+                    "DocumentIds": "077fc471-ad8c-4c74-b6c2-0094d76e7287",
+                    "Id": "3a742f32-c61f-4a1e-9c66-a88bf6a821df",
+                    "CreatedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "CreatedDate": "2023-01-13T12:50:38",
+                    "ModifiedBy": {
+                      "Id": "fd25d4d9-5c87-4b66-aece-bacc637de514",
+                      "Name": "Test User"
+                    },
+                    "ModifiedDate": "2023-01-15T12:50:38",
+                    "DateSigned": "2023-01-15T12:50:38",
+                    "Status": "Signed",
+                    "RecallReason": null,
+                    "DateSent": "2023-01-13T12:50:38",
+                    "FullySignedDocumentId": "fd25d4d9-a597-4b66-aece-bacc637de514"
+                  },
+                  "Errors": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/APIResponseError"
+                  }
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Please provide valid value."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponseError"
+                },
+                "example": {
+                  "Success": false,
+                  "Data": null,
+                  "Errors": [
+                    {
+                      "Id": null,
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIResponseError": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgreementEvent": {
+        "type": "object",
+        "properties": {
+          "ParticipantRole": {
+            "$ref": "#/components/schemas/ParticipantRoleEnum"
+          },
+          "Type": {
+            "$ref": "#/components/schemas/TypeEnum"
+          },
+          "ActingUserEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "ActingUserIpAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "ActingUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "Date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "DeviceLocation": {
+            "$ref": "#/components/schemas/DeviceLocation"
+          },
+          "DevicePhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DigitalSignatureInfo": {
+            "$ref": "#/components/schemas/DigitalSignatureInfo"
+          },
+          "InitiatingUserEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "InitiatingUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ParticipantEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "ParticipantId": {
+            "type": "string",
+            "nullable": true
+          },
+          "SynchronizationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "VaultEventId": {
+            "type": "string",
+            "nullable": true
+          },
+          "VaultProviderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "VersionId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgreementEventList": {
+        "type": "object",
+        "properties": {
+          "Events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementEvent"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgreementEventListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "$ref": "#/components/schemas/AgreementEventList"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgreementSigningCyclesResponse": {
+        "type": "object",
+        "properties": {
+          "eSignTransactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalESignId": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "signProviderLevelStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "signingProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "sentDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiryDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "timeZoneInfo": {
+            "$ref": "#/components/schemas/TimeZoneInformation"
+          },
+          "recipientDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipientDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgreementSigningCyclesResponseListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementSigningCyclesResponse"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthenticationType": {
+        "enum": [
+          "NONE",
+          "SMS"
+        ],
+        "type": "string"
+      },
+      "BooleanAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "boolean"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Configuration": {
+        "type": "object",
+        "properties": {
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignMergeField": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignRecipient": {
+        "type": "object",
+        "properties": {
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "FirstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Title": {
+            "type": "string",
+            "nullable": true
+          },
+          "Company": {
+            "type": "string",
+            "nullable": true
+          },
+          "MobileNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "AcceptOnly": {
+            "type": "boolean"
+          },
+          "Authentication": {
+            "$ref": "#/components/schemas/AuthenticationType"
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignReminder": {
+        "type": "object",
+        "properties": {
+          "IntervalInDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "RepetitionsCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "StartInDaysDelay": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignRequest": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          },
+          "TransactionType": {
+            "$ref": "#/components/schemas/TransactionType"
+          },
+          "Settings": {
+            "$ref": "#/components/schemas/CongaSignSettings"
+          },
+          "Recipients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CongaSignRecipient"
+            },
+            "nullable": true
+          },
+          "Sender": {
+            "$ref": "#/components/schemas/CongaSignSender"
+          },
+          "DocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "TemplateId": {
+            "type": "string",
+            "nullable": true
+          },
+          "MergeFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CongaSignMergeField"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignResponse": {
+        "type": "object",
+        "properties": {
+          "PackageId": {
+            "type": "string",
+            "nullable": true
+          },
+          "TagUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "EsignTransactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Status": {
+            "type": "boolean"
+          },
+          "SigningUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "$ref": "#/components/schemas/CongaSignResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignSender": {
+        "type": "object",
+        "properties": {
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "FirstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Title": {
+            "type": "string",
+            "nullable": true
+          },
+          "Company": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CongaSignSettings": {
+        "type": "object",
+        "properties": {
+          "SigningOrder": {
+            "$ref": "#/components/schemas/SigningOrder"
+          },
+          "SignedDocumentDeliveryOptions": {
+            "$ref": "#/components/schemas/SignedDocumentDeliveryOptions"
+          },
+          "Language": {
+            "$ref": "#/components/schemas/Language"
+          },
+          "TimezoneId": {
+            "$ref": "#/components/schemas/TimezoneId"
+          },
+          "Reminder": {
+            "$ref": "#/components/schemas/CongaSignReminder"
+          },
+          "ExpireDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeliveryMethods": {
+        "enum": [
+          "EMAIL",
+          "URL"
+        ],
+        "type": "string"
+      },
+      "DeviceLocation": {
+        "type": "object",
+        "properties": {
+          "Latitude": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DigitalSignatureInfo": {
+        "type": "object",
+        "properties": {
+          "Company": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocProtectionSettings": {
+        "type": "object",
+        "properties": {
+          "ProtectionLevel": {
+            "$ref": "#/components/schemas/ProtectionLevelType"
+          },
+          "DocumentId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Email": {
+        "type": "object",
+        "properties": {
+          "EmailSubject": {
+            "type": "string",
+            "nullable": true
+          },
+          "EmailContent": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailAttachment": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "MimeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "FileData": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "FileContent": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Expiration": {
+        "type": "object",
+        "properties": {
+          "ExpireEnabled": {
+            "type": "boolean"
+          },
+          "ExpireAfter": {
+            "type": "string",
+            "nullable": true
+          },
+          "ExpireWarn": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Language": {
+        "enum": [
+          "EnglishUS",
+          "Danish",
+          "German",
+          "EnglishUK",
+          "SpanishLatinAmerica",
+          "SpanishSpain",
+          "French",
+          "Italian",
+          "Dutch",
+          "Norwegian",
+          "Polish",
+          "Portuguese",
+          "Romanian",
+          "Bulgarian",
+          "Russian",
+          "ChineseSimplified",
+          "ChineseTraditional",
+          "Japanese",
+          "Korean",
+          "Greek",
+          "Arabic"
+        ],
+        "type": "string"
+      },
+      "ParticipantRoleEnum": {
+        "enum": [
+          "SIGNER",
+          "DELEGATETOSIGNER",
+          "APPROVER",
+          "DELEGATETOAPPROVER",
+          "ACCEPTOR",
+          "DELEGATETOACCEPTOR",
+          "FORMFILLER",
+          "DELEGATETOFORMFILLER",
+          "CERTIFIEDRECIPIENT",
+          "DELEGATETOCERTIFIEDRECIPIENT",
+          "SHARE",
+          "SENDER"
+        ],
+        "type": "string"
+      },
+      "ProtectionLevelType": {
+        "enum": [
+          "AllowOnlyRevisions",
+          "AllowOnlyComments",
+          "AllowOnlyFormFields",
+          "AllowOnlyReading",
+          "NoProtection"
+        ],
+        "type": "string"
+      },
+      "Recipient": {
+        "required": [
+          "Email"
+        ],
+        "type": "object",
+        "properties": {
+          "Email": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "FirstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Role": {
+            "type": "string",
+            "nullable": true
+          },
+          "RoutingOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ReciepentIdentityVerification": {
+            "type": "string",
+            "nullable": true
+          },
+          "RecipientTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "RecipientCompany": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipientDetail": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusFailureReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "signProviderLevelStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipientInfo": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "FirstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "RecipientType": {
+            "$ref": "#/components/schemas/RecipientType"
+          },
+          "Title": {
+            "type": "string",
+            "nullable": true
+          },
+          "Company": {
+            "type": "string",
+            "nullable": true
+          },
+          "Role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipientInfoListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipientInfo"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipientType": {
+        "enum": [
+          "Contact",
+          "Email",
+          "User"
+        ],
+        "type": "string"
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "ReminderEnabled": {
+            "type": "boolean"
+          },
+          "ReminderDelay": {
+            "type": "string",
+            "nullable": true
+          },
+          "ReminderFrequency": {
+            "type": "string",
+            "nullable": true
+          },
+          "ReminderCount": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignConfig": {
+        "type": "object",
+        "properties": {
+          "Configuration": {
+            "$ref": "#/components/schemas/Configuration"
+          },
+          "State": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignProviderResponse": {
+        "type": "object",
+        "properties": {
+          "SignProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "nullable": true
+          },
+          "Default": {
+            "type": "boolean"
+          },
+          "Active": {
+            "type": "boolean"
+          },
+          "LastUpdated": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Sequence": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignProviderType": {
+        "enum": [
+          "AdobeSign",
+          "CongaSign",
+          "DocuSign",
+          "WetSign"
+        ],
+        "type": "string"
+      },
+      "SignProviderTypeAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "$ref": "#/components/schemas/SignProviderType"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignRequest": {
+        "required": [
+          "DocumentIds",
+          "Recipients"
+        ],
+        "type": "object",
+        "properties": {
+          "ObjectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ObjectType": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "Recipients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recipient"
+            }
+          },
+          "Cc": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recipient"
+            },
+            "nullable": true
+          },
+          "Bcc": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recipient"
+            },
+            "nullable": true
+          },
+          "DocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "AdditionalAttachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailAttachment"
+            },
+            "nullable": true
+          },
+          "IsPasswordProtected": {
+            "type": "boolean"
+          },
+          "DocumentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "ReciepentIdentityVerification": {
+            "type": "string",
+            "nullable": true
+          },
+          "Reminder": {
+            "$ref": "#/components/schemas/Reminder"
+          },
+          "Expiration": {
+            "$ref": "#/components/schemas/Expiration"
+          },
+          "ReturnUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "UserDefinedProtectionLevels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDefinedProtectionLevels"
+            },
+            "nullable": true,
+            "deprecated": true
+          },
+          "TemplateId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Status": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsBackgroundMode": {
+            "type": "boolean"
+          },
+          "DocProtectionSettings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocProtectionSettings"
+            },
+            "nullable": true
+          },
+          "DeliveryMethod": {
+            "$ref": "#/components/schemas/DeliveryMethods"
+          },
+          "Language": {
+            "type": "string",
+            "nullable": true
+          },
+          "TimeZone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignResponse": {
+        "type": "object",
+        "properties": {
+          "PackageId": {
+            "type": "string",
+            "nullable": true
+          },
+          "TagUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "EsignTransactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Status": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "SigningUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "$ref": "#/components/schemas/SignResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignedDocumentDeliveryOptions": {
+        "enum": [
+          "DESIGNER_PAGE",
+          "DIRECT",
+          "SIGNING_PAGE"
+        ],
+        "type": "string"
+      },
+      "SigningOrder": {
+        "enum": [
+          "PARALLEL",
+          "SEQUENTIAL"
+        ],
+        "type": "string"
+      },
+      "StringListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringObjectDictionaryAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "object",
+            "additionalProperties": {
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringObjectDictionaryListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Template": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "TemplateId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TemplateListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Template"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeZoneInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimezoneId": {
+        "enum": [
+          "Etc_GMT_Plus_12",
+          "Pacific_Samoa",
+          "US_Samoa",
+          "HST",
+          "Pacific_Honolulu",
+          "Pacific_Marquesas",
+          "Pacific_Gambier",
+          "US_Alaska",
+          "America_Los_Angeles",
+          "America_Tijuana",
+          "Canada_Pacific",
+          "PST",
+          "America_Vancouver",
+          "America_Denver",
+          "Canada_Mountain",
+          "America_Phoenix",
+          "CST",
+          "Canada_Central",
+          "US_Central",
+          "America_Regina",
+          "America_Chicago",
+          "Canada_Saskatchewan",
+          "America_Bogota",
+          "America_Toronto",
+          "EST",
+          "US_Eastern",
+          "America_Detroit",
+          "America_Jamaica",
+          "America_Montreal",
+          "America_Panama",
+          "America_Caracas",
+          "America_Puerto_Rico",
+          "Canada_Atlantic",
+          "America_Antigua",
+          "America_Barbados",
+          "America_Santiago",
+          "America_St_Johns",
+          "CNT",
+          "Canada_Newfoundland",
+          "America_Argentina_Buenos_Aires",
+          "Brazil_East",
+          "Atlantic_South_Georgia",
+          "Brazil_DeNoronha",
+          "Atlantic_Azores",
+          "Atlantic_Cape_Verde",
+          "Africa_Casablanca",
+          "GMT",
+          "Etc_Greenwich",
+          "Europe_London",
+          "Iceland",
+          "Africa_Lagos",
+          "CET",
+          "Europe_Paris",
+          "Europe_Zurich",
+          "Europe_Amsterdam",
+          "Europe_Madrid",
+          "Europe_Copenhagen",
+          "Europe_Prague",
+          "Europe_Rome",
+          "Europe_Stockholm",
+          "Europe_Warsaw",
+          "ART",
+          "Africa_Cairo",
+          "Asia_Istanbul",
+          "Europe_Helsinki",
+          "Africa_Addis_Ababa",
+          "Africa_Nairobi",
+          "Asia_Tehran",
+          "Asia_Dubai",
+          "Europe_Moscow",
+          "NET",
+          "Asia_Kabul",
+          "Asia_Karachi",
+          "Asia_Kolkata",
+          "IST",
+          "Asia_Katmandu",
+          "Asia_Dhaka",
+          "Asia_Rangoon",
+          "Asia_Bangkok",
+          "Asia_Jakarta",
+          "VST",
+          "Asia_Hong_Kong",
+          "Australia_Perth",
+          "CTT",
+          "Australia_Eucla",
+          "Asia_Seoul",
+          "Asia_Tokyo",
+          "JST",
+          "ACT",
+          "Australia_Adelaide",
+          "Australia_Darwin",
+          "AET",
+          "Australia_Brisbane",
+          "Australia_Sydney",
+          "Pacific_Kiritimati"
+        ],
+        "type": "string"
+      },
+      "TransactionType": {
+        "enum": [
+          "ESIGNING",
+          "INPERSON_ESIGNING",
+          "INPERSON_ELECTRONIC_NOTARIZATION"
+        ],
+        "type": "string"
+      },
+      "TypeEnum": {
+        "enum": [
+          "ACCESSCODEGENERATED",
+          "ACCESSCODECONSUMED",
+          "AUTOCANCELLEDCONVERSIONPROBLEM",
+          "ACTIONAUTODELEGATED",
+          "ACTIONCOMPLETED",
+          "ACTIONCOMPLETEDHOSTED",
+          "ACTIONCOMPLETEDOFFLINE",
+          "ACTIONCOMPLETEDOFFLINEHOSTED",
+          "ACTIONCOMPLETEDWIDGETVERIFIED",
+          "ACTIONCOMPLETEDWIDGETVERIFIEDAPITOKEN",
+          "ACTIONCOMPLETEDWIDGETVERIFICATIONWAIVED",
+          "ACTIONDELEGATED",
+          "ACTIONREPLACEDSIGNER",
+          "ACTIONREQUESTED",
+          "CREATED",
+          "CREATEDFROMWIDGET",
+          "CREATEDOFFLINE",
+          "CREATEDVIAUPLOAD",
+          "CREATEDVIAACROBAT",
+          "CREATEDVIAREADER",
+          "ACTIVATED",
+          "DIGITALSIGNUIDAISIGNERCONSENT",
+          "DIGSIGNED",
+          "DEACTIVATED",
+          "DOCUMENTSDELETED",
+          "DOWNLOADED",
+          "EMAILBOUNCED",
+          "EMAILVIEWED",
+          "EXPIRED",
+          "EXPIREDAUTOMATICALLY",
+          "FAXEDBYSENDER",
+          "FAXINRECEIVED",
+          "KBAAUTHENTICATED",
+          "MODIFIED",
+          "OFFLINESYNC",
+          "OTHER",
+          "PAID",
+          "PRESIGNED",
+          "RECALLED",
+          "RECALLEDMAXSIGNINGKBAATTEMPTS",
+          "RECALLEDMAXSIGNINGPASSWORDATTEMPTS",
+          "RECALLEDMAXSIGNINGPHONEATTEMPTS",
+          "REJECTED",
+          "SENDERCREATEDNEWREVISION",
+          "SHARED",
+          "SIGNED",
+          "SIGNINGURLREQUESTED",
+          "UPLOADEDBYSENDER",
+          "USERACKAGREEMENTMODIFIED",
+          "VAULTED",
+          "WEBIDENTITYAUTHENTICATED",
+          "WEBIDENTITYSPECIFIED",
+          "WRITTENDOWNLOAD",
+          "WRITTENSIGNED"
+        ],
+        "type": "string"
+      },
+      "UserDefinedProtectionLevels": {
+        "type": "object",
+        "properties": {
+          "DocumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProtectionLevel": {
+            "$ref": "#/components/schemas/ProtectionLevelType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserRole": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "AdobeSign",
+      "description": "Adobe sign"
+    },
+    {
+      "name": "AgreementSigningCycle",
+      "description": "Provides endpoints for managing and retrieving agreement signing cycles."
+    },
+    {
+      "name": "Authorization",
+      "description": "This class contains endpoints for authorizing sign providers like Conga Sign, Adobe Sign, or DocuSign, or wet signature."
+    },
+    {
+      "name": "Configuration",
+      "description": "Send documents for eSignature using Conga Sign, Adobe Sign, DocuSign, or wet signature"
+    },
+    {
+      "name": "CongaSign",
+      "description": "Send transaction using Conga Sign"
+    },
+    {
+      "name": "Sign",
+      "description": "Send documents for eSignature using Conga Sign, Adobe Sign, DocuSign, or wet signature"
+    }
+  ]
+}

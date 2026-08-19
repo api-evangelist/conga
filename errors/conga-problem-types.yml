@@ -1,6 +1,7 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://developer.conga.com/revenue/docs/status-and-error-codes
+enriched_from: openapi/ (31 assembled specs, 2,136 operations)
 format: json:api
 envelope:
   field: errors
@@ -41,7 +42,109 @@ problems:
   detail: >-
     The request exceeded the allowed rate limits (100 req/s production,
     25 req/s development by default). See rate-limits/conga-rate-limits.yml.
+- status: 403
+  title: Forbidden
+  detail: >-
+    The token is valid but the caller's platform permissions do not allow the
+    operation. Declared on 362 operations.
+  source: openapi
+- status: 404
+  title: Not Found
+  detail: The addressed resource does not exist. Declared on 621 operations.
+  source: openapi
+- status: 422
+  title: Unprocessable Entity
+  detail: >-
+    Semantically invalid payload. Declared on 31 operations, concentrated in the
+    catalog and cart services.
+  source: openapi
+- status: 500
+  title: Internal Server Error
+  detail: >-
+    The most widely declared failure response in the catalogue - 1,166 operations
+    document a 500.
+  source: openapi
+- status: 503
+  title: Service Unavailable
+  detail: Declared on 37 operations.
+  source: openapi
+- status: 207
+  title: Multi-Status
+  detail: >-
+    Declared on 38 operations. Conga's bulk endpoints (bulk user create/update,
+    bulk upsert, bulk permission-group changes) return per-record outcomes rather
+    than failing the whole batch - the response body carries both the created ids
+    and an error list for the records that failed validation.
+  source: openapi
+status_code_census:
+  source: openapi/ - counted across all 2,136 operations
+  '200': 1954
+  '500': 1166
+  '400': 1098
+  '404': 621
+  '401': 395
+  '403': 362
+  '204': 295
+  '201': 110
+  '202': 41
+  '207': 38
+  '503': 37
+  '422': 31
+  '406': 5
+  '405': 2
+  '409': 1
+  '304': 1
+error_schemas:
+  note: >-
+    The specs do not use one error schema. Five distinct envelopes appear across
+    the 31 services, which is the single clearest sign that the platform is an
+    assembly of separately-built services rather than one designed API.
+  shapes:
+  - name: ErrorDetail
+    specs: 17
+    shape: '{ Message: string }'
+    note: The most common - a bare message with no code and no machine-readable type.
+  - name: ProblemDetails
+    specs: 9
+    shape: RFC 7807 fields (type/title/status/detail/instance)
+    note: >-
+      Nine services carry the ASP.NET Core ProblemDetails schema (5 as
+      "ProblemDetails", 4 as "Microsoft.AspNetCore.Mvc.ProblemDetails"), but NOT
+      ONE operation in the entire catalogue declares an
+      application/problem+json response content type - every response is
+      application/json, text/json or text/plain. The shape is RFC 7807, the media
+      type is not, so a client cannot content-negotiate or detect problem
+      documents.
+  - name: Conga.Revenue.Catalog.API.Models.CatalogError
+    specs: 1
+    shape: '{ code: int32, message: string, timestamp: date-time, additionalDetails: any }'
+    note: The only envelope in the catalogue carrying a numeric error code and a timestamp.
+  - name: APIResponseError / ErrorApiResponse / ApiError
+    specs: 2
+    shape: Errors[] inside a Success/Data/Errors/Warnings envelope
+    note: >-
+      The platform's generic API response wrapper - Success, RecordCount, Data,
+      Errors[], Warnings[], Profile, TotalTime, StatusCode, HasMoreRecords,
+      NextCursor.
+  - name: Errors / ErrorResult / ErrorDetailResponse / Error / Error2
+    specs: 4
+    shape: assorted one-off wrappers
+rfc9457:
+  conforms: false
+  reason: >-
+    No operation declares application/problem+json, no error carries a stable
+    `type` URI, and there is no published registry of problem types. The
+    RFC 7807-shaped ProblemDetails schema present in 9 specs is an artifact of the
+    ASP.NET Core stack, not a published contract.
+error_code_registry:
+  published: false
+  note: >-
+    Conga publishes no enumerated error-code reference. Errors carry a free-text
+    Message (or a service-local numeric `code` in Catalog only), so a client
+    cannot branch on error identity without string-matching prose.
 notes: >-
   Conga returns errors inline with the JSON:API error-object specification
-  (http://jsonapi.org/format/#error-objects). Per-operation error detail is
-  documented on each endpoint's reference page under developer.conga.com.
+  (http://jsonapi.org/format/#error-objects) per its prose documentation, while
+  the OpenAPI documents show five different envelopes across the 31 services.
+  Per-operation error detail is documented on each endpoint's reference page
+  under developer.conga.com and is captured verbatim in openapi/.

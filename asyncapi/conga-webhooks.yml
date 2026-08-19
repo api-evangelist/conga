@@ -1,0 +1,108 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/conga-extensibility.json, openapi/conga-conga-sign.json, openapi/conga-esignature.json
+asyncapi_published: false
+description: >-
+  Conga publishes no AsyncAPI document and no event catalog, but it does ship an
+  event surface: "Conga Hooks" (service hooks) in the Extensibility service let a
+  customer register data-change and schedule rules that fire outbound, plus a
+  callback-contract mechanism that dispatches platform events into
+  customer-authored custom code. Conga Sign carries its own callback connector
+  and per-package/per-role notification endpoints, and eSignature exposes an
+  event log. All of this is CONFIGURED through REST - the event types themselves
+  are served at runtime from the tenant, not published as a static catalog, so
+  the event names below could not be enumerated anonymously.
+surfaces:
+- name: Conga Hooks - service hooks rules
+  spec: openapi/conga-extensibility.json
+  base: https://rls.congacloud.com/api/extensibility/v1
+  kind: outbound event rules
+  operations:
+  - GET /api/extensibility/v1/servicehooks/rules
+  - POST /api/extensibility/v1/servicehooks/rules
+  - GET /api/extensibility/v1/servicehooks/rules/{name}
+  - PATCH /api/extensibility/v1/servicehooks/rules/{name}
+  - DELETE /api/extensibility/v1/servicehooks/rules/{name}
+  - GET /api/extensibility/v1/servicehooks/rules/supported-event-types
+  - GET /api/extensibility/v1/servicehooks/rules/cancellation/settings
+  - PUT /api/extensibility/v1/servicehooks/rules/cancellation/settings
+  trigger_kinds: [data change, schedule]
+  note: >-
+    "Validates and creates the data change or schedule rule" - Conga Hooks fires
+    on either a record mutation or a timer.
+- name: Conga Hooks - data change rules
+  spec: openapi/conga-extensibility.json
+  kind: outbound event rules
+  operations:
+  - GET /api/extensibility/v1/servicehooks/datachangerules
+  - POST /api/extensibility/v1/servicehooks/datachangerules
+  - GET /api/extensibility/v1/servicehooks/datachangerules/{name}
+  - PUT /api/extensibility/v1/servicehooks/datachangerules/{name}
+  - DELETE /api/extensibility/v1/servicehooks/datachangerules/{name}
+  - GET /api/extensibility/v1/servicehooks/datachangerules/supported-event-types
+  - GET /api/extensibility/v1/servicehooks/datachangerules/cancellation/settings
+  - PUT /api/extensibility/v1/servicehooks/datachangerules/cancellation/settings
+- name: Callback contracts
+  spec: openapi/conga-extensibility.json
+  kind: inbound dispatch into customer custom code
+  operations:
+  - GET /api/extensibility/v1/callbacks
+  - PUT /api/extensibility/v1/callbacks
+  - GET /api/extensibility/v1/callbacks/{name}
+  - GET /api/extensibility/v1/callbacks/modules
+  - GET /api/extensibility/v1/callbacks/modules/{moduleName}
+  - GET /api/extensibility/v1/callbacks/settings
+  - PUT /api/extensibility/v1/callbacks/settings
+  note: >-
+    A callback contract binds a named platform extension point in a module to a
+    customer custom-code project and class. This is in-platform dispatch, not an
+    HTTP webhook to a customer endpoint.
+- name: Conga Sign callbacks and notifications
+  spec: openapi/conga-conga-sign.json
+  base: https://rls.congacloud.com/api/sign
+  operations:
+  - /v1/cs-callback
+  - /v1/cs-callback/connectors/{origin}
+  - /v1/cs-packages/{packageId}/notifications
+  - /v1/cs-packages/{packageId}/roles/{roleId}/notifications
+  - /v1/cs-packages/{packageId}/roles/{roleId}/sms_notification
+  - /v1/cs-packages/{packageId}/documents/{documentId}/approvals/{approvalId}/mobile_notification
+  note: >-
+    Signature-ceremony lifecycle callbacks plus email/SMS/mobile signer
+    notifications.
+- name: eSignature event log
+  spec: openapi/conga-esignature.json
+  operations:
+  - GET /api/esign/v1/esignatures/eventlogs
+  - GET /api/esign/v1/esignatures/eventlogs/{packageId}
+  kind: pull - an event history read, not a push subscription
+event_catalog:
+  published: false
+  enumerated: false
+  reason: >-
+    The supported event types are served at runtime from the tenant
+    (GET .../servicehooks/rules/supported-event-types and
+    .../datachangerules/supported-event-types), both of which require an
+    authenticated tenant token. Conga publishes no static list of event names on
+    developer.conga.com, so none is recorded here rather than guessed.
+delivery:
+  transport: unknown
+  signing: not documented
+  retry_policy: not documented
+  cancellation_token:
+    supported: true
+    note: >-
+      Both service-hook families expose a cancellation-token setting
+      (GET/PUT .../cancellation/settings), implying hooks can veto or halt the
+      triggering operation - unusual and worth documenting, but the semantics are
+      not published.
+asyncapi:
+  document: null
+  probed:
+  - {url: 'https://developer.conga.com/asyncapi.yaml', status: 200, real: false, note: 'ReadMe SPA catch-all - identical 547KB HTML shell served for every unknown path'}
+  - {url: 'https://rls.congacloud.com/asyncapi.json', status: 403}
+  note: >-
+    No AsyncAPI document is published anywhere on Conga's surface. Emitting one
+    from these REST configuration endpoints would be fabrication - the message
+    payloads are unknown.
+checked: '2026-08-13'

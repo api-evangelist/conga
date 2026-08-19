@@ -1,26 +1,112 @@
-generated: '2026-07-18'
-method: searched
-source: probed /.well-known/ across Conga hosts
+generated: '2026-08-13'
+method: probed
+source: probed /.well-known/ across every Conga host in apis.yml and every OpenAPI servers[] host
 notes: >-
-  The developer portal (developer.conga.com) is ReadMe-hosted and returns a
-  200 SPA shell for arbitrary /.well-known/ paths, so security.txt / ai-plugin.json
-  / openapi.json on that host are false positives (Content-Type text/html) and
-  are NOT recorded as real documents. The OIDC discovery document below is a real
-  application/json response served by Conga's Auth0-backed login service.
+  Conga serves real discovery documents, but never at the host root. The
+  production platform's OIDC discovery document lives under the auth service's
+  own base path (/api/v1/auth/.well-known/openid-configuration) in all three
+  regions, and the MCP server publishes RFC 9728 OAuth Protected Resource
+  Metadata at a sub-path (/.well-known/oauth-protected-resource/mcp) rather than
+  at the bare /.well-known/oauth-protected-resource. Root /.well-known/ probes
+  on the API gateway return a Kong "no Route matched" 404 and root probes on
+  login-rls return an S3 403. The ReadMe-hosted developer portal
+  (developer.conga.com) answers 200 with an SPA shell for arbitrary
+  /.well-known/ paths and is treated as a miss on every path. No security.txt is
+  served on any Conga host.
 hosts:
+- host: https://login-rls.congacloud.com
+  role: production platform auth service (NA)
+  documents:
+  - path: /api/v1/auth/.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    real: true
+    file: conga-rls-na-openid-configuration.json
+    note: >-
+      Real OIDC discovery. Advertises 26 scopes including the platform API scopes
+      (api.cart, api.catalog, api.quote, api.order, api.document-management,
+      api.user-management, api.metadata, api.data, api.localization,
+      api.revenue-admin, api.custom-api, api.email, doc-gen.composer, sign,
+      sign.provisioning), 8 grant types including device_code, CIBA and
+      token-exchange, and PKCE S256.
+  - path: /.well-known/openid-configuration
+    status: 403
+    content_type: application/xml
+    real: false
+    note: S3 AccessDenied at the host root; the document is under /api/v1/auth/.
+- host: https://login.congacloud.eu
+  role: production platform auth service (EU)
+  documents:
+  - path: /api/v1/auth/.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    real: true
+    file: conga-rls-eu-openid-configuration.json
+- host: https://login.congacloud.au
+  role: production platform auth service (AU)
+  documents:
+  - path: /api/v1/auth/.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    real: true
+    file: conga-rls-au-openid-configuration.json
+    note: >-
+      The AU document is the only one that advertises the MCP resource as a
+      scope ("https://rls-preview.congacloud.au/mcp"). That single string is how
+      Conga's otherwise-undocumented MCP server was discovered.
+- host: https://rls.congacloud.com
+  role: production API gateway (Kong), OpenAPI servers[] host
+  documents:
+  - path: /.well-known/oauth-protected-resource/mcp
+    status: 200
+    content_type: application/json
+    real: true
+    file: conga-mcp-oauth-protected-resource.json
+    note: RFC 9728 OAuth Protected Resource Metadata for the MCP server.
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    real: false
+    note: Kong "no Route matched with those values" - the metadata is at the /mcp sub-path.
+  - path: /.well-known/security.txt
+    status: 404
+    real: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    real: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    real: false
+  - path: /.well-known/api-catalog
+    status: 404
+    real: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    real: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    real: false
 - host: https://login.conga.com
+  role: developer-portal identity (Auth0)
   documents:
   - path: /.well-known/openid-configuration
     status: 200
     content_type: application/json
+    real: true
     file: conga-openid-configuration.json
 - host: https://developer.conga.com
+  role: ReadMe-hosted developer portal
   documents:
   - path: /.well-known/security.txt
     status: 200
     content_type: text/html
     real: false
-    note: ReadMe SPA catch-all, not a real security.txt
+    note: ReadMe SPA catch-all, not a real security.txt. Treated as a miss.
+  - path: /.well-known/agent-card.json
+    status: 429
+    real: false
+    note: >-
+      The portal rate-limits non-browser clients with a Cloudflare challenge page
+      on HTML paths. Its markdown twins (<page>.md) and llms.txt answer 200.
   - path: /.well-known/openid-configuration
     status: 404
   - path: /.well-known/oauth-authorization-server
@@ -28,6 +114,21 @@ hosts:
   - path: /.well-known/api-catalog
     status: 404
 - host: https://www.conga.com
+  role: marketing site (Drupal)
   documents:
   - path: /.well-known/security.txt
     status: 404
+    real: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    real: false
+  - path: /.well-known/agent.json
+    status: 404
+    real: false
+security_txt:
+  served: false
+  note: >-
+    No RFC 9116 security.txt is served on any Conga host, despite Conga running a
+    published vulnerability-disclosure program at conga.com/vulnerability-disclosure.
+    Adding one is the single cheapest discovery fix available to them.
+checked: '2026-08-13'

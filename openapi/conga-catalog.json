@@ -1,0 +1,4978 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Catalog",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://rls.congacloud.com/api/catalog/v1"
+    }
+  ],
+  "paths": {
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "List categories",
+        "description": "Retrieves all or a filtered list of categories based on provided parameters. For example, passing the price list ID retrieves all categories associated with that price list ID.\r\n<p> The API returns the list of categories with such details as category ID, category name, description, hierarchy ID, and the category's parent and child categories.</p><p>The API also executes visibility rules at runtime. The API executes one or more visibility rules on the root category and retrieves the list of categories. These visibility rules can include or exclude specific categories. The visibility rule must be associated with the price list to be executed at runtime.</p>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Identifier for a price list entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "Enter the storefront ID to retrieve its visibility rules.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Conditional filter in URI format.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Enter the name of the category to narrow down the search result. The API can only match a maximum of 20 characters. If the input string is longer than 30 characters, the API retrieves categories where category name matches the first 20 characters of search string. If the parameter is left blank, all relevant categories after the filter is executed are retrieved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Enter the fields and sort order for the result. Add multiple fields to sort the result further. By default, sort order is ascending based on the category name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Pass a cart id to filter the data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Enter the page number of the search result from where to view the result.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Enter the number of records to display on each page. By default, the API displays 50 records on each page. A maximum of 500 records are displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "description": "Enter the depth to fetch categories till that level.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fetchEmptyCategories",
+            "in": "query",
+            "description": "Set value to false to only get the Categories that are associated with Products",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the Category search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{categoryId}": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Get category details",
+        "description": "Retrieves the details of a category and its child categories by category ID and price list ID. The API returns such category details as category name, description, and hierarchy ID. The API also returns details of a sub-category's parent and child categories.\r\n<p> When you pass a category ID, the API retrieves all products associated with it in the price list. When you pass <i>All</i> as the category ID, the API retrieves all products across all categories for the price list.</p>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The price list ID that is used to filter the records associated with it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "The category ID to retrieve the records associated with it.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Pass a cart id to filter the data relative to a specific cart",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "description": "Enter the depth of the category hierarchy. The API retrieves the details of all sub-categories until that level.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the Category search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Category"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{categoryId}/products": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Retrieve all products in a category",
+        "description": "Retrieves all active products associated with the provided category ID and price list ID. This can be the ID of the leaf category, sub-category, or root category.\r\n<p>For a leaf category, the API returns all products associated with it. If the ID of the root or sub-category (not a leaf category ID) is provided, the API returns all the products associated with all child categories. By default, the API returns the following fields with results sorted alphabetically by Product Name.</p><ul><li>Product Name</li><li>Product Code</li><li>Product Description</li><li>Product Family</li><li>List Price</li><li>Charge Type</li><li>The image associated with the product.</li></ul>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Enter the ID of the price list associated with the products to narrow down the search.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "Enter the category ID, typically the classification hierarchy ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Add conditional filters in standard URI format to narrow down the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Enter the name of the product to narrow down the search result. The API can only match a maximum of 20 characters. If the input string is longer than 20 characters, the API retrieves products where the product name matches the first 20 characters of the search string.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Add the list of related objects that are associated with the product to include them in the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Enter the fields and sort order for the result. Add multiple fields to sort the result further. By default, sort order is ascending based on relevance.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Enter the page number of the search result from where to view the result.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Enter the number of records to display on each page. By default, the API displays 50 records on each page. A maximum of 500 records are displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Enter the cart Id",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "productSortEmptyFirst",
+            "in": "query",
+            "description": "Flag to place products with null values in the sorting field at first or last in the list.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable the currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{categoryId}/services": {
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Retrieve all service products in a category",
+        "description": "Retrieves all active service products associated with the provided category ID and price list ID. This can be the ID of the leaf category, sub-category, or root category.\r\n<p>For a leaf category, the API returns all service products associated with it. If the ID of the root or sub-category (not a leaf category ID) is provided, the API returns all the products associated with all child categories. By default, the API returns the following fields with results sorted alphabetically by Product Name.</p><ul><li>Product Name</li><li>Product Code</li><li>Product Description</li><li>Product Family</li><li>List Price</li><li>Charge Type</li><li>The image associated with the product.</li></ul>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Enter the ID of the price list associated with the products to narrow down the search.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "Enter the category ID, typically the classification hierarchy ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Add conditional filters in standard URI format to narrow down the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Enter the name of the product to narrow down the search result. The API can only match a maximum of 20 characters. If the input string is longer than 20 characters, the API retrieves products where the product name matches the first 20 characters of the search string.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Add the list of related objects that are associated with the product to include them in the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Enter the fields and sort order for the result. Add multiple fields to sort the result further. By default, sort order is ascending based on relevance.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Enter the page number of the search result from where to view the result.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Enter the number of records to display on each page. By default, the API displays 50 records on each page. A maximum of 500 records are displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Enter the cart Id",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "productSortEmptyFirst",
+            "in": "query",
+            "description": "Flag to place products with null values in the sorting field at first or last in the list.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable the currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Input needed to list the service products.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/favorites": {
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete the favorite records",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      },
+      "get": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "List favorites by price list",
+        "description": "Retrieves a list of active favorites associated with the provided Price List ID.",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Enter the price list ID to retrieve the Favorites associated with it. The API displays a validation error in case an inactive price list ID is entered.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Add conditional filters in standard URI format to narrow down the search result. For example, \"in(Scope:'Public','Private')\".",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Enter the name of the FavoriteConfiguration to narrow down the search result. The API can only match a maximum of 20 characters. If the input string is longer than 20 characters, the API retrieves FavoriteConfigurations where the name matches the first 20 characters of the search string.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Enter the fields and sort order for the result. Add multiple fields to sort the result further. By default, sort order is ascending based on relevance.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Enter the page number of the search result from where to view the result.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Enter the number of records to display on each page. By default, the API displays 50 records on each page. A maximum of 500 records are displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.FavoriteConfiguration"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Catalog.API.Models.CatalogError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/favorites/{Id}": {
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete a favorite",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "A unique identifier of the favorite.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      },
+      "get": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Fetch favorite by ID",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "A unique identifier of the favorite.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      },
+      "patch": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Update a favorite",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "A unique identifier of the favorite.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isasync",
+            "in": "query",
+            "description": "if set to `true` [is asynchronous].",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "line-numbers",
+            "in": "query",
+            "description": "Line numbers.\r\n            The following example shows how to specify multiple line numbers:\r\n            GET  ../api/cart/v1/carts/{cartId}/status?lineNumbers=1,2,3",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Favorite record fields to be updated.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "example": {
+                "Name": "CreateFavorite",
+                "Description": "CreateFavorite",
+                "Scope": "Public"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "example": {
+                "Name": "CreateFavorite",
+                "Description": "CreateFavorite",
+                "Scope": "Public"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "example": {
+                "Name": "CreateFavorite",
+                "Description": "CreateFavorite",
+                "Scope": "Public"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "example": {
+                "Name": "CreateFavorite",
+                "Description": "CreateFavorite",
+                "Scope": "Public"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/favorites/{Id}/addtocart/{cartId}": {
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Add favorite to a cart",
+        "description": "Adds a favorite to the cart identified in cartId.",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "The identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "A unique identifier of the cart.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isasync",
+            "in": "query",
+            "description": "if set to `true` [is asynchronous].",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "excludeadjustments",
+            "in": "query",
+            "description": "Set to <i>True</i> to exclude adjustments.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/favorites/{Id}/items": {
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete the line-items from within the Favorite",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "Favorite Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "line-items to be removed",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/favorites/{Id}/preview": {
+      "get": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Preview favorite by ID",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "A unique identifier of the favorite to preview it.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Preview Favorite response field list",
+            "schema": {
+              "type": "string",
+              "default": "PreviewFavoriteResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/favorites/{Id}/publish": {
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Publish favorite to a pricelist",
+        "description": "Publishes a favorite for the given pricelist.",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "description": "A unique identifier of the favorite.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isasync",
+            "in": "query",
+            "description": "if set to `true` [is asynchronous].",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A unique identifier for the price list.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/job-status/{jobId}": {
+      "get": {
+        "tags": [
+          "JobStatus"
+        ],
+        "summary": "Get job status",
+        "description": "Retrieves job status details for the given job.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "A unique identifier of the job",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "summary": "Get account locations",
+        "parameters": [
+          {
+            "name": "priceListId",
+            "in": "header",
+            "description": "A unique identifier of the price list.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "The unique identifier for a cart.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Enter the search result page number to view the result from.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Contains the number of records to display on each page. By default, the API displays 50 records per page. A maximum of 500 records can be displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 500
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.AccountLocation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/price-lists/active": {
+      "get": {
+        "tags": [
+          "PriceLists"
+        ],
+        "summary": "Retrieve a price list",
+        "parameters": [
+          {
+            "name": "priceListId",
+            "in": "header",
+            "description": "A unique identifier for a price list.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "header",
+            "description": "A unique identifier for an account.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "A unique identifier for a storefront.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the active pricelist response field list. <strong>For example:</strong> ActivePriceListFields_Default.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.PriceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Catalog.API.Models.CatalogError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "List products by price list",
+        "description": "Retrieves details of active products associated with the provided price list ID. The API only retrieves active products with an active price list and price list item. The API also applies visibility rules and only retrieves relevant products. \r\n<p>The API searches, sorts, filters, and applies pagination on the retrieved result.</p><p>For example, retrieve a list of products where the product name is \"Product A\", sort the result by product name.</p><p>The API returns the list of products in a price list and details of the following fields, among others.</p><ul><li>Product Name</li><li>Product Code</li><li>Product Description</li><li>Product Family</li><li>Product Type</li><li>Configuration Type</li><li>Has Attributes</li><li>Configuration Type</li><li>Option products (if provided product is a bundle) including the default bundle options</li><li>The image associated with the product</li><li>List Price</li><li>Charge Type</li></ul>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Enter the price list ID to retrieve the products associated with it. If an inactive price list ID is entered, the API displays a validation error.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "Enter the storefront ID to retrieve visibility rules.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Contains conditional filter or filters in standard URI format to narrow the search result. For example, \"eq(Product Family = 'Hardware')\".",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Keyword used to narrow search results. The API can match 20 characters at most. If the input string exceeds 20 characters, the API retrieves products where the product name matches the first 20 characters of search string. If the parameter is left blank, all relevant products after the filter is executed are retrieved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Contains a list of objects associated with the product for inclusion in the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Contains the fields and sort order for the result. Adding fields refines the result further. The default sort order is ascending by relevance.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of the search result to view the result from.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Contains the number of records to display on each page. The API displays 50 records per page by default. A maximum of 500 records is displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Unique identifier of the cart",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "productSortEmptyFirst",
+            "in": "query",
+            "description": "Flag to place products with null values in the sorting field at first or last in the list.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Catalog.API.Models.CatalogError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/compare": {
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Compare products",
+        "description": "Compares the attributes of a list of products by productId.",
+        "parameters": [
+          {
+            "name": "pricelistId",
+            "in": "header",
+            "description": "The price list ID that is used to filter associated records.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "A cart's unique identifier. Pass a cart ID to filter data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A product's unique identifier. Enter a list of product IDs to specify products for retrieval.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/details": {
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Retrieve products by ID",
+        "description": "Retrieves product details for multiple products listed by product ID.",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The price list ID used to filter associated records.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "A list of product detail types to include in the search result. Possible values are `prices`, `options`, or `attributes`. These provide pricing details, option details (if the product is a bundle), or category details.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "A cart's unique identifier.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "description": "A product depth specification. The API retrieves the product and sub-product details until reaching the specified depth (level).",
+            "schema": {
+              "type": "string",
+              "default": "1"
+            }
+          },
+          {
+            "name": "suppressWarning",
+            "in": "query",
+            "description": "When this flag is set to true, the API responds with a 200 code even if it does not find a product in the response.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "fetchNonLeafOptionGroups",
+            "in": "query",
+            "description": "Flag to enable fetching non-leaf ProductOptionGroups and OptionGroups",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable the currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "isOptimizedFetch",
+            "in": "query",
+            "description": "Flag to enable/disable fetching option groups and options when required",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The unique identifier of a product. Enter product IDs to specify products to be retrieved.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get a product's details",
+        "description": "Retrieves the details of a product (productId). The API only retrieves active products with an active price list and price list item.\r\n<p>The API returns details of the following fields, among others.</p><ul><li>Product Name</li><li>Product Code</li><li>Associated Categories</li><li>Associated Attributes</li><li>Configuration Type</li><li>List Price</li><li>Charge Type</li><li>Options products (if the provided product is a bundle)</li></ul>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The price list ID used to filter associated records.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "The ID of the product to retrieve associated records.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Related data to include in the response. Available values are `attributes`, `options`, `prices`, and `categories`.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "optionGroupIds",
+            "in": "query",
+            "description": "The IDs of the leaf option groups with details to be fetched. Works only when isOptimizedFetch is passed as true.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "The unique identifier for a cart. Pass a cart ID to filter the data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "description": "The depth of the bundle level. The API retrieves the details of all options and sub-bundles to this level. The product ID provided in the parameters is at level 0.",
+            "schema": {
+              "type": "string",
+              "default": "3"
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable the currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "fetchNonLeafOptionGroups",
+            "in": "query",
+            "description": "Flag to enable fetching non-leaf ProductOptionGroups and OptionGroups",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "isOptimizedFetch",
+            "in": "query",
+            "description": "Flag to enable/disable fetching option groups and options",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/{productId}/search": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Searches the search text in bundle context (option groups, options, attribute groups, attributes)",
+        "description": "Retrieves the list where the search text matches.",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The price list ID used to filter associated records.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "The ID of the product to retrieve associated records.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "The search text which will search in options, attributes, sub bundles",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "This mentions where to search into. Available values are `attributes`, `options`",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "The unique identifier for a cart. Pass a cart ID to filter the data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "description": "The depth of the bundle level. Search results will be matched till that depth.",
+            "schema": {
+              "type": "string",
+              "default": "3"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search": {
+      "post": {
+        "tags": [
+          "SmartSearch"
+        ],
+        "summary": "Search products",
+        "description": "Applies search filters in the catalog to retrieve one or more products that satisfy the search filter criteria provided in the parameters and the request body. To filter out a product you can use the following facets/search criteria. \r\n <ul><li>Product Type(E.g., Equipment or service)</li><li>Family(E.g., Software or hardware)</li><li>Configuration Type(E.g., Standalone or bundle)</li><li>A custom multi-picklist field called AdminAuto_CustomMultiPicklistField_c(E.g., Bundle1, Bundle 2)</li></ul><p>Please note that the search filter that you are passing must be associated with the category ID on which you are performing the search.</p><p>This API also does multiple search criteria to filter out the product, it considers one or more of the conditions using AND/OR association.For example, to search within the family facet (Software or hardware) the facet value will only take the OR logic.But to search products across the Family facet and Product Type facet, the AND logic will be applicable.This API also sorts records in ascending order and applies pagination on the retrieved result.</p><p>Pass the Pricelist ID and Category ID in the header and select the Search Type in the query parameters to call this API.When you pass a specific Category ID, the search filters will be applied to all products associated with that specific category ID.When you pass Category ID as <b>All</b>, the search filters will be applied to all the products across all the categories. The Pricelist ID and Search Type are mandatory fields.You can also use the Filter and Includes query parameter to deepen your search by passing the categories and pricelist items.When you do not pass the category ID in the header or pass an empty request body, the API returns all the products without any facets/search filter.</p>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The identifier of the price list to search on.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "A unique identifier of the storefront.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search-type",
+            "in": "query",
+            "description": "Default is `Product`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryid",
+            "in": "header",
+            "description": "The identifier of the category to search on.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Contains conditional filters in standard URI that can be used to narrow down the search result. Only the AND operator is supported to associate multiple filters.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "A keyword to narrow down the search result. The API can match a maximum of 20 characters. If the keyword exceeds 20 characters, the API considers only first 20 characters of the keyword to find match in the record header fields. If the parameter is left blank, all relevant records after the filter is executed are retrieved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Related data to include in response.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The list of fields and sort order. The default sort order is ascending by name of the record.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of the resultset to view. Use this parameter with the \"limit\" parameter to configure pagination.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records to display on each page. A maximum of 500 records are displayed on each page. The current page and range index of the result set can be found in the <i>content-range</i> header field in the response with the total number of results. This helps paginate the result set.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Pass a cart id to filter the data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "productSortEmptyFirst",
+            "in": "query",
+            "description": "Set this as 'True' to display empty products first in the search result.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Set this as 'True' to disable the currency conversion.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Config Name that stores the Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/typeahead": {
+      "get": {
+        "tags": [
+          "SmartSearch"
+        ],
+        "summary": "Search products using typeahead",
+        "description": "Searches for products using typeahead search, an autosuggest method that predicts search results and gives users suggestions when they enter one or more letters related to their search.\r\n<p>This API searches and retrieves products based on the query parameters that you have passed.You must select the Search-Type query parameter as <b>Product</b> to run this API.For example, to search for products that contain the letter �a�, select the Search-Type query parameter to product, and under the Query parameter, enter the letter �a�. Executing this API displays all the products that have the letter �a� in their Product Name, Description, and Product code.If you do not pass any Query parameters, all the products will be retrieved. The PriceList ID in the header is a mandatory field to execute this API.</p>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "The identifier of the price list to search on.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search-type",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryid",
+            "in": "header",
+            "description": "The identifier of the category to search on.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "A keyword to narrow down the search result. The API can match a maximum of 20 characters. If the keyword exceeds 20 characters, the API considers only first 20 characters of the keyword to find match in the record header fields. If the parameter is left blank, all relevant records after the filter is executed are retrieved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The list of fields and sort order. The default sort order is ascending by name of the record.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "storeFrontId",
+            "in": "header",
+            "description": "A unique identifier of the storefront.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Pass a cart id to filter the data relative to a specific cart.",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of the resultset to view. Use this parameter with the \"limit\" parameter to configure pagination.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records to display on each page. A maximum of 500 records are displayed on each page. The current page and range index of the result set can be found in the \"content-range\" header field in the response with the total number of results. This helps paginate the result set.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "configName",
+            "schema": {
+              "type": "string",
+              "default": "ProductSearchConfig"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services": {
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "List service products",
+        "description": "Retrieves details of active service products associated with the provided price list ID. The API only retrieves active products with an active price list and price list item. The API also applies visibility rules and only retrieves relevant products. \r\n<p>The API searches, sorts, filters, and applies pagination on the retrieved result.</p><p>For example, retrieve a list of products where the product name is \"Product A\", sort the result by product name.</p><p>The API returns the list of products in a price list and details of the following fields, among others.</p><ul><li>Product Name</li><li>Product Code</li><li>Product Description</li><li>Product Family</li><li>Product Type</li><li>Configuration Type</li><li>Has Attributes</li><li>Configuration Type</li><li>Option products (if provided product is a bundle) including the default bundle options</li><li>The image associated with the product</li><li>List Price</li><li>Charge Type</li></ul>",
+        "parameters": [
+          {
+            "name": "pricelistid",
+            "in": "header",
+            "description": "Enter the price list ID to retrieve the products associated with it. If an inactive price list ID is entered, the API displays a validation error.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Contains conditional filter or filters in standard URI format to narrow the search result. For example, \"eq(Product Family = 'Hardware')\".",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Keyword used to narrow search results. The API can match 20 characters at most. If the input string exceeds 20 characters, the API retrieves products where the product name matches the first 20 characters of search string. If the parameter is left blank, all relevant products after the filter is executed are retrieved.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includes",
+            "in": "query",
+            "description": "Contains a list of objects associated with the product for inclusion in the search result.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Contains the fields and sort order for the result. Adding fields refines the result further. The default sort order is ascending by relevance.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of the search result to view the result from.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Contains the number of records to display on each page. The API displays 50 records per page by default. A maximum of 500 records is displayed on each page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          },
+          {
+            "name": "cartId",
+            "in": "header",
+            "description": "Unique identifier of the cart",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "name": "productSortEmptyFirst",
+            "in": "query",
+            "description": "Flag to place products with null values in the sorting field at first or last in the list.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "disableCurrencyConversion",
+            "in": "query",
+            "description": "Flag to enable/disable currency conversion of price list items",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "configName",
+            "in": "query",
+            "description": "Product search response field list",
+            "schema": {
+              "type": "string",
+              "default": "ResponseFieldList_Default"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Input needed to list the service products.",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conga.Revenue.Catalog.API.Models.CatalogError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Conga.Platform.Common.Models.LookupObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.Catalog.API.Models.CatalogError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "Error code",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error Message",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Time when the error occurred",
+            "format": "date-time"
+          },
+          "additionalDetails": {
+            "description": "Additional details about the error",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Error object returned by the Catalog APIs"
+      },
+      "Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput": {
+        "type": "object",
+        "properties": {
+          "isPointOfSale": {
+            "type": "boolean"
+          },
+          "lineItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.DataAccess.Models.Common.Facet": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "facetValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.FacetValue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.DataAccess.Models.Common.FacetValue": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "isSelected": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest": {
+        "type": "object",
+        "properties": {
+          "isPointOfSale": {
+            "type": "boolean"
+          },
+          "lineItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            },
+            "nullable": true
+          },
+          "facets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.DataAccess.Models.Common.Facet"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.Entities.Attribute": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lookupObjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "pickListValue": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.PickListValueItem"
+            },
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpText": {
+            "type": "string",
+            "nullable": true
+          },
+          "precision": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "scale": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.AttributeGroup": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeMatrixId": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "threeColumnAttributeDisplay": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "twoColumnAttributeDisplay": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "attributeGroupMembers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.AttributeGroupMember"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.AttributeGroupMember": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "attribute": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Attribute"
+          },
+          "attributeGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "cascadeSharedAttributeStatus": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "cascadeSharedAttributeUpdates": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayType": {
+            "type": "string",
+            "nullable": true
+          },
+          "isHidden": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isReadOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.AttributeGroupTranslation": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeGroupTranslationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "productAttributeGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productAttributeGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.BaseEntity": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Category": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancestorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancestorPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "hierarchyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultSearchCategory": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "expandedByDefault": {
+            "type": "boolean"
+          },
+          "guidePage": {
+            "type": "string",
+            "nullable": true
+          },
+          "hideAllSearchFilters": {
+            "type": "boolean"
+          },
+          "imageURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "includeInTotalsView": {
+            "type": "boolean"
+          },
+          "isHidden": {
+            "type": "boolean"
+          },
+          "isLeaf": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isPicklist": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "largeImageURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "longDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "searchFilterFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.FavoriteConfiguration": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Feature": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureSetId": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.FeatureSet": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.OptionGroup": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancestorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancestorPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultSearchOptionGroup": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "expandedByDefault": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "guidePage": {
+            "type": "string",
+            "nullable": true
+          },
+          "hideAllSearchFilters": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hierarchyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "includeInTotalsView": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isHidden": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isLeaf": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isModifiable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isPicklist": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "largeImageURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "longDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxOptions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxTotalQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxTotalQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "minOptions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minTotalQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minTotalQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiableType": {
+            "type": "string",
+            "nullable": true
+          },
+          "searchFilterFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Platform.AccountLocation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eTag": {
+            "type": "string",
+            "nullable": true
+          },
+          "account": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "billingPreference": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "creditMemoEmailTemplate": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultCreditMemoTemplate": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultInvoiceStatementTemplate": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultInvoiceTemplate": {
+            "type": "string",
+            "nullable": true
+          },
+          "invoiceEmailTemplate": {
+            "type": "string",
+            "nullable": true
+          },
+          "invoiceSeparately": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isDefault": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "location": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "paymentTerm": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "taxExempt": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "taxExemptStatus": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Platform.FavoriteConfiguration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eTag": {
+            "type": "string",
+            "nullable": true
+          },
+          "productConfiguration": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lastUsedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "favoritePriceList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.Platform.FavoritePriceListMetadata"
+            },
+            "nullable": true
+          },
+          "scope": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Platform.FavoritePriceListMetadata": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "isSource": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.Entities.Platform.PickListValueItem": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Conga.Revenue.Entities.Platform.PriceList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eTag": {
+            "type": "string",
+            "nullable": true
+          },
+          "account": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "basedOnAdjustmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "basedOnAdjustmentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "basedOnPriceList": {
+            "$ref": "#/components/schemas/Conga.Platform.Common.Models.LookupObject"
+          },
+          "contractNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "costModel": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "disableCurrencyAdjustment": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.PriceList": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountId": {
+            "type": "string",
+            "nullable": true
+          },
+          "basedOnAdjustmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "basedOnAdjustmentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "basedOnPriceList": {
+            "type": "string",
+            "nullable": true
+          },
+          "basedOnPriceListId": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "costModel": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "disableCurrencyAdjustment": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.PriceListItem": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "allocateGroupAdjustment": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allowManualAdjustment": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allowPriceRampOverlap": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allowProration": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "autoCascadeQuantity": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "autoCascadeSellingTerm": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "autoRenew": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "autoRenewalTerm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "autoRenewalType": {
+            "type": "string",
+            "nullable": true
+          },
+          "autoUpdateQuantity": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "billingFrequency": {
+            "type": "string",
+            "nullable": true
+          },
+          "billingRule": {
+            "type": "string",
+            "nullable": true
+          },
+          "chargeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractItemNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "criteria": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultPriceDatasource": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultPriceFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "defaultQuantityDatasource": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultQuantityFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultSellingTerm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "disableAssetIntegration": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "disableCostModel": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "disableSyncWithOpportunity": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "enableAutoRampCreation": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "enableCommitment": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "enableRampCreation": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "frequency": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasCriteria": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isProductActive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isTaxable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isTaxInclusive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isQuantityReadOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isSellingTermReadOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isUsageTierModifiable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "listPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxUsageQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minMaxPriceAppliesTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "minPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minUsageQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "priceIncludedInBundle": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "priceListId": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceUom": {
+            "type": "string",
+            "nullable": true
+          },
+          "productCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "productDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "productFamily": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rollupPriceToBundle": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "relatedAdjustmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "relatedAdjustmentAppliesTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedAdjustmentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedAdjustmentAmountSourceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedItem": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.PriceListItem"
+          },
+          "relatedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "relatedPercentAppliesTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "sellingUomId": {
+            "type": "string",
+            "nullable": true
+          },
+          "subType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedPriceListItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.RelatedPriceListItem"
+            },
+            "nullable": true
+          },
+          "relatedItemId": {
+            "type": "string",
+            "nullable": true
+          },
+          "taxable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "taxCodeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "taxInclusive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedAdjustmentSource": {
+            "type": "string",
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          },
+          "priceList": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.PriceList"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.Product": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "configurationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "customizable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "excludeFromSitemap": {
+            "type": "boolean"
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasAttributes": {
+            "type": "boolean"
+          },
+          "hasDefaults": {
+            "type": "boolean"
+          },
+          "hasOptions": {
+            "type": "boolean"
+          },
+          "hasSearchAttributes": {
+            "type": "boolean"
+          },
+          "imageURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isCustomizable": {
+            "type": "boolean"
+          },
+          "isTabViewEnabled": {
+            "type": "boolean"
+          },
+          "disableExpandInCart": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "allowVisualization": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "productCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "productType": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantityUnitOfMeasure": {
+            "type": "string",
+            "nullable": true
+          },
+          "renewalLeadTime": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "nullable": true
+          },
+          "uom": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "layout": {
+            "type": "string",
+            "nullable": true
+          },
+          "productCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductCategory"
+            },
+            "nullable": true
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.PriceListItem"
+            },
+            "nullable": true
+          },
+          "productAttributeGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup"
+            },
+            "nullable": true
+          },
+          "productOptionGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup"
+            },
+            "nullable": true
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductTranslation"
+            },
+            "nullable": true
+          },
+          "triggeringPrimaryLineNumbers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "productAttributeMatrixViews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductAttributeMatrixView"
+            },
+            "nullable": true
+          },
+          "productFeatureValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductFeatureValue"
+            },
+            "nullable": true
+          },
+          "productFeatures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductFeature"
+            },
+            "nullable": true
+          },
+          "productGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductGroupMember"
+            },
+            "nullable": true
+          },
+          "productOptionGroupsForBundle": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup"
+            },
+            "nullable": true
+          },
+          "ruleActionId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductAttributeGroup": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldUpdateCriteriaIds": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "attributeGroupTranslationes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.AttributeGroupTranslation"
+            },
+            "nullable": true
+          },
+          "attributeGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.AttributeGroup"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductAttributeGroupMember": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "attributeGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldUpdateCriteriaIds": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "productAttributeGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductAttributeMatrixView": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "attributeValueMatrixId": {
+            "type": "string",
+            "nullable": true
+          },
+          "columns": {
+            "type": "string",
+            "nullable": true
+          },
+          "hash": {
+            "type": "string",
+            "nullable": true
+          },
+          "keys": {
+            "type": "string",
+            "nullable": true
+          },
+          "productAttributeScope": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductCategory": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "string",
+            "nullable": true
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "defaultQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "modifiable": {
+            "type": "boolean"
+          },
+          "maxQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "category": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Category"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductFeature": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureSetId": {
+            "type": "string",
+            "nullable": true
+          },
+          "includedFeatures": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "featureSet": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.FeatureSet"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductFeatureValue": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isIncluded": {
+            "type": "boolean"
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "feature": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Feature"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductGroup": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductGroupMember": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          },
+          "productGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductGroup"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductOptionComponent": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "allowCloning": {
+            "type": "boolean"
+          },
+          "autoUpdateQuantity": {
+            "type": "boolean"
+          },
+          "componentProductId": {
+            "type": "string",
+            "nullable": true
+          },
+          "configType": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "inclusionCriteria": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "isModifiable": {
+            "type": "boolean"
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "maxQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "minQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "parentProductId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productOptionGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationshipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "componentProductName": {
+            "type": "string",
+            "nullable": true
+          },
+          "componentProduct": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          },
+          "parentProduct": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          },
+          "productOptionGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductOptionGroup": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "detailPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "isHidden": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isGlobal": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isLeaf": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isModifiable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isPicklist": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "maxOptions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxTotalQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxTotalQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minOptions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minTotalQuantityExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "minTotalQuantity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "modifiableType": {
+            "type": "string",
+            "nullable": true
+          },
+          "optionGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentOptionGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productAttributeGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "rootOptionGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "rootSequence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "productOptionComponents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductOptionComponent"
+            },
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.Product"
+          },
+          "parentOptionGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.OptionGroup"
+          },
+          "productAttributeGroupMember": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroupMember"
+          },
+          "rootOptionGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.OptionGroup"
+          },
+          "optionGroup": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.OptionGroup"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.ProductTranslation": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "family": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "productCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "translationName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Conga.Revenue.Entities.RelatedPriceListItem": {
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.BaseEntity"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "digest": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceListItemId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedAdjustmentAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "relatedAdjustmentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedChargeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedCustomGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedCustomField": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedItem": {
+            "$ref": "#/components/schemas/Conga.Revenue.Entities.PriceListItem"
+          },
+          "relatedPriceListItemId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedProductId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedProductFamily": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedProductGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Microsoft.AspNetCore.Mvc.ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Please insert JWT with Bearer into field",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Categories",
+      "description": "Catalog APIs to search categories and products associated with a Category"
+    },
+    {
+      "name": "Favorites",
+      "description": "<H3>⚠️ **Deprecated:** Favorite APIs have been deprecated from the Catalog Service. \r\n            Please find these APIs here → <a href=\"/api/favorite/swagger/index.html\">/api/favorite/swagger/index.html</a></H3>"
+    },
+    {
+      "name": "JobStatus",
+      "description": "API to return job status details"
+    },
+    {
+      "name": "Locations",
+      "description": "Catalog APIs for Locations"
+    },
+    {
+      "name": "PriceLists",
+      "description": "Catalog APIs for Pricelists"
+    },
+    {
+      "name": "Products",
+      "description": "Catalog APIs to search products"
+    },
+    {
+      "name": "Services",
+      "description": "Catalog APIs to search service products"
+    },
+    {
+      "name": "SmartSearch",
+      "description": "Search APIs to search product details"
+    }
+  ]
+}

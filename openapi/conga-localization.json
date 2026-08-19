@@ -1,0 +1,3178 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Localization",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://rls.congacloud.com"
+    }
+  ],
+  "paths": {
+    "/api/localization-admin/v1/translations": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Retrieve a paginated list of translations for a given Type(String/Schema), with optional locale, module, search and filtering",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "The translation type (e.g., String, Schema). Required.",
+            "schema": {
+              "$ref": "#/components/schemas/TranslationType"
+            }
+          },
+          {
+            "name": "locales",
+            "in": "query",
+            "description": "The locales identifier (e.g., \"en-US\") to filter translations. Optional.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "module",
+            "in": "query",
+            "description": "The module name to filter translations. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchText",
+            "in": "query",
+            "description": "The text to search for in translation keys. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeTotalCount",
+            "in": "query",
+            "description": "Indicates whether to include the total count of records in the response.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve. Defaults to 1.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The number of items per page. Defaults to the maximum limit which is 100.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "The field by which to sort the results. Optional. Defaults to ModifiedDate.",
+            "schema": {
+              "$ref": "#/components/schemas/SortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "description": "The direction in which to sort the results (Ascending or Descending). Optional. Defaults to Descending.",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationsListItemListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/locales/{locale}": {
+      "delete": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Bulk delete translations for a specific locale",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "The locale for which translations are to be deleted (e.g., \"en-US\").",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A list of translation delete requests containing key, module, type, protection status, and delete-for-all-locales flag.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsDeleteRequest"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsDeleteRequest"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsDeleteRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanNullableAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": true,
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Bulk create translations for a specific locale",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "The locale for which translations are to be created (e.g., \"en-US\").",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A list of translation requests containing key, module, value, and type information.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsCreateRequest"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsCreateRequest"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsCreateRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanNullableAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": true,
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Bulk update translations for a specific locale",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "The locale for which translations are to be updated (e.g., \"en-US\").",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A list of translation update requests containing key, module, value, type, protection status, and locales.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsUpdateRequest"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsUpdateRequest"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationsUpdateRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanNullableAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": true,
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/locales/{locale}/custom/export": {
+      "post": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Export translations for the specified locale and modules as a CSV file",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "The locale identifier (e.g., \"en-US\") for which translations are to be exported.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "The Conga.Platform.Translation.Enums.TranslationType to filter the translations to export. Optional.",
+            "schema": {
+              "$ref": "#/components/schemas/TranslationType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "An array of module names to include in the export.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/locales/{locale}/custom/import": {
+      "post": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Import translations from a file for the specified locale using the v2 import logic",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "The locale identifier (e.g., \"en-US\") for which translations are to be imported.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "translations": {
+                    "type": "string",
+                    "description": "The file containing translation data to be imported.",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "translations": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/modules": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Retrieve all defined translation modules for the specified translation type",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "The Conga.Platform.Translation.Enums.TranslationType for which to retrieve modules.",
+            "schema": {
+              "$ref": "#/components/schemas/TranslationType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    "Platform",
+                    "CLM",
+                    "CPQ"
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/organization-locales": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Get the current Organization Locales configuration",
+        "responses": {
+          "200": {
+            "description": "Organization locales retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocaleResponseListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error during retrieval"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Configure locales in Organization Locales configuration",
+        "requestBody": {
+          "description": "A list of locale codes to set for the organization.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organization locales configured successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgLocaleUpdateResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": true,
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or locales list"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error during configuration"
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/organization-locales-tracking/{trackingId}/status": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Get the current Organization Locales Change Tracking Info",
+        "parameters": [
+          {
+            "name": "trackingId",
+            "in": "path",
+            "description": "TrackingId returned against Org Locale change.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization locales retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgLocaleChangeTrackingInfoListAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error during retrieval"
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/schema-auto-translate": {
+      "post": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Automatically translate the schema of an object based on the provided metadata and target locale(s)",
+        "description": "This endpoint processes the given object metadata and generates translations for all translatable elements\r\nsuch as display names, descriptions, and field labels. The operation is executed asynchronously.",
+        "parameters": [
+          {
+            "name": "targetLocales",
+            "in": "query",
+            "description": "Optional list of target locale(s) for translation. If not provided, default locales will be used.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The metadata of the object to be translated, including its name, display name, \r\ndescription, fields, and other properties that will be translated.\r\n\nNote: The object metadata must be provided in English only. This ensures accurate translationsto the target locale(s).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectMetadata"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectMetadata"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectMetadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Schema auto-translation completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Represents a response for auto-translation.\r\nThis class is a dictionary where the key is a string representing a schema/text name,\r\nand the value is another dictionary with keys as field names and values as their translated strings."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or object metadata"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error during translation processing"
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/text-auto-translate": {
+      "post": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Automatically translate a set of text key-value pairs into the specified target locales",
+        "description": "This endpoint processes the given text data and generates translations for target locales.",
+        "parameters": [
+          {
+            "name": "targetLocales",
+            "in": "query",
+            "description": "Optional list of target locale(s) for translation. If not provided, default locales will be used.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A dictionary containing the keys/values. Corresponding values to be translated and Keys will be retained as is.\r\n\nNote: The text value must be provided in English only. This ensures accurate translationsto the target locale(s).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Text auto-translation completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Represents a response for auto-translation.\r\nThis class is a dictionary where the key is a string representing a schema/text name,\r\nand the value is another dictionary with keys as field names and values as their translated strings."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error during translation processing"
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/{type}": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Retrieve translations using a cursor-based approach for a given type, with optional locale, module, and search filtering",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "The translation type (e.g., String, Schema). Required.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationType"
+            }
+          },
+          {
+            "name": "localesCSV",
+            "in": "query",
+            "description": "A comma-separated list of locale identifiers to filter translations. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
+            "in": "query",
+            "description": "The module name to filter translations. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchText",
+            "in": "query",
+            "description": "The text to search for in translation keys. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "The pagination cursor. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The number of items per page. Defaults to the maximum limit which is 100.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "sortField",
+            "in": "query",
+            "description": "The field by which to sort the results. Optional. Defaults to ModifiedDate.",
+            "schema": {
+              "$ref": "#/components/schemas/SortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "description": "The direction in which to sort the results (Ascending or Descending). Optional. Defaults to Descending.",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationListResponseAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization-admin/v1/translations/{type}/count": {
+      "get": {
+        "tags": [
+          "Translations Management Admin"
+        ],
+        "summary": "Retrieve the total count of translations for a given type, with optional locale, module, and search filtering",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "The translation type (e.g., String, Schema). Required.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TranslationType"
+            }
+          },
+          {
+            "name": "localesCSV",
+            "in": "query",
+            "description": "A comma-separated list of locale identifiers to filter translations. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
+            "in": "query",
+            "description": "The module name to filter translations. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchText",
+            "in": "query",
+            "description": "The text to search for in translation keys. Optional.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Int32NullableAPIResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations": {
+      "get": {
+        "tags": [
+          "Translation Management Runtime"
+        ],
+        "summary": "Get translations for multiple modules (Only supported for String type)",
+        "description": "Returns a dictionary of modules and their translations.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "description": "The module names to fetch translations for. Can be specified multiple times.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dictionary of module translations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Represents a response containing translation keys for modules.\r\nThe outer dictionary maps module names to their respective translation key-value pairs."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Translation Management Runtime"
+        ],
+        "summary": "Get translations for a given keys and modules (Only supported for String type)",
+        "description": "Allows fetching multiple translations in a single request.",
+        "requestBody": {
+          "description": "List of translation requests. Each request specifies a key, module, and optional parameters for translation.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationRequestItem"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationRequestItem"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslationRequestItem"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TranslationResponseItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations/modules/{module}/bulk": {
+      "get": {
+        "tags": [
+          "Translation Runtime"
+        ],
+        "summary": "Get translations by Module",
+        "description": "Gets translations for the given module.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "path",
+            "description": "A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The number of records to retrieve at once. If not specified, the default page size is 2000 records.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "The position of the last retrieved record.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationsResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Translations": [
+                      {
+                        "Key": "ACCESS_DENIES",
+                        "Locale": "en-US",
+                        "Module": "CLM",
+                        "Value": "Access denied",
+                        "CreatedBy": {
+                          "Id": "cb6da05e-41f1-4a4b-9c5f-8ade4be365aa",
+                          "Name": "Admin admin"
+                        },
+                        "CreatedDate": "7/27/2026 11:08:51 AM",
+                        "ModifiedBy": null,
+                        "ModifiedDate": null
+                      },
+                      {
+                        "Key": "ACCESS_GRANTED",
+                        "Locale": "en-US",
+                        "Module": "CLM",
+                        "Value": "Access granted",
+                        "CreatedBy": {
+                          "Id": "7c77bfbb-0cd7-41ec-a04e-b12f76b1cfb6",
+                          "Name": "Admin admin"
+                        },
+                        "CreatedDate": "7/27/2026 11:08:51 AM",
+                        "ModifiedBy": null,
+                        "ModifiedDate": null
+                      }
+                    ],
+                    "Cursor": null,
+                    "HasMoreRecords": false
+                  },
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations/{module}/bulk": {
+      "post": {
+        "tags": [
+          "Translation Runtime"
+        ],
+        "summary": "Get translated values for the user's locale",
+        "description": "Retrieves the translated values for the given module and list of keys.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "path",
+            "description": "A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A list of unique keys of the translation module specified above.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkTranslationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkTranslationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkTranslationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkTranslationResponseListAPIResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations/{module}/bulk/parameters": {
+      "post": {
+        "tags": [
+          "Translation Runtime"
+        ],
+        "summary": "Get translated values with parameters for the user's locale",
+        "description": "Retrieves the translated values with parameters for the given module and list of keys.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "path",
+            "description": "A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "A list of unique keys of the translation module specified above each accociated with message paramerter(s).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ParameterizedBulkTranslationRequest"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ParameterizedBulkTranslationRequest"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ParameterizedBulkTranslationRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkTranslationResponseListAPIResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations/{module}/{key}": {
+      "get": {
+        "tags": [
+          "Translation Runtime"
+        ],
+        "summary": "Get translated value for the user's locale",
+        "description": "Retrieves the translated value for the given module and key.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "path",
+            "description": "A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "A unique key for the specified module.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/localization/v1/translations/{module}/{key}/parameters": {
+      "get": {
+        "tags": [
+          "Translation Runtime"
+        ],
+        "summary": "Get translated value and user locale",
+        "description": "Retrieves the translated value based on the input combination (Module, Key, and Parameters) given in the parameters.",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "path",
+            "description": "Contains the module name for which the translated value is to be fetched; for example: `CLM.DOC_GEN` or `CPQ.CART`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "A unique key for the specified module.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "parameters",
+            "in": "query",
+            "description": "Message paramaters/variables.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "deutsch - Access denied",
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AliasFieldDefinitionDetail": {
+        "type": "object",
+        "properties": {
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ObjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Sequence": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AliasFieldMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "AliasFieldDefinitionDetail": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AliasFieldDefinitionDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Attributes": {
+        "type": "object",
+        "properties": {
+          "PublishDataChangeEvents": {
+            "type": "boolean"
+          },
+          "TrackAuditHistory": {
+            "type": "boolean"
+          },
+          "IsInternalObject": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BooleanNullableAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BulkTranslationRequest": {
+        "type": "object",
+        "properties": {
+          "Keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A List of unique keys.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Model for Bulk Translation Request"
+      },
+      "BulkTranslationResponse": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "A unique identfier value.",
+            "nullable": true
+          },
+          "Locale": {
+            "type": "string",
+            "description": "An identifier of a language and region; for example, en-US. You can get a list of locales from the User Management APIs.",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "description": "The translated value of the key passed in the request.",
+            "nullable": true
+          },
+          "Status": {
+            "$ref": "#/components/schemas/ResultStatus"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Bulk Translation Response"
+      },
+      "BulkTranslationResponseListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkTranslationResponse"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ComplexFieldMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldMetadata"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ControllingAndDependentPicklistEntry": {
+        "type": "object",
+        "properties": {
+          "ControllingPicklistEntry": {
+            "type": "string",
+            "nullable": true
+          },
+          "DependentPicklistEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PicklistEntry"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataType": {
+        "enum": [
+          "String",
+          "Int",
+          "Double",
+          "Currency",
+          "Boolean",
+          "DateTime",
+          "AutoNumber",
+          "Lookup",
+          "Picklist",
+          "MultiPicklist",
+          "Identifier",
+          "LongString",
+          "Complex",
+          "ComplexArray",
+          "Reference",
+          "Rollup",
+          "Decimal",
+          "Image",
+          "Alias",
+          "Date",
+          "Owner"
+        ],
+        "type": "string"
+      },
+      "DependentPicklistMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "DependentFieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ControllingFieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ControllingAndDependentPicklistEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ControllingAndDependentPicklistEntry"
+            },
+            "nullable": true
+          },
+          "IsDeprecated": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FieldMetadata": {
+        "type": "object",
+        "properties": {
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "DataType": {
+            "$ref": "#/components/schemas/DataType"
+          },
+          "DefaultValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsProtected": {
+            "type": "boolean"
+          },
+          "IsIndexField": {
+            "type": "boolean"
+          },
+          "IsSortable": {
+            "type": "boolean"
+          },
+          "IsRequired": {
+            "type": "boolean"
+          },
+          "IsUnique": {
+            "type": "boolean"
+          },
+          "IsDeprecated": {
+            "type": "boolean"
+          },
+          "IsCalculated": {
+            "type": "boolean"
+          },
+          "IsInternalField": {
+            "type": "boolean"
+          },
+          "IsAliasField": {
+            "type": "boolean"
+          },
+          "ReadAccess": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "WriteAccess": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "Length": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "LookupObjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "LookupFilterCriteria": {
+            "type": "string",
+            "nullable": true
+          },
+          "DependentPicklistMetadataName": {
+            "type": "string",
+            "nullable": true
+          },
+          "PicklistName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ComplexMetadataName": {
+            "type": "string",
+            "nullable": true
+          },
+          "AutoNumberInitialSeed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AutoNumberPrefix": {
+            "type": "string",
+            "nullable": true
+          },
+          "Precision": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Scale": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Expression": {
+            "type": "string",
+            "nullable": true
+          },
+          "ExpressionDependency": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "AliasExpressionDependency": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "IsPreComputed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "ReferenceObject": {
+            "type": "string",
+            "nullable": true
+          },
+          "TargetObject": {
+            "type": "string",
+            "nullable": true
+          },
+          "TargetField": {
+            "type": "string",
+            "nullable": true
+          },
+          "RollupFunction": {
+            "type": "string",
+            "nullable": true
+          },
+          "RollupFilterCriteria": {
+            "type": "string",
+            "nullable": true
+          },
+          "AliasFieldDefinition": {
+            "type": "string",
+            "nullable": true
+          },
+          "AliasFieldMetadataName": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsRichTextField": {
+            "type": "boolean"
+          },
+          "IsPropertyLookup": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "IdentifierType": {
+            "$ref": "#/components/schemas/IdentifierType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpStatusCode": {
+        "enum": [
+          "Continue",
+          "SwitchingProtocols",
+          "Processing",
+          "EarlyHints",
+          "OK",
+          "Created",
+          "Accepted",
+          "NonAuthoritativeInformation",
+          "NoContent",
+          "ResetContent",
+          "PartialContent",
+          "MultiStatus",
+          "AlreadyReported",
+          "IMUsed",
+          "MultipleChoices",
+          "MovedPermanently",
+          "Found",
+          "SeeOther",
+          "NotModified",
+          "UseProxy",
+          "Unused",
+          "TemporaryRedirect",
+          "PermanentRedirect",
+          "BadRequest",
+          "Unauthorized",
+          "PaymentRequired",
+          "Forbidden",
+          "NotFound",
+          "MethodNotAllowed",
+          "NotAcceptable",
+          "ProxyAuthenticationRequired",
+          "RequestTimeout",
+          "Conflict",
+          "Gone",
+          "LengthRequired",
+          "PreconditionFailed",
+          "RequestEntityTooLarge",
+          "RequestUriTooLong",
+          "UnsupportedMediaType",
+          "RequestedRangeNotSatisfiable",
+          "ExpectationFailed",
+          "MisdirectedRequest",
+          "UnprocessableEntity",
+          "Locked",
+          "FailedDependency",
+          "UpgradeRequired",
+          "PreconditionRequired",
+          "TooManyRequests",
+          "RequestHeaderFieldsTooLarge",
+          "UnavailableForLegalReasons",
+          "InternalServerError",
+          "NotImplemented",
+          "BadGateway",
+          "ServiceUnavailable",
+          "GatewayTimeout",
+          "HttpVersionNotSupported",
+          "VariantAlsoNegotiates",
+          "InsufficientStorage",
+          "LoopDetected",
+          "NotExtended",
+          "NetworkAuthenticationRequired"
+        ],
+        "type": "string"
+      },
+      "IdentifierType": {
+        "enum": [
+          "UUIDv4",
+          "UID18"
+        ],
+        "type": "string"
+      },
+      "IndexMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "IndexMetadataDetail": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IndexMetadataDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndexMetadataDetail": {
+        "type": "object",
+        "properties": {
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Int32NullableAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LocaleResponse": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Gets or sets the locale name (e.g., \"en-US\").",
+            "nullable": true
+          },
+          "DisplayName": {
+            "type": "string",
+            "description": "Gets or sets the display name of the locale (e.g., \"English (United States)\").",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a locale with its name and display name."
+      },
+      "LocaleResponseListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocaleResponse"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LookupObject": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "description": "User Id.",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "description": "User Name.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsProtected": {
+            "type": "boolean"
+          },
+          "IsDeprecated": {
+            "type": "boolean"
+          },
+          "IsShared": {
+            "type": "boolean"
+          },
+          "IsDataCacheEnabled": {
+            "type": "boolean"
+          },
+          "IsTrackingEnabled": {
+            "type": "boolean"
+          },
+          "IsAllowOwnerScope": {
+            "type": "boolean"
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "ObjectType": {
+            "$ref": "#/components/schemas/ObjectType"
+          },
+          "IsRecycleBinEnabled": {
+            "type": "boolean"
+          },
+          "FieldMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldMetadata"
+            },
+            "nullable": true
+          },
+          "InternalRuntimeAliasFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldMetadata"
+            },
+            "nullable": true
+          },
+          "InternalPrecomputedAliasFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldMetadata"
+            },
+            "nullable": true
+          },
+          "PicklistMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PicklistMetadata"
+            },
+            "nullable": true
+          },
+          "DependentPicklistMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DependentPicklistMetadata"
+            },
+            "nullable": true
+          },
+          "ComplexFieldMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComplexFieldMetadata"
+            },
+            "nullable": true
+          },
+          "AliasFieldMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AliasFieldMetadata"
+            },
+            "nullable": true
+          },
+          "IndexMetadata": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IndexMetadata"
+            },
+            "nullable": true
+          },
+          "TtlFieldMetadata": {
+            "$ref": "#/components/schemas/TtlFieldMetadata"
+          },
+          "CreatedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "CreatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ModifiedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "ModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Attributes": {
+            "$ref": "#/components/schemas/Attributes"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectType": {
+        "enum": [
+          "Default",
+          "Property"
+        ],
+        "type": "string"
+      },
+      "OrgLocaleChangeStatus": {
+        "enum": [
+          "InProgress",
+          "Failed",
+          "Completed",
+          "Started"
+        ],
+        "type": "string"
+      },
+      "OrgLocaleChangeTrackingInfo": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "description": "A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "description": "Name",
+            "nullable": true
+          },
+          "CreatedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "CreatedDate": {
+            "type": "string",
+            "description": "Created date",
+            "format": "date-time"
+          },
+          "ModifiedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "ModifiedDate": {
+            "type": "string",
+            "description": "Modified date",
+            "format": "date-time"
+          },
+          "ExternalId": {
+            "type": "string",
+            "description": "External ID",
+            "nullable": true
+          },
+          "ETag": {
+            "type": "string",
+            "description": "Etag",
+            "nullable": true
+          },
+          "TrackingId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Locale": {
+            "type": "string",
+            "nullable": true
+          },
+          "ActionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "OnLocaleDeleteUserUpdateCompleted": {
+            "type": "boolean"
+          },
+          "OnLocaleDeleteProcessedUserIds": {
+            "type": "string",
+            "nullable": true
+          },
+          "ModulesToProcessCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ProcessedModulesCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ErrorDetails": {
+            "type": "string",
+            "nullable": true
+          },
+          "TraceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "UserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Status": {
+            "$ref": "#/components/schemas/OrgLocaleChangeStatus"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "OrgLocaleChangeTrackingInfoListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrgLocaleChangeTrackingInfo"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrgLocaleUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "TrackingIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of Ids to track the background process of org locale update.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ParameterizedBulkTranslationRequest": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "A unique key.",
+            "nullable": true
+          },
+          "Parameters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "An array of values associated with the translation.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Bulk translation request with parameter values."
+      },
+      "PicklistEntry": {
+        "type": "object",
+        "properties": {
+          "Value": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayText": {
+            "type": "string",
+            "nullable": true
+          },
+          "Sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "IsDeprecated": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PicklistMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "AllowNonConfiguredPicklistEntries": {
+            "type": "boolean"
+          },
+          "PicklistEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PicklistEntry"
+            },
+            "nullable": true
+          },
+          "IsDeprecated": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResultStatus": {
+        "enum": [
+          "Success",
+          "Fail",
+          "NotFound",
+          "Invalid",
+          "Conflict"
+        ],
+        "type": "string"
+      },
+      "SortDirection": {
+        "enum": [
+          "Ascending",
+          "Descending"
+        ],
+        "type": "string"
+      },
+      "SortField": {
+        "enum": [
+          "ModifiedDate",
+          "Key",
+          "Value",
+          "Locale",
+          "Module",
+          "ModifiedBy_Name",
+          "IsProtected"
+        ],
+        "type": "string",
+        "description": "Specifies the fields by which translation records can be sorted."
+      },
+      "StringAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Translation": {
+        "type": "object",
+        "properties": {
+          "Locale": {
+            "type": "string",
+            "description": "An identifier of a language and region; for example, en-US. You can get a list of locales from the User Management APIs.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "A classifier for the translation. for example, CLM.DOC_GEN or CPQ.CART.",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "description": "The actual value of translation.",
+            "nullable": true
+          },
+          "CreatedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "CreatedDate": {
+            "type": "string",
+            "description": "Date of creation.",
+            "nullable": true
+          },
+          "ModifiedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "ModifiedDate": {
+            "type": "string",
+            "description": "Last modified date.",
+            "nullable": true
+          },
+          "Key": {
+            "type": "string",
+            "description": "A Unique Identifier",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Translation model"
+      },
+      "TranslationListResponse": {
+        "type": "object",
+        "properties": {
+          "Translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationsListItem"
+            },
+            "description": "Gets or sets the translated value.",
+            "nullable": true
+          },
+          "Cursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a translation locale list item containing translation details for a specific key and module."
+      },
+      "TranslationListResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/TranslationListResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TranslationRequestItem": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the unique key identifying the translation item.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation item.",
+            "nullable": true
+          },
+          "Parameters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gets or sets the list of parameters for the translation item.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single item in a translation request."
+      },
+      "TranslationResponseItem": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the key identifying the translation item.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation item.",
+            "nullable": true
+          },
+          "Value": {
+            "type": "string",
+            "description": "Gets or sets the translated value.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single item in a translation response."
+      },
+      "TranslationType": {
+        "enum": [
+          "String",
+          "Schema"
+        ],
+        "type": "string",
+        "description": "Enumeration for translation types."
+      },
+      "TranslationsCreateRequest": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the translation key.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation.",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/TranslationType"
+          },
+          "Value": {
+            "type": "string",
+            "description": "Gets or sets the value of the translation to be created.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a request to create a new translation entry."
+      },
+      "TranslationsDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the translation key.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation.",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/TranslationType"
+          },
+          "IsProtected": {
+            "type": "boolean",
+            "description": "Gets or sets a value indicating whether the translation is protected from deletion."
+          },
+          "IsDeleteForAllLocales": {
+            "type": "boolean",
+            "description": "Gets or sets a value indicating whether the deletion should apply to all locales."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a request to delete a translation locale."
+      },
+      "TranslationsListItem": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the translation key.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation.",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/TranslationType"
+          },
+          "Value": {
+            "type": "string",
+            "description": "Gets or sets the translated value.",
+            "nullable": true
+          },
+          "IsProtected": {
+            "type": "boolean",
+            "description": "Gets or sets a value indicating whether the translation is protected from modification."
+          },
+          "Locale": {
+            "type": "string",
+            "description": "Gets or sets the locale for which the translation is applicable.",
+            "nullable": true
+          },
+          "LastModifiedBy": {
+            "type": "string",
+            "description": "Last modified by user.",
+            "nullable": true
+          },
+          "LastModifiedDate": {
+            "type": "string",
+            "description": "Last modified by date.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a translation locale list item containing translation details for a specific key and module."
+      },
+      "TranslationsListItemListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationsListItem"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TranslationsResponse": {
+        "type": "object",
+        "properties": {
+          "Translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Translation"
+            },
+            "nullable": true
+          },
+          "Cursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "HasMoreRecords": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Translations Response"
+      },
+      "TranslationsResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/TranslationsResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TranslationsUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string",
+            "description": "Gets or sets the translation key.",
+            "nullable": true
+          },
+          "Module": {
+            "type": "string",
+            "description": "Gets or sets the module associated with the translation.",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/TranslationType"
+          },
+          "Value": {
+            "type": "string",
+            "description": "Gets or sets the value of the translation.",
+            "nullable": true
+          },
+          "IsProtected": {
+            "type": "boolean",
+            "description": "Gets or sets a value indicating whether the translation is protected from modification."
+          },
+          "LocalesToUpdate": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gets or sets the list of locale codes where translation needs to be auto updated.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a request to update translation locales for a specific key and module."
+      },
+      "TtlFieldMetadata": {
+        "type": "object",
+        "properties": {
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "RetentionPeriodInDaysServiceQuotaKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Please insert JWT with Bearer into field",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Translation Management Runtime"
+    },
+    {
+      "name": "Translation Runtime"
+    },
+    {
+      "name": "Translations Management Admin"
+    }
+  ]
+}

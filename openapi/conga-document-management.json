@@ -1,0 +1,3487 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Document Management",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://rls.congacloud.com"
+    }
+  ],
+  "paths": {
+    "/api/document-management/v1/documents": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Delete documents by their IDs",
+        "description": "Deletes multiple documents and returns the status of the request.",
+        "requestBody": {
+          "description": "List of document IDs",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "IsDeleted": true,
+                    "Message": "d985ea31-57b8-497a-94e3-f775318a52a0,9476257e-d42b-45b4-8643-1f08fb60f1cf deleted successfully."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Upload documents",
+        "description": "Uploads multiple documents and returns a list of metadata for each document. The following file extentions are supported: *.doc,.docx,.pdf,.zip,.png,.rtf,.txt,.jpg,.jpeg,.msg,.xls,.xlsx*",
+        "parameters": [
+          {
+            "name": "objectType",
+            "in": "query",
+            "description": "Object name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "query",
+            "description": "Object ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "Description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutBy",
+            "in": "query",
+            "description": "Checkedout by information",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutDate",
+            "in": "query",
+            "description": "Checkedout date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags available for documents",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "isSearchable",
+            "in": "query",
+            "description": "Indicates whether the document is searchable or not",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "customProperties": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              },
+              "encoding": {
+                "files": {
+                  "style": "form"
+                },
+                "customProperties": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "c8dcc5ae-3e5b-428b-a402-deb88772b30f",
+                      "DocumentId": "b117de29-1fc9-4a8b-aed6-c6b79bf42ce6",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "558ddf99-7644-4206-98cf-43e738741978",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:36.9668947+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:36.966904+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/bulk": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get documents by their IDs",
+        "description": "Retrieves multiple documents by document ID.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "query",
+            "description": "List of string values of the documentIds",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "ignoreInvalidIds",
+            "in": "query",
+            "description": "List of string values of the documentIds",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "DocumentMetadata": {
+                        "Description": "Desc",
+                        "Extension": ".txt",
+                        "Tags": "",
+                        "ObjectType": "Agreement",
+                        "ObjectId": "aa03b67d-f622-4b3e-8757-5996361e7ca9",
+                        "DocumentId": "29850b74-7599-4adb-86aa-200c84db8d2a",
+                        "DocumentVersion": 1,
+                        "IsDeleted": false,
+                        "CheckoutBy": "",
+                        "CheckoutDate": "2022-01-01T00:00:00",
+                        "FileSize": 100,
+                        "FileType": "text/plain",
+                        "IsLatest": true,
+                        "IsSearchable": true,
+                        "Id": "bf663ebd-e4a2-4588-a2d7-b3346e8a505d",
+                        "Name": "Doc1.txt",
+                        "CreatedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "CreatedDate": "2026-07-27T11:13:37.0726532+00:00",
+                        "ModifiedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "ModifiedDate": "2026-07-27T11:13:37.0726614+00:00",
+                        "ExternalId": null,
+                        "ETag": null
+                      },
+                      "BlobData": "UEFO"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/multipart-uploads": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Initiate a multipart upload",
+        "description": "Initiates multipart upload and returns the upload ID, key, and document metadata.",
+        "requestBody": {
+          "description": "Document request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitMultipartUploadResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "UploadId": "7162",
+                    "Key": "1465",
+                    "Metadata": {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "4df07ca1-8760-40a6-af5e-06be37fc4ee9",
+                      "DocumentId": "5d88cf57-5cf8-4f2e-accc-52881a15671e",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "818170e0-5d93-40e4-b6d3-86ee37141c14",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.0032968+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.003305+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/objects/{objectId}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get documents by object ID and file type",
+        "description": "Retrieves documents by passing file type and object ID as inputs.",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "Object ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileType",
+            "in": "query",
+            "description": "Type of the file",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "DocumentMetadata": {
+                        "Description": "Desc",
+                        "Extension": ".txt",
+                        "Tags": "",
+                        "ObjectType": "Agreement",
+                        "ObjectId": "ea84fc4e-9a9f-4866-9307-0d43f6a259bf",
+                        "DocumentId": "cfe2a764-6777-4e0b-aef5-95ccd0d34397",
+                        "DocumentVersion": 1,
+                        "IsDeleted": false,
+                        "CheckoutBy": "",
+                        "CheckoutDate": "2022-01-01T00:00:00",
+                        "FileSize": 100,
+                        "FileType": "text/plain",
+                        "IsLatest": true,
+                        "IsSearchable": true,
+                        "Id": "2bd9b387-f1fd-4f4a-bd6d-82da2cc23bf1",
+                        "Name": "Doc1.txt",
+                        "CreatedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "CreatedDate": "2026-07-27T11:13:37.1140056+00:00",
+                        "ModifiedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "ModifiedDate": "2026-07-27T11:13:37.114024+00:00",
+                        "ExternalId": null,
+                        "ETag": null
+                      },
+                      "BlobData": "UEFO"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/objects/{objectType}/{objectId}": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Delete documents by object type and ID",
+        "description": "Deletes documents by object type and object ID.",
+        "parameters": [
+          {
+            "name": "objectType",
+            "in": "path",
+            "description": "Object name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "Object ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "IsDeleted": true,
+                    "Message": "Documents associated to 1fa0765b-91a0-4e4f-bafe-e22437a806f2 are deleted successfully."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get documents by object type and ID",
+        "description": "Retrieves documents by passing the object type and object ID as inputs",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "Object ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectType",
+            "in": "path",
+            "description": "Object name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "DocumentMetadata": {
+                        "Description": "Desc",
+                        "Extension": ".txt",
+                        "Tags": "",
+                        "ObjectType": "Agreement",
+                        "ObjectId": "0be937b4-8ef6-439c-9cc3-6fc83709f714",
+                        "DocumentId": "1c9a1621-fd22-4641-8beb-3de9a71e8dc9",
+                        "DocumentVersion": 1,
+                        "IsDeleted": false,
+                        "CheckoutBy": "",
+                        "CheckoutDate": "2022-01-01T00:00:00",
+                        "FileSize": 100,
+                        "FileType": "text/plain",
+                        "IsLatest": true,
+                        "IsSearchable": true,
+                        "Id": "4557ad2b-3dc6-46f6-9447-3aecb8434e87",
+                        "Name": "Doc1.txt",
+                        "CreatedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "CreatedDate": "2026-07-27T11:13:37.088088+00:00",
+                        "ModifiedBy": {
+                          "Id": "",
+                          "Name": ""
+                        },
+                        "ModifiedDate": "2026-07-27T11:13:37.0880963+00:00",
+                        "ExternalId": null,
+                        "ETag": null
+                      },
+                      "BlobData": "UEFO"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/objects/{objectType}/{objectId}/versions": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get version details by object type and ID",
+        "description": "Retrieves document version details by passing the object type and object ID as inputs.",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "description": "Object ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectType",
+            "in": "path",
+            "description": "Object name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "106a9c5d-df68-42a2-8900-5faa9704913e",
+                      "DocumentId": "c4fc8c35-a5bf-4ce1-b758-08ece31e711d",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "731368d1-e09f-4439-bae4-cd690010f487",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.0915395+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.0915485+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/search": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Search documents using advanced query parameters",
+        "description": "Searches for documents using the provided query parameters and returns matching document metadata.",
+        "parameters": [
+          {
+            "name": "includeTotalCount",
+            "in": "query",
+            "description": "Optional parameter for specifying whether the total record count should be included in the response.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Query parameters for document searching.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "20f5b9d9-93e0-4120-be49-4e6b893a7856",
+                      "DocumentId": "01e4ef5f-db79-479b-bbb9-a0c6f854bc09",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "2480c9a1-870d-48aa-bfaa-de957b4d5a7e",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.1107967+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.1108046+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/upload": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Upload a single document",
+        "description": "Uploads a single document and returns the document's metadata. The following file extentions are supported: *.doc,.docx,.pdf,.zip,.png,.rtf,.txt,.jpg,.jpeg,.msg,.xls,.xlsx*",
+        "parameters": [
+          {
+            "name": "objectType",
+            "in": "query",
+            "description": "Object name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "query",
+            "description": "Object ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newVersionId",
+            "in": "query",
+            "description": "ID of the new document version",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "Description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutBy",
+            "in": "query",
+            "description": "Checkedout by details",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutDate",
+            "in": "query",
+            "description": "Checkedout date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags available for the document",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "query",
+            "description": "Document ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isSearchable",
+            "in": "query",
+            "description": "Indicates whether the document is searchable or not",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "customProperties": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                },
+                "customProperties": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Description": "Desc",
+                    "Extension": ".txt",
+                    "Tags": "",
+                    "ObjectType": "Agreement",
+                    "ObjectId": "eb028509-f9ba-43d0-b2cb-e56135a3628e",
+                    "DocumentId": "e187f8c2-d775-4ffe-b171-6b60589a9d59",
+                    "DocumentVersion": 1,
+                    "IsDeleted": false,
+                    "CheckoutBy": "",
+                    "CheckoutDate": "2022-01-01T00:00:00",
+                    "FileSize": 100,
+                    "FileType": "text/plain",
+                    "IsLatest": true,
+                    "IsSearchable": true,
+                    "Id": "dabbc6d7-9c99-4922-b6b6-7a10f073eeb4",
+                    "Name": "Doc1.txt",
+                    "CreatedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "CreatedDate": "2026-07-27T11:13:36.98699+00:00",
+                    "ModifiedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "ModifiedDate": "2026-07-27T11:13:36.9869984+00:00",
+                    "ExternalId": null,
+                    "ETag": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Delete a document by its ID",
+        "description": "Deletes a document and returns the status of the request.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hardDelete",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "IsDeleted": true,
+                    "Message": "12f6e292-d07f-42a5-8680-ecaa5b600fe3 deleted successfully."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Update a document",
+        "description": "Updates a document and returns the updated document's metadata.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newVersionId",
+            "in": "query",
+            "description": "ID of the new document version",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "Description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutBy",
+            "in": "query",
+            "description": "Checkedout by details",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkoutDate",
+            "in": "query",
+            "description": "Checkedout date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isSearchable",
+            "in": "query",
+            "description": "Indicates whether the document is searchable",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "customProperties": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                },
+                "customProperties": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Description": "Desc",
+                    "Extension": ".txt",
+                    "Tags": "",
+                    "ObjectType": "Agreement",
+                    "ObjectId": "29ea5a9c-52de-4269-a1c7-7dc36dae99cd",
+                    "DocumentId": "0b5acffc-571b-48a2-a77a-1400318cf002",
+                    "DocumentVersion": 1,
+                    "IsDeleted": false,
+                    "CheckoutBy": "",
+                    "CheckoutDate": "2022-01-01T00:00:00",
+                    "FileSize": 100,
+                    "FileType": "text/plain",
+                    "IsLatest": true,
+                    "IsSearchable": true,
+                    "Id": "0b0e116e-c4a9-4b7d-a685-eb546c3e6861",
+                    "Name": "Doc1.txt",
+                    "CreatedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "CreatedDate": "2026-07-27T11:13:37.0352186+00:00",
+                    "ModifiedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "ModifiedDate": "2026-07-27T11:13:37.0352268+00:00",
+                    "ExternalId": null,
+                    "ETag": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/clone": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Clone a document",
+        "description": "Clones the document described by the document ID.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Description": "Desc",
+                    "Extension": ".txt",
+                    "Tags": "",
+                    "ObjectType": "Agreement",
+                    "ObjectId": "2c6860b3-f5ac-47f4-921b-57f1d2610ffb",
+                    "DocumentId": "ba798000-baf6-4143-bbbd-ec33c8a4f0b8",
+                    "DocumentVersion": 1,
+                    "IsDeleted": false,
+                    "CheckoutBy": "",
+                    "CheckoutDate": "2022-01-01T00:00:00",
+                    "FileSize": 100,
+                    "FileType": "text/plain",
+                    "IsLatest": true,
+                    "IsSearchable": true,
+                    "Id": "ab11fb27-9584-4af1-9165-7020dd27fac4",
+                    "Name": "Doc1.txt",
+                    "CreatedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "CreatedDate": "2026-07-27T11:13:37.0945997+00:00",
+                    "ModifiedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "ModifiedDate": "2026-07-27T11:13:37.0946081+00:00",
+                    "ExternalId": null,
+                    "ETag": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/exists": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Check a document",
+        "description": "Checks whether the given document (documentId) exists.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/metadata": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get a document's metadata by its ID",
+        "description": "Retrieves the document metadata by passing a document ID as an input.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "Description": "Desc",
+                    "Extension": ".txt",
+                    "Tags": "",
+                    "ObjectType": "Agreement",
+                    "ObjectId": "1c7c957a-fc8d-4bf3-bb0e-2c24809ddfcc",
+                    "DocumentId": "95a11e37-a026-47d7-a7d8-0c7f57d805ed",
+                    "DocumentVersion": 1,
+                    "IsDeleted": false,
+                    "CheckoutBy": "",
+                    "CheckoutDate": "2022-01-01T00:00:00",
+                    "FileSize": 100,
+                    "FileType": "text/plain",
+                    "IsLatest": true,
+                    "IsSearchable": true,
+                    "Id": "efe82415-5c76-40ac-9963-a94258065dbd",
+                    "Name": "Doc1.txt",
+                    "CreatedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "CreatedDate": "2026-07-27T11:13:37.049965+00:00",
+                    "ModifiedBy": {
+                      "Id": "",
+                      "Name": ""
+                    },
+                    "ModifiedDate": "2026-07-27T11:13:37.0499733+00:00",
+                    "ExternalId": null,
+                    "ETag": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Update the document metadata information for all versions",
+        "description": "Updates the document metadata information for all versions and returns the status of the request.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Metadata of the document",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentMetadataUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentMetadataUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentMetadataUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/multipart-uploads": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Abort a multipart upload",
+        "description": "Aborts an incomplete multipart upload, deletes the metadata and version associated with it, and returns the status of the request.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Multipart upload data request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipartUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "Multipart upload aborted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Complete multipart upload",
+        "description": "Completes multipart upload by combining single uploaded parts and returns the status of the request.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Multipart upload data request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteMultipartUploadRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteMultipartUploadRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteMultipartUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": "Multipart upload completed successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Upload a single part of a large file",
+        "description": "Uploads a single part of a large file and returns the Etag and part number.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "The key that identifies the file location. It is defined in the multipart initiate response.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadId",
+            "in": "query",
+            "description": "Upload ID. It is defined in the multipart initiate response.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partNumber",
+            "in": "query",
+            "description": "A part number uniquely identifies a part and its position in the object you are uploading.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPartResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "ETag": "16562",
+                    "PartNumber": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/versions": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Retrieve document versions",
+        "description": "Retrieves document versions by passing a document ID as an input.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentMetadataListAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": [
+                    {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "c2f6d533-5db5-45f4-993a-bd9f3e1b6b7e",
+                      "DocumentId": "744727cb-7f3d-4594-9feb-3e9a39b6b474",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "3c96e607-44ab-4afc-85b7-bcf67e132780",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.099533+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.0995415+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{documentId}/versions/{versionId}": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Delete a versioned document",
+        "description": "Deletes a document version by passing the document ID and version ID as inputs.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "description": "Document version ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "IsDeleted": true,
+                    "Message": "ad22aac7-2221-46bd-8b3b-b1a516976ef8 deleted successfully."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get a document by its ID and version",
+        "description": "Takes the document ID and version ID as inputs and retrieves specific document version.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "Document ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "description": "Document version ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "DocumentMetadata": {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "a1814de9-31a6-422a-816b-7d2c32724b73",
+                      "DocumentId": "ad4040a2-f6d6-4cc6-8bfe-b279a48da95c",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "c28debbf-a4a5-499a-8c86-c7a78db81b3e",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.1027739+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.1027821+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    },
+                    "BlobData": "UEFO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{id}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get document information by its ID",
+        "description": "Uses the version ID to retrieve a document's metadata.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Version ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseAPIResponse"
+                },
+                "example": {
+                  "Success": true,
+                  "Data": {
+                    "DocumentMetadata": {
+                      "Description": "Desc",
+                      "Extension": ".txt",
+                      "Tags": "",
+                      "ObjectType": "Agreement",
+                      "ObjectId": "81d9630f-db70-40ba-b44e-7fdbfdeab08e",
+                      "DocumentId": "1b61b927-b033-4381-955c-83257ef41b38",
+                      "DocumentVersion": 1,
+                      "IsDeleted": false,
+                      "CheckoutBy": "",
+                      "CheckoutDate": "2022-01-01T00:00:00",
+                      "FileSize": 100,
+                      "FileType": "text/plain",
+                      "IsLatest": true,
+                      "IsSearchable": true,
+                      "Id": "c4beb4dd-f87d-4782-b072-06ee4631d8ea",
+                      "Name": "Doc1.txt",
+                      "CreatedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "CreatedDate": "2026-07-27T11:13:37.0590432+00:00",
+                      "ModifiedBy": {
+                        "Id": "",
+                        "Name": ""
+                      },
+                      "ModifiedDate": "2026-07-27T11:13:37.0590518+00:00",
+                      "ExternalId": null,
+                      "ETag": null
+                    },
+                    "BlobData": "UEFO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "OrganizationFriendlyId is not defined."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/document-management/v1/documents/{id}/download": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get a document by its ID",
+        "description": "Downloads a document by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Version ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Id not provided."
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringAPIResponse"
+                },
+                "example": {
+                  "Success": false,
+                  "Errors": [
+                    {
+                      "Message": "Internal server error occurred. Please contact admin."
+                    }
+                  ],
+                  "StatusCode": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CompleteMultipartUploadRequest": {
+        "type": "object",
+        "properties": {
+          "DocumentId": {
+            "type": "string",
+            "description": "A unique identifier of the document",
+            "nullable": true
+          },
+          "Key": {
+            "type": "string",
+            "description": "Multipart upload key",
+            "nullable": true
+          },
+          "UploadId": {
+            "type": "string",
+            "description": "Upload request identifier",
+            "nullable": true
+          },
+          "ETags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            },
+            "description": "A collection of unique identifiers (entity tags).",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Complete multipart upload request"
+      },
+      "DocumentMetadata": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreatedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "CreatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ModifiedBy": {
+            "$ref": "#/components/schemas/LookupObject"
+          },
+          "ModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ETag": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "description": "Description",
+            "nullable": true
+          },
+          "Extension": {
+            "type": "string",
+            "description": "File Extension **For example :** .doc, .docx, .pdf etc",
+            "nullable": true
+          },
+          "Tags": {
+            "type": "string",
+            "description": "Additioal information about document",
+            "nullable": true
+          },
+          "ObjectType": {
+            "type": "string",
+            "description": "Object type for uploading/storing document **For example :** Agreement",
+            "nullable": true
+          },
+          "ObjectId": {
+            "type": "string",
+            "description": "A unique identifier of the object for which the document is stored",
+            "nullable": true
+          },
+          "DocumentId": {
+            "type": "string",
+            "description": "A unique identifier of the document",
+            "nullable": true
+          },
+          "DocumentVersion": {
+            "type": "integer",
+            "description": "Version number",
+            "format": "int32"
+          },
+          "IsDeleted": {
+            "type": "boolean",
+            "description": "Document deleted flag"
+          },
+          "CheckoutBy": {
+            "type": "string",
+            "description": "Checkout by",
+            "nullable": true
+          },
+          "CheckoutDate": {
+            "type": "string",
+            "description": "Checkout date",
+            "format": "date-time"
+          },
+          "FileSize": {
+            "type": "integer",
+            "description": "Document file size",
+            "format": "int64"
+          },
+          "FileType": {
+            "type": "string",
+            "description": "Document file type **For example :** txt/plain",
+            "nullable": true
+          },
+          "IsLatest": {
+            "type": "boolean",
+            "description": "Is latest document flag"
+          },
+          "IsSearchable": {
+            "type": "boolean",
+            "description": "Gets or sets a value indicating whether the item can be included in search operations.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {},
+        "description": "Document metadata"
+      },
+      "DocumentMetadataAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentMetadataListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentMetadata"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentMetadataUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "CheckoutBy": {
+            "type": "string",
+            "description": "Checkout by",
+            "nullable": true
+          },
+          "CheckoutDate": {
+            "type": "string",
+            "description": "Checkout date",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "description": "Description for document",
+            "nullable": true
+          },
+          "CustomProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "nullable": true
+            },
+            "description": "Document specific additional properties **For instance :* {Property Name, Property Value}",
+            "nullable": true
+          },
+          "Tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additional information about document",
+            "nullable": true
+          },
+          "IsSearchable": {
+            "type": "boolean",
+            "description": "Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to update metadata/schema information of the document"
+      },
+      "DocumentQuery": {
+        "type": "object",
+        "properties": {
+          "Criteria": {
+            "type": "string",
+            "description": "Criteria based on which documents will be fetched",
+            "nullable": true
+          },
+          "Limit": {
+            "type": "integer",
+            "description": "Number of documents to be fetched",
+            "format": "int32",
+            "nullable": true
+          },
+          "Skip": {
+            "type": "integer",
+            "description": "Number of documents to be skipped",
+            "format": "int32",
+            "nullable": true
+          },
+          "Sort": {
+            "$ref": "#/components/schemas/Sort"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentRequest": {
+        "type": "object",
+        "properties": {
+          "DocumentName": {
+            "type": "string",
+            "description": "Document name",
+            "nullable": true
+          },
+          "ObjectType": {
+            "type": "string",
+            "description": "Object type for uploading/storing document **For example :** Agreement",
+            "nullable": true
+          },
+          "ObjectId": {
+            "type": "string",
+            "description": "A unique identifier of the object",
+            "nullable": true
+          },
+          "Tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additioal information about document",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "description": "Document description",
+            "nullable": true
+          },
+          "CheckoutBy": {
+            "type": "string",
+            "description": "Checkout by",
+            "nullable": true
+          },
+          "CheckoutDate": {
+            "type": "string",
+            "description": "Checkout Date",
+            "format": "date-time",
+            "nullable": true
+          },
+          "NewVersionId": {
+            "type": "string",
+            "description": "New version Id for document",
+            "nullable": true
+          },
+          "CustomProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "nullable": true
+            },
+            "description": "Document specific additional properties **For instance :* {Property Name, Property Value}",
+            "nullable": true
+          },
+          "DocumentId": {
+            "type": "string",
+            "description": "A unique identifier of the document",
+            "nullable": true
+          },
+          "IsSearchable": {
+            "type": "boolean",
+            "description": "Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Schema for document"
+      },
+      "DocumentResponse": {
+        "type": "object",
+        "properties": {
+          "DocumentMetadata": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          },
+          "BlobData": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/DocumentResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentResponseListAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentResponse"
+            },
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpStatusCode": {
+        "enum": [
+          "Continue",
+          "SwitchingProtocols",
+          "Processing",
+          "EarlyHints",
+          "OK",
+          "Created",
+          "Accepted",
+          "NonAuthoritativeInformation",
+          "NoContent",
+          "ResetContent",
+          "PartialContent",
+          "MultiStatus",
+          "AlreadyReported",
+          "IMUsed",
+          "MultipleChoices",
+          "MovedPermanently",
+          "Found",
+          "SeeOther",
+          "NotModified",
+          "UseProxy",
+          "Unused",
+          "TemporaryRedirect",
+          "PermanentRedirect",
+          "BadRequest",
+          "Unauthorized",
+          "PaymentRequired",
+          "Forbidden",
+          "NotFound",
+          "MethodNotAllowed",
+          "NotAcceptable",
+          "ProxyAuthenticationRequired",
+          "RequestTimeout",
+          "Conflict",
+          "Gone",
+          "LengthRequired",
+          "PreconditionFailed",
+          "RequestEntityTooLarge",
+          "RequestUriTooLong",
+          "UnsupportedMediaType",
+          "RequestedRangeNotSatisfiable",
+          "ExpectationFailed",
+          "MisdirectedRequest",
+          "UnprocessableEntity",
+          "Locked",
+          "FailedDependency",
+          "UpgradeRequired",
+          "PreconditionRequired",
+          "TooManyRequests",
+          "RequestHeaderFieldsTooLarge",
+          "UnavailableForLegalReasons",
+          "InternalServerError",
+          "NotImplemented",
+          "BadGateway",
+          "ServiceUnavailable",
+          "GatewayTimeout",
+          "HttpVersionNotSupported",
+          "VariantAlsoNegotiates",
+          "InsufficientStorage",
+          "LoopDetected",
+          "NotExtended",
+          "NetworkAuthenticationRequired"
+        ],
+        "type": "string"
+      },
+      "InitMultipartUploadResponse": {
+        "type": "object",
+        "properties": {
+          "UploadId": {
+            "type": "string",
+            "description": "A unique identfier used for consecutive request for multipart upload.",
+            "nullable": true
+          },
+          "Key": {
+            "type": "string",
+            "description": "Storage document key",
+            "nullable": true
+          },
+          "Metadata": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Init multipart upload response"
+      },
+      "InitMultipartUploadResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/InitMultipartUploadResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LookupObject": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MultipartUploadRequest": {
+        "type": "object",
+        "properties": {
+          "DocumentId": {
+            "type": "string",
+            "description": "A unique identifier of the document",
+            "nullable": true
+          },
+          "Key": {
+            "type": "string",
+            "description": "Multipart upload key",
+            "nullable": true
+          },
+          "UploadId": {
+            "type": "string",
+            "description": "Upload request identifier",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Multipart uplaod request"
+      },
+      "OrderBy": {
+        "enum": [
+          "Ascending",
+          "Descending"
+        ],
+        "type": "string"
+      },
+      "Sort": {
+        "type": "object",
+        "properties": {
+          "FieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "OrderBy": {
+            "$ref": "#/components/schemas/OrderBy"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UploadPartResponse": {
+        "type": "object",
+        "properties": {
+          "ETag": {
+            "type": "string",
+            "description": "A unique identifier (entity tag)",
+            "nullable": true
+          },
+          "PartNumber": {
+            "type": "integer",
+            "description": "Part number",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Upload part response"
+      },
+      "UploadPartResponseAPIResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "RecordCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "Data": {
+            "$ref": "#/components/schemas/UploadPartResponse"
+          },
+          "Errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          },
+          "Profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalTime": {
+            "type": "number",
+            "format": "float"
+          },
+          "StatusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "HasMoreRecords": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "NextCursor": {
+            "type": "string",
+            "nullable": true
+          },
+          "Warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Please insert JWT with Bearer into field",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Documents"
+    }
+  ]
+}
