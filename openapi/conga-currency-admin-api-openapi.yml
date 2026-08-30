@@ -1,0 +1,956 @@
+openapi: 3.2.0
+info:
+  title: Conversion Management Currency Admin API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Currency Admin
+paths:
+  /api/currency-management/v1/currency-rates:
+    get:
+      tags:
+      - Currency Admin
+      summary: Get all currency rates
+      description: Returns all currency rates that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the currency rates. **For example**: SourceCurrency = ''USD''. <p>**Note**: The criteria field (in this case, SourceCurrency) should be indexed.</p>'
+        style: form
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: EffectiveEndDate. <p>**Note**: The sort field (in this case, EffectiveEndDate) should be indexed or sortable.</p>'
+        style: form
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC. <p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        style: form
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        style: form
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '2023-02-25T00:00:00'
+                  EffectiveEndDate: '2023-03-25T00:00:00'
+                  ConversionRate: 80
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                - SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '2023-04-25T00:00:00'
+                  EffectiveEndDate: '2023-05-25T00:00:00'
+                  ConversionRate: 81
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    post:
+      tags:
+      - Currency Admin
+      summary: Add a new currency rate
+      description: Creates a new currency rate.
+      requestBody:
+        description: Currency rate information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRate'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRate'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRate'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateAPIResponse'
+              example:
+                Success: true
+                Data:
+                  SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '0001-01-01T00:00:00'
+                  EffectiveEndDate: '0001-01-01T00:00:00'
+                  ConversionRate: 10
+                  Scale: 2
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/currency-management/v1/currency-rates/bulk:
+    post:
+      tags:
+      - Currency Admin
+      summary: Add multiple currency rates
+      description: Creates multiple currency rates.
+      requestBody:
+        description: Currency rates information list
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRate'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRate'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRate'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '0001-01-01T00:00:00'
+                  EffectiveEndDate: '0001-01-01T00:00:00'
+                  ConversionRate: 10
+                  Scale: 2
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                - SourceCurrency: EUR
+                  TargetCurrency: IDR
+                  EffectiveStartDate: '0001-01-01T00:00:00'
+                  EffectiveEndDate: '0001-01-01T00:00:00'
+                  ConversionRate: 5
+                  Scale: 2
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Currency Admin
+      summary: Update multiple currency rates
+      description: Update multiple currency rates and returns the request status.
+      requestBody:
+        description: Currency rates information list
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/currency-management/v1/currency-rates/{id}:
+    delete:
+      tags:
+      - Currency Admin
+      summary: Delete currency rate by ID
+      description: Deletes a currency rate.
+      parameters:
+      - name: id
+        in: path
+        description: Currency rate ID
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    get:
+      tags:
+      - Currency Admin
+      summary: Retrieve a currency rate by ID
+      description: Retrieves a currency rate for the given currency rate ID.
+      parameters:
+      - name: id
+        in: path
+        description: Currency rate ID
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '0001-01-01T00:00:00'
+                  EffectiveEndDate: '0001-01-01T00:00:00'
+                  ConversionRate: 10
+                  Scale: 2
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Currency Admin
+      summary: Update a currency rate
+      description: Updates a currency rate for the given currency rate ID.
+      parameters:
+      - name: id
+        in: path
+        description: Currency rate ID
+        required: true
+        style: simple
+        schema:
+          type: string
+      requestBody:
+        description: Currency rate information
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyRate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: Source currency. **For example:** USD, INR, EUR etc
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+          description: Target currency. **For example:** TVD, IDR, MYR etc
+        EffectiveStartDate:
+          type:
+          - string
+          - 'null'
+          description: Start date
+          format: date-time
+        EffectiveEndDate:
+          type:
+          - string
+          - 'null'
+          description: End date
+          format: date-time
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+      additionalProperties: {}
+      description: Currency rate schema
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyRateListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CurrencyRate'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyRateResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CurrencyRateResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyRateAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CurrencyRate'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CurrencyRateResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+        EffectiveStartDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EffectiveEndDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ConversionRate:
+          type: number
+          format: double
+        Scale:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

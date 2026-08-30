@@ -1,0 +1,58 @@
+openapi: 3.2.0
+info:
+  title: Ingress Preview API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Preview
+paths:
+  /v1/Preview:
+    post:
+      tags:
+      - Preview
+      summary: Merges the provided dataModel with the template to generate a preview.
+      operationId: Preview_MergeTemplate
+      requestBody:
+        x-name: request
+        description: The dataModel and template to merge.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewMergeRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the merged HTML document.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+      security:
+      - JWT: []
+components:
+  schemas:
+    PreviewMergeRequest:
+      type: object
+      description: Represents a request to merge a dataModel and a template for generating a preview.
+      additionalProperties: false
+      properties:
+        dataModel:
+          type: string
+          description: The dataModel to be merged with the template.
+        template:
+          type: string
+          description: The template to be used for merging with the dataModel.
+        locale:
+          type: string
+          description: Locale for currency switches
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

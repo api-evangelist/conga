@@ -1,0 +1,640 @@
+openapi: 3.2.0
+info:
+  title: User Management User Group API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: User Group
+paths:
+  /api/user-management/v1/user-groups:
+    get:
+      tags:
+      - User Group
+      summary: Get filtered user groups
+      description: Returns all user groups that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the user groups. For example: `IsSendEmailToMemebers = ''true''`. <p>**Note:** The criteria field (in this case, IsSendEmailToMemebers) must be indexed.</p>'
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: Name. <p>**Note**: The sort field (in this case, Name) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction (ascending or descending) of the data. For example, ASC or DESC. <p>**Note:** If the sort field parameter is specified, the default sort order is DESC.</p>
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - UserName: SystemAdmin
+                  Id: efafa9a0-2c29-44d4-b39a-06c929a0a33d
+                  PermissionGroups: GlobalScopePermissionGroup
+                - UserName: GeneralUser
+                  Id: dffe9ac3-17f1-40ab-8f1e-238964132fa4
+                  PermissionGroups: ScopePermissionGroup
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - User Group
+      summary: Create a user group
+      description: Creates a new user group and returns the user group's ID.
+      requestBody:
+        description: Details to be created in the user group model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UserGroupCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 4201bcc0-5898-4817-a942-3eae5f3258cf
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/user-groups/bulk-upsert-userGroups:
+    put:
+      tags:
+      - User Group
+      summary: Create and update multiple user groups
+      description: 'Creates and updates multiple user groups and returns the ids of the user groups created and updated. <p>**Note**: If a user group already exists (based on a Platform user record identifier), the API will update the existing user group instead of creating a duplicate record , else if the user group is not present new record is created.</p>'
+      requestBody:
+        description: User group model data to be created or updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserGroupUpsertRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserGroupUpsertRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserGroupUpsertRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObject
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Id: 990dc8ca-6cf6-4770-9db3-d54cdda2e3bf
+                  RecordTypeAccess:
+                    NDA:
+                      Enabled: true
+                    MSA:
+                      Enabled: false
+                    Master:
+                      Enabled: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/user-groups/{userGroupId}:
+    delete:
+      tags:
+      - User Group
+      summary: Delete a user group
+      description: Deletes a user group and returns status.
+      parameters:
+      - name: userGroupId
+        in: path
+        description: User group ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 13580633-d081-479e-b6c5-ce92ae8fb35c deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - User Group
+      summary: Get user group details by ID
+      description: Returns the details of a user group based on the user group ID.
+      parameters:
+      - name: userGroupId
+        in: path
+        description: User group ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Email: exampleusergroup@conga.com
+                  IsSendEmailToMembers: true
+                  ParentUserGroups: null
+                  Id: e4d1ba03-0d78-4d88-aa39-746319952b8b
+                  Name: ExampleUserGroup
+                  CreatedBy:
+                    Id: b152811c-4ca3-4662-ad37-21bfed0c9a88
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.1906909+00:00'
+                  ModifiedBy:
+                    Id: b152811c-4ca3-4662-ad37-21bfed0c9a88
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.1906946+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - User Group
+      summary: Update a user group
+      description: Updates the user group information for a specific group.
+      parameters:
+      - name: userGroupId
+        in: path
+        description: User group ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details to be updated in the user group model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UserGroupUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UserGroupUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: d1ee4716-79d7-47c7-866b-359451c8e26d
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    UserGroup:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        IsSendEmailToMembers:
+          type: boolean
+        ParentUserGroups:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserGroupUpdateRequest:
+      type: object
+      properties:
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user group's email address
+        IsSendEmailToMembers:
+          type: boolean
+          description: The user group's Send Email flag
+      additionalProperties: false
+    UserGroupCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The user group name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user group's email address
+        IsSendEmailToMembers:
+          type: boolean
+          description: The user group's Send Email flag
+      additionalProperties: false
+    UserGroupUpsertRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier for user group
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The user group name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user group's email address
+        IsSendEmailToMembers:
+          type: boolean
+          description: The user group's Send Email flag
+      additionalProperties: false
+    UserGroupAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserGroup'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

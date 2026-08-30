@@ -1,0 +1,3846 @@
+openapi: 3.2.0
+info:
+  title: File Store API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: File Store
+paths:
+  /api/filestore/v1/files:
+    delete:
+      tags:
+      - File Store
+      summary: Delete a file from the file store
+      description: Validates if the specified file exists at the given path and deletes it if found.
+      requestBody:
+        description: 'The request object containing the file details to delete, including:
+
+          - FileName: The name of the file to be deleted.
+
+          - FilePath: The path where the file is stored.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFileRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFileRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeleteFileRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/bulk:
+    delete:
+      tags:
+      - File Store
+      summary: Delete multiple files from the file store
+      description: "Deletes multiple files at the given path with partial success handling. \nFound files are deleted, while missing files return detailed error information. \nEach file’s deletion status is tracked in the response."
+      requestBody:
+        description: 'The request object containing:
+
+          - FilePath: Common path where the files are stored.
+
+          - FileNames: Collection of file names to be deleted.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteFileRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteFileRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteFileRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+    post:
+      tags:
+      - File Store
+      summary: Upload multiple files
+      description: 'Upload multiple files in a single request, including file contents and metadata.
+
+        Each file can have unique tags, expiration settings, and shared URI configuration.
+
+        Files are stored at the specified path.'
+      requestBody:
+        description: 'The request object containing:
+
+          - FilePath: Common path where all files will be stored.
+
+          - Files: Collection of file data, including file names, content, tags, and optional settings.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateFileRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateFileRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateFileRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseListAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseListAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseListAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/limits:
+    get:
+      tags:
+      - File Store
+      summary: Retrieve file size limitation information
+      description: 'This endpoint provides the current configuration limits for file operations:
+
+        - Maximum allowed payload size for standard file uploads
+
+        - Minimum file part size required for multipart uploads
+
+
+        This information is useful for client applications to properly manage file uploads,
+
+        especially when handling large files that require multipart upload functionality.'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FileLimitsAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileLimitsAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FileLimitsAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/multipart-uploads:
+    delete:
+      tags:
+      - File Store
+      summary: Abort an incomplete multipart upload process
+      description: "Cancels an in-progress multipart upload operation and removes any parts \nthat have already been uploaded. Use this endpoint when you need to:\n- Cancel an upload that is no longer needed\n- Handle error conditions where the upload cannot be completed\n- Clean up resources when an upload process is interrupted\n\nAll previously uploaded parts associated with the specified uploadId will be deleted,\nand the upload ID will no longer be valid for future operations."
+      requestBody:
+        description: 'The request object containing:
+
+          - FileName: The name of the file being uploaded.
+
+          - FilePath: The path where the file was being stored.
+
+          - UploadId: Unique identifier returned from InitiateMultipartUploadAsync'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileAbortMultipartUploadRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FileAbortMultipartUploadRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FileAbortMultipartUploadRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+    post:
+      tags:
+      - File Store
+      summary: Initiate a multipart upload process for a large file
+      description: "Starts a multipart upload by creating an upload session.\nIt returns an upload ID for use in subsequent API calls to:\n- Upload individual parts of the file (UploadPartAsync)\n- Complete the multipart upload (CompleteMultipartUploadAsync) \n- Abort the multipart upload if needed (AbortMultipartUploadAsync)\n\nThe multipart upload process allows to upload large files in smaller chunks,\nproviding better reliability for large file transfers and the ability to pause/resume uploads."
+      requestBody:
+        description: 'The request object containing:
+
+          - FileName: The name of the file to be uploaded.
+
+          - FilePath: The path where the file will be stored.
+
+          - FileTags: Optional metadata associated with the file
+
+          - FileExpirationRequest: Optional configuration for file expiration'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileInitiateMultipartUploadRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FileInitiateMultipartUploadRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FileInitiateMultipartUploadRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FileInitiateMultipartUploadResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileInitiateMultipartUploadResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FileInitiateMultipartUploadResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+    put:
+      tags:
+      - File Store
+      summary: Upload a single part of a large file in a multipart upload process
+      description: 'Uploads a single part of a large file in a multipart upload session and returns the ETag and part number.
+
+        This endpoint is used as part of the multipart upload workflow:
+
+        1. First, initialize a multipart upload using InitiateMultipartUploadAsync
+
+        2. Upload individual parts using this endpoint
+
+        3. Complete the upload using CompleteMultipartUploadAsync
+
+
+        The part number must be between 1 and 10,000, and parts must be uploaded sequentially.
+
+        The same part number can be reused to replace a previously uploaded part.'
+      parameters:
+      - name: PartNumber
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: UploadId
+        in: query
+        schema:
+          type: string
+      - name: FileName
+        in: query
+        schema:
+          type: string
+      - name: FilePath
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FileUploadPartResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadPartResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadPartResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/multipart-uploads/complete:
+    post:
+      tags:
+      - File Store
+      summary: Complete a multipart upload process by combining all uploaded parts into the final file
+      description: "This endpoint is the final step in the multipart upload workflow:\n1. Start with InitiateMultipartUploadAsync to get an uploadId\n2. Upload individual parts with UploadPartAsync\n3. Complete the process with this endpoint\n\nThe request requires the uploadId from the initial request and a dictionary of part numbers \nmapped to their ETags (received when each part is uploaded). This allows the system to\nverify all parts and combine them in the correct order.\n\nIf successful, the file will be available at the specified file path."
+      requestBody:
+        description: 'Request containing:
+
+          - FileName: The name of the file being uploaded.
+
+          - FilePath: The path where the completed file will be stored.
+
+          - UploadId: Identifier from the InitiateMultipartUploadAsync call
+
+          - ETags: Dictionary mapping part numbers to their ETags
+
+          - FileSharedURIRequest: Optional settings to generate a shared access URI for the completed file'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileCompleteMultipartUploadRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FileCompleteMultipartUploadRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FileCompleteMultipartUploadRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/shareduri:
+    post:
+      tags:
+      - File Store
+      summary: Provide time-based public access to a file
+      description: 'Generates a temporary URL that provides public access to a file for a limited time.
+
+        The URL will be valid for the duration specified in the request''s TTLSeconds parameter.'
+      requestBody:
+        description: 'The request object containing:
+
+          - FileName: The name of the file for which the temporary URL is generated.
+
+          - FilePath: The path where the file is stored.
+
+          - TTLSeconds: The duration (in seconds) for which the access URL remains valid.
+
+          - Protocol: The protocol to use (HTTP or HTTPS).'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileCreateSharedURIRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FileCreateSharedURIRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FileCreateSharedURIRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FileSharedURIResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileSharedURIResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FileSharedURIResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/download:
+    get:
+      tags:
+      - File Store
+      summary: Download multiple files as a ZIP archive
+      description: 'Retrieves multiple files based on their names and file path, packages them into a ZIP archive, and returns the file for download.
+
+        If any requested files are not found, appropriate error details are returned.'
+      parameters:
+      - name: filePath
+        in: path
+        description: The path where the file is stored (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+        required: true
+        schema:
+          type: string
+      - name: fileNames
+        in: query
+        description: The list of file names to be zipped and downloaded.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Zip Archive of the downloaded files
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/filenames/list:
+    get:
+      tags:
+      - File Store
+      summary: Get list of file names
+      description: 'Returns a paginated list of files available at the specified path in the file store.
+
+        It supports:
+
+        - Pagination through continuation tokens for efficient retrieval of large file sets
+
+        - Optional retrieval of file metadata tags
+
+        - Configurable limits on the number of file names returned per request
+
+
+        The response includes file names and optionally their associated metadata tags.
+
+        For large directories, use the continuation token from the response to retrieve subsequent pages of results.'
+      parameters:
+      - name: filePath
+        in: path
+        description: The path where the file is stored (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+        required: true
+        schema:
+          type: string
+      - name: maxFiles
+        in: query
+        description: 'Maximum number of file names to be retrieved in a single request. For example: 10.'
+        schema:
+          type: integer
+          format: int32
+      - name: includeFileTags
+        in: query
+        description: Select true to include metadata tags for each file in the response
+        schema:
+          type: boolean
+      - name: continuationToken
+        in: query
+        description: Optional token used to retrieve the next set of results when paginating.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetFileNamesResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileNamesResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetFileNamesResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/{fileName}/download:
+    get:
+      tags:
+      - File Store
+      summary: Download a file using the specified file path and file name
+      description: 'Retrieves a file from the file store and returns it as a downloadable response.
+
+        It handles the following:
+
+        - URL decoding of the file path to support special characters
+
+        - Determining the appropriate content type based on file extension
+
+        - Setting response headers including content length and modified date
+
+        - Adding file path information for client reference
+
+
+        If the requested file is not found, it returns a 404 Not Found response.'
+      parameters:
+      - name: fileName
+        in: path
+        description: The name of the file to be downloaded, with or without extension.
+        required: true
+        schema:
+          type: string
+      - name: filePath
+        in: path
+        description: The path where the file is stored (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content of the file
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: File not found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetFileResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponseAPIResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/{fileName}/exists:
+    get:
+      tags:
+      - File Store
+      summary: Check if a file exists in the file store
+      description: 'Checks if a file exists at the specified path in the file store, ensuring availability before access.
+
+        Common use cases include:
+
+        - Validating file existence before performing operations on it
+
+        - Pre-checking before initiating a download
+
+        - Verifying if a previously requested file is still available
+
+
+        The path is URL decoded to support special characters in file paths.'
+      parameters:
+      - name: filePath
+        in: path
+        description: The path where the file is stored (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+        required: true
+        schema:
+          type: string
+      - name: fileName
+        in: path
+        description: The name of the file to be checked, with or without extension, as created.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/{fileName}/info:
+    get:
+      tags:
+      - File Store
+      summary: Retrieve detailed information about a specific file in the file store
+      description: 'Returns metadata about a file including:
+
+        - Content type (MIME type)
+
+        - File tags/metadata
+
+        - File name and path information
+
+
+        It provides file information without downloading the full file content, making it efficient for operations that require only file existence verification or metadata checks.
+
+        If the file does not exist or cannot be accessed, a 404 Not Found response is returned.'
+      parameters:
+      - name: fileName
+        in: path
+        description: The name of the file to be retrieved information about, with or without extension.
+        required: true
+        schema:
+          type: string
+      - name: filePath
+        in: path
+        description: The path where the file is stored (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FileInfoAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileInfoAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FileInfoAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/files/{filePath}/{fileName}/upload:
+    post:
+      tags:
+      - File Store
+      summary: Upload a file to the file store with specified metadata and settings
+      description: 'Upload a file with additional configuration through form data:
+
+        - The file content is sent as a multipart form file
+
+        - The file name and path determine storage location
+
+        - Optional metadata tags can be added
+
+        - Optional file sharing settings can be configured
+
+        - Optional file expiration policy can be set
+
+
+        It enforces a maximum upload size limit defined in Constants.MAX_STREAM_UPLOAD_SIZE.
+
+        For larger files, consider using the multipart upload endpoints instead.'
+      parameters:
+      - name: fileName
+        in: path
+        description: The name that will be used for the file in storage.
+        required: true
+        schema:
+          type: string
+      - name: filePath
+        in: path
+        description: The path where the file is stored.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                tags:
+                  type: object
+                  additionalProperties: {}
+                GenerateSharedURI:
+                  type: boolean
+                  default: false
+                Protocol:
+                  enum:
+                  - HTTPS
+                  - HTTP
+                  type: string
+                TTLSeconds:
+                  type: number
+                  format: double
+                IsAutoDeleteOnExpiry:
+                  type: boolean
+                  default: false
+                FileExpiresAfterDays:
+                  enum:
+                  - One
+                  type: string
+            encoding:
+              file:
+                style: form
+              tags:
+                style: form
+              GenerateSharedURI:
+                style: form
+              Protocol:
+                style: form
+              TTLSeconds:
+                style: form
+              IsAutoDeleteOnExpiry:
+                style: form
+              FileExpiresAfterDays:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/folder-operation/{trackingId}/status:
+    get:
+      tags:
+      - File Store
+      summary: Get status of a folder operation by tracking ID
+      description: 'Returns the current status and details of a folder operation (such as delete, copy, or move)
+
+        identified by the provided tracking ID. The response includes information such as the folder name, path,
+
+        operation type, status, and progress.'
+      parameters:
+      - name: trackingId
+        in: path
+        description: The unique identifier for the folder operation to track.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/FolderOperationTrackingInfoResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderOperationTrackingInfoResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/FolderOperationTrackingInfoResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/folders:
+    delete:
+      tags:
+      - File Store
+      summary: Delete all files in a specified folder location
+      description: 'Deletes all files in the specified folder path.
+
+        Note that this operation:
+
+        - Deletes only files in the specified folder (not nested folders).
+
+        - Is irreversible - deleted files cannot be recovered.
+
+        - Returns details of all deleted files in the response.'
+      requestBody:
+        description: The full path of the folder containing files to be deleted. (e.g. "CLM/documents" or "cpq/cart/12345").
+        content:
+          application/json:
+            schema:
+              type: string
+          text/json:
+            schema:
+              type: string
+          application/*+json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/folders/create:
+    post:
+      tags:
+      - File Store
+      summary: Create a new folder in the file store at the specified path
+      description: 'Creates a new folder structure within the file store.
+
+        The folder is created at the specified folder path with the given folder name.
+
+        If the parent path doesn''t exist, it will give path does not exist validation error.
+
+
+        Use this endpoint when you need to:
+
+        - Create an organizational structure before uploading files
+
+        - Create a dedicated space for a specific set of files
+
+        - Generate folder hierarchies for structured data storage'
+      requestBody:
+        description: 'The request object containing:
+
+          - FolderPath: The path where the new folder should be created. (It can be kept empty to create folder inside file store root folder.)
+
+          - FolderName: The name of the folder to be created.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/folders/delete:
+    delete:
+      tags:
+      - File Store
+      summary: Delete the contents of a specified folder in the file store
+      description: 'Deletes all contents within the specified folder path and folder name.
+
+        The operation is performed asynchronously and returns the status of the deletion.'
+      requestBody:
+        description: 'The request object containing:
+
+          - FolderPath: The path of the folder whose contents are to be deleted.
+
+          - FolderName: The name of the folder whose contents are to be deleted.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFolderContentsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFolderContentsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeleteFolderContentsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DeleteFolderContentsResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFolderContentsResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFolderContentsResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+  /api/filestore/v1/folders/{folderName}/list:
+    post:
+      tags:
+      - File Store
+      summary: Get all contents of a given folder
+      description: 'Returns details of files and folders for the given folder name and folder path.
+
+        This endpoint retrieves the direct contents (files and subfolders) of a specified folder.
+
+        The response includes metadata for each item and supports pagination through continuation tokens.
+
+
+        Use this endpoint to:
+
+        - Browse folder contents
+
+        - List files in a specific location
+
+        - Navigate through folder hierarchies
+
+
+        The response can be paginated if there are many items in the folder.'
+      parameters:
+      - name: folderName
+        in: path
+        description: Name of the folder whose contents should be retrieved.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'The request object containing:
+
+          - FolderPath: The folder path from which contents to be retrieved (e.g. CLM, cpq-cart-{path}, cpq/cart/{path}).
+
+          - PageSize: Number of items to return per page (Max allowed value 100)
+
+          - ContinuationToken: Optional token for retrieving subsequent pages'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetFolderContentsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GetFolderContentsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GetFolderContentsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetFolderContentsResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFolderContentsResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetFolderContentsResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+        '503':
+          description: Service Temporarily Unavailable
+components:
+  schemas:
+    FileUploadPartResponse:
+      type: object
+      properties:
+        ETag:
+          type:
+          - string
+          - 'null'
+        PartNumber:
+          type: integer
+          format: int32
+      additionalProperties: false
+    FileInitiateMultipartUploadResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FileInitiateMultipartUploadResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Stream:
+      type: object
+      properties:
+        CanRead:
+          type: boolean
+          readOnly: true
+        CanWrite:
+          type: boolean
+          readOnly: true
+        CanSeek:
+          type: boolean
+          readOnly: true
+        CanTimeout:
+          type: boolean
+          readOnly: true
+        Length:
+          type: integer
+          format: int64
+          readOnly: true
+        Position:
+          type: integer
+          format: int64
+        ReadTimeout:
+          type: integer
+          format: int32
+        WriteTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    FileInfoAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FileInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BulkDeleteFileRequest:
+      type: object
+      properties:
+        FilePath:
+          type:
+          - string
+          - 'null'
+        FileNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    GetFileNamesResponse:
+      type: object
+      properties:
+        FilesInfo:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FileInfo'
+        ContinuationToken:
+          type:
+          - string
+          - 'null'
+        IsTruncated:
+          type: boolean
+      additionalProperties: false
+    CreateFolderResponse:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        FolderName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FileSharedURIRequest:
+      type: object
+      properties:
+        GenerateSharedURI:
+          type: boolean
+          default: false
+        Protocol:
+          enum:
+          - HTTPS
+          - HTTP
+          type: string
+        TTLSeconds:
+          type: number
+          format: double
+      additionalProperties: false
+    FileLimits:
+      type: object
+      properties:
+        MaxPayloadSizeKB:
+          type: integer
+          format: int32
+        MinFilePartSizeKB:
+          type: integer
+          format: int32
+      additionalProperties: false
+    DeleteFileResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        IsDeleted:
+          type: boolean
+      additionalProperties: false
+    CreateFolderRequest:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        FolderName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    GetFileResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        FileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
+        FileSize:
+          type: integer
+          format: int64
+        ModifiedDate:
+          type: string
+          format: date-time
+      additionalProperties: false
+    FolderContentInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Type:
+          enum:
+          - Folder
+          - File
+          type: string
+        ModifiedDate:
+          type: string
+          format: date-time
+        Size:
+          type: integer
+          format: int64
+      additionalProperties: false
+    FolderOperationTrackingInfoResponse:
+      type: object
+      properties:
+        FolderName:
+          type:
+          - string
+          - 'null'
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+        Operation:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        StartDate:
+          type: string
+          format: date-time
+        EndDate:
+          type: string
+          format: date-time
+        TotalFileCount:
+          type: integer
+          format: int32
+        ProcessedFileCount:
+          type: integer
+          format: int32
+        TotalSize:
+          type: integer
+          format: int32
+      additionalProperties: false
+    DeleteFileRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    GetFileNamesResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/GetFileNamesResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CreateFileResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CreateFileResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GetFolderContentsResponse:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        FolderName:
+          type:
+          - string
+          - 'null'
+        Contents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FolderContentInfo'
+        IsTruncated:
+          type: boolean
+        ContinuationToken:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DeleteFolderContentsResponse:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        FolderName:
+          type:
+          - string
+          - 'null'
+        TrackingId:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FileUploadPartResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FileUploadPartResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BulkCreateFileRequest:
+      type: object
+      properties:
+        FilePath:
+          type:
+          - string
+          - 'null'
+        Files:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BaseCreateRequest'
+      additionalProperties: false
+    CreateFolderResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CreateFolderResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GetFolderContentsRequest:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        ContinuationToken:
+          type:
+          - string
+          - 'null'
+        PageSize:
+          type: integer
+          format: int32
+      additionalProperties: false
+    GetFolderContentsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/GetFolderContentsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DeleteFolderContentsRequest:
+      type: object
+      properties:
+        FolderPath:
+          type:
+          - string
+          - 'null'
+        FolderName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CreateFileResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CreateFileResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileExpirationRequest:
+      type: object
+      properties:
+        IsAutoDeleteOnExpiry:
+          type: boolean
+          default: false
+        FileExpiresAfterDays:
+          enum:
+          - One
+          type: string
+      additionalProperties: false
+    BaseCreateRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        InputStream:
+          $ref: '#/components/schemas/Stream'
+        FileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
+          deprecated: true
+        FileTags:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        FileSharedURIRequest:
+          $ref: '#/components/schemas/FileSharedURIRequest'
+        FileExpirationRequest:
+          $ref: '#/components/schemas/FileExpirationRequest'
+      additionalProperties: false
+    FileAbortMultipartUploadRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        UploadId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DeleteFolderContentsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/DeleteFolderContentsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileCompleteMultipartUploadRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        UploadId:
+          type:
+          - string
+          - 'null'
+        ETags:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        FileSharedURIRequest:
+          $ref: '#/components/schemas/FileSharedURIRequest'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileLimitsAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FileLimits'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FolderOperationTrackingInfoResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FolderOperationTrackingInfoResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileSharedURIResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FileSharedURIResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CreateFileResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        SharedURI:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FileInitiateMultipartUploadResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        UploadId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FileCreateSharedURIRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        TTLSeconds:
+          type: number
+          format: double
+        Protocol:
+          enum:
+          - HTTPS
+          - HTTP
+          type: string
+      additionalProperties: false
+    FileInitiateMultipartUploadRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        FileTags:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        FileExpirationRequest:
+          $ref: '#/components/schemas/FileExpirationRequest'
+      additionalProperties: false
+    DeleteFileResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/DeleteFileResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GetFileResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/GetFileResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileInfo:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        ModifiedDate:
+          type: string
+          format: date-time
+        FileSize:
+          type: integer
+          format: int64
+        ContentType:
+          type:
+          - string
+          - 'null'
+        FileTags:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FileSharedURIResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        SharedURI:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

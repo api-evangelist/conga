@@ -1,0 +1,787 @@
+openapi: 3.2.0
+info:
+  title: Contracts Bulk Import API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Bulk Import
+paths:
+  /api/clm/v1/import/jobs:
+    post:
+      tags:
+      - Bulk Import
+      summary: Create a bulk import job
+      description: The API allows you to upload .CSV files and import bulk data into Conga CLM. You can upload accounts, contacts, and agreements in bulk by creating and uploading a .CSV file. This creates a record for the file, which is assigned a queued status. The conga-contracts-batch-worker verifies the data and skips invalid data records. It creates records for the valid records in CLM. You can review failure reasons by accessing the .CSV file at the specified endpoint (/api/clm/v1/import/jobs/{jobId}).
+      requestBody:
+        description: The .CSV file containing data to be imported
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: Returns jobID of the bulk import job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobAPIResponse'
+        '400':
+          description: Provided query is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/import/jobs/query:
+    post:
+      tags:
+      - Bulk Import
+      summary: List bulk import jobs
+      description: Retrieves all bulk import job records.
+      requestBody:
+        description: Query parameters to get bulk import jobs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns the list of bulk import jobs that match the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkImportResponseQueryResponseAPIResponse'
+        '400':
+          description: Provided query is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/import/jobs/{jobId}:
+    delete:
+      tags:
+      - Bulk Import
+      summary: Delete a bulk import job
+      description: Permanently deletes record of the given job ID from the system.
+      parameters:
+      - name: jobId
+        in: path
+        description: ID of the bulk import job
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The bulk import job is deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkJobResultResponseListAPIResponse'
+        '400':
+          description: The provided job ID is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Bulk Import
+      summary: Get bulk import job result
+      description: Gets the result (failure or success) for a given job.
+      parameters:
+      - name: jobId
+        in: path
+        description: ID of the bulk import job
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns details of bulk import job for the provided job ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkJobResultResponseListAPIResponse'
+        '400':
+          description: Provided query is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/import/jobs/{jobId}/batch/{batchId}:
+    get:
+      tags:
+      - Bulk Import
+      summary: Get uploaded file details
+      description: Fetches contents of the file uploaded for bulk data creation based on jobID and batchID.
+      parameters:
+      - name: jobId
+        in: path
+        description: ID of the bulk import job
+        required: true
+        schema:
+          type: string
+      - name: batchId
+        in: path
+        description: ID of the bulk import batch
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the file uploaded for bulk data import
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkJobResultResponseListAPIResponse'
+        '400':
+          description: Provided query is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/import/templates/{format}:
+    get:
+      tags:
+      - Bulk Import
+      summary: Get bulk import templates
+      description: The API fetches bulk import templates for the provided objectName and format. Templates are required for uploading .CSV files to import bulk data into Conga CLM. A template comprises columns corresponding to the database fields required for inserting data for the data type. A distinct template is provided to create .CSV files to upload the Account, Contact, and Agreement data types.
+      parameters:
+      - name: objectName
+        in: query
+        description: Object name, such as Agreement, Account, or Contact
+        schema:
+          type: array
+          items:
+            type: string
+      - name: format
+        in: path
+        description: Template file format. The only supported format is .CSV
+        required: true
+        schema:
+          $ref: '#/components/schemas/AllowedTemplateDocumentFormats'
+      responses:
+        '200':
+          description: Returns list of bulk import templates that match the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResultAPIResponse'
+        '400':
+          description: Provided query is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    BulkImportResponse:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+          description: Job Id
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Batch Id
+        Name:
+          type:
+          - string
+          - 'null'
+          description: File Name
+        State:
+          type:
+          - string
+          - 'null'
+          description: Job Status
+        ContentType:
+          type:
+          - string
+          - 'null'
+          description: Content Type
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created Date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified Date
+          format: date-time
+        StartTime:
+          type: string
+          description: Start Time
+          format: date-time
+        EndTime:
+          type: string
+          description: End Time
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External Id
+        TotalRecordCount:
+          type: integer
+          description: Total Record Count
+          format: int32
+        SuccessRecordCount:
+          type: integer
+          description: Success Record Count
+          format: int32
+        FailedRecordCount:
+          type: integer
+          description: Failed Record Count
+          format: int32
+      additionalProperties: false
+      description: Bulk job Details
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    BulkImportResponseQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BulkImportResponse'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FileResultAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+          format: binary
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    JobAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/Job'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BulkJobResultResponse:
+      type: object
+      properties:
+        State:
+          $ref: '#/components/schemas/JobState'
+        BatchId:
+          type:
+          - string
+          - 'null'
+          description: BatchId
+        FileName:
+          type:
+          - string
+          - 'null'
+          description: FileName
+        FileContent:
+          type:
+          - string
+          - 'null'
+          description: FileContent
+          format: byte
+      additionalProperties: false
+      description: Bulk Job result
+    AllowedTemplateDocumentFormats:
+      enum:
+      - csv
+      - xlsx
+      type: string
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    JobState:
+      enum:
+      - Queued
+      - InProgress
+      - Completed
+      - Failed
+      type: string
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    BulkImportResponseQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/BulkImportResponseQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BulkJobResultResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BulkJobResultResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    Job:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        State:
+          $ref: '#/components/schemas/JobState'
+      additionalProperties: false
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

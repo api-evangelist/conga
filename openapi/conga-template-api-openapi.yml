@@ -1,0 +1,237 @@
+openapi: 3.2.0
+info:
+  title: Contracts Template API
+  version: v1
+  description: Controller for Templates APIs
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Template
+  description: Controller for Templates APIs
+paths:
+  /api/clm/v1/templates/query:
+    post:
+      tags:
+      - Template
+      summary: Find template records
+      description: Fetches template records that match a query.
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        '200':
+          description: Returns template records that match the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponseAPIResponse'
+        '400':
+          description: Query is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    Template:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Type:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Category:
+          type:
+          - string
+          - 'null'
+        Subcategory:
+          type:
+          - string
+          - 'null'
+        Language:
+          type:
+          - string
+          - 'null'
+        Locale:
+          type:
+          - string
+          - 'null'
+        LocaleId:
+          type:
+          - string
+          - 'null'
+        Keywords:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type: boolean
+        LastModified:
+          type:
+          - string
+          - 'null'
+        Guidance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+      description: Model for Template
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    TemplateRequest:
+      type: object
+      properties:
+        Type:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        RecordTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+      description: Request model for Template
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    TemplateResponse:
+      type: object
+      properties:
+        RequestQueryBodyValue:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        ResponseBody:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Template'
+      additionalProperties: false
+      description: Response from Template
+    TemplateResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/TemplateResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

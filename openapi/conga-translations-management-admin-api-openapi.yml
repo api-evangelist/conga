@@ -1,0 +1,1849 @@
+openapi: 3.2.0
+info:
+  title: Localization Translations Management Admin API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Translations Management Admin
+paths:
+  /api/localization-admin/v1/translations:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Retrieve a paginated list of translations for a given Type(String/Schema), with optional locale, module, search and filtering
+      parameters:
+      - name: type
+        in: query
+        description: The translation type (e.g., String, Schema). Required.
+        schema:
+          $ref: '#/components/schemas/TranslationType'
+      - name: locales
+        in: query
+        description: The locales identifier (e.g., "en-US") to filter translations. Optional.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: module
+        in: query
+        description: The module name to filter translations. Optional.
+        schema:
+          type: string
+      - name: searchText
+        in: query
+        description: The text to search for in translation keys. Optional.
+        schema:
+          type: string
+      - name: includeTotalCount
+        in: query
+        description: Indicates whether to include the total count of records in the response.
+        schema:
+          type: boolean
+          default: false
+      - name: page
+        in: query
+        description: The page number to retrieve. Defaults to 1.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The number of items per page. Defaults to the maximum limit which is 100.
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      - name: sortField
+        in: query
+        description: The field by which to sort the results. Optional. Defaults to ModifiedDate.
+        schema:
+          $ref: '#/components/schemas/SortField'
+      - name: sortDirection
+        in: query
+        description: The direction in which to sort the results (Ascending or Descending). Optional. Defaults to Descending.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationsListItemListAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/locales/{locale}:
+    delete:
+      tags:
+      - Translations Management Admin
+      summary: Bulk delete translations for a specific locale
+      parameters:
+      - name: locale
+        in: path
+        description: The locale for which translations are to be deleted (e.g., "en-US").
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A list of translation delete requests containing key, module, type, protection status, and delete-for-all-locales flag.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsDeleteRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsDeleteRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsDeleteRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+    post:
+      tags:
+      - Translations Management Admin
+      summary: Bulk create translations for a specific locale
+      parameters:
+      - name: locale
+        in: path
+        description: The locale for which translations are to be created (e.g., "en-US").
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A list of translation requests containing key, module, value, and type information.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+    put:
+      tags:
+      - Translations Management Admin
+      summary: Bulk update translations for a specific locale
+      parameters:
+      - name: locale
+        in: path
+        description: The locale for which translations are to be updated (e.g., "en-US").
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A list of translation update requests containing key, module, value, type, protection status, and locales.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsUpdateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsUpdateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationsUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/locales/{locale}/custom/export:
+    post:
+      tags:
+      - Translations Management Admin
+      summary: Export translations for the specified locale and modules as a CSV file
+      parameters:
+      - name: locale
+        in: path
+        description: The locale identifier (e.g., "en-US") for which translations are to be exported.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: The Conga.Platform.Translation.Enums.TranslationType to filter the translations to export. Optional.
+        schema:
+          $ref: '#/components/schemas/TranslationType'
+      requestBody:
+        description: An array of module names to include in the export.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/locales/{locale}/custom/import:
+    post:
+      tags:
+      - Translations Management Admin
+      summary: Import translations from a file for the specified locale using the v2 import logic
+      parameters:
+      - name: locale
+        in: path
+        description: The locale identifier (e.g., "en-US") for which translations are to be imported.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                translations:
+                  type: string
+                  description: The file containing translation data to be imported.
+                  format: binary
+            encoding:
+              translations:
+                style: form
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/modules:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Retrieve all defined translation modules for the specified translation type
+      parameters:
+      - name: type
+        in: query
+        description: The Conga.Platform.Translation.Enums.TranslationType for which to retrieve modules.
+        schema:
+          $ref: '#/components/schemas/TranslationType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Platform
+                - CLM
+                - CPQ
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/organization-locales:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Get the current Organization Locales configuration
+      responses:
+        '200':
+          description: Organization locales retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocaleResponseListAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error during retrieval
+    put:
+      tags:
+      - Translations Management Admin
+      summary: Configure locales in Organization Locales configuration
+      requestBody:
+        description: A list of locale codes to set for the organization.
+        content:
+          application/json:
+            schema:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Organization locales configured successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLocaleUpdateResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Invalid request or locales list
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error during configuration
+  /api/localization-admin/v1/translations/organization-locales-tracking/{trackingId}/status:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Get the current Organization Locales Change Tracking Info
+      parameters:
+      - name: trackingId
+        in: path
+        description: TrackingId returned against Org Locale change.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Organization locales retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLocaleChangeTrackingInfoListAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error during retrieval
+  /api/localization-admin/v1/translations/schema-auto-translate:
+    post:
+      tags:
+      - Translations Management Admin
+      summary: Automatically translate the schema of an object based on the provided metadata and target locale(s)
+      description: 'This endpoint processes the given object metadata and generates translations for all translatable elements
+
+        such as display names, descriptions, and field labels. The operation is executed asynchronously.'
+      parameters:
+      - name: targetLocales
+        in: query
+        description: Optional list of target locale(s) for translation. If not provided, default locales will be used.
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: "The metadata of the object to be translated, including its name, display name, \ndescription, fields, and other properties that will be translated.\n\nNote: The object metadata must be provided in English only. This ensures accurate translationsto the target locale(s)."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadata'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadata'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadata'
+      responses:
+        '200':
+          description: Schema auto-translation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: 'Represents a response for auto-translation.
+
+                  This class is a dictionary where the key is a string representing a schema/text name,
+
+                  and the value is another dictionary with keys as field names and values as their translated strings.'
+        '400':
+          description: Invalid request or object metadata
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error during translation processing
+  /api/localization-admin/v1/translations/text-auto-translate:
+    post:
+      tags:
+      - Translations Management Admin
+      summary: Automatically translate a set of text key-value pairs into the specified target locales
+      description: This endpoint processes the given text data and generates translations for target locales.
+      parameters:
+      - name: targetLocales
+        in: query
+        description: Optional list of target locale(s) for translation. If not provided, default locales will be used.
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: 'A dictionary containing the keys/values. Corresponding values to be translated and Keys will be retained as is.
+
+
+          Note: The text value must be provided in English only. This ensures accurate translationsto the target locale(s).'
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+          text/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        '200':
+          description: Text auto-translation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: 'Represents a response for auto-translation.
+
+                  This class is a dictionary where the key is a string representing a schema/text name,
+
+                  and the value is another dictionary with keys as field names and values as their translated strings.'
+        '400':
+          description: Invalid request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error during translation processing
+  /api/localization-admin/v1/translations/{type}:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Retrieve translations using a cursor-based approach for a given type, with optional locale, module, and search filtering
+      parameters:
+      - name: type
+        in: path
+        description: The translation type (e.g., String, Schema). Required.
+        required: true
+        schema:
+          $ref: '#/components/schemas/TranslationType'
+      - name: localesCSV
+        in: query
+        description: A comma-separated list of locale identifiers to filter translations. Optional.
+        schema:
+          type: string
+      - name: module
+        in: query
+        description: The module name to filter translations. Optional.
+        schema:
+          type: string
+      - name: searchText
+        in: query
+        description: The text to search for in translation keys. Optional.
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        description: The pagination cursor. Optional.
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of items per page. Defaults to the maximum limit which is 100.
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      - name: sortField
+        in: query
+        description: The field by which to sort the results. Optional. Defaults to ModifiedDate.
+        schema:
+          $ref: '#/components/schemas/SortField'
+      - name: sortDirection
+        in: query
+        description: The direction in which to sort the results (Ascending or Descending). Optional. Defaults to Descending.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationListResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+  /api/localization-admin/v1/translations/{type}/count:
+    get:
+      tags:
+      - Translations Management Admin
+      summary: Retrieve the total count of translations for a given type, with optional locale, module, and search filtering
+      parameters:
+      - name: type
+        in: path
+        description: The translation type (e.g., String, Schema). Required.
+        required: true
+        schema:
+          $ref: '#/components/schemas/TranslationType'
+      - name: localesCSV
+        in: query
+        description: A comma-separated list of locale identifiers to filter translations. Optional.
+        schema:
+          type: string
+      - name: module
+        in: query
+        description: The module name to filter translations. Optional.
+        schema:
+          type: string
+      - name: searchText
+        in: query
+        description: The text to search for in translation keys. Optional.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Int32NullableAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+components:
+  schemas:
+    Attributes:
+      type: object
+      properties:
+        PublishDataChangeEvents:
+          type: boolean
+        TrackAuditHistory:
+          type: boolean
+        IsInternalObject:
+          type: boolean
+      additionalProperties: false
+    SortField:
+      enum:
+      - ModifiedDate
+      - Key
+      - Value
+      - Locale
+      - Module
+      - ModifiedBy_Name
+      - IsProtected
+      type: string
+      description: Specifies the fields by which translation records can be sorted.
+    DataType:
+      enum:
+      - String
+      - Int
+      - Double
+      - Currency
+      - Boolean
+      - DateTime
+      - AutoNumber
+      - Lookup
+      - Picklist
+      - MultiPicklist
+      - Identifier
+      - LongString
+      - Complex
+      - ComplexArray
+      - Reference
+      - Rollup
+      - Decimal
+      - Image
+      - Alias
+      - Date
+      - Owner
+      type: string
+    TranslationsCreateRequest:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translation key.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation.
+        Type:
+          $ref: '#/components/schemas/TranslationType'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the value of the translation to be created.
+      additionalProperties: false
+      description: Represents a request to create a new translation entry.
+    OrgLocaleChangeStatus:
+      enum:
+      - InProgress
+      - Failed
+      - Completed
+      - Started
+      type: string
+    IdentifierType:
+      enum:
+      - UUIDv4
+      - UID18
+      type: string
+    TranslationsDeleteRequest:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translation key.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation.
+        Type:
+          $ref: '#/components/schemas/TranslationType'
+        IsProtected:
+          type: boolean
+          description: Gets or sets a value indicating whether the translation is protected from deletion.
+        IsDeleteForAllLocales:
+          type: boolean
+          description: Gets or sets a value indicating whether the deletion should apply to all locales.
+      additionalProperties: false
+      description: Represents a request to delete a translation locale.
+    PicklistMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    OrgLocaleUpdateResponse:
+      type: object
+      properties:
+        TrackingIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of Ids to track the background process of org locale update.
+      additionalProperties: false
+    TranslationListResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/TranslationListResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    AliasFieldMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        AliasFieldDefinitionDetail:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AliasFieldDefinitionDetail'
+      additionalProperties: false
+    OrgLocaleChangeTrackingInfo:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        TrackingId:
+          type:
+          - string
+          - 'null'
+        Locale:
+          type:
+          - string
+          - 'null'
+        ActionType:
+          type:
+          - string
+          - 'null'
+        OnLocaleDeleteUserUpdateCompleted:
+          type: boolean
+        OnLocaleDeleteProcessedUserIds:
+          type:
+          - string
+          - 'null'
+        ModulesToProcessCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        ProcessedModulesCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        ErrorDetails:
+          type:
+          - string
+          - 'null'
+        TraceId:
+          type:
+          - string
+          - 'null'
+        UserId:
+          type:
+          - string
+          - 'null'
+        Status:
+          $ref: '#/components/schemas/OrgLocaleChangeStatus'
+      additionalProperties: {}
+    ComplexFieldMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+      additionalProperties: false
+    LocaleResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/LocaleResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Int32NullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    TranslationsListItemListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TranslationsListItem'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DependentPicklistMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        DependentFieldName:
+          type:
+          - string
+          - 'null'
+        ControllingFieldName:
+          type:
+          - string
+          - 'null'
+        ControllingAndDependentPicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ControllingAndDependentPicklistEntry'
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    IndexMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        IndexMetadataDetail:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/IndexMetadataDetail'
+      additionalProperties: false
+    TtlFieldMetadata:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        RetentionPeriodInDaysServiceQuotaKey:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TranslationType:
+      enum:
+      - String
+      - Schema
+      type: string
+      description: Enumeration for translation types.
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    TranslationListResponse:
+      type: object
+      properties:
+        Translations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TranslationsListItem'
+          description: Gets or sets the translated value.
+        Cursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+      description: Represents a translation locale list item containing translation details for a specific key and module.
+    ObjectType:
+      enum:
+      - Default
+      - Property
+      type: string
+    TranslationsUpdateRequest:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translation key.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation.
+        Type:
+          $ref: '#/components/schemas/TranslationType'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the value of the translation.
+        IsProtected:
+          type: boolean
+          description: Gets or sets a value indicating whether the translation is protected from modification.
+        LocalesToUpdate:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of locale codes where translation needs to be auto updated.
+      additionalProperties: false
+      description: Represents a request to update translation locales for a specific key and module.
+    ControllingAndDependentPicklistEntry:
+      type: object
+      properties:
+        ControllingPicklistEntry:
+          type:
+          - string
+          - 'null'
+        DependentPicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+      additionalProperties: false
+    ObjectMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        IsProtected:
+          type: boolean
+        IsDeprecated:
+          type: boolean
+        IsShared:
+          type: boolean
+        IsDataCacheEnabled:
+          type: boolean
+        IsTrackingEnabled:
+          type: boolean
+        IsAllowOwnerScope:
+          type: boolean
+        Category:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          $ref: '#/components/schemas/ObjectType'
+        IsRecycleBinEnabled:
+          type: boolean
+        FieldMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+        InternalRuntimeAliasFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+        InternalPrecomputedAliasFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+        PicklistMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistMetadata'
+        DependentPicklistMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DependentPicklistMetadata'
+        ComplexFieldMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ComplexFieldMetadata'
+        AliasFieldMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AliasFieldMetadata'
+        IndexMetadata:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/IndexMetadata'
+        TtlFieldMetadata:
+          $ref: '#/components/schemas/TtlFieldMetadata'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        Attributes:
+          $ref: '#/components/schemas/Attributes'
+      additionalProperties: false
+    FieldMetadata:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        DataType:
+          $ref: '#/components/schemas/DataType'
+        DefaultValue:
+          type:
+          - string
+          - 'null'
+        IsProtected:
+          type: boolean
+        IsIndexField:
+          type: boolean
+        IsSortable:
+          type: boolean
+        IsRequired:
+          type: boolean
+        IsUnique:
+          type: boolean
+        IsDeprecated:
+          type: boolean
+        IsCalculated:
+          type: boolean
+        IsInternalField:
+          type: boolean
+        IsAliasField:
+          type: boolean
+        ReadAccess:
+          type:
+          - boolean
+          - 'null'
+        WriteAccess:
+          type:
+          - boolean
+          - 'null'
+        Length:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        LookupObjectName:
+          type:
+          - string
+          - 'null'
+        LookupFilterCriteria:
+          type:
+          - string
+          - 'null'
+        DependentPicklistMetadataName:
+          type:
+          - string
+          - 'null'
+        PicklistName:
+          type:
+          - string
+          - 'null'
+        ComplexMetadataName:
+          type:
+          - string
+          - 'null'
+        AutoNumberInitialSeed:
+          type: integer
+          format: int32
+        AutoNumberPrefix:
+          type:
+          - string
+          - 'null'
+        Precision:
+          type: integer
+          format: int32
+        Scale:
+          type: integer
+          format: int32
+        Expression:
+          type:
+          - string
+          - 'null'
+        ExpressionDependency:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        AliasExpressionDependency:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        IsPreComputed:
+          type:
+          - boolean
+          - 'null'
+        ReferenceObject:
+          type:
+          - string
+          - 'null'
+        TargetObject:
+          type:
+          - string
+          - 'null'
+        TargetField:
+          type:
+          - string
+          - 'null'
+        RollupFunction:
+          type:
+          - string
+          - 'null'
+        RollupFilterCriteria:
+          type:
+          - string
+          - 'null'
+        AliasFieldDefinition:
+          type:
+          - string
+          - 'null'
+        AliasFieldMetadataName:
+          type:
+          - string
+          - 'null'
+        IsRichTextField:
+          type: boolean
+        IsPropertyLookup:
+          type:
+          - boolean
+          - 'null'
+        IdentifierType:
+          $ref: '#/components/schemas/IdentifierType'
+      additionalProperties: false
+    AliasFieldDefinitionDetail:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+      additionalProperties: false
+    LocaleResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the locale name (e.g., "en-US").
+        DisplayName:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the display name of the locale (e.g., "English (United States)").
+      additionalProperties: false
+      description: Represents a locale with its name and display name.
+    IndexMetadataDetail:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    OrgLocaleChangeTrackingInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/OrgLocaleChangeTrackingInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    TranslationsListItem:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translation key.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation.
+        Type:
+          $ref: '#/components/schemas/TranslationType'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translated value.
+        IsProtected:
+          type: boolean
+          description: Gets or sets a value indicating whether the translation is protected from modification.
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the locale for which the translation is applicable.
+        LastModifiedBy:
+          type:
+          - string
+          - 'null'
+          description: Last modified by user.
+        LastModifiedDate:
+          type:
+          - string
+          - 'null'
+          description: Last modified by date.
+      additionalProperties: false
+      description: Represents a translation locale list item containing translation details for a specific key and module.
+    PicklistEntry:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+        DisplayText:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

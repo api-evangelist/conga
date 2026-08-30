@@ -1,0 +1,1519 @@
+openapi: 3.2.0
+info:
+  title: Data Custom Object API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Custom Object
+paths:
+  /api/data/v1/custom-objects/query/parallel:
+    post:
+      tags:
+      - Custom Object
+      summary: Execute multiple queries
+      description: Executes multiple query requests parallelly on custom objects and returns the responses of each query in a list.
+      requestBody:
+        description: Array of query request
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Query'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Query'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Query'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - - Name: System Admin
+                    Id: 9486dfd3-7f10-4fcf-8217-9151c9fd7a84
+                - - Name: Limited Access User
+                    Id: bee0e2a4-6b96-484d-a76f-e90b69adb86e
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+  /api/data/v1/custom-objects/query/{objectName}:
+    post:
+      tags:
+      - Custom Object
+      summary: Execute single query
+      description: Validates and executes the query request for the given custom object and specifying whether the total record count should be included in the response.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object to which query needs to be processed.It can only contain underscores and alphanumeric characters and "_c" in the sufix. **For example**: CustomObject_c.'
+        required: true
+        schema:
+          type: string
+      - name: IncludeTotalCount
+        in: query
+        description: 'Set to true to get the total count of records in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: after
+        in: query
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        description: Actual query to be executed
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: 2190416d-fef3-4cc6-81d5-dd409d0acb1e
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+  /api/data/v1/custom-objects/{objectName}:
+    get:
+      tags:
+      - Custom Object
+      summary: Get all custom object records
+      description: Returns a list of all records for the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object from which the records need to be fetched. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: criteria
+        in: query
+        description: 'Search criteria for the object. **For example**: `IsActive = ''true''`.<p>**Note**: The criteria field (in this case, IsActive) must be indexed.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: 'Number of records in each page. **For example**: `5` produces five records for each page.'
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: 'Number of pages to be fetched. **For example**: `2` fetches the second page with the number of records in the pageSize parameter.<p>**Note**: The page index starts at 1.</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: `FirstName`.<p>**Note**: The sort field (in this case, FirstName) must be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction for the data.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: 9d79e384-9a77-4b18-a075-7651aca9edc7
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    post:
+      tags:
+      - Custom Object
+      summary: Insert a new custom object record
+      description: Validates the record details and inserts if it does not exist in the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object in which the record is to be inserted. It can only contain alphanumeric characters and underscores, and must contain "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. For example: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID, and externalId must be schema fields). The schema and metadata can be generated using the Schema Manager APIs.</p>\n             Refer to the following table to understand the behavior when you pass ID and/or External ID.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Create a record using the ID field value as provided in the payload. | ExternalId unique validation |\n             | Yes            | No                     | Create a record using the ID field value as provided in the payload and set the ExternalId to null. | NA |\n             | No             | Yes                    | Generate a new GUID and create a record using the ID field value with the new GUID value. | ExternalId unique validation |\n             | No             | No                     | Generate a new GUID and create a record using the ID field value with the new GUID value and set the ExternalId to null. | NA |"
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 248a95b4-3692-466d-ac28-c2c0cf0bb629
+                StatusCode: Created
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: User doesn't have permission on 'account_p' object.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/bulk:
+    delete:
+      tags:
+      - Custom Object
+      summary: Delete custom object records
+      description: Removes multiple records from the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: DeleteByField
+        in: query
+        description: 'The field to use for deleting the record. <p>**Note**: Default value set to Id.</p>'
+        schema:
+          $ref: '#/components/schemas/DeleteByField'
+      - name: DeleteBehaviour
+        in: query
+        description: whether to do  a soft/hard delete record or not
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      - name: IncludeDeleteResultStatus
+        in: query
+        description: 'Set to true to get the delete status in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: 'Multiple record IDs to be deleted. **For example**: `2614d72c-edfc-4dc5-b72f-45104fe5ef43`.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 'DeletedRecordIds : [9266cdea-0a83-44c4-9341-fe48feff0579,ce0eb2f9-4cb5-4ee0-8c18-63366cbd818d]'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    patch:
+      tags:
+      - Custom Object
+      summary: Upsert custom object records
+      description: Validates the record details and updates if the ID already exists in the provided object, else inserts if it does not.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object in which the record is to be inserted. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        description: 'Set to true to enforce optimistic locking. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: UpdateByField
+        in: query
+        description: 'The field to use for updating the record. <p>**Note**: Default value set to Id.</p>'
+        schema:
+          $ref: '#/components/schemas/UpdateByField'
+      requestBody:
+        description: "Details about the record. **For example**: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID. and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you want to upsert records by ID field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `ID` if it exists, and ensure that the `externalId` is unique. | ExternalId unique validation |\n             | Yes            | No                     | Update the record using the `ID` if it exists, and ensure that the `externalId` is unique. | NA |\n             | No             | Yes                    | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` is unique. | ExternalId unique validation |\n             | No             | No                     | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` remains null. | NA |\n             Refer to the following table to understand the behavior when you want to upsert records by externalId field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `externalId` if it exists. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | Yes            | No                     | Update the record using the `ID` if it exists, keeping `externalId` unchanged. If the `ID` does not exist, create a new record with that ID, and set the `externalId` to null. | NA |\n             | No             | Yes                    | Update the record using the `externalId` if it exists. | NA |\n             | No             | No                     | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` remains null. | NA |"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    post:
+      tags:
+      - Custom Object
+      summary: Insert custom object records
+      description: Validates custom object record details and creates multiple records in the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID, and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you pass ID and/or External ID.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Create records using the ID field value as provided in the payload. | ExternalId unique validation |\n             | Yes            | No                     | Create records using the ID field value as provided in the payload and set the ExternalId to null. | NA |\n             | No             | Yes                    | Generate new GUIDs and create records using the ID field value with the new GUID value. | ExternalId unique validation |\n             | No             | No                     | Generate new GUIDs and create records using the ID field value with the new GUID value and set the ExternalId to null. | NA |"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - 41fd9c3f-8c3f-446a-b251-53fc19b6d6f9
+                - 1a890c2d-5d0f-49f5-b18d-0b27839cfe39
+                - c03fe1bf-a95d-4925-8149-8049691874e5
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Custom Object
+      summary: Update custom object records
+      description: Validates the custom object record details and updates multiple records in the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must contain "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: UpdateByField
+        in: query
+        description: 'The field to use for updating the record. <p>**Note**: Default value set to ID.</p>'
+        schema:
+          $ref: '#/components/schemas/UpdateByField'
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: Name = \"Mark\", Description = \"Description\", `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID. and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you want to update records by ID field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `ID` if it exists, and ensure the `externalId` is unique. | ExternalId unique validation |\n             | Yes            | No                     | Update the record using the `ID` if it exists, and ensure the `externalId` is unique. | NA |\n             | No             | Yes                    | Invalid scenario. Throw a validation error. | Throw a validation error if the ID is not found, indicating that the ID must exist. |\n             | No             | No                     | Invalid scenario. Throw a validation error. | NA |\n             Refer to the following table to understand the behavior when you want to update records by externalId field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `externalId` if it exists. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | Yes            | No                     | Invalid scenario. Throw a validation error. | Throw a validation error indicating that the externalId must exist. |\n             | No             | Yes                    | Update the record using the `externalId` if it exists. | NA |\n             | No             | No                     | Invalid scenario. Throw a validation error. | Throw a validation error indicating that the externalId must exist. |"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/by-externalId/{externalId}:
+    delete:
+      tags:
+      - Custom Object
+      summary: Delete a custom object record by externalId
+      description: Validates the record based on the external ID and removes it from the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain underscores and alphanumeric characters. **For example**: PaymentTool, PaymentToolHistory.'
+        required: true
+        schema:
+          type: string
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 27a6a4a6-41c0-4e2a-b56d-355bb4ab2e09.'
+        required: true
+        schema:
+          type: string
+      - name: deleteBehaviour
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    get:
+      tags:
+      - Custom Object
+      summary: Get a custom object record using externalId
+      description: Checks the externalId in the given custom object and fetches the record if it exists.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain underscores and alphanumeric characters. **For example**: PaymentTool, PaymentToolHistory.'
+        required: true
+        schema:
+          type: string
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Custom Object
+      summary: Update a record by externalId
+      description: Updates the record based on the object, externalId, and the details of the record that you want to update.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the object. It can only contain underscores and alphanumeric characters. **For example**: PaymentTool, PaymentToolHistory.'
+        required: true
+        schema:
+          type: string
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 2618d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: Name = \"Mark\", Description = \"Description\".\n             /// <p>**Note**: The fields/properties should be part of the schema/metadata created for the object(in this case, Name and Description should be a field in schema). The schema/metadata can be generated using schema manager API.</p>\n             Refer to the following table to understand the behavior when you pass ID in the payload.\n            \n             | ID in payload? | Behavior | Validation |\n             |----------------|----------|------------|\n             | Yes            | Update a record by `externalId`. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | No             | Update a record by `externalId`. | NA |"
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/criteria/bulk:
+    delete:
+      tags:
+      - Custom Object
+      summary: Delete custom object records as per the criteria
+      description: Removes multiple records that satisfy the criteria in the custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: IncludeDeleteResultStatus
+        in: query
+        description: 'Set to true to get the delete status in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: DeleteBehaviour
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByCriteriaRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeleteByCriteriaRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeleteByCriteriaRequest'
+      responses:
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Custom Object
+      summary: Update custom object records as per the criteria
+      description: Validates the custom object record details and updates multiple records that satisfy the given criteria.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object in which the record is to be updated. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      - name: after
+        in: query
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        description: Criteria-based request for bulk updating records.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateManyByCriteriaRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateManyByCriteriaRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateManyByCriteriaRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/recordtypes:
+    get:
+      tags:
+      - Custom Object
+      summary: Get all record types for the custom object
+      description: Retrieves a list of all record types for the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Custom object name. It can only contain underscores and alphanumeric characters and "_c" in the sufix. **For example**: CustomObject_c.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/summary:
+    get:
+      tags:
+      - Custom Object
+      summary: Get object record count and size on disk
+      description: Returns a count of all records for the given object, and it's size on disk.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the object from which the records need to be fetched. It can only contain underscores and alphanumeric characters. **For example**: PaymentTool, PaymentToolHistory.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: 4a7d1aff-c61c-40e8-ae09-eccab96b89e6
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/custom-objects/{objectName}/{id}:
+    delete:
+      tags:
+      - Custom Object
+      summary: Delete a custom object record
+      description: Validates the record based on the record ID and removes it from the given custom object.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: 'Actual record ID. **For example**: `2614d72c-edfc-4dc5-b72f-45104fe5ef43`.'
+        required: true
+        schema:
+          type: string
+      - name: deleteBehaviour
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    get:
+      tags:
+      - Custom Object
+      summary: Get a custom object record using record ID
+      description: Checks the record ID in the given custom object and fetches the record if it exists.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: 'Actual record ID. <p>**For example**: `2614d72c-edfc-4dc5-b72f-45104fe5ef43`.</p>'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Custom Object
+      summary: Update a custom object record
+      description: Updates the record based on the custom object, record ID, and the details of the record to update.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Name of the custom object. It can only contain alphanumeric characters and underscores, and must have "_c" in the suffix. <p>**For example**: `CustomObject_c`.</p>'
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Actual record ID. For example, `2614d72c-edfc-4dc5-b72f-45104fe5ef43`.
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: `Name = \"Mark\"`, `Description = \"Description\"`.\n            <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name and Description must be schema fields). The schema and metadata can be generated using the Schema Manager APIs.</p>"
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UpdateByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    DeleteBehaviour:
+      enum:
+      - SoftDelete
+      - HardDelete
+      type: string
+    Query:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of object on which querying needs to be done.
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The fields which are to be displayed.
+        Distinct:
+          type: boolean
+          description: Select true to get distinct records
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of records to be skipped.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names which are to be grouped.
+      additionalProperties: false
+      description: Schema Model for Query
+    UpdateManyByCriteriaRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object from which the records need to be updated.
+        ValuesToUpdate:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: 'Tha values which needs to be updated **For example**: Name = "Mark"'
+        Criteria:
+          type:
+          - string
+          - 'null'
+          description: 'Update criteria for the Records. **For example**: IsActive = ''true''. <p>**Note**: The criteria field (in this case, IsActive) should be indexed.</p>'
+        PageNumber:
+          type:
+          - integer
+          - 'null'
+          description: The page number of the result set to view.
+          format: int32
+        PageSize:
+          type:
+          - integer
+          - 'null'
+          description: The number of records to display on each page.
+          format: int32
+      additionalProperties: false
+      description: Criteria based request for bulk updating records.
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+      description: Sort information for records.
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    DeleteByCriteriaRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object from which the records need to be deleted.
+        Criteria:
+          type:
+          - string
+          - 'null'
+          description: 'Delete criteria for the Records. **For example**: IsActive = ''true''. <p>**Note**: The criteria field (in this case, IsActive) should be indexed.</p>'
+        PageSize:
+          type:
+          - integer
+          - 'null'
+          description: The number of records to display on each page.
+          format: int32
+          deprecated: true
+        PageNumber:
+          type:
+          - integer
+          - 'null'
+          description: The page number of the result set to view.
+          format: int32
+          deprecated: true
+        NumberOfRecordsToDelete:
+          type:
+          - integer
+          - 'null'
+          description: "Number of records to delete. \nIf NumberOfRecordsToDelete is provided PageNumber and PageSize will be ignored."
+          format: int32
+      additionalProperties: false
+      description: Criteria based request for delete.
+    StringObjectDictionaryListListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: array
+            items:
+              type: object
+              additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DeleteByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,345 @@
+openapi: 3.2.0
+info:
+  title: Administration Features API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Features
+paths:
+  /features/{parentId}/product-feature-values:
+    delete:
+      tags:
+      - Features
+      summary: Delete product feature values
+      description: Deletes multiple junction records.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Features
+      summary: Retrieve product feature values
+      description: Retrieves a list of junction records.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: The filter conditions
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: The sort expression
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records to retrieve per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: The related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Features
+      summary: Update product feature values
+      description: Updates multiple junction records.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to update
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: Name of the record
+              Value: test
+              Feature:
+                Id: Feature-Id
+                Name: Feature-Name
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Features
+      summary: Create product feature values
+      description: Creates multiple junction records.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductFeatureValue'
+      responses:
+        '200':
+          description: OK
+  /features/{parentId}/product-feature-values/{id}:
+    delete:
+      tags:
+      - Features
+      summary: Delete a product feature value
+      description: Deletes a specific product feature value junction record that links a product to a feature. This removes the association between the product and feature while preserving both the product and feature entities themselves.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the junction record to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Features
+      summary: Retrieve a product feature value
+      description: Retrieves a specific junction record.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the junction record
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Features
+      summary: Update a product feature value
+      description: Updates a specific junction record.
+      parameters:
+      - name: parentId
+        in: path
+        description: The ID of the parent entity
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the junction record to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated record
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: Name of the record
+              Value: test
+              Feature:
+                Id: Feature-Id
+                Name: Feature-Name
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    ProductFeatureValue:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Feature:
+          $ref: '#/components/schemas/LookupObject'
+        IsIncluded:
+          type:
+          - boolean
+          - 'null'
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        Value:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+      example:
+        Name: Name of the record
+        Value: test
+        Feature:
+          Id: Feature-Id
+          Name: Feature-Name
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

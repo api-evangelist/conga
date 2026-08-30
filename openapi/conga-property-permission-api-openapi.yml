@@ -1,0 +1,335 @@
+openapi: 3.2.0
+info:
+  title: User Management Property Permission API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Property Permission
+paths:
+  /api/user-management/v1/property-permissions/{permissionGroupName}/propertyObjects:
+    get:
+      tags:
+      - Property Permission
+      summary: Get property objects for a given permissionGroupName
+      description: Retrieves property objects based on the PermissionGroupName.
+      parameters:
+      - name: permissionGroupName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/property-permissions/{permissionGroupName}/{propertyName}:
+    delete:
+      tags:
+      - Property Permission
+      summary: Delete a Property Permission
+      description: Removes Property Permission for given permissionGroupName and propertyName
+      parameters:
+      - name: permissionGroupName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User Activate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Property Permission
+      summary: Get property permissions By permissionGroupName and propertyName
+      description: Retrieves property permissions based on permissionGroupName and propertyName.
+      parameters:
+      - name: permissionGroupName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Property Permission
+      summary: Upsert a new property permission
+      description: Upserts a new property permission
+      parameters:
+      - name: permissionGroupName
+        in: path
+        description: Permission Group Name
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        description: Property Name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Property permission model data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyPermissionUpsertRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PropertyPermissionUpsertRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PropertyPermissionUpsertRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyPermissionResponseExample'
+              example:
+                Success: true
+                Data:
+                  PropertyName: CompanyGroup
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Permission: '{\"Public\":{\"READ\":true,\"CREATE\":false,\"UPDATE\":true,\"Delete\":false},\"Internal\":{\"READ\":true,\"CREATE\":false,\"UPDATE\":true,\"Delete\":true},\"In Training\":{\"CREATE\":false,\"READ\":false,\"UPDATE\":false,\"DELETE\":false}}"'
+                  ObjectEnablement: '[{"ObjectName":"Account","IsEnabled":true,"RelatedObjectEnablement":[{"RelatedObjectName":"Agreement","IsEnabled":true},{"RelatedObjectName":"AgreementLineItem","IsEnabled":true},{"RelatedObjectName":"AccountLocation","IsEnabled":false},{"RelatedObjectName":"AgreementObligation","IsEnabled":false},{"RelatedObjectName":"Asset","IsEnabled":false},{"RelatedObjectName":"AssetLineItem","IsEnabled":false},{"RelatedObjectName":"AssetLineItemHistory","IsEnabled":false},{"RelatedObjectName":"AssetRenewGroup","IsEnabled":false},{"RelatedObjectName":"BillingHeader","IsEnabled":false},{"RelatedObjectName":"CollaborationRequest","IsEnabled":false},{"RelatedObjectName":"Contact","IsEnabled":false},{"RelatedObjectName":"ContractRequest","IsEnabled":false},{"RelatedObjectName":"CustomerPOItem","IsEnabled":false},{"RelatedObjectName":"CustomerPurchaseOrder","IsEnabled":false},{"RelatedObjectName":"Deal","IsEnabled":false},{"RelatedObjectName":"ForecastBillingScheduleRecord","IsEnabled":false},{"RelatedObjectName":"IncentiveBenefitData","IsEnabled":false},{"RelatedObjectName":"IncentiveLoyaltyEnrollment","IsEnabled":false},{"RelatedObjectName":"LineItem","IsEnabled":false},{"RelatedObjectName":"Obligation","IsEnabled":false},{"RelatedObjectName":"Opportunity","IsEnabled":false},{"RelatedObjectName":"Order","IsEnabled":false},{"RelatedObjectName":"OrderLineItem","IsEnabled":false},{"RelatedObjectName":"PriceList","IsEnabled":false},{"RelatedObjectName":"ProductConfiguration","IsEnabled":false},{"RelatedObjectName":"ProductUsage","IsEnabled":false},{"RelatedObjectName":"Proposal","IsEnabled":false},{"RelatedObjectName":"StoreFront","IsEnabled":false}]},{"ObjectName":"Agreement","IsEnabled":true,"RelatedObjectEnablement":[{"RelatedObjectName":"Order","IsEnabled":true},{"RelatedObjectName":"RelatedAgreement","IsEnabled":false}]}]'
+                  Id: 96900df1-14c3-4e0c-b546-d0de0f8ec91c
+                  Name: CompanyGroup.ViewAllPermissionGroup
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    PropertyPermissionResponseExample:
+      type: object
+      additionalProperties: false
+    PropertyPermissionUpsertRequest:
+      type: object
+      properties:
+        Permission:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+        ObjectEnablement:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectEnablementConfig'
+      additionalProperties: false
+      description: Request model for upserting property permissions
+    RelatedObjectEnablementConfig:
+      type: object
+      properties:
+        RelatedObjectName:
+          type:
+          - string
+          - 'null'
+        IsEnabled:
+          type: boolean
+      additionalProperties: false
+    ObjectEnablementConfig:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        IsEnabled:
+          type: boolean
+        RelatedObjectEnablement:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RelatedObjectEnablementConfig'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

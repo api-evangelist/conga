@@ -1,0 +1,478 @@
+openapi: 3.2.0
+info:
+  title: Ingress Salesforce API
+  version: 1.0.0
+  description: This controller provides access to information inside a customer's salesforce account.
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Salesforce
+  description: This controller provides access to information inside a customer's salesforce account.
+paths:
+  /v1/Salesforce/Mock/relatedContacts/{recordId}:
+    get:
+      tags:
+      - Salesforce
+      summary: 'MOCK: Fetch related contacts for a given Salesforce record'
+      operationId: Salesforce_MockGetRelatedContacts
+      parameters:
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Salesforce/attachments/{objectId}:
+    get:
+      tags:
+      - Salesforce
+      summary: Retrieves recent attachments and files for a Salesforce record(objectId).
+      operationId: Salesforce_GetRecentSalesforceAttachments
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+          default: false
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesforceAttachmentResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      security:
+      - JWT: []
+  /v1/Salesforce/objectType/{recordId}:
+    get:
+      tags:
+      - Salesforce
+      summary: Get Salesforce Object Name and Object Type by Record ID
+      operationId: Salesforce_GetObjectType
+      parameters:
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesforceObjectResult'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      security:
+      - JWT: []
+  /v1/Salesforce/relatedContacts/{recordId}:
+    get:
+      tags:
+      - Salesforce
+      summary: Fetch related contacts for a given Salesforce record.
+      operationId: Salesforce_GetRelatedContacts
+      parameters:
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+          default: false
+        x-position: 2
+      - name: pageNumber
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 3
+      - name: pageSize
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 25
+        x-position: 4
+      - name: nameFilter
+        in: query
+        schema:
+          type: string
+        x-position: 5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesforceRelatedContactsResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      security:
+      - JWT: []
+  /v1/Salesforce/search:
+    get:
+      tags:
+      - Salesforce
+      summary: Search Salesforce Leads, Contacts and Users
+      operationId: Salesforce_SalesforceContactsLeadsUsers
+      parameters:
+      - name: searchQuery
+        in: query
+        schema:
+          type: string
+        x-position: 1
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+          default: false
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Salesforce/templates:
+    get:
+      tags:
+      - Salesforce
+      summary: Fetch all managed package Salesforce templates (CET + CGT) for the current customer's org.
+      operationId: Salesforce_SalesforceTemplates
+      parameters:
+      - name: page
+        in: query
+        description: Page number, default 1
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 1
+      - name: batchSize
+        in: query
+        description: Batch size, default 50
+        schema:
+          type: integer
+          format: int32
+          default: 50
+        x-position: 2
+      - name: isSandbox
+        in: query
+        description: If true, use sandbox connection
+        schema:
+          type: boolean
+          default: false
+        x-position: 3
+      - name: templateType
+        in: query
+        description: "Allowed values: CET, CGT, BOTH.\n            Case-insensitive. If null or empty, returns all templates.\n            "
+        schema:
+          type: string
+        x-position: 4
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesforceTemplateQueryResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      security:
+      - JWT: []
+components:
+  schemas:
+    SalesforceRelatedContactsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        totalCount:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedContact'
+    SalesforceAttachment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        mimeType:
+          type: string
+        fileSize:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        fileExtension:
+          type: string
+    SalesforceTemplateRecord:
+      type: object
+      description: Template record
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: Template type
+        templateGroup:
+          type: string
+          description: Logical group for the template
+        orgId:
+          type: string
+          description: Salesforce Org Id.
+        description:
+          type: string
+          description: Human-readable description of the template.
+        fileName:
+          type: string
+          description: Original file name of the template.
+        fileExtension:
+          type: string
+          description: File extension.
+        documentFileSize:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        id:
+          type: string
+          description: Primary Id of the template record.
+        key:
+          type: string
+          description: Optional key / external lookup key.
+        name:
+          type: string
+          description: Display name of the template.
+        repository:
+          type: string
+          description: Source repository label.
+        contentType:
+          type: string
+          description: MIME content type.
+        lastModifiedDate:
+          type: string
+          description: UTC timestamp string when this template was last modified.
+        templateType:
+          type: string
+          description: Logical template type, e.g. "Word", "PDF", "CET".
+    SalesforceTemplateQueryResponse:
+      type: object
+      description: Wrapper object for template query results.
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          description: 'Array of template items returned.
+
+            Can include multiple types (Word templates, CET email templates, PDFs, etc.).'
+          items:
+            $ref: '#/components/schemas/SalesforceTemplateRecord'
+        totalCount:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        hasMore:
+          type: boolean
+    SalesforceObjectResult:
+      type: object
+      description: Represents the Salesforce object type lookup result.
+      additionalProperties: false
+      properties:
+        recordId:
+          type: string
+        objectName:
+          type: string
+        objectType:
+          type: string
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    RelatedContact:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        email:
+          type: string
+        isPrimary:
+          type: boolean
+        contactType:
+          type: string
+        accountName:
+          type: string
+    SalesforceAttachmentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesforceAttachment'
+    ErrorResult:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

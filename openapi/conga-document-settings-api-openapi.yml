@@ -1,0 +1,970 @@
+openapi: 3.2.0
+info:
+  title: Contracts Document Settings API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Document Settings
+paths:
+  /api/clm/v1/settings/documents/output-formats:
+    post:
+      tags:
+      - Document Settings
+      summary: Create a document output format
+      description: Creates a new record for a document's output format (doc, docx, pdf, or rtf), along with other options like adding a watermark.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentOutputFormat'
+      responses:
+        '201':
+          description: Returns the newly created document output format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 37b480d8-1b2d-4cbc-aaf6-1a31a5ec334e
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: No value is provided in the request body
+    put:
+      tags:
+      - Document Settings
+      summary: Update document output format
+      description: Updates a document output format and its properties based on the document output format ID.
+      requestBody:
+        description: ID of the document output format
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DocumentOutputFormatRequest'
+      responses:
+        '200':
+          description: Returns the list of document output formats associated with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentOutputFormatListAPIResponse'
+        '400':
+          description: The given ID is invalid or blank.
+  /api/clm/v1/settings/documents/output-formats/query:
+    post:
+      tags:
+      - Document Settings
+      summary: Show document output format records
+      description: Queries document output format records for matching details.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns the list of document output formats that match the given query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 7f5f9f94-7985-437c-aa2d-57f894674105
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: The query is invalid.
+  /api/clm/v1/settings/documents/output-formats/{id}:
+    delete:
+      tags:
+      - Document Settings
+      summary: Delete a document output format
+      description: Deletes a document output format based on the provided ID.
+      parameters:
+      - name: id
+        in: path
+        description: ID of an existing document output format
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: The document output format is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The given ID is invalid.
+    get:
+      tags:
+      - Document Settings
+      summary: Get a document output format
+      description: Gets document output format details based on the document output format ID.
+      parameters:
+      - name: id
+        in: path
+        description: ID of an existing document output format
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Lists document output formats associated with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentOutputFormatListAPIResponse'
+        '400':
+          description: The provided ID is invalid.
+  /api/clm/v1/settings/documents/protections:
+    post:
+      tags:
+      - Document Settings
+      summary: Add a document protection setting
+      description: Adds a document protection setting for a user role and a contract type.
+      requestBody:
+        description: Document Protection
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentProtectionDTO'
+      responses:
+        '200':
+          description: Returns the newly created document protection setting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: If any required value is not provided in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Document Settings
+      summary: Update a document protection setting
+      description: Updates a list of fields in a document protection setting.
+      requestBody:
+        description: List of field values to be updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+              IsRequired: false
+            - Id: 7b3f1a92-dc45-4e8a-b12c-9a6e5d3f8c01
+              IsRequired: true
+      responses:
+        '200':
+          description: Returns whether the document protection is updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Id
+                - Name
+                - CreatedBy
+                - CreatedDate
+                - ModifiedBy
+                - ModifiedDate
+                - ExternalId
+                - Account
+                - RecordType
+                - ActivatedBy
+                - ActivatedDate
+                - ContractCategory
+                - ContractNumber
+                - AmendmentEffectiveDate
+                - AutoRenewConsent
+                - AutoRenewTermMonths
+                - AutoRenewalTerms
+                - AutoRenewal
+                - ContractDurationDays
+                - ContractEndDate
+                - ContractNumber
+                - ContractStartDate
+                - ContractedDays
+                - Description
+                - InitiationType
+                - InternalRenewalNotificationDays
+                - InternalRenewalStartDate
+                - ParentContract
+                - Perpetual
+                - PrimaryContact
+                - Opportunity
+                - RemainingContractedDays
+                - RenewalNoticeDate
+                - RenewalNoticeDays
+                - RetentionDate
+                - RetentionPolicyId
+                - Source
+                - SpecialTerms
+                - StatusCategory
+                - Status
+                - SubmitRequestMode
+                - TermMonths
+                - TerminationComments
+                - TerminationDate
+                - TerminationNoticeDays
+                - TerminationNoticeIssueDate
+                - TotalContractValue
+                - ExecutedDate
+                - RecordOwner
+                - Currency
+                - AutoExpire
+                - TestCustomFieldOne_c
+                - CustRTF9_c
+                Warnings: null
+                Errors: null
+        '400':
+          description: If any required value is not provided in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/settings/documents/protections/clone:
+    post:
+      tags:
+      - Document Settings
+      summary: Copy document protection settings
+      description: Copies document protection settings that do not exist in destination roles from the source role.
+      requestBody:
+        description: Document Protection Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentProtectionRequest'
+      responses:
+        '200':
+          description: Returns "true" if the document protection settings are copied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: If any required value is not provided in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/settings/documents/protections/query:
+    post:
+      tags:
+      - Document Settings
+      summary: Query document protection settings
+      description: Retrieves multiple document protection settings based on query parameters such as Limit, Skip, Sort, GroupBy, etc.
+      requestBody:
+        description: Query Parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns document protection settings for the given query details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 83326220-3c78-4681-98ed-477aede023ff
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: If any required value is not given in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/settings/documents/protections/{documentProtectionId}:
+    delete:
+      tags:
+      - Document Settings
+      summary: Delete a document protection setting
+      description: Deletes a document protection setting.
+      parameters:
+      - name: documentProtectionId
+        in: path
+        description: Document Protection ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns whether the document protection setting is deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: If any required value is not provided in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Document Settings
+      summary: Get a document protection setting
+      description: Fetches a document protection setting.
+      parameters:
+      - name: documentProtectionId
+        in: path
+        description: Document Protection ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns details of a document protection setting based on the provided document protection ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentProtectionDTOAPIResponse'
+        '400':
+          description: If any required value is not provided in the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentOutputFormatListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentOutputFormat'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    DocumentProtectionDTO:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Action:
+          type:
+          - string
+          - 'null'
+          description: Action
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        ProtectionLevel:
+          type:
+          - string
+          - 'null'
+          description: Protection Level
+        ProtectionType:
+          type:
+          - string
+          - 'null'
+          description: Protection Type
+      additionalProperties: {}
+      description: DTO containing necessary properties for Contract Protection
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentProtectionDTOAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentProtectionDTO'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    DocumentOutputFormat:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        RecordType:
+          type:
+          - string
+          - 'null'
+          description: Record Type
+        AllowOverrideWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default watermark setting during the agreement document generation process.
+        AllowOverride:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default output format during the agreement document generation process
+        IncludeWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether watermark will be added to the document
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: The document output format (either PDF, RTF or DOC or DOCX)
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        DocumentAction:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Indicates the document actions on which the output formats are supposed to be applied
+        DefaultWatermarkSelection:
+          type:
+          - boolean
+          - 'null'
+          description: The default watermark selection when IncludeWatermark is UserSelection
+      additionalProperties: {}
+      description: DocumentOutputFormat model
+    DocumentProtectionRequest:
+      required:
+      - DestinationRoles
+      - SourceRoleId
+      type: object
+      properties:
+        SourceRoleId:
+          minLength: 1
+          type: string
+          description: Role Id for Source
+        DestinationRoles:
+          type: array
+          items:
+            $ref: '#/components/schemas/LookupObject'
+          description: List of Destination Roles
+        DocumentProtection:
+          $ref: '#/components/schemas/DocumentProtectionDTO'
+      additionalProperties: false
+      description: Request Model for Document Request
+    DocumentOutputFormatRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        RecordType:
+          type:
+          - string
+          - 'null'
+          description: Record Type
+        AllowOverrideWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default watermark setting during the agreement document generation process.
+        AllowOverride:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default output format during the agreement document generation process
+        IncludeWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether watermark will be added to the document
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: The document output format (either PDF, RTF or DOC or DOCX)
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        DocumentAction:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Indicates the document actions on which the output formats are supposed to be applied
+        DefaultWatermarkSelection:
+          type:
+          - boolean
+          - 'null'
+          description: The default watermark selection when IncludeWatermark is UserSelection
+      additionalProperties: {}
+      description: Request Model for Document Output Format
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

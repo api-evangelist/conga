@@ -1,0 +1,803 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract Relationship API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract Relationship
+paths:
+  /api/clm/v1/contracts/{contractId}/hierarchy:
+    get:
+      tags:
+      - Contract Relationship
+      summary: Get hierarchy of a contract
+      description: Gets the contract hierarchy for the provided contract ID and fetches the contract's child and descendant contracts.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract
+        required: true
+        schema:
+          type: string
+      - name: onlySystemRelationship
+        in: query
+        description: Controls whether the hierarchy is built using only system-generated relationships. When set to true, only system relationships are included. When set to false, manually created relationships are also included. The default value is true.
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Returns hierarchy of the provided contract ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractHierarchiesResponseAPIResponse'
+        '400':
+          description: Provided contract ID is not valid or the contract is not in hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/relationships:
+    get:
+      tags:
+      - Contract Relationship
+      summary: Get contract relationship details
+      description: Gets relationship details of the provided contract ID if a contract has linked contracts.
+      parameters:
+      - name: contractId
+        in: path
+        description: Unique identifier of a contract
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns contract relationship details of the provided contract ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedAgreementListAPIResponse'
+        '400':
+          description: Provided contract ID is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Contract Relationship
+      summary: Link contracts by relationship
+      description: 'Links one contract to another. Contracts can be linked using IsAmendmentFor, IsAmendedBy, IsRenewalFor, and IsRenewedBy relationships.
+
+        When you amend or renew a contract, the original and the new contract are linked automatically.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Name of the relationship
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRelationshipRequest'
+      responses:
+        '200':
+          description: Returns the linked contract IDs and their relationship details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedAgreementAPIResponse'
+        '400':
+          description: The value provided is invalid or not provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/relationships/link:
+    post:
+      tags:
+      - Contract Relationship
+      summary: Link contracts using RelationshipFromType and RelationshipToType
+      description: 'Links one contract to another by creating the specified relationship. Provide the source contractId and a ContractRelationshipRequest containing the RelatedContractId, RelationshipFromType and RelationshipToType (for example: IsAmendmentFor, IsAmendedBy, IsRenewalFor, IsRenewedBy, IsNDAFor). Specify standard as well as custom picklist values configured for RelationshipFromType and RelationshipToType fields in RelatedAgreement object in the schema manager. The API returns the created RelatedAgreement with linked contract IDs and relationship details.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRelationshipRequestV2'
+      responses:
+        '200':
+          description: Returns the linked contract IDs and their relationship details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedAgreementAPIResponse'
+        '400':
+          description: The value provided is invalid or not provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/relationships/query:
+    post:
+      tags:
+      - Contract Relationship
+      summary: Query a contract relationship
+      description: Fetches the list of related contracts for the given contract ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Sorting Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SortingRequest'
+      responses:
+        '200':
+          description: Returns a list of related contracts for the provided contract ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRelationshipResponseListAPIResponse'
+        '400':
+          description: Provided contract ID or sort request is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/relationships/{relationshipId}:
+    delete:
+      tags:
+      - Contract Relationship
+      summary: Unlink related contracts
+      description: Unlinks one contract from another.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract.
+        required: true
+        schema:
+          type: string
+      - name: relationshipId
+        in: path
+        description: ID provided for a relationship when two contracts are linked.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns confirmation that the contracts are unlinked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided relationship Id is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    ContractRelationshipRequestV2:
+      type: object
+      properties:
+        RelatedContractId:
+          type:
+          - string
+          - 'null'
+          description: Id of Related Contract
+        RelationshipFromType:
+          type:
+          - string
+          - 'null'
+          description: How current contract is related to the related contract
+        RelationshipToType:
+          type:
+          - string
+          - 'null'
+          description: How related contract is related to the current contract
+      additionalProperties: false
+      description: Request model for Contract Relationship
+    ContractRelationshipRequest:
+      type: object
+      properties:
+        RelatedContractId:
+          type:
+          - string
+          - 'null'
+          description: Id of Related Contract
+        RelationshipType:
+          type:
+          - string
+          - 'null'
+          description: Type of Relationship i.e. "IsAmendmentFor", "IsAmendedBy", "IsRenewalFor", "IsRenewedBy", "IsParentOf", "IsChildOf"
+      additionalProperties: false
+      description: Request model for Contract Relationship
+    ContractHierarchiesResponse:
+      type: object
+      properties:
+        Account:
+          $ref: '#/components/schemas/AccountResponse'
+        Supplier:
+          $ref: '#/components/schemas/SupplierResponse'
+        Contract:
+          $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+        ParentContracts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+          description: Parents contract list of a given contract id.
+        ChildContracts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+          description: Children contract list of a given contract id.
+        OtherRelatedContracts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+          description: All related contracts except Automatically Amended/Renewed contracts of a given contract id.
+        AmendedContracts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+          description: Automatically Amended contracts of a given contract id.
+        RenewedContracts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractHierarchicalFieldsResponse'
+          description: Automatically Renewed contracts of a given contract id.
+      additionalProperties: false
+      description: ''
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    RelatedAgreementListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RelatedAgreement'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ContractHierarchiesResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractHierarchiesResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ContractRelationshipResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractRelationshipResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    RelatedAgreementAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/RelatedAgreement'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ContractHierarchicalFieldsResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Contract Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Contract Name.
+        StatusCategory:
+          type:
+          - string
+          - 'null'
+          description: Contract Status Category.
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Contract Status
+        ContractNumber:
+          type:
+          - string
+          - 'null'
+          description: Contract Number.
+      additionalProperties: false
+      description: ''
+    RelatedAgreement:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ContractFrom:
+          $ref: '#/components/schemas/LookupObject'
+        ContractTo:
+          $ref: '#/components/schemas/LookupObject'
+        RelationshipFromType:
+          type:
+          - string
+          - 'null'
+          description: RelationshipFromType
+        RelationshipToType:
+          type:
+          - string
+          - 'null'
+          description: RelationshipToType
+        SystemRelationship:
+          type: boolean
+          description: RelationshipToType
+      additionalProperties: {}
+      description: RelatedAgreement entity model
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    SortingRequest:
+      type: object
+      properties:
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+      additionalProperties: false
+      description: Request model for Sorting
+    SupplierResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Supplier Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Supplier Name.
+        SupplierCode:
+          type:
+          - string
+          - 'null'
+          description: Supplier Number.
+      additionalProperties: false
+      description: Response model for supplier information in contract hierarchies.
+    ContractRelationshipResponse:
+      type: object
+      properties:
+        ContractId:
+          type:
+          - string
+          - 'null'
+          description: Related Contract's Id
+        ContractName:
+          type:
+          - string
+          - 'null'
+          description: Related Contract's Name
+        ContractNumber:
+          type:
+          - string
+          - 'null'
+          description: Related contract's Number
+        ContractStatus:
+          type:
+          - string
+          - 'null'
+          description: Related contract's Status
+        RelationshipFromType:
+          type:
+          - string
+          - 'null'
+          description: Main contract's relationship to Related contract
+        RelationshipToType:
+          type:
+          - string
+          - 'null'
+          description: Related contract's relationship to main contract
+        RelationshipId:
+          type:
+          - string
+          - 'null'
+          description: Relationship Id
+        RelationshipCategory:
+          $ref: '#/components/schemas/RelationshipCategory'
+      additionalProperties: false
+      description: Contract relationships response model
+    AccountResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Account Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Account Name.
+        AccountNumber:
+          type:
+          - string
+          - 'null'
+          description: Account Number.
+      additionalProperties: false
+      description: ''
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RelationshipCategory:
+      enum:
+      - System
+      - Manual
+      - ParentChild
+      type: string
+      description: Relationship Categories
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

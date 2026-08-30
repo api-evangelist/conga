@@ -1,0 +1,745 @@
+openapi: 3.2.0
+info:
+  title: X-Author Contract Checkin API
+  version: v1
+  description: This class contains APIs related to agreement document checkins
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: ContractCheckin
+  description: This class contains APIs related to agreement document checkins
+paths:
+  /api/xauthor/v1/contracts/{contractId}/check-in:
+    post:
+      tags:
+      - ContractCheckin
+      summary: 'Performs post checkin activity like reconcilation / pdf file creation / metadata processing.
+
+        File content wont be read as part of this process.Request contains all the information related to file content which is required during checkin'
+      parameters:
+      - name: contractId
+        in: path
+        description: Agreement Id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Agreement Id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: Checkin request parameters
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Model.ContractCheckinRequestModel'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Model.ContractCheckinRequestModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Model.ContractCheckinRequestModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Model.ContractCheckinRequestModel'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.DTO.Contracts.DocumentCheckInResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.DTO.Contracts.DocumentCheckInResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.DTO.Contracts.DocumentCheckInResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Conga.XAuthor.Metadata.V2.ClauseMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum'
+        subType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.ClauseSubTypeEnum'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        baseValue:
+          type:
+          - string
+          - 'null'
+        isSmart:
+          type: boolean
+        isDirty:
+          type: boolean
+        configReferenceId:
+          type:
+          - string
+          - 'null'
+        configName:
+          type:
+          - string
+          - 'null'
+        isMarkedForDeletion:
+          type: boolean
+        markupClauseMetadata:
+          type:
+          - string
+          - 'null'
+        condition:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Condition'
+      additionalProperties: false
+    Conga.XAuthor.Model.ContractClauseBaseModel:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        text:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ConditionFilter:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        fieldType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum'
+        dataType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum'
+        fieldApiName:
+          type:
+          - string
+          - 'null'
+        fieldLabel:
+          type:
+          - string
+          - 'null'
+        fieldLocalName:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        referenceTo:
+          type:
+          - string
+          - 'null'
+        referenceFieldPath:
+          type:
+          - string
+          - 'null'
+        operator:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+        expression:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Gdocs.Domain.Metadata.V2.Enum.TemplateTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.FieldMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum'
+        renderAs:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldRenderAsEnum'
+        baseValueLocalized:
+          type:
+          - string
+          - 'null'
+        baseValue:
+          type:
+          - string
+          - 'null'
+        isSmart:
+          type: boolean
+        isReadonly:
+          type:
+          - boolean
+          - 'null'
+        isUpdateable:
+          type:
+          - boolean
+          - 'null'
+        locale:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Locale'
+        defaultLocale:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Locale'
+        sourceInfo:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldSourceMetadata'
+        isMarkedForDeletion:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.DocumentMetadata:
+      type: object
+      properties:
+        schemaVersion:
+          type:
+          - string
+          - 'null'
+        mergeEngine:
+          type:
+          - string
+          - 'null'
+        mergeVersion:
+          type:
+          - string
+          - 'null'
+        templateType:
+          $ref: '#/components/schemas/Conga.XAuthor.Gdocs.Domain.Metadata.V2.Enum.TemplateTypeEnum'
+        templateVersion:
+          type:
+          - string
+          - 'null'
+        templateReferenceId:
+          type:
+          - string
+          - 'null'
+        templateVersionId:
+          type:
+          - string
+          - 'null'
+        businessObject:
+          type:
+          - string
+          - 'null'
+        businessObjectId:
+          type:
+          - string
+          - 'null'
+        parentObjectId:
+          type:
+          - string
+          - 'null'
+        documentId:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        documentMetadataId:
+          type:
+          - string
+          - 'null'
+        documentVersion:
+          type:
+          - string
+          - 'null'
+        hasSmartItem:
+          type: boolean
+        locale:
+          type:
+          - string
+          - 'null'
+        numberPrecision:
+          type: integer
+          format: int32
+        currencyPrecision:
+          type: integer
+          format: int32
+        currencyPrefixType:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Model.ContractCheckinDocumentInfoModel:
+      type: object
+      properties:
+        suggestedFileName:
+          type:
+          - string
+          - 'null'
+        includeWaterMark:
+          type: boolean
+        removeWaterMark:
+          type: boolean
+        createPdfAttachment:
+          type: boolean
+        pdfCompliance:
+          $ref: '#/components/schemas/Conga.XAuthor.Model.Enum.PDFCompliance'
+        enableFile:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Model.ClauseReconcileModel:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        action:
+          $ref: '#/components/schemas/Conga.XAuthor.Model.Enum.ClauseReconcileAction'
+        currentText:
+          type:
+          - string
+          - 'null'
+        previousText:
+          type:
+          - string
+          - 'null'
+        comments:
+          type:
+          - string
+          - 'null'
+        diffText:
+          type:
+          - string
+          - 'null'
+        hasTrackChanges:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.FieldSourceMetadata:
+      type: object
+      properties:
+        fieldType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum'
+        dataType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum'
+        fieldAPIName:
+          type:
+          - string
+          - 'null'
+        fieldLocalName:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        fieldObjectInstanceId:
+          type:
+          - string
+          - 'null'
+        referenceFieldPath:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ExternalMetadata:
+      type: object
+      properties:
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldExternalMetadata'
+        clauses:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ClauseExternalMetadata'
+      additionalProperties: false
+    Conga.XAuthor.Model.Enum.ClauseReconcileAction:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.FieldExternalMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.Enum.FieldRenderAsEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      type: integer
+      format: int32
+    Conga.XAuthor.Model.ContractCheckinRequestModel:
+      type: object
+      properties:
+        contractId:
+          type:
+          - string
+          - 'null'
+        gDocsId:
+          type:
+          - string
+          - 'null'
+        gDocURL:
+          type:
+          - string
+          - 'null'
+        metadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.BaseMetadata'
+        saveOption:
+          $ref: '#/components/schemas/Conga.XAuthor.Model.Enum.VersionTypeEnum'
+        reconclieInfo:
+          $ref: '#/components/schemas/Conga.XAuthor.Model.ContractReconcileModel'
+        documentInfo:
+          $ref: '#/components/schemas/Conga.XAuthor.Model.ContractCheckinDocumentInfoModel'
+        documentTags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        asyncCheckIn:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Model.FieldReconcileModel:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        fieldAPIName:
+          type:
+          - string
+          - 'null'
+        currentValue:
+          type:
+          - string
+          - 'null'
+        sameTagFieldCurrentValue:
+          type:
+          - string
+          - 'null'
+        previousValue:
+          type:
+          - string
+          - 'null'
+        diffText:
+          type:
+          - string
+          - 'null'
+        isDeleted:
+          type: boolean
+        sameTagFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Model.FieldReconcileModel'
+        hasTrackChanges:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ClauseExternalMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.ClauseSubTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.ConditionJson:
+      type: object
+      properties:
+        filters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ConditionFilter'
+        filterLogicExpression:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.Locale:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        numberPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        currencyPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        currencyPrefixType:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Condition:
+      type: object
+      properties:
+        conditionCQLStyle:
+          type:
+          - string
+          - 'null'
+        conditionJson:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ConditionJson'
+      additionalProperties: false
+    Conga.XAuthor.Model.Enum.PDFCompliance:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.DTO.Contracts.DocumentCheckInResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        version:
+          type:
+          - string
+          - 'null'
+        metadataV2FileId:
+          type:
+          - string
+          - 'null'
+        fileName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Model.ContractReconcileModel:
+      type: object
+      properties:
+        reconcileData:
+          type: boolean
+        fieldReconcileData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Model.FieldReconcileModel'
+        clauseReconcileData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Model.ClauseReconcileModel'
+        clausesInsertedAsText:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Model.ContractClauseBaseModel'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.SchemaMetadata:
+      type: object
+      properties:
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldMetadata'
+        clauses:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ClauseMetadata'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.BaseMetadata:
+      type: object
+      properties:
+        documentMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.DocumentMetadata'
+        schemaMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.SchemaMetadata'
+        externalMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ExternalMetadata'
+      additionalProperties: false
+    Conga.XAuthor.Model.Enum.VersionTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      type: integer
+      format: int32
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

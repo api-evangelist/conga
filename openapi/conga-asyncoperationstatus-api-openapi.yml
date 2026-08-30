@@ -1,0 +1,205 @@
+openapi: 3.2.0
+info:
+  title: Approvals Async Operation Status API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: AsyncOperationStatus
+paths:
+  /v1/async-operation-status/{correlationId}:
+    get:
+      tags:
+      - AsyncOperationStatus
+      summary: Get Async Operation Status by correlation id
+      description: Gets Async Operation Status by correlation id.
+      operationId: AsyncOperationStatus_GetByCorrelationId
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        description: The correlation ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: An Async Operation for the correlation id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncOperationStatusAPIResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    OperationTransactionAPIResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: The operation transaction
+        additionalProperties: {}
+        required:
+        - TransactionId
+        - CorrelationId
+        - Status
+        - OperationName
+        - Message
+        properties:
+          TransactionId:
+            type: string
+            description: The TransactionId
+            minLength: 1
+          CorrelationId:
+            type: string
+            description: The CorrelationId
+            minLength: 1
+          Status:
+            type: string
+            description: The status of the operation
+            minLength: 1
+          OperationName:
+            type: string
+            description: The name of the operation
+            minLength: 1
+          Message:
+            type: string
+            description: Additional details about the transaction
+            minLength: 1
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        Type:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Detail:
+          type:
+          - string
+          - 'null'
+        Instance:
+          type:
+          - string
+          - 'null'
+        Extensions:
+          type: object
+          additionalProperties: {}
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    AsyncOperationStatusAPIResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: Async operation status
+        additionalProperties: {}
+        required:
+        - CorrelationId
+        - Status
+        - Message
+        - Transactions
+        properties:
+          CorrelationId:
+            type: string
+            description: The correlation id
+            minLength: 1
+          Status:
+            type: string
+            description: The operation status
+            minLength: 1
+          Message:
+            type: string
+            description: The operation status message
+            minLength: 1
+          Transactions:
+            type: array
+            description: The list of operation transactions
+            items:
+              $ref: '#/components/schemas/OperationTransactionAPIResponse'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

@@ -1,0 +1,223 @@
+openapi: 3.2.0
+info:
+  title: Approvals Rule Dimensions API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: RuleDimensions
+paths:
+  /v1/rule-dimensions:
+    post:
+      tags:
+      - RuleDimensions
+      summary: Save an approval rule dimension
+      description: Writes an approval rule dimension.
+      operationId: RuleDimensions_Save
+      requestBody:
+        x-name: requestRuleDimensionPayload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRuleDimension'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: A definition of the approval rule dimension
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDimension'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rule-dimensions/{id}:
+    delete:
+      tags:
+      - RuleDimensions
+      summary: Delete an approval rule dimension
+      description: Deletes an approval rule dimension by ID.
+      operationId: RuleDimensions_DeleteById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule dimension ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Boolean. True if successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleDimensionDeleteDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - RuleDimensions
+      summary: Get an approval rule dimension
+      description: Gets an approval rule dimension by ID.
+      operationId: RuleDimensions_GetById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule dimension ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Approval rule dimension based on ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDimension'
+      security:
+      - oauth2: []
+      - Bearer: []
+    put:
+      tags:
+      - RuleDimensions
+      summary: Update an approval rule dimension
+      description: Updates an approval rule dimension by ID.
+      operationId: RuleDimensions_UpdateById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule dimension ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: dimensionPayload
+        description: The approval rule dimension payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRuleDimension'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: boolean
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDimension'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    RuleDimensionDeleteDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

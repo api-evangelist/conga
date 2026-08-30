@@ -1,0 +1,260 @@
+openapi: 3.2.0
+info:
+  title: File Store CDN Store API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: CDN Store
+paths:
+  /api/cdnstore/v1/files:
+    delete:
+      tags:
+      - CDN Store
+      summary: Delete a file
+      description: Validates if the specified file exists at the given path and deletes it if found.; otherwise, it returns an exception.
+      requestBody:
+        description: CDNFileDeleteRequest
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CDNFileDeleteRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CDNFileDeleteRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CDNFileDeleteRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDNFileDeleteResponseAPIResponse'
+        '404':
+          description: Not Found
+        '503':
+          description: Service Temporarily Unavailable
+  /api/cdnstore/v1/files/bulk:
+    delete:
+      tags:
+      - CDN Store
+      summary: Delete multiple files
+      description: Validates if the specified files exist at the given path and deletes it if found.; otherwise, it returns an exception.
+      requestBody:
+        description: Bulk delete file request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CDNBulkFileDeleteRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CDNBulkFileDeleteRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CDNBulkFileDeleteRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CDNFileDeleteResponseAPIResponse'
+        '404':
+          description: Not Found
+        '503':
+          description: Service Temporarily Unavailable
+  /api/cdnstore/v1/files/{fileFullPath}:
+    get:
+      tags:
+      - CDN Store
+      summary: Get the file from the CDN store
+      description: Retrieves a file's details and contents from the CDN store.
+      parameters:
+      - name: fileFullPath
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '503':
+          description: Service Temporarily Unavailable
+    post:
+      tags:
+      - CDN Store
+      summary: Upload a file(upto 100 MB) to the CDN store
+      description: Uploads a file (upto 100 MB) to the CDN store.
+      parameters:
+      - name: fileFullPath
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '503':
+          description: Service Temporarily Unavailable
+components:
+  schemas:
+    CDNBulkFileDeleteRequest:
+      type: object
+      properties:
+        FilePath:
+          type:
+          - string
+          - 'null'
+        FileNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    CDNFileDeleteResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CDNFileDeleteResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          enum:
+          - Continue
+          - SwitchingProtocols
+          - Processing
+          - EarlyHints
+          - OK
+          - Created
+          - Accepted
+          - NonAuthoritativeInformation
+          - NoContent
+          - ResetContent
+          - PartialContent
+          - MultiStatus
+          - AlreadyReported
+          - IMUsed
+          - MultipleChoices
+          - MovedPermanently
+          - Found
+          - SeeOther
+          - NotModified
+          - UseProxy
+          - Unused
+          - TemporaryRedirect
+          - PermanentRedirect
+          - BadRequest
+          - Unauthorized
+          - PaymentRequired
+          - Forbidden
+          - NotFound
+          - MethodNotAllowed
+          - NotAcceptable
+          - ProxyAuthenticationRequired
+          - RequestTimeout
+          - Conflict
+          - Gone
+          - LengthRequired
+          - PreconditionFailed
+          - RequestEntityTooLarge
+          - RequestUriTooLong
+          - UnsupportedMediaType
+          - RequestedRangeNotSatisfiable
+          - ExpectationFailed
+          - MisdirectedRequest
+          - UnprocessableEntity
+          - Locked
+          - FailedDependency
+          - UpgradeRequired
+          - PreconditionRequired
+          - TooManyRequests
+          - RequestHeaderFieldsTooLarge
+          - UnavailableForLegalReasons
+          - InternalServerError
+          - NotImplemented
+          - BadGateway
+          - ServiceUnavailable
+          - GatewayTimeout
+          - HttpVersionNotSupported
+          - VariantAlsoNegotiates
+          - InsufficientStorage
+          - LoopDetected
+          - NotExtended
+          - NetworkAuthenticationRequired
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CDNFileDeleteRequest:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CDNFileDeleteResponse:
+      type: object
+      properties:
+        FileName:
+          type:
+          - string
+          - 'null'
+        FilePath:
+          type:
+          - string
+          - 'null'
+        IsDeleted:
+          type: boolean
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

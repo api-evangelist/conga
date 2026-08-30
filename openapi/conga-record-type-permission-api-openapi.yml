@@ -1,0 +1,727 @@
+openapi: 3.2.0
+info:
+  title: User Management Record Type Permission API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Record Type Permission
+paths:
+  /api/user-management/v1/recordtype-permissions:
+    post:
+      tags:
+      - Record Type Permission
+      summary: Set a record type's permission
+      description: Sets a record type's permission and returns its unique identifier (ID).
+      requestBody:
+        description: Record type permission model data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 558adfb2-64f4-410a-9b12-d2bebe3b8134
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Record Type Permission
+      summary: Update a record type's permission for a given permission group and object
+      description: Updates a record type's permission for a given permission group and object, and returns the updated record type permission details.
+      requestBody:
+        description: Updated model data for the record type permission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordTypePermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  RecordTypeAccess: '{"NDA":{"Enabled":true},"MSA":{"Enabled":false}}'
+                  Id: 235c8e3a-ee50-4399-aa58-c2be867b051c
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: fea189b1-59c1-4ff4-afb2-61a6a924895a
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.2115738+00:00'
+                  ModifiedBy:
+                    Id: 98bb8dbb-39e1-461b-839c-3c36e631dd22
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.2115828+00:00'
+                  ExternalId: c8021920-5ea2-44fe-88b5-283432007412
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/recordtype-permissions/bulk:
+    post:
+      tags:
+      - Record Type Permission
+      summary: Set multiple record type permissions
+      description: Sets multiple record type permissions and returns their unique identifiers (ID).
+      requestBody:
+        description: Record type permission model data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypePermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - ddd532da-dd12-414b-bb01-14793a0ff7e0
+                - 45f6a55d-4041-4790-9e00-72ed9358c015
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/recordtype-permissions/{permissionGroupName}/{objectName}:
+    delete:
+      tags:
+      - Record Type Permission
+      summary: Delete a record type's permission by permission group and object
+      description: Removes a record type's permission from the given permission group and object.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      - name: permissionGroupName
+        in: path
+        description: Permission group name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 5599fcaa-ead7-48d3-af95-3cfc22663cb1 deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Record Type Permission
+      summary: Get the record type permission details by object and permission group name
+      description: Fetches the record type permission details based on the object and permission group name.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      - name: permissionGroupName
+        in: path
+        description: Permission group name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObject
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Id: 9e2b0ed6-ae9e-4aee-a76e-de3ddc30b29b
+                  RecordTypeAccess:
+                    NDA:
+                      Enabled: true
+                    MSA:
+                      Enabled: false
+                    Master:
+                      Enabled: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/recordtype-permissions/{recordTypePermissionId}:
+    delete:
+      tags:
+      - Record Type Permission
+      summary: Delete a record type's permission by ID
+      description: Removes a record type's permission for the given record type permission ID.
+      parameters:
+      - name: recordTypePermissionId
+        in: path
+        description: Record type permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 143dc26f-06b4-49a6-9479-158793070dea deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/recordtype-permissions/{recordtypePermissionId}:
+    get:
+      tags:
+      - Record Type Permission
+      summary: Get the record type permission details by ID
+      description: Fetches the record type permission details based on the record type permission ID.
+      parameters:
+      - name: recordtypePermissionId
+        in: path
+        description: Record type permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordTypePermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  RecordTypeAccess: '{"NDA":{"Enabled":false},"MSA":{"Enabled":false}}'
+                  Id: 22afaccf-dcf6-44df-a2a8-74bfa7f9d580
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 082b4fc9-18a4-42fd-a0ae-f7dc20039538
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.2302891+00:00'
+                  ModifiedBy:
+                    Id: 37450513-a59a-4b82-b6dd-bbb66262ae9f
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.2302977+00:00'
+                  ExternalId: 964cf095-8c11-464f-9b4f-fe675325a047
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Record Type Permission
+      summary: Update a record type's permission
+      description: Updates a record type's permission and returns the updated record type permission details.
+      parameters:
+      - name: recordtypePermissionId
+        in: path
+        description: Record type permission ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated model data for the record type permission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RecordTypePermissionUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordTypePermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  RecordTypeAccess: '{"NDA":{"Enabled":true},"MSA":{"Enabled":false}}'
+                  Id: 69a83b0d-4117-4bff-b5c2-14b6c7a4e011
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: c751c386-bd3d-467e-9c7f-369fc002e2b9
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.2356202+00:00'
+                  ModifiedBy:
+                    Id: 2c13db53-e384-4294-8b78-4164f283a5cc
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.235628+00:00'
+                  ExternalId: 51eef340-c05e-4d37-a567-fcd0532c0f17
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordTypePermissionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/RecordTypePermission'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordTypeAccessConfig:
+      type: object
+      properties:
+        RecordTypeName:
+          type:
+          - string
+          - 'null'
+          description: Record type name
+        Enabled:
+          type: boolean
+      additionalProperties: false
+    RecordTypePermissionCreateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object for which record type permission is to be created.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which record type permission is to be created.
+        RecordTypeAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecordTypeAccessConfig'
+          description: Collection of record type access
+      additionalProperties: false
+    RecordTypePermission:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+        RecordTypeAccess: {}
+      additionalProperties: {}
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordTypePermissionUpdateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which record type permission is to be updated.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which record type permission is to be updated.
+        RecordTypeAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecordTypeAccessConfig'
+          description: Collection of record type access
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,742 @@
+openapi: 3.2.0
+info:
+  title: User Management Field Permission API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Field Permission
+paths:
+  /api/user-management/v1/field-permissions:
+    delete:
+      tags:
+      - Field Permission
+      summary: Delete a field permission by permission group and object
+      description: Deletes a field permission from the given permission group and object.
+      parameters:
+      - name: objectName
+        in: query
+        description: Object name
+        schema:
+          type: string
+      - name: permissionGroupName
+        in: query
+        description: Permission group name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: c898c355-6b18-45f9-a836-45279e3d7a9b deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Field Permission
+      summary: Get the field permission details by object and permission group name
+      description: Fetches the field permission details for the given object and permission group name.
+      parameters:
+      - name: objectName
+        in: query
+        description: Object name
+        schema:
+          type: string
+      - name: permissionGroupName
+        in: query
+        description: Permission group name
+        schema:
+          type: string
+      - name: accessType
+        in: query
+        description: Type of access
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObject
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Id: b92d92a5-99d0-4de8-8599-bfe47a5408a4
+                  FieldLevelAccess:
+                    Id:
+                      ReadAccess: true
+                      WriteAccess: false
+                    SampleField:
+                      ReadAccess: true
+                      WriteAccess: true
+                    ExternalId:
+                      ReadAccess: true
+                      WriteAccess: false
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Field Permission
+      summary: Set field permissions
+      description: Sets field permissions and returns a unique identifier (ID).
+      requestBody:
+        description: Field permission model data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: ea7d5061-219a-49c9-948c-9dacc5fad4f1
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Field Permission
+      summary: Update a field permission for a given permission group and object
+      description: Updates a field permission for a given permission group and object, and returns the updated field permission details.
+      requestBody:
+        description: Updated model data for the field permission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldPermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  FieldLevelAccess: '{"Account":{"ReadAccess":true,"WriteAccess":true},"ActivatedBy":{"ReadAccess":true,"WriteAccess":false},"ActivatedDate":{"ReadAccess":false,"WriteAccess":true},"Id":{"ReadAccess":true,"WriteAccess":false},"CreatedBy":{"ReadAccess":true,"WriteAccess":false}}'
+                  Id: 24716990-7502-4ead-b175-b878f91f9a61
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 45b58395-0e52-4da5-8ab3-a65d1535397a
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.9555663+00:00'
+                  ModifiedBy:
+                    Id: 97919eac-5af3-4dab-9241-dac06c79f292
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.955575+00:00'
+                  ExternalId: 6dea6932-bbc3-4796-aa79-3f7a29797f63
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/field-permissions/bulk:
+    post:
+      tags:
+      - Field Permission
+      summary: Set multiple field permissions
+      description: Sets multiple field permissions and returns their respective unique identifiers (ID).
+      requestBody:
+        description: Field permission model data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldPermissionCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldPermissionCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldPermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - 8bd45e98-4081-4680-95b7-62ca9cb8a97f
+                - ad9ec466-9d9c-4602-92b3-878f5aba3879
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/field-permissions/{fieldPermissionId}:
+    delete:
+      tags:
+      - Field Permission
+      summary: Delete a field permission by ID
+      description: Deletes a field permission for the given field permission ID.
+      parameters:
+      - name: fieldPermissionId
+        in: path
+        description: Field permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: fc4be84c-ea66-4c3f-b579-67acb39ebfce deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Field Permission
+      summary: Get the field permission details by ID
+      description: Fetches the field permission details based on the field permission ID.
+      parameters:
+      - name: fieldPermissionId
+        in: path
+        description: Field permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldPermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  FieldLevelAccess: '{"Account":{"ReadAccess":true,"WriteAccess":true},"ActivatedBy":{"ReadAccess":true,"WriteAccess":false},"ActivatedDate":{"ReadAccess":false,"WriteAccess":true},"Id":{"ReadAccess":true,"WriteAccess":false},"CreatedBy":{"ReadAccess":true,"WriteAccess":false}}'
+                  Id: 5c3681d2-5672-4ee3-a299-ff7ff816ce68
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 7964eb7c-f01e-4df8-a927-15926e15b31d
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.9718361+00:00'
+                  ModifiedBy:
+                    Id: 50a08d66-6427-4e3e-8ff4-897a45456677
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.9718433+00:00'
+                  ExternalId: bb2c656c-f83a-4140-85a3-abf7cf112a8b
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Field Permission
+      summary: Update a field permission
+      description: Updates a field permission and returns the updated field permission details.
+      parameters:
+      - name: fieldPermissionId
+        in: path
+        description: Field permission ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated model data for the field permission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateByIdRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateByIdRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FieldPermissionUpdateByIdRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldPermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  FieldLevelAccess: '{"Account":{"ReadAccess":true,"WriteAccess":true},"ActivatedBy":{"ReadAccess":true,"WriteAccess":false},"ActivatedDate":{"ReadAccess":false,"WriteAccess":true},"Id":{"ReadAccess":true,"WriteAccess":false},"CreatedBy":{"ReadAccess":true,"WriteAccess":false}}'
+                  Id: 98d42c2b-396f-47bc-b924-df289016d5cd
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 96da70d9-a031-41ec-b6b5-dce5afc1579b
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.9780738+00:00'
+                  ModifiedBy:
+                    Id: 83c7defa-dffd-45ee-9057-291b0d936b3a
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.9780812+00:00'
+                  ExternalId: d1ae4429-6506-43f0-b336-1df07b42d892
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    FieldPermissionCreateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object for which field permission is to be created.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which field permission is to be created.
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field access
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FieldPermissionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FieldPermission'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FieldPermissionUpdateByIdRequest:
+      type: object
+      properties:
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field level access
+      additionalProperties: false
+    FieldAccessConfigRequest:
+      type: object
+      properties:
+        Field:
+          type:
+          - string
+          - 'null'
+          description: Name of the field
+        Read:
+          type: boolean
+        Write:
+          type: boolean
+      additionalProperties: false
+    FieldPermission:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+        FieldLevelAccess: {}
+      additionalProperties: {}
+    FieldPermissionUpdateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object for which field permission is to be updated.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which field permission is to be updated.
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field access
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

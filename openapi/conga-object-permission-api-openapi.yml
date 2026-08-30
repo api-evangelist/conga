@@ -1,0 +1,1064 @@
+openapi: 3.2.0
+info:
+  title: User Management Object Permission API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Object Permission
+paths:
+  /api/user-management/v1/objectpermissions:
+    get:
+      tags:
+      - Object Permission
+      summary: Get all object permissions
+      description: Returns all object permissions that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the object permissions. **For example**: IsActive = ''true''.<p>**Note**: The criteria field (in this case, IsDeleted) should be indexed.</p>'
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: ObjectName.<p>**Note**: The sort field (in this case, ObjectName) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC<p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page. Default page size is 100.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Object Permission
+      summary: Create a new object permission
+      description: Creates a new object permission and returns the object permission's ID.
+      requestBody:
+        description: Object permission model data to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 99d39a44-53ef-4f8d-b56e-ae188a0eb8d9
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/objectpermissions/bulk:
+    delete:
+      tags:
+      - Object Permission
+      summary: Delete multiple object permission records
+      description: Removes multiple object permission records and returns a list of the deleted object permission's IDs as well as error messages for invalid records.
+      requestBody:
+        description: Multiple object permission IDs to be deleted
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Object Permission
+      summary: Create multiple object permissions
+      description: Creates multiple object permissions and returns their IDs.
+      requestBody:
+        description: Object permissions model data to be created
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectPermissionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - d7e20470-6d6c-41e5-9035-4ce9b48d27d9
+                - d9bd7ebb-757c-4eb1-8886-ab32cb374c0c
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/objectpermissions/objects:
+    get:
+      tags:
+      - Object Permission
+      summary: List all object names for object permissions
+      description: Fetches and lists all objects for object permissions and returns `OK` when the request is executed.
+      parameters:
+      - name: sortField
+        in: query
+        description: Field name for sorting
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction (ascending or descending) of the data in sortField.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view
+        schema:
+          type: integer
+          format: int32
+      - name: startsWithFilter
+        in: query
+        description: Filter to fetch only names starting with this string.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectInfoListAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/objectpermissions/objects/{objectName}:
+    get:
+      tags:
+      - Object Permission
+      summary: Get object permission details by object name
+      description: Fetches the object permission details for the provided object name.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectPermissionListAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  ViewAll: true
+                  ModifyAll: false
+                  ActionPermissions: '{"CREATE":{"Standard":true,"Enabled":true,"Criteria":""},"UPDATE":{"Standard":true,"Enabled":true,"Criteria":""},"DELETE":{"Standard":true,"Enabled":false,"Criteria":""},"READ":{"Standard":true,"Enabled":true,"Criteria":""}}'
+                  ScopePermissions: '{"GLOBAL":"","USER":[],"ACCOUNT":null,"CONTACT":""}'
+                  IsDeleted: false
+                  PermissionType: null
+                  Id: b0a81cd8-26a4-4286-883b-8046e9143dac
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 52ef899b-44a6-4d8e-ad91-4d17f873f425
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.101872+00:00'
+                  ModifiedBy:
+                    Id: 5e7f0e3a-8ef4-44f0-9abf-d8306d8319a6
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.1018797+00:00'
+                  ExternalId: 97153a87-759b-41b9-bc77-660abba6d57e
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/objectpermissions/{objectName}/actionpermissions/{actionName}/validate:
+    get:
+      tags:
+      - Object Permission
+      summary: Validate object action permission
+      description: Based on the object name and action name, validates whether the object has action permission.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      - name: actionName
+        in: path
+        description: Action name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/objectpermissions/{objectPermissionId}:
+    delete:
+      tags:
+      - Object Permission
+      summary: Delete an object permission
+      description: Removes an object permission and returns the deleted object permission's ID.
+      parameters:
+      - name: objectPermissionId
+        in: path
+        description: Object permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: ef4510e9-3517-4919-b32a-9316cad0bc5c deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Object Permission
+      summary: Get object permission details by ID
+      description: Fetches the object permission details based on the object permission ID.
+      parameters:
+      - name: objectPermissionId
+        in: path
+        description: Object permission ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectPermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  ViewAll: true
+                  ModifyAll: false
+                  ActionPermissions: '{"CREATE":{"Standard":true,"Enabled":true,"Criteria":""},"UPDATE":{"Standard":true,"Enabled":true,"Criteria":""},"DELETE":{"Standard":true,"Enabled":false,"Criteria":""},"READ":{"Standard":true,"Enabled":true,"Criteria":""}}'
+                  ScopePermissions: '{"GLOBAL":"","USER":[],"ACCOUNT":null,"CONTACT":""}'
+                  IsDeleted: false
+                  PermissionType: null
+                  Id: e582a83d-ee56-403b-8fcf-c91acd1725b4
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 0f233730-312d-4ab5-aa2e-fd328679961e
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.0632876+00:00'
+                  ModifiedBy:
+                    Id: 3c68efbc-e968-42ec-a0bc-dcbae44383b0
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.0632953+00:00'
+                  ExternalId: 99f4eea4-3177-46ff-b17f-9386249cbc89
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Object Permission
+      summary: Update an object permission
+      description: Updates an object permission and returns updated object permission details.
+      parameters:
+      - name: objectPermissionId
+        in: path
+        description: Object permission ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details to be updated in the object permission model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ObjectPermissionUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectPermissionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObjectName
+                  PermissionGroupName: SamplePermissionGroupName
+                  ViewAll: true
+                  ModifyAll: false
+                  ActionPermissions: '{"CREATE":{"Standard":true,"Enabled":true,"Criteria":""},"UPDATE":{"Standard":true,"Enabled":true,"Criteria":""},"DELETE":{"Standard":true,"Enabled":false,"Criteria":""},"READ":{"Standard":true,"Enabled":true,"Criteria":""}}'
+                  ScopePermissions: '{"GLOBAL":"","USER":[],"ACCOUNT":null,"CONTACT":""}'
+                  IsDeleted: false
+                  PermissionType: null
+                  Id: 5e7778f2-5430-43a9-bd5c-a6f52633f50b
+                  Name: SampleObjectName.SamplePermissionGroupName
+                  CreatedBy:
+                    Id: 13251bda-f4d5-4700-9f29-18116df87926
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.0759932+00:00'
+                  ModifiedBy:
+                    Id: ee0a81db-5c29-4257-8780-61181c878799
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.0760005+00:00'
+                  ExternalId: 0a257ef0-e0d1-4682-97d4-afcfe91f6018
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectPermissionType:
+      enum:
+      - Internal
+      - External
+      type: string
+    ActionPermissionConfig:
+      type: object
+      properties:
+        ActionName:
+          type:
+          - string
+          - 'null'
+        Enabled:
+          type: boolean
+        Criteria:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ContactScopeConfig:
+      type: object
+      properties:
+        EnabledAsPrimaryObject:
+          type: boolean
+          description: 'Used only for primary objects e.g. Supplier, Account
+
+            Indicates whether the primary object is accessible or not'
+        DependentObjectMappings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContactScopeDependentObjectMapping'
+          description: 'Used only for dependent objects e.g. SupplierContact, SupplierLocation, Agreement
+
+            Shows dependency of the primary object and dependent objects with lookup field name in dependent object.'
+      additionalProperties: false
+      description: Contact Scope configuration
+    ObjectInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Category:
+          type:
+          - string
+          - 'null'
+        IsProtected:
+          type: boolean
+        IsDeprecated:
+          type: boolean
+        ObjectType:
+          $ref: '#/components/schemas/ObjectType'
+      additionalProperties: false
+    ObjectPermissionListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectPermission'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    AccountScopeConfig:
+      type: object
+      properties:
+        AccountScopeFieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserScopeConfig:
+      type: object
+      properties:
+        RelationshipFieldName:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ObjectPermissionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ObjectPermission'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectPermissionCreateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: ID of the object permission
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which an object permission is to be created
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which an object permission is to be created
+        ViewAll:
+          type: boolean
+          description: Provides view access to all the defined resources
+        ModifyAll:
+          type: boolean
+          description: Provides view and modify access to all the defined resources
+        ActionPermissions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActionPermissionConfig'
+          description: Collection of action permissions
+        ScopePermissions:
+          $ref: '#/components/schemas/ScopePermissionConfig'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+        PermissionType:
+          $ref: '#/components/schemas/ObjectPermissionType'
+      additionalProperties: false
+    ContactScopeDependentObjectMapping:
+      type: object
+      properties:
+        PrimaryObjectName:
+          type:
+          - string
+          - 'null'
+          description: Primary object name e.g. Supplier, Account
+        LookupFieldName:
+          type:
+          - string
+          - 'null'
+          description: Lookup/reference field on the dependent object that points to the primary object.
+      additionalProperties: false
+      description: Contact Scope dependent object mapping
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ObjectPermissionUpdateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which object permission is to be updated
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which object permission is to be updated
+        ViewAll:
+          type: boolean
+          description: Provides view access to all the defined resources
+        ModifyAll:
+          type: boolean
+          description: Provides view and modify access to all the defined resources
+        ActionPermissions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActionPermissionConfig'
+          description: Collection of action permissions
+        ScopePermissions:
+          $ref: '#/components/schemas/ScopePermissionConfig'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ObjectPermission:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+        ViewAll:
+          type: boolean
+        ModifyAll:
+          type: boolean
+        ActionPermissions: {}
+        ScopePermissions: {}
+        IsDeleted:
+          type: boolean
+        PermissionType:
+          $ref: '#/components/schemas/ObjectPermissionType'
+      additionalProperties: {}
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectType:
+      enum:
+      - Default
+      - Property
+      type: string
+    ScopePermissionConfig:
+      type: object
+      properties:
+        GLOBAL:
+          type:
+          - string
+          - 'null'
+        USER:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserScopeConfig'
+        ACCOUNT:
+          $ref: '#/components/schemas/AccountScopeConfig'
+        CONTACT:
+          $ref: '#/components/schemas/ContactScopeConfig'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

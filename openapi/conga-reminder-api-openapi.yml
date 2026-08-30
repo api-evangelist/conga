@@ -1,0 +1,308 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Reminder API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: Reminder
+paths:
+  /v1/cs-packages/{packageId}/reminders:
+    post:
+      tags:
+      - Reminder
+      summary: Create a reminder schedule
+      description: 'The user can only create a reminder schedule on packages that are not yet sent.
+
+        All reminders are created automatically by the system when a package is sent.'
+      operationId: Reminder_CreateReminders
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: 'The unique package ID. '
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: packageReminderSchedule
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageReminderSchedule'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageReminderSchedule'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    delete:
+      tags:
+      - Reminder
+      summary: Delete a reminder schedule
+      description: Deletes the reminder schedule of the specified package.
+      operationId: Reminder_DeleteReminders
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: 'The unique package ID. '
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageReminderSchedule'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Reminder
+      summary: Retrieve a package's reminder schedule
+      description: Retrieves the reminder schedule of a package. A reminder schedule for the package must already exist.
+      operationId: Reminder_GetReminders
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: 'The unique package ID. '
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfPackageReminderSchedule'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Reminder
+      summary: Update a reminder schedule
+      description: 'Updates the specified package''s reminder schedule.
+
+        This resource is not available for packages whose status is SENT.'
+      operationId: Reminder_UpdateReminders
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: 'The unique package ID. '
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: packageReminderSchedule
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageReminderSchedule'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageReminderSchedule'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    PackageReminder:
+      type: object
+      description: Dates of package reminder, including transaction and reminder sent dates.
+      additionalProperties: false
+      properties:
+        date:
+          type:
+          - string
+          - 'null'
+          description: Transaction sent date.
+          format: date-time
+        sentDate:
+          type:
+          - string
+          - 'null'
+          description: Reminder sent date.
+          format: date-time
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    ResultOfPackageReminderSchedule:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/PackageReminderSchedule'
+    PackageReminderSchedule:
+      type: object
+      description: 'By setting a reminder schedule, a sender can choose when and how often to notify a signer about a pending signature,
+
+        in addition to the initial notification sent the moment the transaction is sent for signing. In other words,
+
+        assuming the transaction is not yet completed, a customizable number of notifications can be sent with a specified
+
+        interval between each to remind your signer that a signature is required.'
+      additionalProperties: false
+      properties:
+        intervalInDays:
+          type: integer
+          description: Reminder interval (in days).
+          format: int32
+        packageId:
+          type: string
+          description: The unique package Id.
+        reminders:
+          type: array
+          description: List of Reminders.
+          items:
+            $ref: '#/components/schemas/PackageReminder'
+        repetitionsCount:
+          type: integer
+          description: Number of repetitive counts.
+          format: int32
+        startInDaysDelay:
+          type: integer
+          description: Reminder delay (in days).
+          format: int32
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

@@ -1,0 +1,631 @@
+openapi: 3.2.0
+info:
+  title: Conversion Management UOM Conversion Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: UOM Conversion Runtime
+paths:
+  /api/conversion-management/v1/query/uom-conversion:
+    post:
+      tags:
+      - UOM Conversion Runtime
+      summary: Retrieve converted UOM value
+      description: Retrieves the converted UOM value.
+      requestBody:
+        description: UOM conversion request. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvertedUOMAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FromUOM: Box
+                  ToUOM: Each
+                  Product:
+                    Id: a0b1c2d3-e4f5-6789-0abc-def123456789
+                    Name: Product-001
+                  ProductFamily: null
+                  Value: 5
+                  ConversionRate: 10
+                  ConvertedValue: 50
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/conversion-management/v1/query/uom-conversion-rates:
+    post:
+      tags:
+      - UOM Conversion Runtime
+      summary: Retrieve effective UOM conversion rate
+      description: Retrieves the effective UOM conversion rate.
+      requestBody:
+        description: UOM conversion rate retrieval request. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionGetRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionGetRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UOMConversionGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UOMConversionRateAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FromUOM: Box
+                  ToUOM: Each
+                  Product: null
+                  ProductFamily: null
+                  ConversionRate: 10
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/conversion-management/v1/query/uom-conversion-rates/bulk:
+    post:
+      tags:
+      - UOM Conversion Runtime
+      summary: Retrieve effective UOM conversion rates in bulk
+      description: Retrieves the effective UOM conversion rates in bulk.
+      requestBody:
+        description: UOM conversion rate retrieval requests. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UOMConversionGetRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UOMConversionGetRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UOMConversionGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkUOMConversionRatesAPIResponse'
+              example:
+                Success: true
+                Data:
+                  UOMConversionRates:
+                  - FromUOM: Box
+                    ToUOM: Each
+                    Product: null
+                    ProductFamily: null
+                    ConversionRate: 10
+                    Id: a0b1c2d3-e4f5-6789-0abc-def123456789
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  - FromUOM: Case
+                    ToUOM: Box
+                    Product: null
+                    ProductFamily: null
+                    ConversionRate: 5
+                    Id: b1c2d3e4-f567-8901-2abc-def345678901
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  Error: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    UOMConversionRequest:
+      type: object
+      properties:
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+      additionalProperties: false
+      description: UOM conversion request schema
+    BulkUOMConversionRates:
+      type: object
+      properties:
+        UOMConversionRates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UOMConversionRate'
+          description: A collection of UOMConversionRates
+        Error:
+          type:
+          - string
+          - 'null'
+          description: General error details that apply to the entire operation
+      additionalProperties: false
+      description: Bulk UOM conversion rates
+    ConvertedUOM:
+      type: object
+      properties:
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+        ConvertedValue:
+          type: number
+          description: Converted value
+          format: double
+      additionalProperties: false
+      description: Converted UOM
+    ConvertedUOMAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ConvertedUOM'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UOMConversionRate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+      additionalProperties: {}
+      description: UOM conversion rate schema
+    UOMConversionGetRequest:
+      type: object
+      properties:
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    UOMConversionRateAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UOMConversionRate'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BulkUOMConversionRatesAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BulkUOMConversionRates'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

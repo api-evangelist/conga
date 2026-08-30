@@ -1,0 +1,101 @@
+openapi: 3.2.0
+info:
+  title: Administration Validation API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Validation
+paths:
+  /validate:
+    post:
+      tags:
+      - Validation
+      summary: Validate data of multiple objects
+      requestBody:
+        description: validationRequestList
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValidationRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValidationRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '202':
+          description: Accepted
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+  /{objectName}/validate:
+    post:
+      tags:
+      - Validation
+      summary: Validate data of an object for a given criteria
+      parameters:
+      - name: objectName
+        in: path
+        description: ObjectName
+        required: true
+        schema:
+          type: string
+      - name: forceTrigger
+        in: query
+        description: forceTrigger pass as true if you don't want to wait for previous job to be completed
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: Criteria
+        content:
+          application/json:
+            schema:
+              type: string
+          text/json:
+            schema:
+              type: string
+          application/*+json:
+            schema:
+              type: string
+      responses:
+        '202':
+          description: Accepted
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+components:
+  schemas:
+    ValidationRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        ForceTrigger:
+          type: boolean
+          default: false
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

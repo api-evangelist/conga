@@ -1,0 +1,1404 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract Obligations API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract Obligations
+paths:
+  /api/clm/v1/contracts/{contractId}/obligation-fulfillments:
+    post:
+      tags:
+      - Contract Obligations
+      summary: Get the obligation and fulfillment details of the contract
+      description: Fetches the obligation and fulfillment details of the contract with document details
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ID of the obligation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns the details of obligations and fulfillments of the input contract ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  Status: Activated
+                  StatusCategory: In Effect
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.3236736Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.3236738Z'
+                  ContractNumber: '42'
+                  Currency: USD
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/obligations:
+    delete:
+      tags:
+      - Contract Obligations
+      summary: Delete contract obligations
+      description: Deletes obligations associated with the specified contractID. If contractObligationIds are provided, only those specific obligations are deleted; otherwise, all obligations linked to the contract are deleted.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to delete obligations
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of obligation IDs to delete specified obligations
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The given contract obligations Ids are deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResultStatusDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  4ae151a8-ba84-4e60-888e-86326c02d0db: Success
+                  af72e569-9e65-4f97-a7c9-26466c02be51: Fail
+                Warnings: null
+                Errors: null
+        '400':
+          description: Contract IDs is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Contract Obligations
+      summary: Create an obligation for a contract
+      description: "Creates an obligation record for the specified Contract ID. Name is a required field to create an obligation.   \nYou can specify values for the following additional fields for the obligation.\n* ObligationType \n* Priority \n* Description \n* AccountableParty \n* Assignee \n* Reviewer \n* DueDate \n* Comments"
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to create obligation
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: External Supplier Contact Obligation
+              ObligationType: Contractual
+              Priority: High
+              Frequency: OneTime
+              Description: External obligation assigned to supplier contact
+              AccountableParty: External
+              AssigneeType: User
+              AssigneeSupplierContact:
+                Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                Name: Supplier Contact Name
+              Reviewer:
+                Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                Name: Internal Reviewer
+              DueDate: '0001-01-06T00:00:00'
+              Comments: Test obligation for buy-side contract with external supplier contact assignee
+      responses:
+        '200':
+          description: Returns the details of the created contract obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: fd2a3813-d842-4470-a485-0f20a6eeb069
+                  Name: External Supplier Contact Obligation
+                  Agreement: 4ae151a8-ba84-4e60-888e-86326c02d0db
+                  RecordType: Contractual
+                  Priority: High
+                  Description: External obligation assigned to supplier contact
+                  AccountableParty: External
+                  AssigneeType: User
+                  Assignee: null
+                  AssigneeContact: null
+                  AssigneeSupplierContact:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Supplier Contact Name
+                  AssigneeUserGroup: null
+                  Reviewer:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Internal Reviewer
+                  ReviewerType: User
+                  ReviewerContact: null
+                  PrintOnContract: true
+                  DueDate: '0001-01-06T00:00:00'
+                  Comments: Test obligation for buy-side contract
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.2775501Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.2775545Z'
+                  ExternalId: null
+                  ETag: 3021ebe9-a159-4b2d-9809-880bb01c7ead
+                  Obligation: null
+                  ObligationNumber: OB-000123
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  AgreementClause: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: A required value is missing from the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/obligations/query:
+    post:
+      tags:
+      - Contract Obligations
+      summary: Get all contract obligations
+      description: 'Fetches all contract obligations associated with a specified contract ID.
+
+        You can refine the results by applying filters and sorting options using query parameters.'
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to fetch obligations
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to filter and sort the contract obligations list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Name: Contract-Demo
+                    Account:
+                      Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                      Name: Conga
+                    RecordType: MSA
+                    ContractCategory: Sales
+                    TotalContractValue: 2000
+                    ContractStartDate: '2023-01-01T00:00:00'
+                    ContractEndDate: '2023-12-31T00:00:00'
+                    RecordOwner:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: Bumble Bee
+                      OwnerType: User
+                    Status: Request
+                    StatusCategory: Request
+                    Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2023-01-16T11:59:24'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2023-01-16T11:59:24'
+                    ExternalId: null
+                    ActivatedBy: null
+                    ActivatedDate: null
+                    ContractNumber: '42'
+                    AmendmentEffectiveDate: null
+                    AutoRenewConsent: null
+                    AutoRenewTermMonths: null
+                    AutoRenewalTerms: null
+                    AutoRenewal: null
+                    ContractNumberAuto: 42
+                    Description: null
+                    Currency: USD
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/obligations/{obligationId}:
+    delete:
+      tags:
+      - Contract Obligations
+      summary: Delete a contract obligation by ID
+      description: Deletes a contract obligation by its ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract obligation is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '404':
+          description: Contract obligation not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Contract Obligations
+      summary: Get a contract obligation by ID
+      description: Fetches a contract obligation by its ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the contract obligation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: e6b5ba08-b209-4603-8e74-491e52c2bef0
+                  Name: External Supplier Contact Obligation
+                  Agreement: 4ae151a8-ba84-4e60-888e-86326c02d0db
+                  RecordType: Contractual
+                  Priority: High
+                  Description: External obligation assigned to supplier contact
+                  AccountableParty: External
+                  AssigneeType: User
+                  Assignee: null
+                  AssigneeContact: null
+                  AssigneeSupplierContact:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Supplier Contact Name
+                  AssigneeUserGroup: null
+                  Reviewer:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Internal Reviewer
+                  ReviewerType: User
+                  ReviewerContact: null
+                  PrintOnContract: true
+                  DueDate: '0001-01-06T00:00:00'
+                  Comments: Test obligation for buy-side contract
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.291895Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.2918952Z'
+                  ExternalId: null
+                  ETag: 3021ebe9-a159-4b2d-9809-880bb01c7ead
+                  Obligation: null
+                  ObligationNumber: OB-000123
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  AgreementClause: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '404':
+          description: Contract obligation not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Contract Obligations
+      summary: Update a contract obligation
+      description: Updates a contract obligation record.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated contract obligation details
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: External Supplier Contact Obligation
+              ObligationType: Contractual
+              Priority: High
+              Frequency: OneTime
+              Description: External obligation assigned to supplier contact
+              AccountableParty: External
+              AssigneeType: User
+              AssigneeSupplierContact:
+                Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                Name: Supplier Contact Name
+              Reviewer:
+                Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                Name: Internal Reviewer
+              DueDate: '0001-01-06T00:00:00'
+              Comments: Test obligation for buy-side contract with external supplier contact assignee
+      responses:
+        '200':
+          description: Returns the updated contract obligation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: bdbb987d-6f57-4dd1-a817-cfe12424c22e
+                  Name: External Supplier Contact Obligation
+                  Agreement: 4ae151a8-ba84-4e60-888e-86326c02d0db
+                  RecordType: Contractual
+                  Priority: High
+                  Description: External obligation assigned to supplier contact
+                  AccountableParty: External
+                  AssigneeType: User
+                  Assignee: null
+                  AssigneeContact: null
+                  AssigneeSupplierContact:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Supplier Contact Name
+                  AssigneeUserGroup: null
+                  Reviewer:
+                    Id: af72e569-9e65-4f97-a7c9-26466c02be51
+                    Name: Internal Reviewer
+                  ReviewerType: User
+                  ReviewerContact: null
+                  PrintOnContract: true
+                  DueDate: '0001-01-06T00:00:00'
+                  Comments: Test obligation for buy-side contract
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.2985006Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.2985009Z'
+                  ExternalId: null
+                  ETag: 3021ebe9-a159-4b2d-9809-880bb01c7ead
+                  Obligation: null
+                  ObligationNumber: OB-000123
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  AgreementClause: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid request data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/documents:
+    post:
+      tags:
+      - Contract Obligations
+      summary: Create a contract obligation document
+      description: Creates a new document for the specified contract obligation.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: Returns the newly created contract obligation document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID, obligation ID, or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/documents/{documentId}:
+    delete:
+      tags:
+      - Contract Obligations
+      summary: Delete a contract obligation document
+      description: Deletes a document based on the provided document ID for the specified contract obligation.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns confirmation that the document is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID, obligation ID, or document ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Contract Obligations
+      summary: Get contract obligation document details
+      description: Fetches document details for the provided document ID within a specific contract obligation.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns document details for the provided document ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAPIResponse'
+        '400':
+          description: The provided contract ID, obligation ID, or document ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    StringObjectDictionaryQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    DocumentMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentMetadata'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    Document:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        DocumentMetadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+        BlobData:
+          type:
+          - string
+          - 'null'
+          description: Actual document as a blob (byte array)
+          format: byte
+      additionalProperties: {}
+      description: Represents documents associated with contracts and agreements
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DocumentMetadata:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Extension:
+          type:
+          - string
+          - 'null'
+        Tags:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        DocumentVersion:
+          type: integer
+          format: int32
+        IsDeleted:
+          type: boolean
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+        CheckoutDate:
+          type: string
+          format: date-time
+        FileSize:
+          type: integer
+          format: int64
+        FileType:
+          type:
+          - string
+          - 'null'
+        IsLatest:
+          type: boolean
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: {}
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringResultStatusDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    DocumentAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/Document'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

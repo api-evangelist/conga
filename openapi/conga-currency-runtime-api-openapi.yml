@@ -1,0 +1,684 @@
+openapi: 3.2.0
+info:
+  title: Conversion Management Currency Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Currency Runtime
+paths:
+  /api/currency-management/v1/query/currency-conversion:
+    post:
+      tags:
+      - Currency Runtime
+      summary: Retrieve converted currency
+      description: Retrieves the converted currency.
+      requestBody:
+        description: Currency conversion retrieval request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyConversionGetRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyConversionGetRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CurrencyConversionGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvertedCurrencyAPIResponse'
+              example:
+                Success: true
+                Data:
+                  SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveDate: '0001-01-01T00:00:00'
+                  Value: 10
+                  ConversionRate: 2
+                  ConvertedValue: 20
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/currency-management/v1/query/currency-rates:
+    post:
+      tags:
+      - Currency Runtime
+      summary: Retrieve effective currency rate
+      description: Retrieves the effective currency rate.
+      requestBody:
+        description: Currency rate retrieval request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRateGetRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRateGetRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CurrencyRateGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateAPIResponse'
+              example:
+                Success: true
+                Data:
+                  SourceCurrency: USD
+                  TargetCurrency: INR
+                  EffectiveStartDate: '0001-01-01T00:00:00'
+                  EffectiveEndDate: '0001-01-01T00:00:00'
+                  ConversionRate: 10
+                  Scale: 2
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/currency-management/v1/query/currency-rates/bulk:
+    post:
+      tags:
+      - Currency Runtime
+      summary: Retrieve effective currency rates
+      description: Retrieves the effective currency rates.
+      requestBody:
+        description: Currency rate retrieval requests
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRateGetRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRateGetRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyRateGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkCurrencyRatesAPIResponse'
+              example:
+                Success: true
+                Data:
+                  CurrencyRates:
+                  - SourceCurrency: USD
+                    TargetCurrency: INR
+                    EffectiveStartDate: '0001-01-01T00:00:00'
+                    EffectiveEndDate: '0001-01-01T00:00:00'
+                    ConversionRate: 10
+                    Scale: 2
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  - SourceCurrency: EUR
+                    TargetCurrency: IDR
+                    EffectiveStartDate: '0001-01-01T00:00:00'
+                    EffectiveEndDate: '0001-01-01T00:00:00'
+                    ConversionRate: 5
+                    Scale: 2
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  Error: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    CurrencyRate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: Source currency. **For example:** USD, INR, EUR etc
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+          description: Target currency. **For example:** TVD, IDR, MYR etc
+        EffectiveStartDate:
+          type:
+          - string
+          - 'null'
+          description: Start date
+          format: date-time
+        EffectiveEndDate:
+          type:
+          - string
+          - 'null'
+          description: End date
+          format: date-time
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+      additionalProperties: {}
+      description: Currency rate schema
+    BulkCurrencyRatesAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BulkCurrencyRates'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ConvertedCurrency:
+      type: object
+      properties:
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: Source currency. **For example:** USD, INR, EUR etc
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+          description: Target currency. **For example:** TVD, IDR, MYR etc
+        EffectiveDate:
+          type: string
+          description: Effective date
+          format: date-time
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+        ConvertedValue:
+          type: number
+          description: Converted value
+          format: double
+      additionalProperties: false
+      description: Converted currency
+    BulkCurrencyRates:
+      type: object
+      properties:
+        CurrencyRates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CurrencyRateResponse'
+          description: A collection of CurrencyRates
+        Error:
+          type:
+          - string
+          - 'null'
+          description: Error details
+      additionalProperties: false
+      description: Bulk currency rates
+    ConvertedCurrencyAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ConvertedCurrency'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyRateAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CurrencyRate'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CurrencyConversionGetRequest:
+      type: object
+      properties:
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: Source currency. **For example:** USD, INR, EUR etc
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+          description: Target currency. **For example:** TVD, IDR, MYR etc
+        EffectiveDate:
+          type: string
+          description: Effective date
+          format: date-time
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+      additionalProperties: false
+      description: Currency conversion get schema
+    CurrencyRateResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+        EffectiveStartDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EffectiveEndDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ConversionRate:
+          type: number
+          format: double
+        Scale:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    CurrencyRateGetRequest:
+      type: object
+      properties:
+        SourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: Source currency. **For example:** USD, INR, EUR etc
+        TargetCurrency:
+          type:
+          - string
+          - 'null'
+          description: Target currency. **For example:** TVD, IDR, MYR etc
+        EffectiveDate:
+          type: string
+          description: Effective date
+          format: date-time
+      additionalProperties: false
+      description: Curremcy rate get request schema
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

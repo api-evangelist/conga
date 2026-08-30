@@ -1,0 +1,1006 @@
+openapi: 3.2.0
+info:
+  title: Approvals Rule Entries API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: RuleEntries
+paths:
+  /v1/rule-entries:
+    post:
+      tags:
+      - RuleEntries
+      summary: Save an approval rule entry
+      description: Writes an approval rule entry and returns the updated approval rule entry definition.
+      operationId: RuleEntries_Save
+      requestBody:
+        x-name: ruleEntryPayload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRuleEntryDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: approval rule entry definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rule-entries/reorder:
+    post:
+      tags:
+      - RuleEntries
+      summary: Reorder rule entries
+      description: Reorders the list of rule entries (ruleEntries) within a rule to the order given in the request body.
+      operationId: RuleEntries_Reorder
+      requestBody:
+        x-name: ruleEntries
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReorderApprovalRuleEntryRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Returns an approval rule, including the reordered entries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRule'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rule-entries/validate:
+    get:
+      tags:
+      - RuleEntries
+      summary: Validate a rule entry label
+      description: Validates whether a rule entry label is already used.
+      operationId: RuleEntries_Validate
+      parameters:
+      - name: ruleId
+        in: query
+        required: true
+        description: rule ID under which ruleEntryName resides
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: ruleEntryLabel
+        in: query
+        required: true
+        description: rule entry name to be validated
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      responses:
+        '200':
+          description: Boolean. True if the named rule entry does not exist in the rule entries associated with ruleId, meaning the rule entry name is available for this rule entry stack.
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rule-entries/{id}:
+    get:
+      tags:
+      - RuleEntries
+      summary: Get an approval rule entry
+      description: Gets an approval rule entry by ID.
+      operationId: RuleEntries_GetById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule entry ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The rule and its associated entries, including the request rule entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleEntryResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    RuleEntryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        RuleAssignees:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApprovalRuleAssigneeDTO'
+        Name:
+          type:
+          - string
+          - 'null'
+        Id:
+          type:
+          - string
+          - 'null'
+        Active:
+          type:
+          - boolean
+          - 'null'
+        EntryLabel:
+          type:
+          - string
+          - 'null'
+        ApprovalRuleId:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        Description:
+          type:
+          - string
+          - 'null'
+        Condition:
+          type:
+          - string
+          - 'null'
+        AutoReapprovalCriteria:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        SequenceVisual:
+          type:
+          - number
+          - 'null'
+          format: decimal
+        DependsOn:
+          type:
+          - string
+          - 'null'
+        AutoReapprove:
+          type:
+          - boolean
+          - 'null'
+        ConditionFieldNames:
+          type:
+          - string
+          - 'null'
+        CriteriaFieldNames:
+          type:
+          - string
+          - 'null'
+        Dimension1Value:
+          type:
+          - string
+          - 'null'
+        Dimension2Value:
+          type:
+          - string
+          - 'null'
+        Dimension3Value:
+          type:
+          - string
+          - 'null'
+        Dimension4Value:
+          type:
+          - string
+          - 'null'
+        Dimension5Value:
+          type:
+          - string
+          - 'null'
+        Dimension6Value:
+          type:
+          - string
+          - 'null'
+        IncludePrevious:
+          type:
+          - boolean
+          - 'null'
+        ValueType:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+    ApprovalRuleLookupObject:
+      type: object
+      description: A lookup object that references an approval rule
+      additionalProperties: false
+      required:
+      - Id
+      - Name
+      properties:
+        Id:
+          type: string
+          description: The approval rule id
+          minLength: 1
+          example: D42569E8-DC7F-4159-A77E-252740F87C19
+        Name:
+          type: string
+          description: The approval rule name
+          minLength: 1
+          example: my-approval-rule
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    ApprovalRuleDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRule'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntryDTO'
+    EscalationDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        EscalationLevel:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        EscalationToId:
+          type:
+          - string
+          - 'null'
+        EscalationToType:
+          type:
+          - string
+          - 'null'
+        EscalationToName:
+          type:
+          - string
+          - 'null'
+        CustomAssignee:
+          oneOf:
+          - $ref: '#/components/schemas/CustomAssigneePayload'
+        Id:
+          type:
+          - string
+          - 'null'
+    ApprovalRuleEntryDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssigneeDTO'
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ReorderApprovalRuleEntryRequest:
+      type: object
+      description: Request to reorder approval rule entries
+      additionalProperties: false
+      required:
+      - Id
+      - ApprovalRuleId
+      properties:
+        Id:
+          type: string
+          description: The approval rule entry id
+          minLength: 1
+          example: A5D22168-9AC5-41A2-B4F0-A6DB2ADA5A9B
+        ApprovalRuleId:
+          description: The approval rule
+          oneOf:
+          - $ref: '#/components/schemas/ApprovalRuleLookupObject'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    CustomAssigneePayload:
+      type: object
+      description: CustomAssigneePayload
+      additionalProperties: false
+      properties:
+        CustomObject:
+          type: string
+          description: CustomObject
+        CustomField:
+          type: string
+          description: CustomField
+        CustomAssigneeAdvancedLogic:
+          type:
+          - string
+          - 'null'
+          description: CustomAssigneeAdvancedLogic
+        AssigneeNameExpression:
+          type:
+          - string
+          - 'null'
+          description: Parsed Expression to be shown in UI
+        FreeFormEnabled:
+          type: boolean
+          description: Custom object filter free form expression
+        FreeFormExpression:
+          type:
+          - string
+          - 'null'
+          description: FreeFormExpression
+        CustomAssigneeFilters:
+          type:
+          - array
+          - 'null'
+          description: Custom assignee filters
+          items:
+            $ref: '#/components/schemas/CustomAssigneeFilterPayload'
+    CustomAssigneeFilterPayload:
+      type: object
+      description: CustomAssigneeFilterPayload
+      additionalProperties: false
+      properties:
+        FilterFieldName:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameType:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameRefTo:
+          type:
+          - string
+          - 'null'
+        FilterFieldOperator:
+          type:
+          - string
+          - 'null'
+        FilterFieldValue:
+          type:
+          - string
+          - 'null'
+        FilterFieldValueBindField:
+          type:
+          - string
+          - 'null'
+        UseBindFieldEnabled:
+          type: boolean
+    ReminderDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        Id:
+          type:
+          - string
+          - 'null'
+    ApprovalRule:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPercent:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPolicy:
+            type:
+            - string
+            - 'null'
+          BusinessObject:
+            type:
+            - string
+            - 'null'
+          ContinuePolicyApprovalOnAReject:
+            type:
+            - boolean
+            - 'null'
+          RuleCriteria:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension1ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension2Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension2ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension3Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension3ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension4Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension4ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension5Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension5ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension6Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension6ValueType:
+            type:
+            - string
+            - 'null'
+          EffectiveDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          ExpirationDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          MatchRule:
+            type:
+            - string
+            - 'null'
+          RuleType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StopProcessingMoreRules:
+            type:
+            - boolean
+            - 'null'
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntry'
+    ApprovalRuleAssigneeDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRuleAssignee'
+      - type: object
+        additionalProperties: {}
+        properties:
+          CustomAssigneePayload:
+            oneOf:
+            - $ref: '#/components/schemas/CustomAssigneePayload'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/EscalationDTO'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ReminderDTO'
+    Escalation:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          EscalationLevel:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          EscalationForId:
+            type:
+            - string
+            - 'null'
+          EscalationForType:
+            type:
+            - string
+            - 'null'
+          EscalationToId:
+            type:
+            - string
+            - 'null'
+          EscalationToType:
+            type:
+            - string
+            - 'null'
+          EscalationToName:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          StepId:
+            type:
+            - string
+            - 'null'
+          Rule:
+            type:
+            - string
+            - 'null'
+          RuleStep:
+            type:
+            - string
+            - 'null'
+          ExpectedDaysToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedHoursToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedMinutesToComplete:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleEntry:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleAssignee:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Id:
+            type:
+            - string
+            - 'null'
+          Name:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          RuleEntryId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeDependsOn:
+            type:
+            - string
+            - 'null'
+          AssigneeSequence:
+            type: number
+            format: double
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type: boolean
+          SkipUnresolvedAssignee:
+            type: boolean
+          EscalationEnabled:
+            type:
+            - boolean
+            - 'null'
+          ReminderEnabled:
+            type:
+            - boolean
+            - 'null'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/Reminder'
+    Reminder:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Sequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          TimeDurationUnit:
+            type:
+            - string
+            - 'null'
+          ReminderForId:
+            type:
+            - string
+            - 'null'
+          ReminderForType:
+            type:
+            - string
+            - 'null'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

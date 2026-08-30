@@ -1,0 +1,148 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Signature Layout API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: SignatureLayout
+paths:
+  /v1/cs-account/admin/accountSettings/signatureLayout:
+    get:
+      tags:
+      - SignatureLayout
+      summary: Retrieve signature layout configuration
+      description: Retrieves the current signature layout configuration for the account, including logo and capture layout settings.
+      operationId: SignatureLayout_GetSignatureLayout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - SignatureLayout
+      summary: Update signature layout configuration
+      description: Updates the signature layout configuration for the account, including logo image and capture layout settings.
+      operationId: SignatureLayout_UpdateSignatureLayout
+      requestBody:
+        x-name: signatureLayoutRequest
+        description: The signature layout configuration to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureLayoutRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    SignatureLayoutRequest:
+      type: object
+      description: Signature layout configuration request model
+      additionalProperties: false
+      properties:
+        logo:
+          description: Logo configuration for the signature layout
+          oneOf:
+          - $ref: '#/components/schemas/LogoConfiguration'
+        captureLayout:
+          description: Capture layout configuration
+    LogoConfiguration:
+      type: object
+      description: Logo configuration for signature layout
+      additionalProperties: false
+      properties:
+        image:
+          type: string
+          description: Base64 encoded image binary data
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

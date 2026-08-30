@@ -1,0 +1,412 @@
+openapi: 3.2.0
+info:
+  title: Administration Incentive Coupons API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Incentive Coupons
+paths:
+  /incentives/{ParentId}/coupons:
+    delete:
+      tags:
+      - Incentive Coupons
+      summary: Delete incentive coupons
+      description: Deletes one or more incentive coupons from the collection.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of incentive coupons to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Incentive Coupons
+      summary: Retrieve incentive coupons
+      description: Retrieves a collection of incentive coupons based on the parent incentive.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: An optional array of filters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: An optional sort criteria
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: An optional array of included fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Incentive Coupons
+      summary: Update incentive coupons
+      description: Updates one or more incentive coupons in the collection. Parent reassignment is not allowed.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to be updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: IncentiveCouponName
+              IsActive: true
+              PriceDimension:
+                Id: PriceDimensionId
+                Name: PriceDimensionName
+              AssignedToID: null
+              CouponCode: CouponCode
+              CouponLimit: 10
+              EffectiveDate: '2019-10-10'
+              ExpirationDate: '2030-10-10'
+              NumOfTimesUsed: null
+              Status: Draft
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Incentive Coupons
+      summary: Create incentive coupons
+      description: Adds one or more incentive coupons to the collection. The parent incentive is automatically filled.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of incentive coupons to add to the collection
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveCoupon'
+      responses:
+        '200':
+          description: OK
+  /incentives/{ParentId}/coupons/generate/{numberOfCoupons}:
+    post:
+      tags:
+      - Incentive Coupons
+      summary: Auto generates specified number of incentive coupons
+      description: Auto generates specified number of incentive coupons. The parent incentive is automatically filled.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      - name: numberOfCoupons
+        in: path
+        description: Number of coupons to be generated
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+  /incentives/{ParentId}/coupons/{Id}:
+    delete:
+      tags:
+      - Incentive Coupons
+      summary: Delete an incentive coupon
+      description: Deletes a single incentive coupon document based on the identifier and parent incentive.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the incentive coupon
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Incentive Coupons
+      summary: Retrieve an incentive coupon
+      description: Retrieves a single incentive coupon document based on the identifier and parent incentive.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the incentive coupon
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Incentive Coupons
+      summary: Update an incentive coupon
+      description: Updates a single incentive coupon document based on the identifier and parent incentive.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent incentive
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the incentive coupon
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated state of the incentive coupon
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: IncentiveCouponName
+              IsActive: true
+              PriceDimension:
+                Id: PriceDimensionId
+                Name: PriceDimensionName
+              AssignedToID: null
+              CouponCode: CouponCode
+              CouponLimit: 10
+              EffectiveDate: '2019-10-10'
+              ExpirationDate: '2030-10-10'
+              NumOfTimesUsed: null
+              Status: Draft
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    IncentiveCoupon:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        PriceDimension:
+          $ref: '#/components/schemas/LookupObject'
+        AssignedToID:
+          type:
+          - string
+          - 'null'
+        CouponCode:
+          type:
+          - string
+          - 'null'
+        CouponLimit:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Incentive:
+          $ref: '#/components/schemas/LookupObject'
+        NumOfTimesUsed:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Status:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+      example:
+        Name: IncentiveCouponName
+        IsActive: true
+        PriceDimension:
+          Id: PriceDimensionId
+          Name: PriceDimensionName
+        AssignedToID: null
+        CouponCode: CouponCode
+        CouponLimit: 10
+        EffectiveDate: '2019-10-10'
+        ExpirationDate: '2030-10-10'
+        NumOfTimesUsed: null
+        Status: Draft
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

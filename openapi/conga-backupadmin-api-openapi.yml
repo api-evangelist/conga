@@ -1,0 +1,154 @@
+openapi: 3.2.0
+info:
+  title: Approvals Backup Admin API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: BackupAdmin
+paths:
+  /v1/backup-admin:
+    delete:
+      tags:
+      - BackupAdmin
+      summary: Delete the backup administrator
+      description: Delete the backup admin user.
+      operationId: BackupAdmin_DeleteBackupAdminUser
+      responses:
+        '200':
+          description: Boolean (`true` if deleted)
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - BackupAdmin
+      summary: Get the backup administrator
+      description: Retrieves details on the currently logged-in user's backup administrator.
+      operationId: BackupAdmin_GetBackupAdminUser
+      responses:
+        '200':
+          description: Backup admin's user info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminUserResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+    post:
+      tags:
+      - BackupAdmin
+      summary: Save the backup administrator
+      description: Create or update the backup admin user.
+      operationId: BackupAdmin_UpsertBackupAdminUser
+      requestBody:
+        x-name: backupAdminUser
+        description: The BackupAdminUser
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupAdminUser'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The backup admin user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupAdminUser'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    UserType:
+      type: string
+      description: ''
+      x-enumNames:
+      - All
+      - Admin
+      - BackupAdmin
+      enum:
+      - all
+      - admin
+      - backup-admin
+    AdminUser:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Initials:
+          type:
+          - string
+          - 'null'
+    BackupAdminUser:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Initials:
+          type:
+          - string
+          - 'null'
+    AdminUserResponse:
+      allOf:
+      - $ref: '#/components/schemas/AdminUser'
+      - type: object
+        additionalProperties: false
+        properties:
+          UserType:
+            $ref: '#/components/schemas/UserType'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

@@ -1,0 +1,543 @@
+openapi: 3.2.0
+info:
+  title: Conga Favorites API
+  version: 1.0.0
+  description: 'Operations tagged Favorites across 2 of this provider''s published API definitions: conga-administration.json, conga-catalog.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+- url: https://rls.congacloud.com/api/catalog/v1
+security:
+- Bearer: []
+tags:
+- name: Favorites
+paths:
+  /favorites:
+    get:
+      tags:
+      - Favorites
+      summary: Retrieves a list of favorite configurations.
+      parameters:
+      - name: filter
+        in: query
+        description: Optional filter criteria.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Optional sort order.
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Page number (default: 1).'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: 'Number of items per page (default: 50).'
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: field
+        in: query
+        description: Optional fields to include in the response.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: Optional filter expression.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of favorite configurations.
+        '204':
+          description: No favorite configurations found.
+    delete:
+      tags:
+      - Favorites
+      summary: Delete the favorite records
+      requestBody:
+        description: ''
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration'
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.FavoriteConfiguration'
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/revenue-admin/v1
+  /favorites/{id}:
+    get:
+      tags:
+      - Favorites
+      summary: Retrieves a favorite configuration by its identifier.
+      parameters:
+      - name: id
+        in: path
+        description: The unique identifier of the favorite configuration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the favorite configuration.
+        '204':
+          description: No favorite configuration found for the given identifier.
+    servers:
+    - url: https://rls.congacloud.com/api/revenue-admin/v1
+  /favorites/{Id}:
+    delete:
+      tags:
+      - Favorites
+      summary: Delete a favorite
+      parameters:
+      - name: Id
+        in: path
+        description: A unique identifier of the favorite.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    get:
+      tags:
+      - Favorites
+      summary: Fetch favorite by ID
+      parameters:
+      - name: Id
+        in: path
+        description: A unique identifier of the favorite.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    patch:
+      tags:
+      - Favorites
+      summary: Update a favorite
+      parameters:
+      - name: Id
+        in: path
+        description: A unique identifier of the favorite.
+        required: true
+        schema:
+          type: string
+      - name: isasync
+        in: query
+        description: if set to `true` [is asynchronous].
+        schema:
+          type: boolean
+      - name: line-numbers
+        in: query
+        description: "Line numbers.\n            The following example shows how to specify multiple line numbers:\n            GET  ../api/cart/v1/carts/{cartId}/status?lineNumbers=1,2,3"
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      requestBody:
+        description: Favorite record fields to be updated.
+        content:
+          application/json-patch+json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: CreateFavorite
+              Description: CreateFavorite
+              Scope: Public
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: CreateFavorite
+              Description: CreateFavorite
+              Scope: Public
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: CreateFavorite
+              Description: CreateFavorite
+              Scope: Public
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: CreateFavorite
+              Description: CreateFavorite
+              Scope: Public
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/catalog/v1
+  /favorites/{Id}/addtocart/{cartId}:
+    post:
+      tags:
+      - Favorites
+      summary: Add favorite to a cart
+      description: Adds a favorite to the cart identified in cartId.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier
+        required: true
+        schema:
+          type: string
+      - name: cartId
+        in: path
+        description: A unique identifier of the cart.
+        required: true
+        schema:
+          type: string
+      - name: isasync
+        in: query
+        description: if set to `true` [is asynchronous].
+        schema:
+          type: boolean
+      - name: excludeadjustments
+        in: query
+        description: Set to <i>True</i> to exclude adjustments.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/catalog/v1
+  /favorites/{Id}/items:
+    delete:
+      tags:
+      - Favorites
+      summary: Delete the line-items from within the Favorite
+      parameters:
+      - name: Id
+        in: path
+        description: Favorite Id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: line-items to be removed
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/catalog/v1
+  /favorites/{Id}/preview:
+    get:
+      tags:
+      - Favorites
+      summary: Preview favorite by ID
+      parameters:
+      - name: Id
+        in: path
+        description: A unique identifier of the favorite to preview it.
+        required: true
+        schema:
+          type: string
+      - name: configName
+        in: query
+        description: Preview Favorite response field list
+        schema:
+          type: string
+          default: PreviewFavoriteResponseFieldList_Default
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/catalog/v1
+  /favorites/{Id}/publish:
+    post:
+      tags:
+      - Favorites
+      summary: Publish favorite to a pricelist
+      description: Publishes a favorite for the given pricelist.
+      parameters:
+      - name: Id
+        in: path
+        description: A unique identifier of the favorite.
+        required: true
+        schema:
+          type: string
+      - name: isasync
+        in: query
+        description: if set to `true` [is asynchronous].
+        schema:
+          type: boolean
+      requestBody:
+        description: A unique identifier for the price list.
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+      deprecated: true
+    servers:
+    - url: https://rls.congacloud.com/api/catalog/v1
+components:
+  schemas:
+    Conga.Revenue.Entities.Platform.FavoriteConfiguration:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        createdBy:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        modifiedDate:
+          type: string
+          format: date-time
+        externalId:
+          type:
+          - string
+          - 'null'
+        eTag:
+          type:
+          - string
+          - 'null'
+        productConfiguration:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        description:
+          type:
+          - string
+          - 'null'
+        isActive:
+          type:
+          - boolean
+          - 'null'
+        lastUsedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        favoritePriceList:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.FavoritePriceListMetadata'
+        scope:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Platform.Common.Models.LookupObject:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Revenue.Entities.FavoriteConfiguration:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Platform.FavoritePriceListMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        isSource:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: false
+    Conga.Revenue.Catalog.API.Models.CatalogError:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Error code
+          format: int32
+        message:
+          type:
+          - string
+          - 'null'
+          description: Error Message
+        timestamp:
+          type: string
+          description: Time when the error occurred
+          format: date-time
+        additionalDetails:
+          description: Additional details about the error
+      additionalProperties: false
+      description: Error object returned by the Catalog APIs
+    Conga.Revenue.Entities.BaseEntity:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-administration.json
+- conga-catalog.json

@@ -1,0 +1,731 @@
+openapi: 3.2.0
+info:
+  title: User Management Guest User API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Guest User
+paths:
+  /api/user-management/v1/user/guest:
+    post:
+      tags:
+      - Guest User
+      summary: Create a guest user
+      description: Creates a guest user and returns the guest user's ID.
+      requestBody:
+        description: Guest user model data to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GuestUserCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: d92d5453-c2ae-4921-8bee-6b07cbffaaa8
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/user/guest/storefront:
+    patch:
+      tags:
+      - Guest User
+      summary: Register storefront
+      description: Updates the mapping between a guest user and a storefront, including storefront type and URL.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserMappingUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserMappingUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GuestUserMappingUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestUserMappingUpdateResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/user/guest/{userId}:
+    delete:
+      tags:
+      - Guest User
+      summary: Deactivate a guest user
+      description: Deactivates a guest user and returns the status.
+      parameters:
+      - name: userId
+        in: path
+        description: Guest user ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User InActivate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Guest User
+      summary: Update a guest user
+      description: Updates the user information for a specific guest user.
+      parameters:
+      - name: userId
+        in: path
+        description: Guest user ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'Details to be updated in the guest user model. **Note**: To see a list of supported numbers, dates, and currency formats, use the *Timezone and Locale APIs* and the *Currency Format APIs*.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GuestUserUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GuestUserUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: DummySystemUser
+                  Email: dummysystemuser@conga.com
+                  Role:
+                    Id: ec3032cb-9040-4d2a-a0f5-a21ca1da4408
+                    Name: GuestUserRole
+                  PermissionGroups: GlobalScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 1901 W El Los Angeles
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: Guest
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: cc97b79a-580e-42b1-96f0-02072aac9f0d
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.772266+00:00'
+                  ModifiedBy:
+                    Id: 50e9950e-46e3-46d6-9b37-c399e962f492
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.7722745+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/user/guest/{userId}/restore:
+    put:
+      tags:
+      - Guest User
+      summary: Restore a deactivated guest user
+      description: Based on the guest user ID, restores a guest user (if deactivated) and sends the message to auth.
+      parameters:
+      - name: userId
+        in: path
+        description: Guest user ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User Activate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    UserType:
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+      - Contact
+      type: string
+    UserResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: FirstName of the User
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: LastName of the User
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: UserName of the User
+        Email:
+          type:
+          - string
+          - 'null'
+          description: Email of the User
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: PermissionGroups assigned to the user
+        RolePermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: RolePermissionGroups assigned to the user
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: Timezone of the User
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: Locale of the User
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: Currency of the User
+        CurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: Currency Format of the User
+        IsDeleted:
+          type: boolean
+          description: Indicates whether the user is Deleted or not
+        IsActive:
+          type: boolean
+          description: Indicates whether the user is Active or not
+        IsSuspended:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is Suspended or not
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: Alias Name of the User
+        Language:
+          type:
+          - string
+          - 'null'
+          description: Language of the User
+        SmallPhotoUrl:
+          type:
+          - string
+          - 'null'
+          description: SmallPhotoUrl of the User
+        LastLoginDate:
+          type:
+          - string
+          - 'null'
+          description: LastLoginDate of the User
+          format: date-time
+        Address:
+          type:
+          - string
+          - 'null'
+          description: Address of the User
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: PhoneNumber of the User
+        IdentityStatus:
+          type:
+          - string
+          - 'null'
+          description: IdentityStatus of the User
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+          description: Unique record identifier from organization external system
+        UserGroupsAssignedTo:
+          type:
+          - string
+          - 'null'
+        Clientid:
+          type:
+          - string
+          - 'null'
+          description: ClientId of associated to the Integration User
+        FederationId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier used to identify user in federated authentication systems
+        IsNextGenUiEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user has access to the NextGen user interface. When true, the NextGen UI is enabled; when false, the Classic UI is used.
+      additionalProperties: {}
+    GuestUserUpdateRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The guest user's first name
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The guest user's last name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The guest user's email address
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: The guest user's time zone
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: The guest user's locale
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: The guest user's currency
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The guest user's alias name
+        Language:
+          type:
+          - string
+          - 'null'
+          description: The guest user's language
+        Address:
+          type:
+          - string
+          - 'null'
+          description: The guest user's address
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The guest user's phone number
+      additionalProperties: false
+    UserResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GuestUserMappingUpdateRequest:
+      type: object
+      properties:
+        StorefrontType:
+          type:
+          - string
+          - 'null'
+          description: Storefront Type (ecom or pcom)
+        StorefrontUrl:
+          type:
+          - string
+          - 'null'
+          description: Storefront URL for the guest user
+        GuestUserId:
+          type:
+          - string
+          - 'null'
+          description: Guest User Id
+        IsHeadlessCommerce:
+          type: boolean
+          description: 'Flag indicating whether this is a headless commerce integration
+
+            Default is false'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    GuestUserCreateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The guest user's ID
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The guest user's first name
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The guest user's last name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The guest user's email address
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: The guest user's time zone
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: The guest user's locale
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: The guest user's currency
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The guest user's alias name
+        Language:
+          type:
+          - string
+          - 'null'
+          description: The guest user's language
+        Address:
+          type:
+          - string
+          - 'null'
+          description: The guest user's address
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The guest user's phone number
+      additionalProperties: false
+    GuestUserMappingUpdateResponse:
+      type: object
+      properties:
+        userId:
+          type:
+          - string
+          - 'null'
+          description: ID of the user
+        storefrontUrl:
+          type:
+          - string
+          - 'null'
+          description: The storefront URL associated with the guest user
+        updated:
+          type: boolean
+          description: Indicates whether the operation was successful
+        message:
+          type:
+          - string
+          - 'null'
+          description: A message describing the result of the operation
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

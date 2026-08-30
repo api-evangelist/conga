@@ -1,0 +1,625 @@
+openapi: 3.2.0
+info:
+  title: Administration Price Rules API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Price Rules
+paths:
+  /rule-sets/{ParentId}/rules:
+    delete:
+      tags:
+      - Price Rules
+      summary: Delete price rules
+      description: 'Deletes  one or more price rules from a price rule set. It can delete a maximum of 100 price rules. When you delete a price rule, CPQ deletes its related price rule entries.
+
+
+
+        When executed, this API returns one or more records with the delete status of each associated record ID.'
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Rules
+      summary: Retrieve price rules
+      description: 'Retrieves all price rules in a price rule set, with their details. Use query parameters to further narrow down the retrieved results.
+
+
+
+        When executed, this API returns all price rules in a price rule set.'
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: An optional array of filters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: An optional sort criteria
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: An optional array of included fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Rules
+      summary: Update price rules
+      description: 'Updates specific fields on one or more price rules. It can update any fields except price rule ID.
+
+
+
+        When executed, this API returns the updated price rule or price rules.'
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to be updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: PriceRule
+              IsActive: true
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+              Dimension1ValueType: Discrete
+              AdjustmentAppliesTo: Base Price
+              AdjustmentChargeType: Adjustment
+              AllowableAction: Unrestricted
+              AllowRemovalOfAdjustment: false
+              PriceListItem:
+                Id: PriceListItem-Id
+                Name: PriceListItem-Name
+              Sequence: 1
+              RuleType: Dimension
+              StopProcessing: true
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Price Rules
+      summary: Create price rules
+      description: 'Creates one or more price rules for a specific price rule set.
+
+
+
+        When executed, this API returns a unique price rule ID (string) that CPQ automatically generates.'
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of price rules to add to the collection
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRule'
+      responses:
+        '200':
+          description: OK
+  /rule-sets/{ParentId}/rules/{Id}:
+    delete:
+      tags:
+      - Price Rules
+      summary: Delete a price rule
+      description: Deletes a single price rule document based on the identifier and parent price ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the price rule
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Rules
+      summary: Retrieve a price rule
+      description: Retrieves a single price rule document based on the identifier and parent price ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the price rule
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Rules
+      summary: Update a price rule
+      description: Updates a single price rule document based on the identifier and parent price ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent price ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the price rule
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated state of the price rule
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: PriceRule
+              IsActive: true
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+              Dimension1ValueType: Discrete
+              AdjustmentAppliesTo: Base Price
+              AdjustmentChargeType: Adjustment
+              AllowableAction: Unrestricted
+              AllowRemovalOfAdjustment: false
+              PriceListItem:
+                Id: PriceListItem-Id
+                Name: PriceListItem-Name
+              Sequence: 1
+              RuleType: Dimension
+              StopProcessing: true
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    PriceRule:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        AdjustmentAppliesTo:
+          type:
+          - string
+          - 'null'
+        AdjustmentChargeType:
+          type:
+          - string
+          - 'null'
+        AllowableAction:
+          type:
+          - string
+          - 'null'
+        AllowRemovalOfAdjustment:
+          type:
+          - boolean
+          - 'null'
+        Beneficiary:
+          type:
+          - string
+          - 'null'
+        BeneficiaryType:
+          type:
+          - string
+          - 'null'
+        BenefitType:
+          type:
+          - string
+          - 'null'
+        Bucket:
+          type:
+          - string
+          - 'null'
+        ChargeTypeCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ChargeTypeCriteriaOper:
+          type:
+          - string
+          - 'null'
+        CountryCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        CountryCriteriaOper:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        CustomPricePointSource:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Dimension1:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension1ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension2:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension2ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension3:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension3ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension4:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension4ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension5:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension5ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension6:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension6ValueType:
+          type:
+          - string
+          - 'null'
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ForEveryXCriteriaDimension:
+          $ref: '#/components/schemas/LookupObject'
+        ForEveryXCriteriaDimensionType:
+          type:
+          - string
+          - 'null'
+        ForEveryXCriteriaDimensionValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        FutureBenefitValidityOffset:
+          type:
+          - number
+          - 'null'
+          format: double
+        FutureBenefitValidityType:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        MetricValueSource:
+          type:
+          - string
+          - 'null'
+        MilestoneCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        MilestoneCriteriaOper:
+          type:
+          - string
+          - 'null'
+        MilestoneStatusCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        MilestoneStatusCriteriaOper:
+          type:
+          - string
+          - 'null'
+        NumberOfEntries:
+          type:
+          - number
+          - 'null'
+          format: double
+        PriceListCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        PriceListCriteriaOper:
+          type:
+          - string
+          - 'null'
+        PricePoints:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductCriteriaOper:
+          type:
+          - string
+          - 'null'
+        ProductFamilyCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductFamilyCriteriaOper:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductGroupCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductGroupCriteriaOper:
+          type:
+          - string
+          - 'null'
+        RegionCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        RegionCriteriaOper:
+          type:
+          - string
+          - 'null'
+        Ruleset:
+          $ref: '#/components/schemas/LookupObject'
+        RuleSubType:
+          type:
+          - string
+          - 'null'
+        RuleType:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        StopProcessing:
+          type:
+          - boolean
+          - 'null'
+        TierMetricRollupDuration:
+          type:
+          - string
+          - 'null'
+        TierMetricType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+      example:
+        Name: PriceRule
+        IsActive: true
+        Dimension1:
+          Id: Dimension1-Id
+          Name: Dimension1-Name
+        Dimension1ValueType: Discrete
+        AdjustmentAppliesTo: Base Price
+        AdjustmentChargeType: Adjustment
+        AllowableAction: Unrestricted
+        AllowRemovalOfAdjustment: false
+        PriceListItem:
+          Id: PriceListItem-Id
+          Name: PriceListItem-Name
+        Sequence: 1
+        RuleType: Dimension
+        StopProcessing: true
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

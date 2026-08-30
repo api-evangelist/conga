@@ -1,0 +1,350 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign One Span Package API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: OneSpanPackage
+paths:
+  /v1/cs-packages/all:
+    get:
+      tags:
+      - OneSpanPackage
+      summary: List packages
+      description: Retrieves a list of document packages in an account. By default, this call returns the API caller's packages. When either the ownerUserId or ownerEmail query parameter is specified, this call returns the specified user's transactions. To retrieve other users' transactions, roles and permissions must be enabled on your account and the API caller must have "Manage users’ transactions, templates, layouts" permission. To enable roles and permissions, contact your Conga Sign sales representative.
+      operationId: OneSpanPackage_ListPackages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfOneSpanPackageResponse'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    SenderType:
+      type: string
+      description: ''
+      x-enumNames:
+      - REGULAR
+      - MANAGER
+      enum:
+      - REGULAR
+      - MANAGER
+    OneSpanDocument:
+      type: object
+      description: OneSpan package document
+      additionalProperties: false
+      properties:
+        approvals:
+          type: array
+          description: List of approvals for the document
+          items:
+            $ref: '#/components/schemas/OneSpanApproval'
+        id:
+          type: string
+          description: Unique id of the document
+        name:
+          type: string
+          description: The document name
+    SignerType:
+      type: string
+      description: Type of signer in OneSpan Sign
+      x-enumNames:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+      enum:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+    PackageStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - DRAFT
+      - SENT
+      - COMPLETED
+      - ARCHIVED
+      - DECLINED
+      - OPTED_OUT
+      - EXPIRED
+      enum:
+      - DRAFT
+      - SENT
+      - COMPLETED
+      - ARCHIVED
+      - DECLINED
+      - OPTED_OUT
+      - EXPIRED
+    ResultOfOneSpanPackageResponse:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/OneSpanPackageResponse'
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    OneSpanApproval:
+      type: object
+      description: Signing Approval object.
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: The unique approval Id.
+        name:
+          type: string
+          description: The unique approval name.
+        role:
+          type: string
+          description: The approval role name.
+    OneSpanPackageResponse:
+      type: object
+      description: OneSpan Package Response
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: The date the package will expire
+          format: int32
+        results:
+          type: array
+          description: Unique package Id
+          items:
+            $ref: '#/components/schemas/OneSpanPackage'
+    OneSpanSender:
+      type: object
+      description: OneSpan Sender information
+      additionalProperties: false
+      properties:
+        type:
+          description: Type
+          oneOf:
+          - $ref: '#/components/schemas/SenderType'
+        name:
+          type: string
+          description: Name
+        id:
+          type: string
+          description: Id
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Updated
+          format: date-time
+        title:
+          type: string
+          description: Title
+        firstName:
+          type: string
+          description: FirstName
+        lastName:
+          type: string
+          description: LastName
+        email:
+          type: string
+          description: Email
+    RoleType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      enum:
+      - SIGNER
+      - SENDER
+    OneSpanSigner:
+      type: object
+      description: OneSpan Signer information
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          description: Signer creation date.
+          format: date-time
+        email:
+          type: string
+          description: Signer email.
+        firstName:
+          type: string
+          description: Signer's first name.
+        id:
+          type: string
+          description: Signer Id.
+        lastName:
+          type: string
+          description: Signer's lastname.
+        name:
+          type: string
+          description: Signer's name.
+        signerType:
+          description: Type of signer
+          oneOf:
+          - $ref: '#/components/schemas/SignerType'
+        title:
+          type: string
+          description: Signer's title.
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Last time signer was updated.
+          format: date-time
+    OneSpanRole:
+      type: object
+      description: OneSpan user role
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Role Id.
+        name:
+          type: string
+          description: Role name.
+        signers:
+          type: array
+          description: Signers associated with the role.
+          items:
+            $ref: '#/components/schemas/OneSpanSigner'
+        type:
+          description: Role type. Currently there are two types, SIGNER and SENDER.
+          oneOf:
+          - $ref: '#/components/schemas/RoleType'
+    OneSpanPackage:
+      type: object
+      description: OneSpan Package
+      additionalProperties: false
+      properties:
+        due:
+          type:
+          - string
+          - 'null'
+          description: The date the package will expire
+          format: date-time
+        id:
+          type: string
+          description: Unique package Id
+        name:
+          type: string
+          description: Package name
+        documents:
+          type: array
+          description: List of package documents
+          items:
+            $ref: '#/components/schemas/OneSpanDocument'
+        roles:
+          type: array
+          description: List of roles in the package
+          items:
+            $ref: '#/components/schemas/OneSpanRole'
+        sender:
+          description: The package sender
+          oneOf:
+          - $ref: '#/components/schemas/OneSpanSender'
+        status:
+          description: Package status
+          oneOf:
+          - $ref: '#/components/schemas/PackageStatus'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: The date the package was last updated
+          format: date-time
+        created:
+          type:
+          - string
+          - 'null'
+          description: The date the package was created
+          format: date-time
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

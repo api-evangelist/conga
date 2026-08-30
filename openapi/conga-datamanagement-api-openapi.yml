@@ -1,0 +1,276 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Data Management API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: DataManagement
+paths:
+  /v1/cs-dataRetentionSettings/dataManagementPolicy:
+    get:
+      tags:
+      - DataManagement
+      summary: Retrieve the data management policy for the account
+      description: Retrieves the data management policy for the account.
+      operationId: DataManagement_GetDataManagementPolicy
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataManagementPolicy'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - DataManagement
+      summary: Update the account's data management policy
+      description: Updates data management policy for the account.
+      operationId: DataManagement_UpdateDataManagementPolicy
+      requestBody:
+        x-name: dataManagementPolicy
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataManagementPolicy'
+        required: true
+        x-position: 1
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-dataRetentionSettings/expiryTimeConfiguration:
+    get:
+      tags:
+      - DataManagement
+      summary: Retrieve the expiry configurations defined for the account
+      description: Retrieves the expiry configurations defined for the account. A value of 0 indicates unlimited.
+      operationId: DataManagement_GetExpiryTimeConfiguration
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpiryTimeConfiguration'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - DataManagement
+      summary: Update the expiry configurations defined for the account
+      description: Updates the expiry configurations defined for the account. For unlimited data retention, assign the “Expiry date” the value 0.
+      operationId: DataManagement_UpdateExpiryTimeConfiguration
+      requestBody:
+        x-name: expiryTimeConfiguration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpiryTimeConfiguration'
+        required: true
+        x-position: 1
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    TransactionRetention:
+      type: object
+      description: Object to manage number of days to retain transactions
+      additionalProperties: false
+      properties:
+        draft:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep drafts for
+          format: int32
+        sent:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep sent transactions for
+          format: int32
+        completed:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep completed transactions for
+          format: int32
+        archived:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep archived transactions for
+          format: int32
+        declined:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep declined transactions for
+          format: int32
+        optedOut:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep opted-out transactions for
+          format: int32
+        expired:
+          type:
+          - integer
+          - 'null'
+          description: Number of days to keep expired transactions for
+          format: int32
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    DataManagementPolicy:
+      type: object
+      description: Object to manage transaction retention
+      additionalProperties: false
+      properties:
+        transactionRetention:
+          description: Transaction retention
+          oneOf:
+          - $ref: '#/components/schemas/TransactionRetention'
+    ExpiryTimeConfiguration:
+      type: object
+      description: Transaction expiry configuration
+      additionalProperties: false
+      properties:
+        maximumRemainingDays:
+          type:
+          - integer
+          - 'null'
+          description: Maximum allowed value for expiry time for transactions in days
+          format: int32
+        remainingDays:
+          type:
+          - integer
+          - 'null'
+          description: Default expiry time for transactions in days
+          format: int32
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

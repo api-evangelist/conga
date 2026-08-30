@@ -1,0 +1,2020 @@
+openapi: 3.2.0
+info:
+  title: Conga Review API
+  version: v1
+  description: 'Operations tagged Review across 2 of this provider''s published API definitions: conga-contracts.json, conga-review.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+tags:
+- name: Review
+paths:
+  /api/clm/v1/contracts/{contractId}/reviews:
+    get:
+      tags:
+      - Review
+      summary: Get contract review details in CLM
+      description: Retrieves details of any active review cycle for the specified contract. Provide the contractId to return the review cycle with metadata such as reviewId, status, reviewers, documents, timestamps and actionable flags.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of a contract with an active review
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns review details for any active review for the provided contract ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - ReviewId: 42abecdc-db5c-4124-a18a-d28eb879ef89
+                  ReviewType: null
+                  Name: Office 365 Review for sales contract document
+                  OriginalDocumentId: 492823d7-1581-4db6-a72a-3f08abe19d8e
+                  OriginalDocumentName: null
+                  FinalDocumentVersionId: null
+                  ADDocumentId: f7f6bf3e-65cc-42d7-919f-a54bce1776ae
+                  ReviewStatus: In Progress
+                  ReviewSequence: null
+                  CreatedDate: '2026-08-14T00:01:43.364402+00:00'
+                  CompletedOn: '2026-08-14T00:01:43.364422+00:00'
+                  CanceledOn: null
+                  CreatedBy: John Doe
+                  Reviewers:
+                  - ReviewerId: 38c23970-cc71-4381-b47e-94327b025085
+                    Name: David
+                    EmailId: david@conga.com
+                    ReviewStatus: In Progress
+                    CreatedDate: '2026-08-14T00:01:43.364519+00:00'
+                    CompletedDate: '2026-08-14T00:01:43.3645313+00:00'
+                    CanceledDate: null
+                    Comment: Reviewer1 Comment
+                  - ReviewerId: 042b4942-8f28-4f9c-a5e9-4ec17a82d232
+                    Name: John
+                    EmailId: john@conga.com
+                    ReviewStatus: Completed
+                    CreatedDate: '2026-08-14T00:01:43.3645587+00:00'
+                    CompletedDate: '2026-08-14T00:01:43.3645588+00:00'
+                    CanceledDate: null
+                    Comment: Reviewer2 Comment
+                Warnings: null
+                Errors: null
+        '400':
+          description: The contract ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Review
+      summary: Initiate a review
+      description: " Sends contract documents for review and initiates a review by sending contract documents to reviewers.\n \n Two types of reviews are available in CLM, \"Simple Review\" and \"Microsoft 365 Review\". \n * When you send documents for Simple Review, all review documents and supporting documents are sent to reviewers as email attachments. Reviewers can email reviewed documents back to the review initiator.\n * When you send a document for Microsoft 365 Review, the review document is shared as Microsoft 365 document links and supporting documents are sent as email attachments. Reviewers can directly review documents via Microsoft 365 and  reviews are imported into CLM automatically at the end of the review. Documents sent for Microsoft 365 review must be in DOCX format, though supporting documents can be of any format. Microsoft 365 Review can be initiated only for one document at a time.\nAfter completing any ongoing review, you can initiate a new review for another document from the same contract. In both reviews, the contract status changes to \"Other Party Review\" after documents are sent for review."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Microsoft 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewStartRequest'
+            examples:
+              SimpleReview:
+                value:
+                  Name: Simple Review for sales contract document
+                  EmailTemplateId: null
+                  ReviewType: SimpleReview
+                  PrimaryDocumentIds:
+                  - 143f9f1f-7b02-4efd-9971-a11f17a48e04
+                  SupportingDocumentIds: null
+                  AdditionalAttachments: null
+                  EmailSubject: Sales contract Review
+                  EmailBody: Please review the attached sales contract
+                  To:
+                  - Name: null
+                    EmailId: david@conga.com
+                    ADMemberId: null
+                    RecipientType: null
+                    RecipientId: null
+                  - Name: null
+                    EmailId: john@conga.com
+                    ADMemberId: null
+                    RecipientType: null
+                    RecipientId: null
+                  Cc: null
+                  Bcc: null
+                  UserDefinedProtectionLevels: null
+              Office365Review:
+                value:
+                  Name: Office 365 Review for sales contract document
+                  EmailTemplateId: null
+                  ReviewType: Office365Review
+                  PrimaryDocumentIds:
+                  - 721f9304-0bf1-4347-b9ea-311d72a22e68
+                  SupportingDocumentIds: null
+                  AdditionalAttachments: null
+                  EmailSubject: Sales contract Review
+                  EmailBody: Please review the attached sales contract
+                  To:
+                  - Name: David
+                    EmailId: david@conga.com
+                    ADMemberId: null
+                    RecipientType: Email
+                    RecipientId: null
+                  - Name: John
+                    EmailId: john@conga.com
+                    ADMemberId: null
+                    RecipientType: Email
+                    RecipientId: null
+                  Cc: null
+                  Bcc: null
+                  UserDefinedProtectionLevels: null
+      responses:
+        '200':
+          description: The review is initiated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewId}/cancel:
+    post:
+      tags:
+      - Review
+      summary: Cancel a review
+      description: "Cancels a review and marks it as canceled.\n* This API is not applicable to Simple Review. \n* For Microsoft 365 Review, the contract status changes to Author Contract. Microsoft 365 document access is revoked for all reviewers and an email notification is sent to all active reviewers."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: reviewId
+        in: path
+        description: ID of the review
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Office 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The review is canceled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewId}/end:
+    post:
+      tags:
+      - Review
+      summary: End a review
+      description: "Ends a review and marks it as completed.\n* For Simple Review, the contract status changes to Ready for Signature. \n* For Microsoft 365 Review, in addition to the status change to Ready for Signature, all reviewers' Microsoft 365 document access is revoked. \nThe final version of the reviewed document is available in the contract with a new version number. An email notification is sent to all active reviewers."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: reviewId
+        in: path
+        description: ID of the review
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Office 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      - name: disableEmailDelivery
+        in: query
+        description: Indicates whether to send end review email notification
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: ''
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: The review ended.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewId}/reviewers:
+    post:
+      tags:
+      - Review
+      summary: Add reviewers to a review cycle in CLM
+      description: Adds one or more reviewers to an active review for the specified contract. Provide the contractId, reviewId, externalReviewToken for Microsoft 365 review and ReviewersAddRequest containing reviewer details. The API returns the updated review details. This API is applicable to Microsoft 365 Review.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: reviewId
+        in: path
+        description: ID of any active review
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Microsoft 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewersAddRequest'
+            example:
+              Reviewers:
+              - Name: David
+                EmailId: david@conga.com
+                ADMemberId: null
+                RecipientType: Email
+                RecipientId: null
+              - Name: John
+                EmailId: john@conga.com
+                ADMemberId: null
+                RecipientType: Email
+                RecipientId: null
+      responses:
+        '200':
+          description: The reviewers are added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewId}/reviewers/cancel:
+    post:
+      tags:
+      - Review
+      summary: Remove reviewers
+      description: "Removes one or more reviewers from an active review. You cannot remove reviewers from a canceled or ended review. When you remove reviewers from an active review, Microsoft 365 document access is revoked for the removed reviewers. An email notification is sent to all removed reviewers. If any changes were made to the review document before removing the reviewer, those changes are retained. \nThis API is not applicable for Simple Review."
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID
+        required: true
+        schema:
+          type: string
+      - name: reviewId
+        in: path
+        description: ID of any active review
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Microsoft 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewersUpdateRequest'
+            example:
+              ReviewerIds:
+              - 00000000-0000-0000-0000-000000000001
+              - 00000000-0000-0000-0000-000000000002
+      responses:
+        '200':
+          description: Reviewers are removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewId}/reviewers/end:
+    post:
+      tags:
+      - Review
+      summary: End review of reviewers
+      description: "Ends a review for one or more reviewers. You cannot end a review that was canceled or ended. \nAn email notification is sent to all reviewers when the review ends. Changes made to the review document before ending the review are retained. \nThis API is not applicable for Simple Review."
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID
+        required: true
+        schema:
+          type: string
+      - name: reviewId
+        in: path
+        description: ID of any active review
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Microsoft 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewersUpdateRequest'
+            example:
+              ReviewerIds:
+              - 00000000-0000-0000-0000-000000000001
+              - 00000000-0000-0000-0000-000000000002
+      responses:
+        '200':
+          description: The review has ended.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Request input is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/contracts/{contractId}/reviews/{reviewType}/{searchString}:
+    get:
+      tags:
+      - Review
+      summary: Search users for document review in CLM
+      description: 'Searches users by name or email ID, for adding as reviewers to inititiate review cycle for a contract. Provide the contractId, reviewType, and searchString. The API returns a list of users with their Id, Name, EmailID, RecipientType, and Role.
+
+        * For Simple Review, the endpoint searches users and contact data sources.
+
+        * For Microsoft 365 Review, the endpoint searches users, contact data sources, and Active Directory users.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of any existing contract
+        required: true
+        schema:
+          type: string
+      - name: reviewType
+        in: path
+        description: 'Review type: either `SimpleReview` or `Office365Review`'
+        required: true
+        schema:
+          type: string
+      - name: searchString
+        in: path
+        description: Search keyword. It can be a user name or email ID
+        required: true
+        schema:
+          type: string
+      - name: externalReviewToken
+        in: header
+        description: Token of the Microsoft 365 Review. ExternalToken is Optional in case of Normal Review flow
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a list of users that matches provided keyword
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Id: b5dbc798-d138-46cb-af28-58558be5ef4d
+                  Name: David
+                  EmailId: david@conga.com
+                  RecipientType: Email
+                  Role:
+                    Id: 8eda454a-73e3-4f61-a10e-e15bab66dff6
+                    Name: Reviewer
+                - Id: 90d7b811-ba5e-47cb-ae43-9fcbe73dfdce
+                  Name: John
+                  EmailId: john@conga.com
+                  RecipientType: User
+                  Role:
+                    Id: 9d159dc5-deb8-4e0e-b22f-992334a9c12f
+                    Name: Approver
+                Warnings: null
+                Errors: null
+        '400':
+          description: Contract ID or review type is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/reviews/token:
+    post:
+      tags:
+      - Review
+      summary: Get Active Directory access token
+      description: Gets an Active Directory access token for Microsoft 365 Review to test Microsoft 365 SharePoint configurations.
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenRequest'
+      responses:
+        '200':
+          description: Returns access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: URL or authentication details are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/review/v1/{objecttype}/{objectid}/reviews:
+    get:
+      tags:
+      - Review
+      summary: Get reviews
+      description: This API retrieves reviews based on a Review's parent object ID.
+      parameters:
+      - name: objecttype
+        in: path
+        description: Type of parent object
+        required: true
+        schema:
+          type: string
+      - name: objectid
+        in: path
+        description: ID of parent object
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/review/v1/{reviewtype}/start:
+    post:
+      tags:
+      - Review
+      summary: Send a document for review
+      description: Sends a document for review to your selected approvers.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      requestBody:
+        description: Send for review request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.StartReview.StartReviewRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.StartReview.StartReviewRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.StartReview.StartReviewRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.StartReviewResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.StartReviewResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.StartReviewResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/review/v1/{reviewtype}/{reviewid}:
+    delete:
+      tags:
+      - Review
+      summary: Cancel a review process
+      description: Cancels a review process you started. You must identify the review with the reviewID parameter and you can invoke an existing email template using emailTemplateId.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The ID of the review process
+        required: true
+        schema:
+          type: string
+      - name: emailTemplateId
+        in: query
+        description: Unique ID designating an email template
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    get:
+      tags:
+      - Review
+      summary: Get review details
+      description: This API retrieves the review ID, which includes associated review status information and properties.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The ID of the review you are querying.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/review/v1/{reviewtype}/{reviewid}/end:
+    post:
+      tags:
+      - Review
+      summary: End my review
+      description: Ends a review process you started. You must pass the reviewId of the process you will end. Passing EmailTemplateId enables you to designate an existing email template to send ending a review. The `file` parameter (required for Normal-type review flows) names the file to process for review.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The ID of a review process
+        required: true
+        schema:
+          type: string
+      - name: emailTemplateId
+        in: query
+        description: Unique ID designating an email template
+        schema:
+          type: string
+      - name: disableEmailDelivery
+        in: query
+        description: Disable email delivery after ending the review
+        schema:
+          type: boolean
+          default: false
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: Document file name.
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+components:
+  schemas:
+    UserDefinedProtectionLevels:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: DocumentId used for applying protection level
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+      description: Model for User Defined Protection Levels
+    ReviewersAddRequest:
+      type: object
+      properties:
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewerInfo'
+          description: List of Reviewers
+      additionalProperties: false
+      description: Request model to add Reviewers
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
+    Recipient:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Id of Recipient
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of Recipient
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Email id of Recipient
+        RecipientType:
+          $ref: '#/components/schemas/RecipientType'
+        Role:
+          $ref: '#/components/schemas/Role'
+      additionalProperties: false
+      description: Model for Recipient
+    ReviewerResponse:
+      type: object
+      properties:
+        ReviewerId:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Id
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Name
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Email Id
+        ReviewStatus:
+          type:
+          - string
+          - 'null'
+          description: Review cycle status ("Initiated", "In Progress", "Completed", or "Canceled")
+        CreatedDate:
+          type: string
+          description: Start date of reviewer
+          format: date-time
+        CompletedDate:
+          type:
+          - string
+          - 'null'
+          description: End date of reviewer
+          format: date-time
+        CanceledDate:
+          type:
+          - string
+          - 'null'
+          description: Canceled date of reviewer
+          format: date-time
+        Comment:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Comment
+      additionalProperties: false
+      description: Response model for Reviewer
+    EmailAttachment:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        MimeType:
+          type:
+          - string
+          - 'null'
+        FileData:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        FileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
+      additionalProperties: false
+    ReviewerInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Name
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Email
+        ADMemberId:
+          type:
+          - string
+          - 'null'
+          description: Active directory member Id if a reviewer has active directory access
+        RecipientType:
+          type:
+          - string
+          - 'null'
+          description: "Recipient type (\"Email\", \"User\", or \"Contact\")\nEmail - Reviewer is an external user or has active directory access \nUser - Reviewer is an internal user\nContact - Reviewer is an external user but is in contacts"
+        RecipientId:
+          type:
+          - string
+          - 'null'
+          description: 'Recipient Id
+
+            When Recipient Type is User, then Id in the User Object.
+
+            When Recipient Type is Contact, then Id in the Contact Object.
+
+            When Recipient Type is Email, leave it empty/blank/null.'
+      additionalProperties: false
+      description: Model for Reviewer Information
+    ReviewersUpdateRequest:
+      type: object
+      properties:
+        ReviewerIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of Reviewer Ids
+      additionalProperties: false
+      description: Request model for updating reviewers
+    ReviewResponse:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+          description: Review Id
+        ReviewType:
+          type:
+          - string
+          - 'null'
+          description: Type of Review cycle. Normal/Office365
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Review Cycle Name
+        OriginalDocumentId:
+          type:
+          - string
+          - 'null'
+          description: Document Id of the document sent for review
+        OriginalDocumentName:
+          type:
+          - string
+          - 'null'
+          description: Name of the document sent for review
+        FinalDocumentVersionId:
+          type:
+          - string
+          - 'null'
+          description: Version Id of the document that is uploaded to CLM after a review ends.
+        ADDocumentId:
+          type:
+          - string
+          - 'null'
+          description: Active Directory document Id
+        ReviewStatus:
+          type:
+          - string
+          - 'null'
+          description: Review cycle status ("Initiated", "In Progress", "Completed", or "Canceled")
+        ReviewSequence:
+          type:
+          - string
+          - 'null'
+          description: Sequence of Review
+        CreatedDate:
+          type: string
+          description: Created Date
+          format: date-time
+        CompletedOn:
+          type:
+          - string
+          - 'null'
+          description: Completed On
+          format: date-time
+        CanceledOn:
+          type:
+          - string
+          - 'null'
+          description: Canceled On
+          format: date-time
+        CreatedBy:
+          type:
+          - string
+          - 'null'
+          description: created By
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewerResponse'
+          description: Reviewers List
+      additionalProperties: false
+      description: Response model for Review
+    RecipientType:
+      enum:
+      - Contact
+      - Email
+      - User
+      type: string
+      description: Type of Recipient
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    RecipientListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Recipient'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    AccessTokenRequest:
+      type: object
+      properties:
+        LoginUrl:
+          type:
+          - string
+          - 'null'
+          description: Login URL for Office 365 authentication
+        Scope:
+          type:
+          - string
+          - 'null'
+          description: Scope for Office 365 authentication
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: Client Id for Office 365 authentication
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+          description: Client Secret for Office 365 authentication
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Authentication code provided by Microsoft for Office 365 delegate authentication
+      additionalProperties: false
+      description: Microsoft O365 Authentication details
+    ReviewResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ReviewStartRequest:
+      required:
+      - EmailBody
+      - EmailSubject
+      - Name
+      - PrimaryDocumentIds
+      - ReviewType
+      - To
+      type: object
+      properties:
+        ReviewType:
+          minLength: 1
+          type: string
+          description: Review Cycle Type ("Simple Review" or "Office 365 Review")
+        PrimaryDocumentIds:
+          type: array
+          items:
+            type: string
+          description: Document Id of a document for which the review needs to be initiated
+        SupportingDocumentIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Document Ids of supporting documents to be considered during the review
+        AdditionalAttachments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailAttachment'
+          description: Additional Attachments
+        EmailSubject:
+          minLength: 1
+          type: string
+          description: Email subject of the review email to be sent to reviewers
+        EmailBody:
+          minLength: 1
+          type: string
+          description: Email Body of the review email to be sent to reviewers
+        To:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewerInfo'
+          description: List of reviewers' information
+        Cc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewerInfo'
+          description: Carbon Copy
+        Bcc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewerInfo'
+          description: Blind Carbon Copy
+        UserDefinedProtectionLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserDefinedProtectionLevels'
+          description: Protection levels to be applied based on userdefined
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the review cycle
+        EmailTemplateId:
+          type:
+          - string
+          - 'null'
+          description: Email Template Id
+      additionalProperties: false
+      description: 'Request model for starting a Review Cycle.
+
+        Inherits all common properties from Conga.Contracts.Model.DTO.Review.ReviewStartRequestBase and adds the required `Name` field.'
+    Role:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Role Id
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Role Name
+      additionalProperties: false
+    Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum:
+      enum:
+      - External
+      - Internal
+      type: string
+    Conga.Review.Service.API.RequestResponseContracts.StartReview.StartReviewRequest:
+      type: object
+      properties:
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
+          description: Reviewers to send document for review
+        DocumentDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.DocumentDetail'
+          description: List of documents with details to be reviewed
+        ReviewNotification:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.ReviewNotification'
+        ReviewObject:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.ReviewObject'
+        ReviewTypeBehavior:
+          type:
+          - string
+          - 'null'
+          description: 'Review type. Dictates the document sharing and access previlages of the reviewers.
+
+            Values: Internal, External, WebOnly, WebOnlyExternal
+
+            Default: WebOnlyExternal'
+      additionalProperties: false
+      description: Start review request containing information required to start review
+    Conga.Review.Service.Application.Commands.StartReview.DocumentDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Password:
+          type:
+          - string
+          - 'null'
+        AdditionalSettings:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.LookUp:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
+      enum:
+      - Email
+      - User
+      - Contact
+      type: string
+    Conga.Review.Service.Application.Commands.StartReview.ReviewNotification:
+      type: object
+      properties:
+        Subject:
+          type:
+          - string
+          - 'null'
+        Body:
+          type:
+          - string
+          - 'null'
+        SupportingDocumentIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Cc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
+        Bcc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.FailedReview:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.ReviewStatusResponse:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        ReviewStatus:
+          type:
+          - string
+          - 'null'
+        ReviewType:
+          type:
+          - string
+          - 'null'
+        Comment:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CreatedDate:
+          type:
+          - string
+          - 'null'
+        CompletedBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CompletedDate:
+          type:
+          - string
+          - 'null'
+        CancelledBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CancelDate:
+          type:
+          - string
+          - 'null'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        InitialDocumentId:
+          type:
+          - string
+          - 'null'
+        FinalDocumentId:
+          type:
+          - string
+          - 'null'
+        SharedDocumentId:
+          type:
+          - string
+          - 'null'
+        SharedURL:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings:
+      type: object
+      properties:
+        ProtectionLevel:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.ProtectionLevel'
+        Password:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Enum.ProtectionLevel:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - ReadOnly
+      - NoProtection
+      type: string
+    Conga.Review.Service.Application.Commands.StartReview.Reviewer:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        MemberId:
+          type:
+          - string
+          - 'null'
+        RecipientType:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.RecipientTypeEnum'
+        RecipientId:
+          type:
+          - string
+          - 'null'
+        ReviewerType:
+          $ref: '#/components/schemas/Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum'
+      additionalProperties: false
+    Conga.Review.Service.Application.Commands.StartReview.ReviewObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.SuccessfulReview:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.StartReviewResponse:
+      type: object
+      properties:
+        SuccessfulReviews:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.SuccessfulReview'
+        FailedReviews:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.FailedReview'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-contracts.json
+- conga-review.json

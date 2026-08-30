@@ -1,0 +1,294 @@
+openapi: 3.2.0
+info:
+  title: Ingress Email API
+  version: 1.0.0
+  description: This controller provides access to email operations like sending email in post delivery.
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Email
+  description: This controller provides access to email operations like sending email in post delivery.
+paths:
+  /v1/Email/Delivery/Sign/{correlationId}:
+    post:
+      tags:
+      - Email
+      summary: Generate sign package url
+      operationId: Email_CreateSignPackage
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: signProvider
+        in: query
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Email/Merge:
+    post:
+      tags:
+      - Email
+      summary: Merge an email template with SF info or JSON payload from original merge request
+      operationId: Email_MergeEmailTemplate
+      parameters:
+      - name: correlationId
+        in: query
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Email/Mock/Delivery/Sign/{correlationId}:
+    post:
+      tags:
+      - Email
+      summary: 'MOCK: Generate sign package url'
+      operationId: Email_MockCreateSignPackage
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: signProvider
+        in: query
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Email/Mock/Send:
+    post:
+      tags:
+      - Email
+      summary: 'MOCK: Send an email with attachments (returns JSON string)'
+      operationId: Email_MockSendEmail
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Attachments:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                    format: binary
+                EmailTo.Id:
+                  type:
+                  - string
+                  - 'null'
+                EmailTo.Address:
+                  type:
+                  - string
+                  - 'null'
+                EmailTo.DisplayName:
+                  type:
+                  - string
+                  - 'null'
+                EmailAdditionalTo:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailCC:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailBcc:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailSubject:
+                  type:
+                  - string
+                  - 'null'
+                EmailTextBody:
+                  type:
+                  - string
+                  - 'null'
+                EmailHTMLBody:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Email/Send:
+    post:
+      tags:
+      - Email
+      summary: Send an email with attachments using providers such as SES, Salesforce (SF), or SendGrid
+      operationId: Email_SendEmail
+      parameters:
+      - name: isSandbox
+        in: query
+        schema:
+          type: boolean
+        x-position: 1
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Attachments:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                    format: binary
+                EmailTo.Id:
+                  type:
+                  - string
+                  - 'null'
+                EmailTo.Address:
+                  type:
+                  - string
+                  - 'null'
+                EmailTo.DisplayName:
+                  type:
+                  - string
+                  - 'null'
+                EmailAdditionalTo:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailCC:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailBcc:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                EmailSubject:
+                  type:
+                  - string
+                  - 'null'
+                EmailTextBody:
+                  type:
+                  - string
+                  - 'null'
+                EmailHTMLBody:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

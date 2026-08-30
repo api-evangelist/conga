@@ -1,0 +1,636 @@
+openapi: 3.2.0
+info:
+  title: Invoice Management Invoices API
+  version: 1.0.0
+  description: API controller for managing invoice operations.
+servers:
+- url: https://rls.congacloud.com/api/invoicing/v1
+security:
+- Bearer: []
+tags:
+- name: Invoices
+  description: API controller for managing invoice operations.
+paths:
+  /invoices/approve:
+    post:
+      tags:
+      - Invoices
+      summary: Approve one or more invoices
+      description: "This endpoint allows bulk approval of invoices. Each invoice is processed independently,\nenabling partial success scenarios where some invoices may be approved while others fail validation.\n            \n**Conditions:**\n- Only invoices with status 'Draft' or 'Pending Approval' can be approved.\n            \n**Effects of approval:**\n- Invoice status is updated to 'Approved'.\n- All related Invoice Line Items are approved.\n- Related Billing Schedule Records and Billing Schedule Details are marked as 'Invoiced'.\n- Billing Header Rollup - Total Invoice Amount and Total Pending Amount are updated."
+      requestBody:
+        description: The request containing the list of invoice IDs to approve.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceApprovalRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceApprovalRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/InvoiceApprovalRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /invoices/cancel:
+    post:
+      tags:
+      - Invoices
+      summary: Cancels one or more invoices.
+      description: "This endpoint allows bulk cancellation of invoices. Each invoice is processed independently,\nenabling partial success scenarios where some invoices may be cancelled while others fail validation.\n            \n**Conditions:**\n- Only invoices with status 'Approved' and payment status 'Unpaid' can be cancelled.\n            \n**Effects of Cancellation:**\n- Invoice status is updated to 'Cancelled'.\n- All related Invoice Line Items are Cancelled.\n- Billing Header Rollup - Total Invoice Amount and Total Pending Amount are updated."
+      requestBody:
+        description: The request containing the list of invoice IDs to cancel.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCancellationRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCancellationRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCancellationRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CancellationResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /invoices/{id}:
+    get:
+      tags:
+      - Invoices
+      summary: Retrieve invoice details
+      description: 'This method fetches an existing invoice from the data store and translates it
+
+        to a response object that can be sent to clients. The method supports viewing the details
+
+        of a previously created invoice.'
+      parameters:
+      - name: id
+        in: path
+        description: The unique identifier of the invoice to retrieve.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+components:
+  schemas:
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    InvoiceApprovalRequest:
+      type: object
+      properties:
+        Ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of invoice IDs to approve.
+      additionalProperties: false
+      description: Represents a request to approve one or more invoices.
+    ApprovalResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApprovalResponse'
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RelatedARTransaction:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        TransactionDate:
+          type: string
+          format: date-time
+        SystemGenerated:
+          type: boolean
+        TransactionType:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Invoice:
+          $ref: '#/components/schemas/LookupObject'
+        CreditMemo:
+          $ref: '#/components/schemas/LookupObject'
+        SourceCreditMemo:
+          $ref: '#/components/schemas/LookupObject'
+        SourceInvoice:
+          $ref: '#/components/schemas/LookupObject'
+        StartingBalance:
+          $ref: '#/components/schemas/CurrencyField'
+        ARAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        EndingBalance:
+          $ref: '#/components/schemas/CurrencyField'
+        Currency:
+          type:
+          - string
+          - 'null'
+        ARTransactionAutoNumber:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    InvoiceResponse:
+      type: object
+      properties:
+        Invoice:
+          $ref: '#/components/schemas/Invoice'
+        InvoiceLineItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+          description: Gets or sets the list of invoice line items.
+        ARTransactions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RelatedARTransaction'
+          description: Gets or sets the list of related accounts receivable transactions.
+      additionalProperties: false
+      description: Represents the response for an invoice, containing the invoice details, associated line items, and accounts receivable transactions.
+    CancellationResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CancellationResponse'
+      additionalProperties: false
+    CancellationResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+      description: 'Represents the result of cancelling a single entity (e.g., invoice or credit memo).
+
+        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ApprovalResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+      description: 'Represents the result of approving a single entity (e.g., invoice or credit memo) within a batch approval operation.
+
+        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
+    Invoice:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        InvoiceRequestResult:
+          $ref: '#/components/schemas/LookupObject'
+        BillTo:
+          $ref: '#/components/schemas/LookupObject'
+        BillToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ShipTo:
+          $ref: '#/components/schemas/LookupObject'
+        ShipToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        ApprovedStatus:
+          type:
+          - string
+          - 'null'
+        InvoiceDate:
+          type: string
+          format: date-time
+        DueDate:
+          type: string
+          format: date-time
+        DueIn:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        DuePastBy:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Currency:
+          type:
+          - string
+          - 'null'
+        TotalOneTimeFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalRecurringFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalEvergreenFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalUsageFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalAdjustments:
+          $ref: '#/components/schemas/CurrencyField'
+        SubTotal:
+          $ref: '#/components/schemas/CurrencyField'
+        Tax:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        InvoiceAutoNumber:
+          type:
+          - string
+          - 'null'
+        Key:
+          type:
+          - string
+          - 'null'
+        SoldTo:
+          $ref: '#/components/schemas/LookupObject'
+        SoldToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ErrorStatus:
+          type:
+          - string
+          - 'null'
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        InvoiceDocumentTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        InvoiceEmailTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        PaymentStatus:
+          type:
+          - string
+          - 'null'
+        TotalDueAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        RecordType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    InvoiceCancellationRequest:
+      type: object
+      properties:
+        Ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of invoice IDs to cancel.
+      additionalProperties: false
+      description: Represents a request to cancel one or more invoices.
+    InvoiceLineItem:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Invoice:
+          $ref: '#/components/schemas/LookupObject'
+        BillTo:
+          $ref: '#/components/schemas/LookupObject'
+        BillToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ShipTo:
+          $ref: '#/components/schemas/LookupObject'
+        ShipToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        Contracted:
+          type: boolean
+        Quantity:
+          type: number
+          format: double
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        StartDate:
+          type: string
+          format: date-time
+        EndDate:
+          type: string
+          format: date-time
+        Currency:
+          type:
+          - string
+          - 'null'
+        Fee:
+          $ref: '#/components/schemas/CurrencyField'
+        Adjustments:
+          $ref: '#/components/schemas/CurrencyField'
+        SubTotal:
+          $ref: '#/components/schemas/CurrencyField'
+        Tax:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        ApprovedStatus:
+          type:
+          - string
+          - 'null'
+        InvoiceLineItemAutoNumber:
+          type:
+          - string
+          - 'null'
+        Category:
+          type:
+          - string
+          - 'null'
+        PriceType:
+          type:
+          - string
+          - 'null'
+        BillingScheduleRecord:
+          $ref: '#/components/schemas/LookupObject'
+        SoldTo:
+          $ref: '#/components/schemas/LookupObject'
+        SoldToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        AssetLineItem:
+          $ref: '#/components/schemas/LookupObject'
+        OrderLineItem:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

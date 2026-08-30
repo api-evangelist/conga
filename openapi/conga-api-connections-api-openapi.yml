@@ -1,0 +1,716 @@
+openapi: 3.2.0
+info:
+  title: User Management API Connections API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: API Connections
+paths:
+  /api/user-management/v1/api-connections:
+    get:
+      tags:
+      - API Connections
+      summary: Get all API connections
+      description: Retrieves all API connections.
+      parameters:
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: APIType.<p>**Note**: The sort field (in this case, APIType) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC<p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIConnectionResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - APIType: API to API
+                  ClientId: SampleClientId
+                  ClientName: ClientA
+                  Description: ClientA Description
+                  ExternalIdentifier: ABCDEFGHI123456789
+                  CorsOrigins: []
+                  BackChannelLogoutURI: ''
+                  FrontChannelLogoutURI: ''
+                  RedirectURI: []
+                  ClientSecret: ''
+                  IsActive: false
+                  AllowedScopes: []
+                - APIType: API to API
+                  ClientId: SampleClientId
+                  ClientName: ClientA
+                  Description: ClientA Description
+                  ExternalIdentifier: ABCDEFGHI123456789
+                  CorsOrigins:
+                  - http://localhost:3000
+                  BackChannelLogoutURI: ''
+                  FrontChannelLogoutURI: ''
+                  RedirectURI:
+                  - https://www.sampleabc.com/
+                  ClientSecret: ''
+                  IsActive: true
+                  AllowedScopes: []
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/api-connections/{externalIdentifier}:
+    get:
+      tags:
+      - API Connections
+      summary: Get API connections
+      description: Retrieves API connections based on the API connection type selected.
+      parameters:
+      - name: externalIdentifier
+        in: path
+        description: External identifier
+        required: true
+        schema:
+          type: string
+      - name: apiConnectionType
+        in: query
+        description: API connection type
+        schema:
+          $ref: '#/components/schemas/APIConnectionType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIConnectionAPIResponse'
+              example:
+                Success: true
+                Data:
+                  APIType: API to API
+                  ClientId: 000000000000-000000000000.apps.googleusercontent.com
+                  ClientName: ClientA
+                  Description: ClientA Description
+                  IsActive: true
+                  ExternalIdentifier: ABCDEFGHI123456789
+                  CorsOrigins: null
+                  BackChannelLogoutURI: null
+                  FrontChannelLogoutURI: null
+                  RedirectURI: null
+                  ClientSecret: null
+                  AllowedScopes: null
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - API Connections
+      summary: Add API connection
+      description: Adds API connection.
+      parameters:
+      - name: externalIdentifier
+        in: path
+        description: External identifier
+        required: true
+        schema:
+          type: string
+      - name: apiConnectionType
+        in: query
+        description: API connection type
+        schema:
+          $ref: '#/components/schemas/APIConnectionType'
+      requestBody:
+        description: Input for creating an API connection.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIConnectionResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - API Connections
+      summary: Update API connection
+      description: Updates API connection.
+      parameters:
+      - name: externalIdentifier
+        in: path
+        description: External identifier
+        required: true
+        schema:
+          type: string
+      - name: apiConnectionType
+        in: query
+        description: API connection type
+        schema:
+          $ref: '#/components/schemas/APIConnectionType'
+      requestBody:
+        description: Input for updating an API connection.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/APIConnectionCreateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIConnectionResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/api-connections/{externalIdentifier}/status:
+    put:
+      tags:
+      - API Connections
+      summary: Update API connection status
+      description: Updates the status of the API connection.
+      parameters:
+      - name: externalIdentifier
+        in: path
+        description: External identifier
+        required: true
+        schema:
+          type: string
+      - name: apiConnectionType
+        in: query
+        description: API connection type
+        schema:
+          $ref: '#/components/schemas/APIConnectionType'
+      requestBody:
+        description: Input for updating the API connection status.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAPIConnectionStatusRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAPIConnectionStatusRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateAPIConnectionStatusRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    APIConnection:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        APIType:
+          type:
+          - string
+          - 'null'
+        ClientId:
+          type:
+          - string
+          - 'null'
+        ClientName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type: boolean
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+        CorsOrigins:
+          type:
+          - string
+          - 'null'
+        BackChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+        FrontChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+        RedirectURI:
+          type:
+          - string
+          - 'null'
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+        AllowedScopes:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    APIConnectionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/APIConnection'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    APIConnectionResponse:
+      type: object
+      properties:
+        APIType:
+          type:
+          - string
+          - 'null'
+        ClientId:
+          type:
+          - string
+          - 'null'
+        ClientName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+        CorsOrigins:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        BackChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+        FrontChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+        RedirectURI:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type: boolean
+        AllowedScopes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+      description: APIConnectionResponse
+    UpdateAPIConnectionStatusRequest:
+      type: object
+      properties:
+        IsActive:
+          type: boolean
+          description: Indicates whether the status of API connection is active or not.
+      additionalProperties: false
+    APIConnectionType:
+      enum:
+      - APItoAPI
+      - UItoAPI
+      type: string
+      description: APIConnectionType
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    APIConnectionResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/APIConnectionResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    APIConnectionCreateRequest:
+      type: object
+      properties:
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The API connection's description
+        ClientName:
+          type:
+          - string
+          - 'null'
+          description: The client's name
+        CorsOrigins:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: URI for Cross-Origin Resource Sharing (CORS)
+        BackChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+          description: URI for direct back-channel communication between the OpenID Providers(OP) and Relying Party(RP) being logged out
+        FrontChannelLogoutURI:
+          type:
+          - string
+          - 'null'
+          description: URI to communicate logout requests from the OpenID Providers(OP) to Relying Party(RP) via the User Agent
+        RedirectURI:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Redirects the request to the defined URL
+        AllowedScopes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Allowed scopes for API connection
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    APIConnectionResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/APIConnectionResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,1079 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract
+paths:
+  /api/clm/v1/contracts:
+    delete:
+      tags:
+      - Contract
+      summary: Delete contracts
+      description: Permanently deletes the contract records of the provided contract IDs from the system.
+      requestBody:
+        description: List of contract IDs to be deleted
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The given contract IDs are deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResultStatusDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  64608ac0-f8d6-482e-8585-cf7f2cdb0b7b: Success
+                  d2fd6dcd-c28c-44ca-9961-b01fc00cbc6a: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: One or more contract IDs is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Contract
+      summary: Create a contract record
+      description: "Creates a contract record in CLM. Name and Record Type are the required fields to create a contract. \n\nCLM auto-populates the system fields, such as Status Category and Status fields, which help identify the current stage of the contract lifecycle.\n\nThe Status Category and Status fields are set to \"Requested\". The logged-in user is added to the RecordOwner field by default. \n\nYou can introduce these additional and custom fields to the contract.\n* Name \n* Account \n* RecordType \n* RecordOwner \n* Status \n* StatusCategory \n* Id \n* CreatedBy \n* CreatedDate \n* ModifiedBy \n* ModifiedDate \n* ExternalId \n* ActivatedBy \n* ActivatedDate \n* ContractCategory \n* ContractNumber \n* AmendmentEffectiveDate \n* AutoRenewConsent \n* AutoRenewTermMonths \n* AutoRenewalTerms \n* AutoRenewal \n* ContractEndDate \n* ContractNumber \n* ContractStartDate \n* Description \n* InitiationType \n* InternalRenewalNotificationDays \n* InternalRenewalStartDate \n* ParentContract \n* Perpetual \n* PrimaryContact \n* Opportunity \n* RemainingContractedDays \n* RenewalNoticeDate \n* RenewalNoticeDays \n* RetentionDate \n* RetentionPolicyId \n* Source \n* SpecialTerms \n* SubmitRequestMode \n* TermMonths \n* TerminationComments \n* TerminationDate \n* TerminationNoticeDays \n* TerminationNoticeIssueDate \n* TermType \n* TotalContractValue \n* ExecutedDate \n* Currency"
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            examples:
+              Auto Renew:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  TermType: Auto Renew
+              Fixed Term:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  TermType: Fixed Term
+              Perpetual:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  TermType: Perpetual
+              Coterminous:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ParentAgreement:
+                    Id: b88r9fgt-a155-69bc-5d99-60c854a1a4a3
+                    Name: Parent Agreement
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  TermType: Coterminous
+              No Term Type:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+      responses:
+        '200':
+          description: Details of the created contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  Status: Request
+                  StatusCategory: Request
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:41.735946Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:41.7359462Z'
+                  ExternalId: null
+                  ActivatedBy: null
+                  ActivatedDate: null
+                  ContractNumber: '42'
+                  AmendmentEffectiveDate: null
+                  AutoRenewConsent: null
+                  AutoRenewTermMonths: null
+                  AutoRenewalTerms: null
+                  AutoRenewal: null
+                  ContractNumberAuto: 42
+                  Description: null
+                  InitiationType: null
+                  InternalRenewalNotificationDays: null
+                  InternalRenewalStartDate: null
+                  ParentContract: null
+                  Perpetual: null
+                  PrimaryContact: null
+                  RemainingContractedDays: null
+                  RenewalNoticeDate: null
+                  RenewalNoticeDays: null
+                  RetentionDate: null
+                  RetentionPolicyId: null
+                  Source: null
+                  SpecialTerms: null
+                  SubmitRequestMode: null
+                  TerminationComments: null
+                  TerminationDate: null
+                  TerminationNoticeDays: null
+                  TerminationNoticeIssueDate: null
+                  ExecutedDate: null
+                  Currency: USD
+                  ContractDurationDays: null
+                  ContractedDays: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Required value is missing from the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/query:
+    post:
+      tags:
+      - Contract
+      summary: Get contract records
+      description: Returns contract records matching the query request. Contracts created from contract requests are included in the result only if their contract status is "Request". Contracts with an "In Progress" or "Canceled" contract status are not included in the result.
+      requestBody:
+        description: Query parameters to get contract records
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns contract records that match the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Name: Contract-Demo
+                    Account:
+                      Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                      Name: Conga
+                    RecordType: MSA
+                    ContractCategory: Sales
+                    TotalContractValue: 2000
+                    ContractStartDate: '2023-01-01T00:00:00'
+                    ContractEndDate: '2023-12-31T00:00:00'
+                    RecordOwner:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: Bumble Bee
+                      OwnerType: User
+                    Status: Request
+                    StatusCategory: Request
+                    Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2023-01-16T11:59:24'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2023-01-16T11:59:24'
+                    ExternalId: null
+                    ActivatedBy: null
+                    ActivatedDate: null
+                    ContractNumber: '42'
+                    AmendmentEffectiveDate: null
+                    AutoRenewConsent: null
+                    AutoRenewTermMonths: null
+                    AutoRenewalTerms: null
+                    AutoRenewal: null
+                    ContractNumberAuto: 42
+                    Description: null
+                    Currency: USD
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided query is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}:
+    delete:
+      tags:
+      - Contract
+      summary: Delete a contract
+      description: Permanently deletes the record of the provided contract ID from the system.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Contract
+      summary: Get a contract's details
+      description: Fetches contract details of the provided contract ID. The API returns values of all contract fields including any configured custom fields.
+      parameters:
+      - name: contractId
+        in: path
+        description: Identifier of the contract
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contract details of the provided contract ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  Status: Request
+                  StatusCategory: Request
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:41.7510845Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:41.7510848Z'
+                  ExternalId: null
+                  ActivatedBy: null
+                  ActivatedDate: null
+                  ContractNumber: '42'
+                  AmendmentEffectiveDate: null
+                  AutoRenewConsent: null
+                  AutoRenewTermMonths: null
+                  AutoRenewalTerms: null
+                  AutoRenewal: null
+                  ContractNumberAuto: 42
+                  Description: null
+                  InitiationType: null
+                  InternalRenewalNotificationDays: null
+                  InternalRenewalStartDate: null
+                  ParentContract: null
+                  Perpetual: null
+                  PrimaryContact: null
+                  RemainingContractedDays: null
+                  RenewalNoticeDate: null
+                  RenewalNoticeDays: null
+                  RetentionDate: null
+                  RetentionPolicyId: null
+                  Source: null
+                  SpecialTerms: null
+                  SubmitRequestMode: null
+                  TerminationComments: null
+                  TerminationDate: null
+                  TerminationNoticeDays: null
+                  TerminationNoticeIssueDate: null
+                  ExecutedDate: null
+                  Currency: USD
+                  ContractDurationDays: null
+                  ContractedDays: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided contract ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Contract
+      summary: Update a contract record
+      description: "Updates a contract record in CLM. The Name and Record Type fields are required update a contract.\n\nYou can also update the contract with these additional and custom fields. \n\n* Name\n* Account\n* RecordType\n* RecordOwner\n* Status\n* StatusCategory\n* Id\n* CreatedBy\n* CreatedDate\n* ModifiedBy\n* ModifiedDate\n* ExternalId\n\n* ActivatedBy\n* ActivatedDate\n* ContractCategory\n* ContractNumber\n* AmendmentEffectiveDate\n* AutoRenewConsent\n* AutoRenewTermMonths\n* AutoRenewalTerms\n* AutoRenewal\n* ContractEndDate\n* ContractNumber\n* ContractStartDate\n* Description\n* InitiationType\n* InternalRenewalNotificationDays\n* InternalRenewalStartDate\n* ParentContract\n* Perpetual\n* PrimaryContact\n* Opportunity\n* RemainingContractedDays\n* RenewalNoticeDate\n* RenewalNoticeDays\n* RetentionDate\n* RetentionPolicyId\n* Source\n* SpecialTerms\n* SubmitRequestMode\n* TermMonths\n* TerminationComments\n* TerminationDate\n* TerminationNoticeDays\n* TerminationNoticeIssueDate\n* TermType\n* TotalContractValue\n* ExecutedDate\n* Currency"
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            examples:
+              Auto Renew:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  TermType: Auto Renew
+              Fixed Term:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  TermType: Fixed Term
+              Perpetual:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  TermType: Perpetual
+              Coterminous:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ParentAgreement:
+                    Id: b88r9fgt-a155-69bc-5d99-60c854a1a4a3
+                    Name: Parent Agreement
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  TermType: Coterminous
+              No Term Type:
+                value:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+      responses:
+        '200':
+          description: Returns updated contract details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Contract-Demo
+                  Account:
+                    Id: 0474fc7a-5914-4059-a412-e88afb581b7a
+                    Name: Conga
+                  RecordType: MSA
+                  ContractCategory: Sales
+                  TotalContractValue: 2000
+                  ContractStartDate: '2023-01-01T00:00:00'
+                  ContractEndDate: '2023-12-31T00:00:00'
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                  Status: Request
+                  StatusCategory: Request
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:41.747207Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:41.7472071Z'
+                  ExternalId: null
+                  ActivatedBy: null
+                  ActivatedDate: null
+                  ContractNumber: '42'
+                  AmendmentEffectiveDate: null
+                  AutoRenewConsent: null
+                  AutoRenewTermMonths: null
+                  AutoRenewalTerms: null
+                  AutoRenewal: null
+                  ContractNumberAuto: 42
+                  Description: null
+                  InitiationType: null
+                  InternalRenewalNotificationDays: null
+                  InternalRenewalStartDate: null
+                  ParentContract: null
+                  Perpetual: null
+                  PrimaryContact: null
+                  RemainingContractedDays: null
+                  RenewalNoticeDate: null
+                  RenewalNoticeDays: null
+                  RetentionDate: null
+                  RetentionPolicyId: null
+                  Source: null
+                  SpecialTerms: null
+                  SubmitRequestMode: null
+                  TerminationComments: null
+                  TerminationDate: null
+                  TerminationNoticeDays: null
+                  TerminationNoticeIssueDate: null
+                  ExecutedDate: null
+                  Currency: USD
+                  ContractDurationDays: null
+                  ContractedDays: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided contract ID is not valid or required values are not provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/signstatus:
+    put:
+      tags:
+      - Contract
+      summary: Update a contract's signature status
+      description: Updates a contract's signature status (signed, declined, or out for signature). For consumption by the eSign Service API.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract to be updated
+        required: true
+        schema:
+          type: string
+      - name: signStatus
+        in: query
+        description: SIGNED or DECLINED or OUT FOR SIGNATURE
+        schema:
+          type: string
+      requestBody:
+        description: List of document IDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The sign status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID or sign status is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    StringObjectDictionaryQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringResultStatusDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

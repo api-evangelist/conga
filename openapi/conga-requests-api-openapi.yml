@@ -1,0 +1,4024 @@
+openapi: 3.2.0
+info:
+  title: Approvals Requests API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: Requests
+paths:
+  /v1/requests/attachments:
+    post:
+      tags:
+      - Requests
+      summary: Get the approval request attachments
+      description: Gets attachments by request IDs.
+      operationId: Requests_GetAttachmentsByRequestIds
+      requestBody:
+        x-name: requestIds
+        description: Array of requestId
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Returns request's Attachment activity with Document meta data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestDocumentResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/bulk-approve:
+    post:
+      tags:
+      - Requests
+      summary: Approve requests
+      description: 'Approves the given requests and offers the next available approvers, continuing those approval
+
+        processes; otherwise, it checks for process completion.'
+      operationId: Requests_ApproveMultiple
+      requestBody:
+        x-name: request
+        description: The request payload
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApproveRejectPayloadDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: 'Boolean: Returns `true` if all are approved; `false` if any fails.'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/bulk-reassign:
+    post:
+      tags:
+      - Requests
+      summary: Reassign requests
+      description: Reassigns multiple listed requests.
+      operationId: Requests_ReassignMultiple
+      requestBody:
+        x-name: request
+        description: List of requests to be reassigned, including the request ID, the new assignee's ID and type, and comments.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReassignMultipleRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: A list of responses for each request. If reassigned, returns true and any error messages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReassignMultipleResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/bulk-reject:
+    post:
+      tags:
+      - Requests
+      summary: Reject approval requests
+      description: Rejects multiple requests.
+      operationId: Requests_RejectMultiple
+      requestBody:
+        x-name: request
+        description: List of request IDs to be rejected, and any comments
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApproveRejectPayloadDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: 'Boolean: returns true if all are rejected; false if any rejection fails.'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/bulk/{actionType}:
+    post:
+      tags:
+      - Requests
+      summary: Bulk business object operations
+      description: Perform the named action types on business objects in bulk operation.
+      operationId: Requests_BulkProcessMultipleContextObjects
+      parameters:
+      - name: actionType
+        in: path
+        required: true
+        description: ActionType
+        schema:
+          $ref: '#/components/schemas/ActionType'
+        x-position: 1
+      requestBody:
+        x-name: requestContextObjects
+        description: ContextObjectRequestDTO
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContextObjectRequestDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContextObjectResponseDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/check-required:
+    post:
+      tags:
+      - Requests
+      summary: Check for objects requiring approval
+      description: Lists business objects and child objects requiring approval.
+      operationId: Requests_CheckRequired
+      requestBody:
+        x-name: approvalRequiredCheckInfo
+        description: ApprovalRequiredCheckInfo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRequiredCheckInfo'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: ID type and approval status for each business object (businessObjectId) and its child objects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequiredCheckInfo'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/check-required-async:
+    post:
+      tags:
+      - Requests
+      summary: Check for objects requiring approval asynchronously
+      description: Lists business objects and child objects requiring approval.
+      operationId: Requests_CheckRequired2
+      requestBody:
+        x-name: approvalRequiredCheckInfo
+        description: ApprovalRequiredCheckInfo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRequiredCheckInfo'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: ID type and approval status for each business object (businessObjectId) and its child objects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitBulkAsyncHttpResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/comments:
+    put:
+      tags:
+      - Requests
+      summary: Add comment to approval request
+      description: Adds comments to approval request
+      operationId: Requests_AddComments
+      requestBody:
+        x-name: requestPayload
+        description: Payload encapsulates the request IDs , comments and attachments.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCommentsRequestPayload'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Boolean. True if successful
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/process-escalation-reminders:
+    post:
+      tags:
+      - Requests
+      summary: Process escalation reminder jobs
+      description: Finds and triggers all reminders and escalations (e.g., sends reminder email, etc.) that are due.
+      operationId: Requests_ProcessReminders
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/rfi:
+    put:
+      tags:
+      - Requests
+      summary: Reqeust an information about approval request
+      description: Reqeust an information about approval request
+      operationId: Requests_AddRFI
+      requestBody:
+        x-name: requestPayload
+        description: Payload encapsulates the request IDs , attachments and Request for Information recipient.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RFIRequestPayload'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Boolean. True if successful
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/submit:
+    post:
+      tags:
+      - Requests
+      summary: Submit for approval
+      description: Submits an object for approval by checking if any approval process meets the criteria for the given object ID and type.
+      operationId: Requests_Submit
+      requestBody:
+        x-name: submitPayload
+        description: The objectId, objectType, comments, and attachment IDs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitApprovalRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the RuntimeApprovalsResponse payload, containing all request and approval information for the submitted object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/submit-async:
+    post:
+      tags:
+      - Requests
+      summary: Submit an approval asynchronously
+      description: 'Submit objects for approval asynchronously, checking if any approval process meets the
+
+        criteria for the given context object ID and type. This asynchronous process allows you
+
+        to submit many objects for approval.'
+      operationId: Requests_Submit2
+      requestBody:
+        x-name: submitAsyncHttpRequest
+        description: Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitBulkAsyncHttpRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: A correlation ID and a list of transactions performed, with object information and a success status for each item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitBulkAsyncHttpResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{correlationId}/status:
+    get:
+      tags:
+      - Requests
+      summary: Get an approval request status
+      description: Gets an approval request status by correlation ID.
+      operationId: Requests_RequestStatus
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        description: The correlation ID of the submitted request
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Transaction information for the correlation ID, including operation status and any messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncOperationStatusAPIResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{id}/adhoc-approver:
+    put:
+      tags:
+      - Requests
+      summary: Add an ad hoc approver
+      description: Adds a new approver to the running approval cycle in the position given in the reference step.
+      operationId: Requests_AddAdhocApproverToRuleBasedApprovalRequest
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: payload
+        description: AddAdHocApproverPayloadDTO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAdHocApproverPayloadDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: The approval requests generated after adding an ad hoc approver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+    delete:
+      tags:
+      - Requests
+      summary: Delete an ad hoc approver
+      description: Deletes an ad hoc approver from a rule-based approval.
+      operationId: Requests_DeleteAdhocApproverFromRuleBasedApprovals
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The approval requests remaining after deleting an ad hoc approver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{id}/approve:
+    post:
+      tags:
+      - Requests
+      summary: Approve a request
+      description: 'Approves the given request and offers the next available approvers, continuing the approval process;
+
+        otherwise, checks for process completion.'
+      operationId: Requests_Approve
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: request
+        description: Contains approval request comments.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveRequestDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: "Boolean: `true` on approval or process completion; `false` on failures, for example approving\n            without appropriate permission."
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{id}/escalate:
+    post:
+      tags:
+      - Requests
+      summary: Escalate an approval request
+      description: Raises an approval request to level set in escalationTold, configured by the user with the original step or rule.
+      operationId: Requests_Escalate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID to escalate
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: 'Boolean: returns true if escalated.'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{id}/reassign:
+    post:
+      tags:
+      - Requests
+      summary: Reassign an approval request
+      description: Reassigns an approval request to a new assignee. Provide the new assignee ID, assignee type, and optional comments.
+      operationId: Requests_ReAssign
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID to reassign
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: requestMessage
+        description: ReassignRequestPayload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReassignRequestPayloadDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: 'Boolean: returns true if reassigned'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{id}/reject:
+    post:
+      tags:
+      - Requests
+      summary: Reject an approval request
+      description: Rejects the given request and offers the next available approvers, continuing the approval process; otherwise, it checks for process completion.
+      operationId: Requests_Reject
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval request ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: request
+        description: The approval request comments
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveRequestDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: 'Boolean: returns true if rejected; false if the rejection failed.'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}:
+    get:
+      tags:
+      - Requests
+      summary: Get status for a context object
+      description: For a given context object type and ID, checks whether the object is in a preview or submitted status.
+      operationId: Requests_GetByObjectTypeAndObjectId
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: Context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: Context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 3
+      responses:
+        '200':
+          description: Process instance payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}/child/{childObjectType}:
+    get:
+      tags:
+      - Requests
+      summary: Get child object approval status
+      description: For a given context object type and ID and child object type, checks whether the child object has a Preview or Submitted status.
+      operationId: Requests_GetChildByObjectTypeAndObjectId
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: Context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: Context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: childObjectType
+        in: path
+        required: true
+        description: Child object type
+        schema:
+          type: string
+        x-position: 3
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 4
+      responses:
+        '200':
+          description: Process instance payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}/comments:
+    get:
+      tags:
+      - Requests
+      summary: Get approval request comments
+      description: Gets all comments for an approval request by object type and ID.
+      operationId: Requests_GetComments
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 3
+      - name: requestId
+        in: query
+        description: If provided, will return only comments for the request with this requestid
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 4
+      - name: commentsOrder
+        in: query
+        description: Order for list of comments by date. Supported orders are ASC or DESC. Default is DESC
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 5
+      responses:
+        '200':
+          description: A list of comments for the context object, including date and commenter information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalComments'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}/preview:
+    get:
+      tags:
+      - Requests
+      summary: Preview an approval
+      description: 'Previews approvals on an object by checking if any approval process meets the criteria for the given
+
+        object ID and type.'
+      operationId: Requests_Preview
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: 'The object type (for example: Opportunity)'
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: 'The object ID (for example: d8eec23-3efd-aa7c-c708-1e875168fa64)'
+        schema:
+          type: string
+        x-position: 2
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 3
+      responses:
+        '200':
+          description: Approval process instance metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeApprovalsResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}/recall:
+    post:
+      tags:
+      - Requests
+      summary: Recall approval requests
+      description: Recalls (cancels) the current approval cycle and notifies affected approvers and delegates (if any).
+      operationId: Requests_Recall
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: Context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: Context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 3
+      requestBody:
+        x-name: request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecallRequests'
+        required: true
+        x-position: 4
+      responses:
+        '200':
+          description: A success status
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{objectType}/{objectId}/{assigneeId}:
+    get:
+      tags:
+      - Requests
+      summary: Get requests by assignee and object ID
+      description: Gets all approval requests for the specified object and assignee.
+      operationId: Requests_GetRequestsByAssigneeIds
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: assigneeId
+        in: path
+        required: true
+        description: The assignee ID
+        schema:
+          type: string
+        x-position: 3
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 4
+      responses:
+        '200':
+          description: A list of requests assigned to the given object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RequestByAssigneeIdResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{requestId}:
+    get:
+      tags:
+      - Requests
+      summary: Get an approval request
+      description: Gets an approval request by request ID.
+      operationId: Requests_GetRequestById
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        description: Context object ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Process instance payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{requestId}/assign-owner:
+    put:
+      tags:
+      - Requests
+      summary: Take ownership of an approval request
+      description: Assigns ownership of a queued approval request to the current user. Use to claim responsibility for processing a request.
+      operationId: Requests_AssignRequestOwner
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        description: Approval request id
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: True if assigning ownership of the request was successful, False if not
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalsQueue'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/requests/{requestId}/consolidation-info:
+    get:
+      tags:
+      - Requests
+      summary: Get consolidation information for an approval request.
+      description: Retrieves consolidation details, including consolidated requests, for the specified approval request ID.
+      operationId: Requests_GetRequestConsolidationInfo
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        description: Identifier of the approval request.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Consolidation information for the specified approval request.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalRequest'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    AdhocProcessDefnPayloadDTO:
+      type: object
+      description: AdhocProcessDefinition Payload DTO encapsulates the information for the generated approval requests, analogous to ad hoc process payloads.
+      additionalProperties: false
+      properties:
+        AdhocGroups:
+          type:
+          - array
+          - 'null'
+          description: Represents generated parent approval requests as an ad hoc group.
+          items:
+            $ref: '#/components/schemas/GroupPayloadDTO'
+        AdhocInfo:
+          description: AdhocInfo encapsulates such information as comments and attachments used during ad hoc process submissions.
+          oneOf:
+          - $ref: '#/components/schemas/AdhocApprovalProcessInfoDTO'
+        AllowApprovedRequestDelete:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether approved requests are to be deleted in flight during an ad hoc edit.
+        AutoReApprovalEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether auto-reapprovals are enabled for ad hoc processes.
+        RequireCommentsOnReject:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether the rejection comments are mandatory.
+        ApprovalStatus:
+          type:
+          - string
+          - 'null'
+          description: Approval status for the approval cycle
+        RequireCommentsOnApprove:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether the approval comments are mandatory.
+        submission_comments:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission
+          example: Example submission comments
+        submission_comments_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comments
+          example: true
+        submission_comments_mandatory:
+          type:
+          - boolean
+          - 'null'
+          description: Make submission comments mandatory
+          example: true
+        submission_comment1_label:
+          type:
+          - string
+          - 'null'
+          description: Submission comment 1 Label
+          example: Custom comment 1 Label
+        submission_date:
+          type:
+          - string
+          - 'null'
+          description: Date the submission occurred
+          format: date-time
+          example: '2023-04-10T22:08:42.756215Z'
+    AddCommentsRequestPayload:
+      type: object
+      description: AddCommentsRequestPayload
+      additionalProperties: false
+      properties:
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example comments for an approval request
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+          description: AttachmentIds
+          example: attachmentId1,attachmentId2
+        ApprovalRequestIds:
+          type:
+          - array
+          - 'null'
+          description: ApprovalRequestIds
+          items:
+            type: string
+    ApprovalRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ComputedId:
+            type: string
+          ApprovalAction:
+            type: string
+          ActionApproveId:
+            type: string
+          ActionReassignId:
+            type: string
+          Active:
+            type: boolean
+          ActualApproverId:
+            $ref: '#/components/schemas/LookupObject'
+          ActualApproverName:
+            type: string
+          ApprovalProcess:
+            type: string
+          ApprovalStatus:
+            type:
+            - string
+            - 'null'
+          ApprovalCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalFromEmail:
+            type:
+            - boolean
+            - 'null'
+          ApprovalPercent:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPolicy:
+            type:
+            - string
+            - 'null'
+          ApproverComments:
+            type: string
+          AssigneeName:
+            type: string
+          ReassignedToId:
+            type: string
+          ReassignedToType:
+            type: string
+          AutoComplete:
+            type:
+            - boolean
+            - 'null'
+          AutoEscalate:
+            type:
+            - boolean
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          BackupFromUserId:
+            $ref: '#/components/schemas/LookupObject'
+          CanEscalate:
+            type:
+            - boolean
+            - 'null'
+          ContinuePolicyApprovalOnAReject:
+            type:
+            - boolean
+            - 'null'
+          CriteriaFieldNames:
+            type: string
+          Date:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateApproved:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateAssigned:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateCancelled:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateEscalated:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateReassigned:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DateRejected:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          DelegateApproverIds:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          DependsOn:
+            type: string
+          EnableApprovedRequestDelete:
+            type:
+            - boolean
+            - 'null'
+          EscalatedToHighestLevel:
+            type: boolean
+          EscalateToChain:
+            type: string
+          EscalateToName:
+            type: string
+          ExpectedCompletionDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          ExpectedDaysToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ExpectedHoursToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          NextNotificationTimeInMinutes:
+            type:
+            - number
+            - 'null'
+            format: double
+          GroupName:
+            type: string
+          GroupUniqueId:
+            type: string
+          HasAttachments:
+            type:
+            - boolean
+            - 'null'
+          HasDelegateApprover:
+            type: boolean
+          IsEscalated:
+            type:
+            - boolean
+            - 'null'
+          InitialSubmitterId:
+            oneOf:
+            - $ref: '#/components/schemas/UserInfo'
+          InternalComments:
+            type: string
+          IsAdhoc:
+            type:
+            - boolean
+            - 'null'
+          IsAutoReapprovalEnabled:
+            type:
+            - boolean
+            - 'null'
+          IsSubprocess:
+            type:
+            - boolean
+            - 'null'
+          Owner:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ParentRequest:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ApprovalProcessInstanceId:
+            $ref: '#/components/schemas/ApprovalProcessInstance'
+          RejectionAction:
+            type: string
+          ApprovalDetails:
+            type: string
+          RequestType:
+            type: string
+          NotifyOnly:
+            type: boolean
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          SubSequence:
+            type: string
+          Status:
+            type: string
+          StepDefinitionReference:
+            type: string
+          StepGroupSeqNumber:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          StepName:
+            type: string
+          StepLabel:
+            type: string
+          Step:
+            type: string
+          StepSequenceString:
+            type: string
+          SubmissionComment1:
+            type: string
+          SubmissionComment2:
+            type: string
+          SubmissionComment3:
+            type: string
+          SubprocessDependsOn:
+            type: string
+          SubprocessDependencyKey:
+            type:
+            - string
+            - 'null'
+          SubprocessName:
+            type: string
+          SubprocessSequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SubstepDependsOn:
+            type: string
+          SubstepDependencyKey:
+            type:
+            - string
+            - 'null'
+          SubstepName:
+            type: string
+          SubstepSequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          WorkflowTriggerAddedComments:
+            type:
+            - boolean
+            - 'null'
+          RequestComments:
+            type: string
+          StepSequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          NotificationType:
+            type:
+            - string
+            - 'null'
+          PrevAssignedToId:
+            type: string
+          PrevAssignedToType:
+            type: string
+          ObjectId:
+            type: string
+          ObjectType:
+            type: string
+          EscalateToId:
+            type: string
+          EscalateToType:
+            type: string
+          ChildObjectId:
+            type: string
+          ChildObjectType:
+            type:
+            - string
+            - 'null'
+          AssignedToId:
+            type: string
+          AssignedToType:
+            type: string
+          BelongsToInitialConsolidation:
+            type:
+            - boolean
+            - 'null'
+          HasReminder:
+            type:
+            - boolean
+            - 'null'
+          RFIRecipientId:
+            type: string
+          RFIRecipientName:
+            type: string
+          RecipientType:
+            type: string
+          DateOfAction:
+            type: string
+          AutoApprovedByPolicy:
+            type: string
+          IsSubStep:
+            type: boolean
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+    AssigneeBackupFrom:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+    AdhocApprovalGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocApprovalProcessInfoId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          GroupName:
+            type:
+            - string
+            - 'null'
+          GroupSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ApproverList:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AdhocApprover'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Sequence:
+            type: integer
+            format: int32
+    UserInfo:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          FirstName:
+            type:
+            - string
+            - 'null'
+          LastName:
+            type:
+            - string
+            - 'null'
+          UserName:
+            type:
+            - string
+            - 'null'
+          Email:
+            type:
+            - string
+            - 'null'
+          Role:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          PermissionGroups:
+            type:
+            - string
+            - 'null'
+          RolePermissionGroups:
+            type:
+            - string
+            - 'null'
+          Timezone:
+            type:
+            - string
+            - 'null'
+          Locale:
+            type:
+            - string
+            - 'null'
+          Currency:
+            type:
+            - string
+            - 'null'
+          CurrencyFormat:
+            type:
+            - string
+            - 'null'
+          IsDeleted:
+            type: boolean
+          IsActive:
+            type: boolean
+          IsSuspended:
+            type:
+            - boolean
+            - 'null'
+          Alias:
+            type:
+            - string
+            - 'null'
+          Language:
+            type:
+            - string
+            - 'null'
+          SmallPhotoUrl:
+            type:
+            - string
+            - 'null'
+          LastLoginDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          Address:
+            type:
+            - string
+            - 'null'
+          PhoneNumber:
+            type:
+            - string
+            - 'null'
+          IdentityStatus:
+            type:
+            - string
+            - 'null'
+          UserType:
+            oneOf:
+            - $ref: '#/components/schemas/UserType2'
+          UserGroupsAssignedTo:
+            type:
+            - string
+            - 'null'
+    ReassignMultipleRequest:
+      type: object
+      description: This encapsulates information for the given requestIds, assigneeId and type and comments.
+      additionalProperties: false
+      required:
+      - RequestId
+      - AssigneeId
+      - AssigneeType
+      properties:
+        RequestId:
+          type: string
+          description: Request Id
+          minLength: 1
+        AssigneeId:
+          type: string
+          description: Assignee Id
+          minLength: 1
+        AssigneeType:
+          type: string
+          description: Assignee Type
+          minLength: 1
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+    ContextObjectStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Type:
+          type:
+          - string
+          - 'null'
+        ApprovalStatus:
+          type:
+          - string
+          - 'null'
+    ApprovalsQueue:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Email:
+            type:
+            - string
+            - 'null'
+          OwnerId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmailToMembers:
+            type: boolean
+    AddAdHocApproverPayloadDTO:
+      type: object
+      description: AddAdhocApporverPaylodDTO
+      additionalProperties: false
+      required:
+      - NewStep
+      - NewStepPosition
+      properties:
+        ReferenceRequestId:
+          type:
+          - string
+          - 'null'
+          description: Reference Approval Request Id
+        NewStep:
+          description: StepDetail
+          oneOf:
+          - $ref: '#/components/schemas/StepDetails'
+        NewStepPosition:
+          description: Position
+          oneOf:
+          - $ref: '#/components/schemas/Position'
+    RuntimeStepDTO:
+      type: object
+      description: RuntimeStepDTO encapsulates the information about the approval request
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          description: Approval Request Id
+        request_id:
+          type:
+          - string
+          - 'null'
+          description: Approval Request Id
+        type:
+          type:
+          - string
+          - 'null'
+          description: Approval Request Type. Possible values=[Standard, Subprocess, Childprocess]
+        child_context_object:
+          type:
+          - object
+          - 'null'
+          description: Child ContextObject fields will be populated if it is ChildProcess.
+          additionalProperties:
+            type: string
+        status:
+          type:
+          - string
+          - 'null'
+          description: Approval status
+        display_item:
+          description: Step Display item configured for the evaluated approval process step
+          oneOf:
+          - $ref: '#/components/schemas/StepDisplayItemDTO'
+        step_sequence:
+          type: integer
+          description: Sequence for the approval request
+          format: int32
+        approver_list:
+          type:
+          - array
+          - 'null'
+          description: Approvers for the given approval process step. For Standard step approvers count will always be one, where as for Subprocess, Childprocess approvers will be as per the configured one at approval process step.
+          items:
+            $ref: '#/components/schemas/RuntimeAssigneeDTO'
+        title:
+          type:
+          - string
+          - 'null'
+          description: Title is reflection of approval process step
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the approval process step
+        submission_comments_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comments
+          example: true
+        submission_comments_1_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comment 1
+          example: true
+        submission_comments_2_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comment 2
+          example: true
+        submission_comments_3_enabled:
+          type:
+          - boolean
+          - 'null'
+        submission_comment1:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission comment 1
+          example: Example submission comment 1
+        submission_comment2:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission comment 2
+          example: Example submission comment 2
+        submission_comment3:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission comment 3
+          example: Example submission comment 3
+    RequestDocumentResponse:
+      type: object
+      description: RequestDocumentResponse
+      additionalProperties: false
+      properties:
+        RequestAttachmentActivities:
+          type:
+          - object
+          - 'null'
+          description: It contains list of documents ids for the corresponding request
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/AttachmentActivity'
+        Documents:
+          type:
+          - array
+          - 'null'
+          description: List of DocumentMetaData
+          items:
+            $ref: '#/components/schemas/DocumentResponse'
+    AdhocApprover:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocGroupId:
+            oneOf:
+            - $ref: '#/components/schemas/AdhocApprovalGroup'
+          ApproverSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalEnabled:
+            type:
+            - boolean
+            - 'null'
+          IsReviewer:
+            type:
+            - boolean
+            - 'null'
+          SendEmail:
+            type:
+            - boolean
+            - 'null'
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeMailId:
+            type:
+            - string
+            - 'null'
+          AssigneeName:
+            type:
+            - string
+            - 'null'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          Sequence:
+            type: integer
+            format: int32
+    ProcessEntryCriteria:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type: string
+        Active:
+          type:
+          - boolean
+          - 'null'
+        Field:
+          type:
+          - string
+          - 'null'
+        ComparisonType:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        FieldKeyValue:
+          type:
+          - string
+          - 'null'
+        BooleanOperator:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    FieldDTO:
+      type: object
+      description: FieldDTO encapsulates the field level information like label, value, datatype
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name for the field
+        label:
+          type:
+          - string
+          - 'null'
+          description: Display Name for the field
+        value:
+          description: Value for the field
+        type:
+          type:
+          - string
+          - 'null'
+          description: Data type for the field
+    RecallRequests:
+      type: object
+      description: RecallRequests
+      additionalProperties: false
+      properties:
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example comments for an approval request
+    Escalation:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          EscalationLevel:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          EscalationForId:
+            type:
+            - string
+            - 'null'
+          EscalationForType:
+            type:
+            - string
+            - 'null'
+          EscalationToId:
+            type:
+            - string
+            - 'null'
+          EscalationToType:
+            type:
+            - string
+            - 'null'
+          EscalationToName:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          StepId:
+            type:
+            - string
+            - 'null'
+          Rule:
+            type:
+            - string
+            - 'null'
+          RuleStep:
+            type:
+            - string
+            - 'null'
+          ExpectedDaysToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedHoursToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedMinutesToComplete:
+            type:
+            - string
+            - 'null'
+    StepDisplayItemDTO:
+      type: object
+      description: StepDisplayItemDTO encapsulates the header and other fields configured which will be displayed in the inspector panel
+      additionalProperties: false
+      properties:
+        header:
+          type:
+          - string
+          - 'null'
+          description: Header field configured for the approval process step
+        fields:
+          type:
+          - array
+          - 'null'
+          description: Fields configured for the approval process step which will be displayed in the inspector panel
+          items:
+            $ref: '#/components/schemas/FieldDTO'
+    SubmitBulkAsyncHttpRequest:
+      type: object
+      description: SubmitAsync HTTP request message
+      additionalProperties: false
+      properties:
+        Requests:
+          type:
+          - array
+          - 'null'
+          description: The list of requests
+          maxItems: 1000
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SubmitAsyncHttpRequest'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    ReassignMultipleResponse:
+      allOf:
+      - $ref: '#/components/schemas/ReassignMultipleRequest'
+      - type: object
+        description: This encapsulates information for the given requestIds, assigneeId and type the corresponding results as well.
+        additionalProperties: false
+        properties:
+          IsSuccess:
+            type:
+            - boolean
+            - 'null'
+            description: Returns true if the action is successfull
+          Message:
+            type:
+            - string
+            - 'null'
+            description: Returns message/error message if any
+    ProcessUpdateAction:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        ActionType:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        FieldName:
+          type:
+          - string
+          - 'null'
+        FieldNameSource:
+          type:
+          - string
+          - 'null'
+        FieldUpdateType:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        FieldKeyValue:
+          type:
+          - string
+          - 'null'
+    RuntimeApprovalsResponse:
+      type: object
+      description: RuntimeApprovalsResponse
+      additionalProperties: false
+      properties:
+        is_adhoc:
+          type: boolean
+          description: Specifies whether the approval cycle was triggered from an ad hoc process.
+          example: true
+        rule_driven_payload:
+          description: Encapsulates the generated steps and the approvers for a rule-driven payload.
+          oneOf:
+          - $ref: '#/components/schemas/ProcessInstancePayloadDTO'
+        adhoc_payload:
+          description: Encapsulates the groups and approvers for an ad hoc process payload.
+          oneOf:
+          - $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+        is_submitted:
+          type: boolean
+          description: Specifies whether approval cycle has been submitted.
+          example: true
+        is_cancelled:
+          type: boolean
+          description: Specifies whether an approval cycle has been canceled.
+          example: true
+        can_recall:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether current user can recall the approval cycle.
+          example: true
+        is_previewed:
+          type: boolean
+          description: Specifies whether an approval cycle has been previewed.
+          example: true
+        is_completed:
+          type: boolean
+          description: Specifies whether an approval cycle is complete.
+          example: true
+        are_rejection_comments_mandatory:
+          type: boolean
+          description: Specifies whether rejection comments are mandatory.
+          example: true
+        are_approval_comments_mandatory:
+          type: boolean
+        are_recall_comments_mandatory:
+          type: boolean
+        are_recall_comments_enabled:
+          type: boolean
+        approval_status:
+          type:
+          - string
+          - 'null'
+          description: The approval cycle's approval status
+          example: Submitted
+        isresubmit_enabled:
+          type: boolean
+          description: 'This propety is only set when the context object status is "Approval Required" and has already been submitted.
+
+            By default it is false.'
+        isupdatepreview:
+          type: boolean
+          description: This property indicates whether an update preview is available.
+        context_object_status:
+          type:
+          - string
+          - 'null'
+          description: This property contains the context object's approval status.
+        approve_comment_label:
+          type:
+          - string
+          - 'null'
+          description: This property contains the Approve comment label to show on UI.
+        reject_comment_label:
+          type:
+          - string
+          - 'null'
+          description: This property contains the Reject comment label to show on UI.
+        recall_comment_label:
+          type:
+          - string
+          - 'null'
+          description: This property contains the recall comment label to show on UI.
+    ApprovalProcess:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ObjectName:
+            type:
+            - string
+            - 'null'
+          ObjectType:
+            type:
+            - string
+            - 'null'
+          Active:
+            type: boolean
+          AdhocStepAutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          ApprovalSummaryPage:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalStatusLabel:
+            type:
+            - string
+            - 'null'
+          ConsolidateApprovals:
+            type:
+            - boolean
+            - 'null'
+          BackupAdminUserId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ConsolidateNotifications:
+            type:
+            - boolean
+            - 'null'
+          ContextType:
+            type:
+            - string
+            - 'null'
+          ContinuePendingApprovalsOnAReject:
+            type:
+            - boolean
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          CustomMyApprovalsPage:
+            type:
+            - string
+            - 'null'
+          CustomPreviewPage:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          EnableApprovedRequestDelete:
+            type:
+            - boolean
+            - 'null'
+          EntryCriteriaFilterLogic:
+            type:
+            - string
+            - 'null'
+          IsAdhoc:
+            type: boolean
+          EscalationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReminderEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AssignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CancellationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RequestForInformationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RejectionEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CommentsEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          NotifyonlyEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReassignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ErrorEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ProcessAutoEscalate:
+            type:
+            - boolean
+            - 'null'
+          ProcessEscalateToId:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToName:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToType:
+            type:
+            - string
+            - 'null'
+          ProcessExpectedDaysToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedHoursToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedMinutesToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessName:
+            type:
+            - string
+            - 'null'
+          RequireCommentsOnReject:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnApprove:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnRecall:
+            type:
+            - boolean
+            - 'null'
+          RecallCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          ApproveCommentLabel:
+            type:
+            - string
+            - 'null'
+          RejectCommentLabel:
+            type:
+            - string
+            - 'null'
+          RecallCommentLabel:
+            type:
+            - string
+            - 'null'
+          SubmissionComment1Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment2Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment3Label:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsEnabled:
+            type: boolean
+          SubmissionCommentsMandatory:
+            type: boolean
+          SubmissionCommentsEnabledCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          SubmissionCommentsPerStep:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsType:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNameHeader:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNames:
+            type:
+            - string
+            - 'null'
+          IsDeleted:
+            type: boolean
+          ProcessEntryCriterias:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessEntryCriteria'
+          ProcessUpdateActions:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessUpdateAction'
+          ProcessStepGroup:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessStepGroup'
+    ApprovalProcessInstance:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalProcess:
+            $ref: '#/components/schemas/ApprovalProcess'
+          AssignmentEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          AttachmentIds:
+            type:
+            - string
+            - 'null'
+          BusinessObjectLink:
+            type: string
+          CancellationEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          RequestForInformationEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          RejectionEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          CommentsEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          Data:
+            type: string
+          EndTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          EscalationEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          ReminderEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          ErrorEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          InstanceNumber:
+            type: string
+          IsAdhoc:
+            type:
+            - boolean
+            - 'null'
+          NotifyonlyEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          PreviousProcessInstance:
+            $ref: '#/components/schemas/BaseObject'
+          ReassignmentEmailTemplate:
+            $ref: '#/components/schemas/LookupObject'
+          StartTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          Status:
+            type: string
+          CRE:
+            type:
+            - boolean
+            - 'null'
+          BusinessObjectId:
+            type: string
+          BusinessObjectType:
+            type: string
+          ReminderDetails:
+            type: string
+          EscalationDetails:
+            type: string
+    RFIRequestPayload:
+      allOf:
+      - $ref: '#/components/schemas/AddCommentsRequestPayload'
+      - type: object
+        description: RFIRequestPayload
+        additionalProperties: false
+        properties:
+          RFIRecipientId:
+            type:
+            - string
+            - 'null'
+            description: RFIRecipientId
+          RFIRecipientType:
+            type:
+            - string
+            - 'null'
+            description: RFIRecipientType
+    ApproveRejectPayloadDTO:
+      type: object
+      description: ApproveRejectPayloadDTO
+      additionalProperties: false
+      required:
+      - Id
+      properties:
+        Id:
+          type: string
+          description: Approval Request ID
+          minLength: 1
+          example: 33BC4454-9C0F-421A-AAC7-80064009AFD1
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example comments for an approval request
+        ActionApproveId:
+          type:
+          - string
+          - 'null'
+          description: ActionApproveId
+        ApprovalFromEmail:
+          type:
+          - boolean
+          - 'null'
+          description: ApprovalFromEmail
+    ApprovalRule:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPercent:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPolicy:
+            type:
+            - string
+            - 'null'
+          BusinessObject:
+            type:
+            - string
+            - 'null'
+          ContinuePolicyApprovalOnAReject:
+            type:
+            - boolean
+            - 'null'
+          RuleCriteria:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension1ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension2Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension2ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension3Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension3ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension4Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension4ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension5Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension5ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension6Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension6ValueType:
+            type:
+            - string
+            - 'null'
+          EffectiveDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          ExpirationDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          MatchRule:
+            type:
+            - string
+            - 'null'
+          RuleType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StopProcessingMoreRules:
+            type:
+            - boolean
+            - 'null'
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntry'
+    StepLevelSubmitComments2:
+      type: object
+      description: Submit Comments for step
+      additionalProperties: false
+      properties:
+        ProcessStepId:
+          type:
+          - string
+          - 'null'
+          description: ProcessStep Id
+        Comment1:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 1 '
+        Comment2:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 2 '
+        Comment3:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 3 '
+    ContextObjectResponseDTO:
+      allOf:
+      - $ref: '#/components/schemas/ContextObjectRequestDTO'
+      - type: object
+        description: This encapsulates information for the given context object id, type the corresponding results as well.
+        additionalProperties: false
+        properties:
+          RuntimeApprovalPayload:
+            description: Returns runtime payload if any
+            oneOf:
+            - $ref: '#/components/schemas/RuntimeApprovalsResponse'
+          IsSuccess:
+            type:
+            - boolean
+            - 'null'
+            description: Returns true if the action is successfull
+          Message:
+            type:
+            - string
+            - 'null'
+            description: Returns message/error message if any
+    ApprovalRuleEntry:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ReassignRequestPayloadDTO:
+      type: object
+      description: ReassignRequestPayloadDTO encapsulates the information to whom the request needs to be reassigned
+      additionalProperties: false
+      required:
+      - AssigneeId
+      - AssigneeType
+      properties:
+        AssigneeId:
+          type: string
+          description: Assignee Id
+          minLength: 1
+        AssigneeType:
+          type: string
+          description: Assignee Type
+          minLength: 1
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+    DocumentResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          DocumentMetadata:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentMetadata'
+          BlobData:
+            type:
+            - string
+            - 'null'
+            format: byte
+    AdhocApprovalProcessInfo:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AttachmentIds:
+            type:
+            - string
+            - 'null'
+          DisplayFields:
+            type:
+            - string
+            - 'null'
+          DisplayHeaderFields:
+            type:
+            - string
+            - 'null'
+          ProcessComments:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+    RuntimeAssigneeDTO:
+      type: object
+      description: RuntimeAssigneeDTO
+      additionalProperties: false
+      properties:
+        assigned_to_id:
+          type:
+          - string
+          - 'null'
+          description: Assignee Id
+        assigned_to_name:
+          type:
+          - string
+          - 'null'
+          description: Assignee Name
+        assigned_to_type:
+          type:
+          - string
+          - 'null'
+          description: Assignee Type
+        assignee_sequence:
+          type: number
+          description: Assignee Sequence
+          format: decimal
+        assignee_delegates:
+          type:
+          - array
+          - 'null'
+          description: Assignee Delegates
+          items:
+            $ref: '#/components/schemas/LookupObject'
+        assignee_backupfrom:
+          description: Actual Assignee for the approval request if the request assigned to Backup configured to the assignee
+          oneOf:
+          - $ref: '#/components/schemas/AssigneeBackupFrom'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Approval Status
+        approver_comments:
+          type:
+          - string
+          - 'null'
+          description: Approver comments
+        date_assigned:
+          type: string
+          description: Date Assigned
+          format: date-time
+        date_approved:
+          type: string
+          description: Date Approved
+          format: date-time
+        date_of_action:
+          type:
+          - string
+          - 'null'
+          description: Date Approved
+        request_id:
+          type:
+          - string
+          - 'null'
+          description: Approval Request Id
+        can_approve_reject:
+          type: boolean
+          description: Specifies whether approve/reject .this evalutes on the requesting user
+        can_reassign:
+          type: boolean
+          description: Specifies whether able to reassign .this evalutes on the requesting user
+        can_escalate:
+          type: boolean
+          description: Specifies whether able to escalate .this evalutes on the requesting user
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the approval process step which copied to approval request
+        is_adhoc_approver:
+          type: boolean
+          description: Specifies whether the request is adhoc approver.this evalutes on the requesting user
+        can_add_adhoc_approver:
+          type: boolean
+          description: Specifies whether able to add adhoc approver.this evalutes on the requesting user
+        step_label:
+          type:
+          - string
+          - 'null'
+          description: Specifies the related step label on the requesting user
+        step_name:
+          type:
+          - string
+          - 'null'
+          description: Specifies the related step name on the requesting user
+    AdhocApprovalProcessInfoDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
+      - type: object
+        description: AdhocApprovalProcessInfoDTO for response payload
+        additionalProperties: {}
+        properties:
+          DisplayFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayFieldsInfo have more information about each field in DisplayFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          DisplayHeaderFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessId
+          ApprovalProcessName:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessName
+    SubmitAsyncHttpRequest:
+      type: object
+      description: SubmitAsync HTTP request message
+      additionalProperties: false
+      properties:
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        Comments:
+          type:
+          - string
+          - 'null'
+        StepComments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/StepLevelSubmitComments2'
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+        IsExternalId:
+          type: boolean
+    GroupPayloadDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RequestId:
+            type:
+            - string
+            - 'null'
+          Status:
+            type:
+            - string
+            - 'null'
+    UserType2:
+      type: string
+      description: ''
+      x-enumNames:
+      - External
+      - Guest
+      - Community
+      - Integration
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+    SubmitBulkAsyncHttpResponse:
+      type: object
+      description: SubmitAsync HTTP response message
+      additionalProperties: false
+      properties:
+        CorrelationId:
+          type:
+          - string
+          - 'null'
+          description: The correlation id
+        Items:
+          type:
+          - array
+          - 'null'
+          description: The response items
+          items:
+            $ref: '#/components/schemas/SubmitHttpResponseTransactionItem'
+    OperationTransactionAPIResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: The operation transaction
+        additionalProperties: {}
+        required:
+        - TransactionId
+        - CorrelationId
+        - Status
+        - OperationName
+        - Message
+        properties:
+          TransactionId:
+            type: string
+            description: The TransactionId
+            minLength: 1
+          CorrelationId:
+            type: string
+            description: The CorrelationId
+            minLength: 1
+          Status:
+            type: string
+            description: The status of the operation
+            minLength: 1
+          OperationName:
+            type: string
+            description: The name of the operation
+            minLength: 1
+          Message:
+            type: string
+            description: Additional details about the transaction
+            minLength: 1
+    ProcessStepEntryCriteria:
+      type: object
+      additionalProperties: false
+      properties:
+        BooleanOperator:
+          type:
+          - string
+          - 'null'
+        Comments:
+          type:
+          - string
+          - 'null'
+        ComparisonType:
+          type:
+          - string
+          - 'null'
+        Field:
+          type:
+          - string
+          - 'null'
+        FieldObject:
+          type:
+          - string
+          - 'null'
+        FieldObjectSource:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        FieldValueObject:
+          type:
+          - string
+          - 'null'
+        FieldValueObjectSource:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    AttachmentActivity:
+      type: object
+      description: AttachmentActivity
+      additionalProperties: false
+      properties:
+        ApprovalRequestId:
+          type:
+          - string
+          - 'null'
+          description: ApprovalRequestId
+        AttachmentId:
+          type:
+          - string
+          - 'null'
+          description: AttachmentId
+        ActivityDate:
+          type: string
+          description: Attachment added Date
+          format: date-time
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        ApproverComments:
+          type:
+          - string
+          - 'null'
+          description: ApproverComments
+        IsValidAttachment:
+          type: boolean
+          description: IsValidAttachment
+    SubmitHttpResponseTransactionItem:
+      type: object
+      description: The SubmitHttpResponseTransactionItem
+      additionalProperties: false
+      properties:
+        TransactionId:
+          type:
+          - string
+          - 'null'
+          description: The transaction id
+        ObjectId:
+          type:
+          - string
+          - 'null'
+          description: The object id
+        ObjectType:
+          type:
+          - string
+          - 'null'
+          description: The object type
+        Success:
+          type: boolean
+          description: Whether or not the operation was successful
+    ApproveRequestDTO:
+      type: object
+      description: ApproveRequestDTO
+      additionalProperties: false
+      properties:
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example comments for an approval request
+        ApprovalFromEmail:
+          type: boolean
+    StepLevelSubmitComments:
+      type: object
+      description: Submit Comments for step
+      additionalProperties: false
+      properties:
+        ProcessStepId:
+          type:
+          - string
+          - 'null'
+          description: ProcessStep Id
+        Comment1:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 1 '
+        Comment2:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 2 '
+        Comment3:
+          type:
+          - string
+          - 'null'
+          description: 'Submission comment 3 '
+    ProcessStepGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          GroupName:
+            type:
+            - string
+            - 'null'
+          GroupSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          Steps:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessStep'
+    SubmitApprovalRequest:
+      type: object
+      description: SubmitApprovalRequest
+      additionalProperties: false
+      required:
+      - ObjectId
+      - ObjectType
+      properties:
+        ObjectId:
+          type: string
+          description: Object Id
+          minLength: 1
+          example: 8655C092-0AAA-423C-AF98-32D8246E494C
+        ObjectType:
+          type: string
+          description: Object Type
+          minLength: 1
+          example: Opportunity
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Process level Comments
+          example: Example submit approval request process level comments
+        StepComments:
+          type:
+          - array
+          - 'null'
+          description: Step level Comments
+          items:
+            $ref: '#/components/schemas/StepLevelSubmitComments'
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+          description: A list of attachments separated by a comma
+          example: attachmentId1,attachmentId2
+        IsExternalId:
+          type: boolean
+          description: True if object ID is an external ID
+    ProcessStep:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApproverType:
+            type:
+            - string
+            - 'null'
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type:
+            - boolean
+            - 'null'
+          EscalationEnabled:
+            type: boolean
+          ReminderEnabled:
+            type: boolean
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          ChildObjectType:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          DisplayFieldNameHeader:
+            type:
+            - string
+            - 'null'
+          DisplayFieldNames:
+            type:
+            - string
+            - 'null'
+          FilterConditionDescription:
+            type:
+            - string
+            - 'null'
+          FilterLogic:
+            type:
+            - string
+            - 'null'
+          HierarchyDriver:
+            type:
+            - string
+            - 'null'
+          KeyFieldNames:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StepLabel:
+            type:
+            - string
+            - 'null'
+          StepName:
+            type:
+            - string
+            - 'null'
+          StepSequenceNumber:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          StepSequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          StepType:
+            type:
+            - string
+            - 'null'
+          SkipUnresolvedAssignee:
+            type: boolean
+          SubmissionComment1Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionComment2Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionComment3Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          CCEmailRecipients:
+            type:
+            - string
+            - 'null'
+          AssigneeName:
+            type:
+            - string
+            - 'null'
+          Rule:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRule'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type: array
+            items:
+              $ref: '#/components/schemas/Reminder'
+          StepEntryCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProcessStepEntryCriteria'
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleAssignee:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Id:
+            type:
+            - string
+            - 'null'
+          Name:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          RuleEntryId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeDependsOn:
+            type:
+            - string
+            - 'null'
+          AssigneeSequence:
+            type: number
+            format: double
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type: boolean
+          SkipUnresolvedAssignee:
+            type: boolean
+          EscalationEnabled:
+            type:
+            - boolean
+            - 'null'
+          ReminderEnabled:
+            type:
+            - boolean
+            - 'null'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/Reminder'
+    ApprovalRequiredCheckInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        HeaderObject:
+          oneOf:
+          - $ref: '#/components/schemas/ContextObjectStatus'
+        ChildObjects:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContextObjectStatus'
+    ApprovalComments:
+      type: object
+      additionalProperties: false
+      properties:
+        CommenterName:
+          type:
+          - string
+          - 'null'
+        CommenterId:
+          type:
+          - string
+          - 'null'
+        Comment:
+          type:
+          - string
+          - 'null'
+        DateCommentAdded:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        RequestId:
+          type:
+          - string
+          - 'null'
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+    Reminder:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Sequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          TimeDurationUnit:
+            type:
+            - string
+            - 'null'
+          ReminderForId:
+            type:
+            - string
+            - 'null'
+          ReminderForType:
+            type:
+            - string
+            - 'null'
+    RequestByAssigneeIdResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ApprovalStatus:
+          type:
+          - string
+          - 'null'
+        AssigneeName:
+          type:
+          - string
+          - 'null'
+        AssigneeId:
+          type:
+          - string
+          - 'null'
+        AssigneeType:
+          type:
+          - string
+          - 'null'
+        DateAssigned:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+    ActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Preview
+      - Submit
+      - Resubmit
+      - Approve
+      - Reject
+      - Recall
+      enum:
+      - Preview
+      - Submit
+      - Resubmit
+      - Approve
+      - Reject
+      - Recall
+    BaseResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+    AssigneeDetails:
+      type: object
+      description: AssigneeDetails encapsulates the information to whom the new step should be assigned
+      additionalProperties: false
+      required:
+      - AssigneeId
+      - AssigneeName
+      - AssigneeType
+      properties:
+        AssigneeId:
+          type: string
+          description: AssigneeId
+          minLength: 1
+        AssigneeName:
+          type: string
+          description: AssigneeName
+          minLength: 1
+        AssigneeType:
+          type: string
+          description: AssigneeType
+          minLength: 1
+    ProcessInstancePayloadDTO:
+      type: object
+      description: ProcessInstancePayloadDTO
+      additionalProperties: false
+      properties:
+        context_object:
+          type:
+          - object
+          - 'null'
+          description: ContextObject fields will be populated if configured.
+          additionalProperties:
+            type: string
+        process_id:
+          type:
+          - string
+          - 'null'
+          description: ID of approval process picked for the approval cycle
+          example: ec26a259-4735-462f-9c10-0d3cbfb2a0e9
+        process_name:
+          type:
+          - string
+          - 'null'
+          description: Name of approval process picked for the approval cycle.
+          example: Price over $100,000
+        steps:
+          type:
+          - array
+          - 'null'
+          description: Generated approval steps
+          items:
+            $ref: '#/components/schemas/RuntimeStepDTO'
+        attachment_ids:
+          type:
+          - string
+          - 'null'
+          description: File attachment IDs
+          example: 5368E72E-783B-42E1-859D-1D5A068386C7
+        submission_comments:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission
+          example: Example submission comments
+        submission_comments_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comments
+          example: true
+        submission_comments_mandatory:
+          type:
+          - boolean
+          - 'null'
+          description: Make submission comments mandatory
+          example: true
+        submission_comment1_label:
+          type:
+          - string
+          - 'null'
+          description: Submission comment 1 Label
+          example: Custom comment 1 Label
+        submission_comment2_label:
+          type:
+          - string
+          - 'null'
+          description: Submission comment 2 Label
+          example: Custom comment 2 Label
+        submission_comment3_label:
+          type:
+          - string
+          - 'null'
+          description: Submission comment 3 Label
+          example: Custom comment 3 Label
+        submission_date:
+          type:
+          - string
+          - 'null'
+          description: Date the submission occurred
+          format: date-time
+          example: '2023-04-10T22:08:42.756215Z'
+        adhoc_approvers_count:
+          type: integer
+          description: The number of ad hoc approvers added during the approval cycle
+          format: int32
+          example: 3
+        submission_comments_type:
+          type:
+          - string
+          - 'null'
+          description: Submission comments type
+          example: Process
+        submission_comments_per_step:
+          type:
+          - string
+          - 'null'
+          description: Submission comments per step
+          example: 3
+    Position:
+      type: string
+      description: Specifies the position where to add the new step
+      x-enumNames:
+      - Parallel
+      - After
+      - Before
+      enum:
+      - Parallel
+      - After
+      - Before
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    DocumentMetadata:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Description:
+            type:
+            - string
+            - 'null'
+          Extension:
+            type:
+            - string
+            - 'null'
+          Tags:
+            type:
+            - string
+            - 'null'
+          ObjectType:
+            type:
+            - string
+            - 'null'
+          ObjectId:
+            type:
+            - string
+            - 'null'
+          DocumentId:
+            type:
+            - string
+            - 'null'
+          DocumentVersion:
+            type: integer
+            format: int32
+          IsDeleted:
+            type: boolean
+          CheckoutBy:
+            type:
+            - string
+            - 'null'
+          CheckoutDate:
+            type: string
+            format: date-time
+          FileSize:
+            type: integer
+            format: int64
+          FileType:
+            type:
+            - string
+            - 'null'
+          IsLatest:
+            type: boolean
+    StepDetails:
+      type: object
+      description: StepDetails
+      additionalProperties: false
+      required:
+      - StepLabel
+      - Assignee
+      properties:
+        StepLabel:
+          type: string
+          description: Position
+          minLength: 1
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Position
+        Assignee:
+          description: Assignee
+          oneOf:
+          - $ref: '#/components/schemas/AssigneeDetails'
+    ContextObjectRequestDTO:
+      type: object
+      description: This encapsulates the information of context object id and type
+      additionalProperties: false
+      required:
+      - ObjectId
+      - ObjectType
+      properties:
+        ObjectId:
+          type: string
+          description: Id of the context object
+          minLength: 1
+        ObjectType:
+          type: string
+          description: Type of the context object
+          minLength: 1
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments for the context object request
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+          description: A list of attachment ids separated a comma
+          example: bd32e035-6e0e-4ed6-b95b-22e1ce198d48,3023e1f1-aba9-40e3-9a91-7a37e62b31fb
+        IsExternalId:
+          type: boolean
+          description: True if object ID is an external ID
+        GroupId:
+          type:
+          - string
+          - 'null'
+          description: if ObjectType is ApprovalRequest set businessObjectId in GroupId
+    AsyncOperationStatusAPIResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: Async operation status
+        additionalProperties: {}
+        required:
+        - CorrelationId
+        - Status
+        - Message
+        - Transactions
+        properties:
+          CorrelationId:
+            type: string
+            description: The correlation id
+            minLength: 1
+          Status:
+            type: string
+            description: The operation status
+            minLength: 1
+          Message:
+            type: string
+            description: The operation status message
+            minLength: 1
+          Transactions:
+            type: array
+            description: The list of operation transactions
+            items:
+              $ref: '#/components/schemas/OperationTransactionAPIResponse'
+    HttpStatusCode:
+      type: string
+      description: ''
+      x-enumNames:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - Ambiguous
+      - MovedPermanently
+      - Moved
+      - Found
+      - Redirect
+      - SeeOther
+      - RedirectMethod
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableContent
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MultipleChoices
+      - MovedPermanently
+      - MovedPermanently
+      - Found
+      - Found
+      - SeeOther
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - RedirectKeepVerb
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

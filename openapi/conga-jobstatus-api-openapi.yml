@@ -1,0 +1,167 @@
+openapi: 3.2.0
+info:
+  title: Conga Job Status API
+  version: 1.0.0
+  description: 'Operations tagged JobStatus across 4 of this provider''s published API definitions: conga-administration.json, conga-billing-management.json, conga-catalog.json, conga-quote.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+- url: https://rls.congacloud.com/api/billing/v1
+- url: https://rls.congacloud.com/api/catalog/v1
+- url: https://rls.congacloud.com/api/quote/v1
+security:
+- Bearer: []
+tags:
+- name: JobStatus
+  description: API to return job status details
+paths:
+  /job-status:
+    delete:
+      tags:
+      - JobStatus
+      summary: Delete job by JobId and also its associated child jobs
+      description: Delete job by JobId and also delete its child jobs
+      requestBody:
+        description: Pass JobIds which you want to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - JobStatus
+      summary: Get multiple job status
+      description: "Retrieves all job status details for the given jobIds.\nIf includeChildJobs is true then it will return all the child jobs for the given jobId.\n\n \nOperationType\n\n \nValidateBatchData -> Detailed validation error messages\n\n \nGenerateBatchReport -> Report link"
+      requestBody:
+        description: jobStatusRequestList
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/JobStatusRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/JobStatusRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/JobStatusRequest'
+      responses:
+        '200':
+          description: OK
+    servers:
+    - url: https://rls.congacloud.com/api/revenue-admin/v1
+  /job-status/{jobId}:
+    get:
+      tags:
+      - JobStatus
+      summary: Get job status
+      description: "Retrieves job status details for the given job.\nIf includeChildJobs is true then it will return all the child jobs for the given jobId.\n\n \nOperationType\n\n \nValidateBatchData -> Detailed validation error messages\n\n \nGenerateBatchReport -> Report link"
+      parameters:
+      - name: jobId
+        in: path
+        description: A unique identifier of the job
+        required: true
+        schema:
+          type: string
+      - name: includeChildJobs
+        in: query
+        description: includeChildJobs
+        schema:
+          type: boolean
+          default: false
+      - name: operationType
+        in: query
+        description: operationType
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    servers:
+    - url: https://rls.congacloud.com/api/revenue-admin/v1
+  /job-status/{id}:
+    get:
+      tags:
+      - JobStatus
+      summary: Get job status
+      description: Retrieves job status details for the given job or record.
+      parameters:
+      - name: id
+        in: path
+        description: A unique identifier of the job or Record Id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    servers:
+    - url: https://rls.congacloud.com/api/billing/v1
+components:
+  schemas:
+    JobStatusRequest:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        IncludeChildJobs:
+          type: boolean
+          default: false
+      additionalProperties: false
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-administration.json
+- conga-billing-management.json
+- conga-catalog.json
+- conga-quote.json

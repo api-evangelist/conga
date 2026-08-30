@@ -1,0 +1,607 @@
+openapi: 3.2.0
+info:
+  title: Administration Option Groups API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Option Groups
+paths:
+  /option-groups:
+    delete:
+      tags:
+      - Option Groups
+      summary: Delete option groups
+      description: 'Deletes one or more option groups based on the list of option group IDs provided in the request body.
+
+
+
+        The API deletes the options groups and all options and child option groups associated with them.'
+      parameters:
+      - name: deleteHierarchy
+        in: query
+        description: If <b>'true'</b>,deletes all child option groups in the hierarchy associated with the requested option group. <br/> If <b>'false'</b>, retains child option groups and creates separate hierarchies for each. <br/> Default is <b>'false'</b>.
+        schema:
+          type: boolean
+      requestBody:
+        description: The list of Option Groups to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Option Groups
+      summary: Retrieve option groups
+      description: 'Retrieves details of one or more option groups.
+
+
+
+        The API returns the structure of each option group which includes the following details among others:<ul><li>option header fields</li><li>associated options</li><li>associated child option groups</li><li>Default Quantity</li><li>Min Quantity</li><li>Max Quantity</li></ul>'
+      parameters:
+      - name: filter
+        in: query
+        description: The filter
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: The sort
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: The included fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Option Groups
+      summary: Update option groups
+      description: 'Updates the details of one or more option groups based on the updates provided in the request body.
+
+
+
+        The API returns the updated structure of the option group.'
+      requestBody:
+        description: The list of records to be updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: OptionGroupName
+              DefaultSearchOptionGroup: true
+              Description: Option Group description
+              HideAllSearchFilters: true
+              ImageURL: Image URL
+              IncludeInTotalsView: true
+              IsHidden: false
+              IsLeaf: true
+              IsPicklist: true
+              Label: Label name
+              LargeImageURL: Large Image URL
+              LongDescription: Long Description
+              MaxOptions: 999
+              MinOptions: 1
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Option Groups
+      summary: Create option groups
+      description: "Creates one or more option groups based on the header details provided in the request body. \n\n\nThe API returns the structure of the newly created option groups."
+      requestBody:
+        description: The list of Option Groups to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OptionGroup'
+      responses:
+        '201':
+          description: Created
+  /option-groups/{Id}:
+    delete:
+      tags:
+      - Option Groups
+      summary: Delete an option group
+      description: Deletes a single option group record.
+      parameters:
+      - name: Id
+        in: path
+        description: The ID of the Option Group to delete
+        required: true
+        schema:
+          type: string
+      - name: deleteHierarchy
+        in: query
+        description: If <b>'true'</b>,deletes all child option groups in the hierarchy associated with the requested option group. <br/> If <b>'false'</b>, retains child option groups and creates separate hierarchies for each. <br/> Default is <b>'false'</b>.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Option Groups
+      summary: Retrieve an option group
+      description: Retrieves details of a single option group.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the Option Group
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Option Groups
+      summary: Update an option group
+      description: Updates a single option group record.
+      parameters:
+      - name: Id
+        in: path
+        description: The ID of the Option Group to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated Option Group
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: OptionGroupName
+              DefaultSearchOptionGroup: true
+              Description: Option Group description
+              HideAllSearchFilters: true
+              ImageURL: Image URL
+              IncludeInTotalsView: true
+              IsHidden: false
+              IsLeaf: true
+              IsPicklist: true
+              Label: Label name
+              LargeImageURL: Large Image URL
+              LongDescription: Long Description
+              MaxOptions: 999
+              MinOptions: 1
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+  /option-groups/{Id}/bundles:
+    get:
+      tags:
+      - Option Groups
+      summary: Retrieve products
+      description: Retrieves list of products.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the Option Group
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+  /option-groups/{Id}/clone:
+    post:
+      tags:
+      - Option Groups
+      summary: Create an option group clone
+      description: Creates a clone of the Option Group with the specified identifier.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the Option Group to clone
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+        '404':
+          description: Not Found
+  /option-groups/{Id}/constraint-rules:
+    get:
+      tags:
+      - Option Groups
+      summary: Retrieve constraint rules
+      description: Retrieves list of Constraint Rules.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the Option Group
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+  /option-groups/{Id}/parent-option-groups:
+    get:
+      tags:
+      - Option Groups
+      summary: Retrieve parent option groups
+      description: Retrieves list of parent Option Groups.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the Option Group
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+  /option-groups/{optionGroup}/add:
+    post:
+      tags:
+      - Option Groups
+      summary: Add an existing option group
+      description: 'Adds an existing option group as a child under the specified destination option group, creating a hierarchical relationship. The source option group must already exist in the system. Note: This API is deprecated. Use the bulk endpoint instead for adding one or more option groups.'
+      parameters:
+      - name: optionGroup
+        in: path
+        description: Destination Option Group id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'SourceOptionGroup : Existing option group id which should be added under destination option group'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddExistingOptionGroupRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/AddExistingOptionGroupRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/AddExistingOptionGroupRequest'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+      deprecated: true
+  /option-groups/{optionGroup}/bulk:
+    post:
+      tags:
+      - Option Groups
+      summary: Add multiple existing option groups under another option group
+      description: Add multiple existing Option Groups under given option group id.
+      parameters:
+      - name: optionGroup
+        in: path
+        description: Destination Option Group id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'SourceOptionGroups : Existing option group ids which should be added under destination option group'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkAddExistingOptionGroupRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BulkAddExistingOptionGroupRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BulkAddExistingOptionGroupRequest'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+components:
+  schemas:
+    AddExistingOptionGroupRequest:
+      type: object
+      properties:
+        SourceOptionGroup:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BulkAddExistingOptionGroupRequest:
+      type: object
+      properties:
+        SourceOptionGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    OptionGroup:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        DefaultSearchOptionGroup:
+          type:
+          - boolean
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        ExpandedByDefault:
+          type:
+          - boolean
+          - 'null'
+        GuidePage:
+          type:
+          - string
+          - 'null'
+        HideAllSearchFilters:
+          type:
+          - boolean
+          - 'null'
+        ImageURL:
+          type:
+          - string
+          - 'null'
+        IncludeInTotalsView:
+          type:
+          - boolean
+          - 'null'
+        IsHidden:
+          type:
+          - boolean
+          - 'null'
+        IsLeaf:
+          type:
+          - boolean
+          - 'null'
+        IsPicklist:
+          type:
+          - boolean
+          - 'null'
+        Label:
+          type:
+          - string
+          - 'null'
+        LargeImageURL:
+          type:
+          - string
+          - 'null'
+        LongDescription:
+          type:
+          - string
+          - 'null'
+        MaxOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        MaxTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        MaxTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        MinOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        MinTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        MinTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        ModifiableType:
+          type:
+          - string
+          - 'null'
+        IsModifiable:
+          type:
+          - boolean
+          - 'null'
+        SearchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Type:
+          type:
+          - string
+          - 'null'
+        Ancestor:
+          $ref: '#/components/schemas/LookupObject'
+        AncestorPath:
+          type:
+          - string
+          - 'null'
+        Hierarchy:
+          $ref: '#/components/schemas/LookupObject'
+        ProductCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+      example:
+        Name: OptionGroupName
+        DefaultSearchOptionGroup: true
+        Description: Option Group description
+        HideAllSearchFilters: true
+        ImageURL: Image URL
+        IncludeInTotalsView: true
+        IsHidden: false
+        IsLeaf: true
+        IsPicklist: true
+        Label: Label name
+        LargeImageURL: Large Image URL
+        LongDescription: Long Description
+        MaxOptions: 999
+        MinOptions: 1
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

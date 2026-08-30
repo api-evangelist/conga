@@ -1,0 +1,1149 @@
+openapi: 3.2.0
+info:
+  title: Extensibility API Resource API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: API Resource
+paths:
+  /api/extensibility/v1/customcode/api-resource:
+    get:
+      tags:
+      - API Resource
+      summary: Get all API resources
+      description: Retrieves a list of all API resources.
+      parameters:
+      - name: startsWithFilter
+        in: query
+        description: A filter value to return values starting with this string.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllApiResourceResponseExample'
+              example:
+                Success: true
+                Data:
+                - Name: sampleApiResource
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                  ModifiedOn: '0001-01-01T00:00:00'
+                - Name: newApiResource
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - API Resource
+      summary: Create a new API resource
+      description: Creates a new API resource.
+      requestBody:
+        description: New API resource request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiResourceResponseExample'
+              example:
+                Success: true
+                Data:
+                  Name: sampleApiResource
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                StatusCode: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/cancellation/settings:
+    get:
+      tags:
+      - API Resource
+      summary: Get CustomAPI cancellation token setting configuration
+      description: Fetches CustomAPI cancellation token setting configuration details.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackCustomCodeSettingsResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ExecutionAbortTimeout: 1000
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - API Resource
+      summary: Upsert CustomAPI cancellation token setting configuration
+      description: If a cancellation token setting is already configured, it is updated; otherwise, a new one is created.
+      requestBody:
+        description: CustomCodeGuardrail configuration data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/resolve:
+    post:
+      tags:
+      - API Resource
+      summary: Resolve a URI
+      description: Resolves the API resource's URI entry information.
+      requestBody:
+        description: API resource URI information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceUriResolutionRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceUriResolutionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceUriResolutionRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiResourceResponseExampleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ResourceName: sampleapiresource
+                  HttpVerb: Get
+                  RouteEntries:
+                  - Id: null
+                    HttpVerb: null
+                    Route: /{empId}/id
+                    CustomCodeName: SampleApi
+                    FullyQualifiedClassName: SampleApi.EmployeeController
+                    MethodName: GetEmployeeById
+                    ResourceName: null
+                    MethodParameterBindings:
+                    - SourceType: empId
+                      SourceName: UriPath
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                  - Id: null
+                    HttpVerb: null
+                    Route: /{empName}/name
+                    CustomCodeName: SampleApi
+                    FullyQualifiedClassName: SampleApi.EmployeeController
+                    MethodName: GetEmployeeByName
+                    ResourceName: null
+                    MethodParameterBindings:
+                    - SourceType: empName
+                      SourceName: UriPath
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/{name}:
+    delete:
+      tags:
+      - API Resource
+      summary: Delete an API resource
+      description: Validates and removes the API resource information based on the API resource name.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteApiResourceResponseExample'
+              example:
+                Success: true
+                Data: newsampleApi deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - API Resource
+      summary: Get API resource information by resource name
+      description: Retrieves the API resource information for the given API resource name.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiResourceByNameResponseExample'
+              example:
+                Success: true
+                Data:
+                  Name: sampleApiResource
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/{name}/clone:
+    post:
+      tags:
+      - API Resource
+      summary: Clone an API resource
+      description: Clones an existing (source) API resource and its associated URI entry information to a new API resource.
+      parameters:
+      - name: name
+        in: path
+        description: Source API resource name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Destination API resource information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ApiResourceCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiResourceResponseExample'
+              example:
+                Success: true
+                Data:
+                  Name: sampleApiResource
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                StatusCode: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/{name}/uri-entries:
+    get:
+      tags:
+      - API Resource
+      summary: Get URIs by name or verb
+      description: Retrieves URI entries by name or HTTP verb.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      - name: httpVerb
+        in: query
+        description: HTTP verb of a resource
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiResourceResponseExample'
+              example:
+                Success: true
+                Data:
+                  ResourceName: sampleapiresource
+                  HttpVerb: Get
+                  RouteEntries:
+                  - Id: null
+                    HttpVerb: null
+                    Route: /{empId}/id
+                    CustomCodeName: SampleApi
+                    FullyQualifiedClassName: SampleApi.EmployeeController
+                    MethodName: GetEmployeeById
+                    ResourceName: null
+                    MethodParameterBindings:
+                    - SourceType: empId
+                      SourceName: UriPath
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                  - Id: null
+                    HttpVerb: null
+                    Route: /{empName}/name
+                    CustomCodeName: SampleApi
+                    FullyQualifiedClassName: SampleApi.EmployeeController
+                    MethodName: GetEmployeeByName
+                    ResourceName: null
+                    MethodParameterBindings:
+                    - SourceType: empName
+                      SourceName: UriPath
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - API Resource
+      summary: Create an API resource URI
+      description: Inserts a new API resource URI entry and returns new resource URI entry information.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: API resource information to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResourceUriEntriesCreateResponseExample'
+              example:
+                Success: true
+                Data:
+                  ResourceName: sampleApiResource
+                  HttpVerb: Get
+                  Route: /{myCode}/code
+                  CustomCodeName: sampleCustomCode
+                  FullyQualifiedClassName: sampleApi.TestClass
+                  MethodName: GetCode
+                  MethodParameterBindings:
+                  - SourceType: code
+                    SourceName: UriPath
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                StatusCode: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/customcode/api-resource/{name}/uri-entries/{id}:
+    delete:
+      tags:
+      - API Resource
+      summary: Delete a URI
+      description: Removes a URI entry based on the API resource name and URI entry ID.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: URI entry ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteApiResourceResponseExample'
+              example:
+                Success: true
+                Data: newsampleApi deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - API Resource
+      summary: Update URI entry information
+      description: Updates a URI entry and returns updated URI entry information.
+      parameters:
+      - name: name
+        in: path
+        description: API resource name
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: URI entry ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: API resource route information to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ResourceUriEntriesUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResourceUriEntriesCreateResponseExampleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ResourceName: sampleApiResource
+                  HttpVerb: Get
+                  Route: /{myCode}/code
+                  CustomCodeName: sampleCustomCode
+                  FullyQualifiedClassName: sampleApi.TestClass
+                  MethodName: GetCode
+                  MethodParameterBindings:
+                  - SourceType: code
+                    SourceName: UriPath
+                  CreatedBy: null
+                  CreatedOn: '0001-01-01T00:00:00'
+                StatusCode: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ApiResourceUriEntriesCreateResponseExample:
+      type: object
+      additionalProperties: false
+    ApiResourceUriEntriesCreateResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ApiResourceUriEntriesCreateResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CustomCodeSettingsRequest:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          description: Time interval, in milliseconds, to abort the custom code's execution
+          format: int32
+      additionalProperties: false
+      description: Request model for custom code settings
+    DeleteApiResourceResponseExample:
+      type: object
+      additionalProperties: false
+    GetAllApiResourceResponseExample:
+      type: object
+      additionalProperties: false
+    ResourceUriEntriesUpdateRequest:
+      type: object
+      properties:
+        HttpVerb:
+          type:
+          - string
+          - 'null'
+          description: HttpVerb for the resource entry
+        Route:
+          type:
+          - string
+          - 'null'
+          description: Route information to identify the resource method
+        CustomCodeName:
+          type:
+          - string
+          - 'null'
+          description: Name of the customcode to be executed on the above verb and route associated with specified resource
+        FullyQualifiedClassName:
+          type:
+          - string
+          - 'null'
+          description: Name of the Class in above customcode
+        MethodName:
+          type:
+          - string
+          - 'null'
+          description: Name of the customcode method to be executed as an api endpoint using above verb and route associated with resource
+        MethodParameterBindings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MethodParameterBinding'
+          description: List of parameters specified in above method
+      additionalProperties: false
+      description: Request payload for creating new ResourceUriEntries for specified resource
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    CallbackCustomCodeSettingsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GetApiResourceByNameResponseExample:
+      type: object
+      additionalProperties: false
+    GetApiResourceResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/GetApiResourceResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ApiResourceCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the resource
+      additionalProperties: false
+      description: Request model to create new Api resource
+    ApiResourceUriResolutionRequest:
+      type: object
+      properties:
+        ResourceName:
+          type:
+          - string
+          - 'null'
+          description: Name of the resource
+        ResourcePath:
+          type:
+          - string
+          - 'null'
+          description: Path to identify the resource
+        HttpVerb:
+          type:
+          - string
+          - 'null'
+          description: Http verb for the resource
+        QueryString:
+          type:
+          - string
+          - 'null'
+          description: Parameter to be passed as QueryString
+        RequestBody:
+          type:
+          - string
+          - 'null'
+          description: 'Request payload for the resource <p>**Note**: It''ll be blank for Get and Delete methods.</p>'
+      additionalProperties: false
+    CreateApiResourceResponseExample:
+      type: object
+      additionalProperties: false
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    GetApiResourceResponseExample:
+      type: object
+      additionalProperties: false
+    ResourceUriEntriesCreateRequest:
+      type: object
+      properties:
+        HttpVerb:
+          type:
+          - string
+          - 'null'
+          description: HttpVerb for the resource entry
+        Route:
+          type:
+          - string
+          - 'null'
+          description: Route information to identify the resource method
+        CustomCodeName:
+          type:
+          - string
+          - 'null'
+          description: Name of the customcode to be executed on the above verb and route associated with specified resource
+        FullyQualifiedClassName:
+          type:
+          - string
+          - 'null'
+          description: Name of the Class in above customcode
+        MethodName:
+          type:
+          - string
+          - 'null'
+          description: Name of the customcode method to be executed as an api endpoint using above verb and route associated with resource
+        MethodParameterBindings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MethodParameterBinding'
+          description: List of parameters specified in above method
+      additionalProperties: false
+      description: Request payload for creating new ResourceUriEntries for specified resource
+    MethodParameterBinding:
+      type: object
+      properties:
+        SourceType:
+          type:
+          - string
+          - 'null'
+        SourceName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

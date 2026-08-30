@@ -1,0 +1,635 @@
+openapi: 3.2.0
+info:
+  title: Conversion Management Frequency Conversion Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Frequency Conversion Runtime
+paths:
+  /api/conversion-management/v1/query/frequency-conversion:
+    post:
+      tags:
+      - Frequency Conversion Runtime
+      summary: Retrieve converted frequency value
+      description: Retrieves the converted frequency value.
+      requestBody:
+        description: Frequency conversion request. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvertedFrequencyAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FromFrequency: Monthly
+                  ToFrequency: Yearly
+                  Value: 100
+                  ConvertedValue: 1200
+                  ConversionRate: 12
+                  Product:
+                    Id: 2953886e-5575-4153-903c-13fcf35bdcc0
+                    Name: product-001
+                  ProductFamily: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/conversion-management/v1/query/frequency-conversion-rates:
+    post:
+      tags:
+      - Frequency Conversion Runtime
+      summary: Retrieve effective frequency Conversion rate
+      description: Retrieves the effective frequency conversion rate.
+      requestBody:
+        description: Frequency conversion rate retrieval request. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionGetRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionGetRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/FrequencyConversionGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrequencyConversionRateAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FromFrequency: Weekly
+                  ToFrequency: Daily
+                  Product: null
+                  ProductFamily: null
+                  ConversionRate: 7
+                  Id: null
+                  Name: null
+                  CreatedBy: null
+                  CreatedDate: '0001-01-01T00:00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '0001-01-01T00:00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/conversion-management/v1/query/frequency-conversion-rates/bulk:
+    post:
+      tags:
+      - Frequency Conversion Runtime
+      summary: Retrieve effective frequency conversion rates in bulk
+      description: Retrieves the effective frequency conversion rates in bulk.
+      requestBody:
+        description: Frequency conversion rate retrieval requests. The API supports multiple levels of conversion rate configuration, at the Product level, the Product Family level, and the Global level. For more information on how the conversion rate takes precedence, click [here](https://documentation.conga.com/en/advantage-platform-administration/preview/conga-advantage-platform-api-reference/conversion-rate-lookup-precedence).
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FrequencyConversionGetRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FrequencyConversionGetRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FrequencyConversionGetRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkFrequencyConversionRatesAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FrequencyConversionRates:
+                  - FromFrequency: Monthly
+                    ToFrequency: Yearly
+                    Product:
+                      Id: product-001
+                      Name: Enterprise Software
+                    ProductFamily: null
+                    ConversionRate: 12
+                    Id: freq-conv-rate-001
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '2026-07-15T00:00:45.5877013Z'
+                    ModifiedBy: null
+                    ModifiedDate: '2026-08-14T00:00:45.5877044Z'
+                    ExternalId: null
+                    ETag: null
+                  - FromFrequency: Weekly
+                    ToFrequency: Monthly
+                    Product:
+                      Id: product-002
+                      Name: Cloud Services
+                    ProductFamily: null
+                    ConversionRate: 4.3
+                    Id: freq-conv-rate-002
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '2026-07-30T00:00:45.58771Z'
+                    ModifiedBy: null
+                    ModifiedDate: '2026-08-14T00:00:45.5877117Z'
+                    ExternalId: null
+                    ETag: null
+                  Error: null
+                StatusCode: OK
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    FrequencyConversionRate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source Frequency. **For example:** Hourly, Daily, etc.
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target Frequency. **For example:** Hourly, Daily, etc.
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+      additionalProperties: {}
+      description: Frequency conversion rate schema
+    BulkFrequencyConversionRates:
+      type: object
+      properties:
+        FrequencyConversionRates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FrequencyConversionRate'
+          description: A collection of FrequencyConversionRates
+        Error:
+          type:
+          - string
+          - 'null'
+          description: General error details that apply to the entire operation
+      additionalProperties: false
+      description: Bulk Frequency conversion rates
+    ConvertedFrequencyAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ConvertedFrequency'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BulkFrequencyConversionRatesAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BulkFrequencyConversionRates'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FrequencyConversionGetRequest:
+      type: object
+      properties:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source Frequency. **For example:** Hourly, Daily, etc.
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target Frequency. **For example:** Hourly, Daily, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    FrequencyConversionRequest:
+      type: object
+      properties:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source Frequency. **For example:** Hourly, Daily, etc.
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target Frequency. **For example:** Hourly, Daily, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+      additionalProperties: false
+      description: Frequency conversion request schema
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ConvertedFrequency:
+      type: object
+      properties:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source frequency
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target frequency
+        Value:
+          type: number
+          description: Input value in source frequency
+          format: double
+        ConvertedValue:
+          type: number
+          description: Converted value in target frequency
+          format: double
+        ConversionRate:
+          type: number
+          description: Conversion rate used
+          format: double
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
+      description: Converted frequency value
+    FrequencyConversionRateAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FrequencyConversionRate'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

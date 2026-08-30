@@ -1,0 +1,763 @@
+openapi: 3.2.0
+info:
+  title: Contracts Clause Obligations API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Clause Obligations
+paths:
+  /api/clm/v1/clauses/{clauseId}/obligations:
+    delete:
+      tags:
+      - Clause Obligations
+      summary: Delete clause obligations
+      description: 'Deletes clause obligations based on the provided clause obligation IDs for the specified clause ID.
+
+
+        If clause obligation IDs are not provided, all clause obligations associated with the provided clause ID are deleted.'
+      parameters:
+      - name: clauseId
+        in: path
+        description: Clause Id for which clause obligations are to be deleted
+        required: true
+        schema:
+          type: string
+      - name: deleteAll
+        in: query
+        description: DeleteAll is true when wan to delete all obligations related to clauseId
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: List of Obligation IDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The given clause obligations Ids are deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResultStatusDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  4ae151a8-ba84-4e60-888e-86326c02d0db: Success
+                  af72e569-9e65-4f97-a7c9-26466c02be51: Fail
+                Warnings: null
+                Errors: null
+        '400':
+          description: Clause IDs is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Clause Obligations
+      summary: Create a clause obligation request
+      description: "Creates a clause obligation record in CLM. Makes Obligation entry in Master Obligation and makes entry of Clause Id and Obligation Id in Clause Obligation table.\nThe required fields to create a clause obligation record are: \n* Name   \nYou can introduce these additional fields to the clause obligation.\n* ObligationType \n* Priority \n* Description"
+      parameters:
+      - name: clauseId
+        in: path
+        description: ID of a clause
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: OBL-0000006
+              Description: Obligation Description
+              ObligationType: Operational
+              Priority: High
+      responses:
+        '200':
+          description: Returns the details of the created clause obligation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 454552c7-915c-4cb0-a9af-d2c015b3597d
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: A required value is missing from the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/clauses/{clauseId}/obligations/query:
+    post:
+      tags:
+      - Clause Obligations
+      summary: Get all clause obligations
+      description: "Fetches all clause obligations with respect to clause Id. \nYou can filter and sort the results by defining query parameters."
+      parameters:
+      - name: clauseId
+        in: path
+        description: ID of a clause
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to filter and sort the list of clause obligations
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    Name: Reviewer
+                    Description: Team is responsible to review the associated contract
+                    Action:
+                    - SendforReview
+                    IsActive: true
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2026-08-14T00:01:41.6886803Z'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2026-08-14T00:01:41.6886806Z'
+                    ExternalId: null
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/clauses/{clauseId}/obligations/{obligationId}:
+    delete:
+      tags:
+      - Clause Obligations
+      summary: Delete a clause obligation by ID
+      description: Deletes a clause obligation by its ID.
+      parameters:
+      - name: clauseId
+        in: path
+        description: ID of the clause
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The clause obligation is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '404':
+          description: Clause obligation not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Clause Obligations
+      summary: Get a clause obligation by ID
+      description: Fetches a clause obligation by its ID.
+      parameters:
+      - name: clauseId
+        in: path
+        description: ID of the clause
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the clause obligation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: c9654dd4-6de8-44ec-9d2d-03088bf3dbfe
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '404':
+          description: Clause obligation not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Clause Obligations
+      summary: Update a clause obligation
+      description: Updates a clause obligation record.
+      parameters:
+      - name: clauseId
+        in: path
+        description: ID of the clause
+        required: true
+        schema:
+          type: string
+      - name: obligationId
+        in: path
+        description: ID of the obligation
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated clause obligation details
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: OBL-0000006
+              Description: Obligation Description
+              ObligationType: Operational
+              Priority: High
+      responses:
+        '200':
+          description: Returns the updated clause obligation details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 9882f368-1344-4a52-9d02-cc31bad2fff8
+                  Name: Test Obligation 1
+                  ObligationType: Operational
+                  Priority: High
+                  Description: Test data
+                  RecordOwner:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: Bumble Bee
+                    OwnerType: User
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid request data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    StringObjectDictionaryQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringResultStatusDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1284 @@
+openapi: 3.2.0
+info:
+  title: Cart - V1 Cart Actions API
+  version: v1
+  description: The cart actions controller
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: CartActions
+  description: The cart actions controller
+paths:
+  /api/cart/v1/carts/active:
+    get:
+      tags:
+      - CartActions
+      summary: Get the latest active cart
+      description: 'Gets the latest active cart, filtering carts with New and Saved status by default.
+
+        Pass the quote ID in the parameters. If the cart for the provided quote does not exist, this API creates a new cart. For an existing cart, the saved cart ID is returned.
+
+        For a newly created cart, the cart status is "New" and a new cart ID is generated.
+
+        The following fields are passed from the quote header to the newly created cart: Account, Price List, Status, Business Object, Business Object Type, Cart Effective Date, Expected Start Date, Expected End Date, Location, Quote/Proposal, Pricing Date, Payment Term, and Cart Name.'
+      parameters:
+      - name: filter
+        in: query
+        description: Add optional conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/abandon:
+    post:
+      tags:
+      - CartActions
+      summary: Abandon a cart
+      description: Validates and abandons a cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/activate:
+    post:
+      tags:
+      - CartActions
+      summary: Activate a cart
+      description: 'Activates a cart associated with the cart ID provided in the parameters.
+
+        Only a cart with a New and Saved status can be activated. Carts in such other statuses as Finalized, Superseded, Suspended, Abandoned, or Deleted cannot be activated.'
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart's unique identifier
+        required: true
+        schema:
+          type: string
+      - name: FlowName
+        in: header
+        description: Header param FlowName
+        schema:
+          type: string
+          default: system
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/applied-rule-actions:
+    get:
+      tags:
+      - CartActions
+      summary: Get the applied rule actions
+      description: Retrieves the applied rule action for a given cart ID and primary line number.
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart identifier
+        required: true
+        schema:
+          type: string
+      - name: primarylineNumber
+        in: query
+        description: Primary Line number of the product
+        schema:
+          type: integer
+          format: int32
+      - name: pagenumber
+        in: query
+        description: Enter the page number of the line.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pagesize
+        in: query
+        description: Enter the number of objects to be retrieved.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/clone:
+    post:
+      tags:
+      - CartActions
+      summary: Clone a cart
+      description: 'Clones a cart according to the primary lines no. given by the user or else clones the cart creating an exact copy of the entire cart with all its contents. The cloned cart is created in the new status. The cartID parameter is required. Set the price query parameter to true to price the cart.
+
+        Clones a cart creating an exact copy of the entire cart with all its contents. The cloned cart is created in the new status. The cartID parameter is required. Set the price query parameter to true to price the cart.
+
+        For Price true clones a cart according to the line no. given by the user but if nothing is given then clones the whole cart creating an exact copy of the entire cart with all its contents.'
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart identifier
+        required: true
+        schema:
+          type: string
+      - name: price
+        in: query
+        description: 'A price query parameter that controls how pricing is handled during the clone operation. If the price parameter is not provided or set to the default value `false`, the API performs a clone without running pricing logic. This behavior is supported only for carts with `cart usetype ` set to `shadow`, which are temporary, non-persistent carts used internally by the Digital Commerce. If set to `true`, the API clones the cart with pricing enabled. This is the preferred option for regular (non-shadow) carts. The pricing logic runs during cloning, and the cloned cart is saved and processed normally. At present, the price: `false` option is limited to shadow cart scenarios only.'
+        schema:
+          type: boolean
+          default: false
+      - name: isChildObjectToClone
+        in: query
+        description: The is child object to clone
+        schema:
+          type: boolean
+          default: false
+      - name: includes
+        in: query
+        description: The includes
+        schema:
+          type: array
+          items:
+            type: string
+      - name: cloneLineItems
+        in: query
+        description: Flag to clone line items
+        schema:
+          type: boolean
+          default: true
+      - name: retainApproval
+        in: query
+        description: Indicate do we need to retain approval status from main cart to clone cart
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: The cart fields to copy
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneFieldsToOverrideModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneFieldsToOverrideModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneFieldsToOverrideModel'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/clone-lines:
+    post:
+      tags:
+      - CartActions
+      summary: Clone lines into existing cart
+      parameters:
+      - name: cartId
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: sourceCartId
+        in: query
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        description: ExcludeAdjustment default value is false. ExcludeUsagePriceTier default value is false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneLinesModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneLinesModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.CloneLinesModel'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/configstatus:
+    get:
+      tags:
+      - CartActions
+      summary: Retrieve Configuration status
+      description: "Returns config status of the cart associated with a given cart ID.\n**Note**: Use either primaryLineNumbers or lineNumbers to filter your API responses.\n If you specify both, the API fetches results according to the primaryLineNumbers parameter."
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: primaryLineNumbers
+        in: query
+        description: "Specify the primary line numbers to be returned in the response.\n            Otherwise, the API returns last added/updated lineitems. See below to specify multiple primary line numbers.\n            GET  ../api/cart/v1/carts/{cartId}/configstatus?primaryLineNumbers=1,2,3"
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: lineNumbers
+        in: query
+        description: "Specify the line numbers to be returned in the response.\n            Otherwise, the API returns last added/updated lineitems. See below to specify multiple line numbers.\n            GET  ../api/cart/v1/carts/{cartId}/configstatus?lineNumbers=1,2,3"
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: includes
+        in: query
+        description: 'A list of related objects to include in search results. Related objects for inclusion can be: line-items'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: pageNumber
+        in: query
+        description: Enter the page number of the line. For example, if there are 500 lines in the cart and page size is 25, then a page number can vary from 1 to 20.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Enter the number of objects to be retrieved.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/displayAction:
+    get:
+      tags:
+      - CartActions
+      summary: Retrive display action details.
+      description: Fetches all display action details for the specified cart in the given flow.
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart identifier.
+        required: true
+        schema:
+          type: string
+      - name: flowName
+        in: query
+        description: Name of the flow.
+        schema:
+          type: string
+      - name: actionParameters
+        in: query
+        description: Action parameters
+        schema:
+          type: object
+          additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/finalize:
+    get:
+      tags:
+      - CartActions
+      summary: Get finalized cart details
+      description: Validates and retrieves the finalized cart details for a given cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - CartActions
+      summary: Finalize a cart
+      description: "Finalizes the cart, completing product configuration. This API finalizes the cart when the final set of products and prices is confirmed. This API also validates the following during runtime:\n  * Whether any product is missing the required configuration. If so, it displays an error message.\n  * Whether any product requires repricing. If so, it displays an error message.\n  * Up to two levels of inclusion and exclusion constraint rules for a product, bundle, sub-bundle, and options belonging to a product family or product group.\n  * Inclusion and exclusion constraint rules across bundles."
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The finalize cart model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.FinalizeCartModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.FinalizeCartModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.FinalizeCartModel'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/group/status:
+    get:
+      tags:
+      - CartActions
+      summary: Gets the line items group metadata.
+      parameters:
+      - name: cartId
+        in: path
+        description: Cart Id
+        required: true
+        schema:
+          type: string
+      - name: group
+        in: query
+        description: Group Name
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter Conditions
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: isMetadata
+        in: query
+        description: Flag indicating if metadata is requested
+        schema:
+          type: boolean
+          default: false
+      - name: pageNumber
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/line-numbers:
+    get:
+      tags:
+      - CartActions
+      summary: Get cart line numbers
+      description: Fetches and validates the line numbers for a given cart ID.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: FilterExpression to filter using AND/OR e.g. "(1 AND (2 OR 3)). If this parameter is null, it will apply AND by default among all filter conditions."
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Add conditional sorting in standard URI format to order the results.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/migrate:
+    post:
+      tags:
+      - CartActions
+      summary: Migrate a cart
+      description: 'Migrates a cart associated with the cart ID provided in the parameters.
+
+        A cart with Abandoned or Superseded status cannot be migrated.'
+      parameters:
+      - name: cartId
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: FlowName
+        in: header
+        schema:
+          type: string
+          default: system
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/order:
+    post:
+      tags:
+      - CartActions
+      summary: Check the cart out
+      description: "Checks out the cart to create an order and order line items based on the given cart ID. The cart does not have to be in Finalized status to check out and create an order: it can be checked out to create an order even from the Draft status. This API returns the created order object with all the order line items. After order creation, the created order is in Draft status, and the cart’s status is Finalized. You can pass the following information for addition to the newly generated order.\n  * OrderAsync Name\n  * Accounts\n     * Sold To\n     * Ship To\n     * Bill To\n  * Primary Contact\n  * Comments (if any)"
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Enter the term included in the cart details to narrow down the serach results.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: isFromObjectDB
+        in: query
+        description: Set the isFromObjectDB to True to check out from the object database. By default, this value is set to False.
+        schema:
+          type: boolean
+          default: false
+      - name: hasAcceptedWarning
+        in: query
+        description: if set to `true` [has accepted warning].
+        schema:
+          type: boolean
+          default: true
+      - name: isAsync
+        in: query
+        description: if set to `true` [is asynchronous].
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: The order override
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/promotion:
+    post:
+      tags:
+      - CartActions
+      summary: Apply promotion to the cart
+      description: Validates and applies a promotion to the given cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /api/cart/v1/carts/{cartId}/quote:
+    post:
+      tags:
+      - CartActions
+      summary: Check the cart out to create a quote
+      description: "Checks out the finalized cart to create a new quote/proposal. This API validates the following during runtime.\n  * The API finalizes the cart, validating all required configurations. If any condition is not met, the cart is not finalized, and the quote/proposal is not created.\n  * When there are no cart finalization errors, a new quote/proposal is created and associated with the cart ID passed in the parameters.\nThe API passes the cart line items to the quote line items. To run this API, at least one product must be added to the cart. After the quote is created, the quote is in draft status, and the cart is in finalized status.\nThe following information is created for the new quote.\n  * RFP due date\n  * Accounts\n    * Sold To\n    * Ship To\n    * Bill To\n  * Primary Contact\n  * Comments (if any)\nYou can also create multiple quotes by passing the same cart ID."
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional list of objects (line-items, adjustments, price-breakups, usage-tiers, summary-groups, product, pricelist, option, pricelistitem, line-items.option, line-items.product, line-items.pricelist, line-items.pricelistitem) to be included in the response. Each object type must be specified in the query string separately.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: hasAcceptedWarning
+        in: query
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        description: The quote override
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Entities.Models.QuoteOverride'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Entities.Models.QuoteOverride'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Entities.Models.QuoteOverride'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/revalidation:
+    get:
+      tags:
+      - CartActions
+      summary: Get revalidation details
+      description: Retrieves revalidation details for a given cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - CartActions
+      summary: Apply revalidation
+      description: Validates and applies the revalidation to a given cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The apply detail
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+          text/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/rule-actions:
+    get:
+      tags:
+      - CartActions
+      summary: GetConfigRulesOfCart
+      description: Gets all the config rules for a given cart ID.
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart identifier
+        required: true
+        schema:
+          type: string
+      - name: pagenumber
+        in: query
+        description: Enter the page number of the line.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pagesize
+        in: query
+        description: Enter the number of objects to be retrieved.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/rule-actions/{ruleActionId}/ignore:
+    post:
+      tags:
+      - CartActions
+      summary: Ignore the rule action
+      description: Validates and ignores a rule action for a given cart.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: ruleActionId
+        in: path
+        description: The rule action's unique identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /api/cart/v1/carts/{cartId}/status:
+    get:
+      tags:
+      - CartActions
+      summary: Retrieve Cart status
+      description: ' Returns a cart''s status, filtered by line number.
+
+        **Note:** Use either primaryLineNumbers or lineNumbers to filter your API responses.
+
+        If you specify both, the API fetches results according to the primaryLineNumbers parameter.
+
+        In adjustment lines, only the entry-level records (e.g., Price Rule Entry, Price Matrix Entry) are included. The parent records (e.g., Price Rule, Price Matrix) are not exposed or available in the context of adjustment lines.'
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: primaryLineNumbers
+        in: query
+        description: Specify the primary line numbers to be returned in the response.
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: lineNumbers
+        in: query
+        description: Specify the line numbers to be returned in the response.
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: includes
+        in: query
+        description: 'A list of related objects to include in search results. Related objects for inclusion can be: adjustments, price-breakups, usage-tiers, summary-groups, line-items, line-items.pricelist, line-items.pricelistitem, line-items.product, line-items.option, and requests-state.'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Add conditional sorting in standard URI format to narrow the sort result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: FilterExpression to filter using AND/OR e.g. "(1 AND (2 OR 3))". If this parameter is null, it will apply AND by default among all filter conditions.
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: Enter the page number of the line. For example, if there are 500 lines in the cart and page size is 25, then a page number can vary from 1 to 20.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Enter the number of objects to be retrieved.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includeConfigResponse
+        in: query
+        description: Set the Include Config Action response to True. The value is set to False by default.
+        schema:
+          type: boolean
+          default: false
+      - name: group
+        in: query
+        description: A field name from which the Line Items will be grouped by
+        schema:
+          type: string
+          default: ''
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/totals:
+    post:
+      tags:
+      - CartActions
+      summary: Processes the totals.
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/triggered-rule-actions:
+    get:
+      tags:
+      - CartActions
+      summary: GetRuleAction
+      parameters:
+      - name: cartId
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: primarylineNumber
+        in: query
+        description: ''
+        schema:
+          type: integer
+          format: int32
+      - name: pagenumber
+        in: query
+        description: ''
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pagesize
+        in: query
+        description: ''
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/carts/{cartId}/validate:
+    post:
+      tags:
+      - CartActions
+      summary: Validate the cart
+      description: Validates a cart record for a given cartId and actionName.
+      parameters:
+      - name: cartId
+        in: path
+        description: The unique identifier of the cart
+        required: true
+        schema:
+          type: string
+      - name: actionName
+        in: query
+        description: Name of the action
+        schema:
+          type: string
+      requestBody:
+        description: Action parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+components:
+  schemas:
+    Conga.Revenue.Entities.Models.QuoteOverride:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        shipToAccount:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        billToAccount:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        rfpResponseDueDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        primaryContact:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        comments:
+          type:
+          - string
+          - 'null'
+        sourceChannel:
+          type:
+          - string
+          - 'null'
+        requestor:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Cart.Manager.Model.CloneFieldsToOverrideModel:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        account:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        approvalStatus:
+          type:
+          - string
+          - 'null'
+        billingPreference:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        billToAccount:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        businessObjectId:
+          type:
+          - string
+          - 'null'
+        businessObjectType:
+          type:
+          - string
+          - 'null'
+        shipToAccount:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        activationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        externalId:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        useType:
+          type:
+          - string
+          - 'null'
+        owner:
+          $ref: '#/components/schemas/Conga.Platform.Common.Models.LookupObject'
+        lineNumbers:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int32
+      additionalProperties: false
+    Conga.Platform.Common.Models.LookupObject:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Revenue.Cart.Manager.Model.CloneLinesModel:
+      type: object
+      properties:
+        lineNumbers:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int32
+        excludeAdjustment:
+          type: boolean
+        excludeUsagePriceTier:
+          type: boolean
+      additionalProperties: false
+    Conga.Revenue.Cart.Manager.Model.FinalizeCartModel:
+      type: object
+      properties:
+        hasAcceptedWarning:
+          type: boolean
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

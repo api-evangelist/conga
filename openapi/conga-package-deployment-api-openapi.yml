@@ -1,0 +1,1011 @@
+openapi: 3.2.0
+info:
+  title: Extensibility Package Deployment API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Package Deployment
+paths:
+  /api/extensibility/v2/deployment/history:
+    get:
+      tags:
+      - Package Deployment
+      summary: Retrieve all data of deployment package history
+      description: "Returns data of deployment package history that meet the parameter conditions.\n            **isSnapshot=true** indicates that we want to fetch packages that are not eligible for promotion\n            **isSnapshot=false** indicates that we want to fetch packages that are eligible for promotion"
+      parameters:
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view
+        schema:
+          type: integer
+          format: int32
+      - name: isSnapshot
+        in: query
+        description: '**true** indicates that we want to fetch packages that are not eligible for promotion
+
+          **false** indicates that we want to fetch packages that are eligible for promotion'
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDeploymentHistoryResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Id: unique-deployment-id
+                  PackageName: repositoryname__branchname__2
+                  DeploymentId: null
+                  Status: Inprogress
+                  DeployedBy: System Admin
+                  DeployedOn: '2023-08-04T01:51:42'
+                  IsRollbackEnabled: false
+                  ReleaseLabel: null
+                  IsSnapshot: true
+                - Id: unique-deployment-id
+                  PackageName: repositoryname__branchname__1
+                  DeploymentId: null
+                  Status: Succeeded
+                  DeployedBy: System Admin
+                  DeployedOn: '2023-08-02T13:33:02'
+                  IsRollbackEnabled: false
+                  ReleaseLabel: null
+                  IsSnapshot: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/package/deploy:
+    post:
+      tags:
+      - Package Deployment
+      summary: Deploy source artifact package
+      description: Deploys the source artifact package asynchronously. **Note:** Package may contain CustomCode, Configuration, Schema.
+      parameters:
+      - name: Description
+        in: query
+        description: More details about the package and deployment
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                File:
+                  type: string
+                  description: Import file
+                  format: binary
+            encoding:
+              File:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDeploymentResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageName: deployed-package-name
+                  DeploymentId: unique-deployment-id
+                StatusCode: OK
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/package/promote:
+    post:
+      tags:
+      - Package Deployment
+      summary: Promote a package to the target environment
+      description: 'Promotes a package to a target environment using the provided integration user''s credentials (client ID and secret) and Release URI information.<p>Note: - Use the GET ​/api​/extensibility​/v2​/deployment​/package​/{name}​/info endpoint to get the Release URI. - For more information on how to create the integration user and get the client ID and secret, see the [Adding Users](https://documentation.conga.com/en/advantage-platform-administration/current/conga-advantage-platform-for-administrators/managing-users/adding-users) topic.</p>'
+      requestBody:
+        description: Package promotion request information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoteRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PromoteRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PromoteRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDeploymentResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageName: deployed-package-name
+                  DeploymentId: unique-deployment-id
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/package/{name}/history:
+    get:
+      tags:
+      - Package Deployment
+      summary: Retrieve resource deployment information for the specified package
+      description: Returns resource deployments for the specified package that meets the parameter criteria. Note:** Package may contain CustomCode, Configuration, Schema.
+      parameters:
+      - name: name
+        in: path
+        description: Package name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourcePackageDeploymentHistoryResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - PackageName: package-name
+                  ResourceName: customcode-2
+                  ResourceType: null
+                  Status: Succeeded
+                  CreatedBy: user-1
+                  CreatedDate: '2023-08-11T11:13:33'
+                - PackageName: package-name
+                  ResourceName: customcode-1
+                  ResourceType: null
+                  Status: Succeeded
+                  CreatedBy: user-1
+                  CreatedDate: '2023-08-11T11:13:30'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/package/{name}/info:
+    get:
+      tags:
+      - Package Deployment
+      summary: Retrieve package information for the specified package
+      description: Returns package's information along with ReleaseURI for the specified package that meets the parameter criteria.
+      parameters:
+      - name: name
+        in: path
+        description: Package name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageInformationResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageName: package-name
+                  Description: more details about package
+                  ReleaseURI: https://release-uri
+                  ReleaseLabel: release-1
+                  Language: C#
+                  Status: Succeeded
+                  DeployedBy: user-1
+                  DeployedOn: '2025-03-11T11:13:33'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/package/{name}/rollback:
+    post:
+      tags:
+      - Package Deployment
+      summary: Revert a custom code deployment package with given name
+      description: Reverts all custom code projects deployed with the given package name to the latest available version in history or delete the custom code if no history found. **Note:** This will not revert Configuration and Schema resources.
+      parameters:
+      - name: name
+        in: path
+        description: Package name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDeploymentResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageName: deployed-package-name
+                  DeploymentId: unique-deployment-id
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/{deploymentId}/logs:
+    get:
+      tags:
+      - Package Deployment
+      summary: Get package deployment logs
+      description: Retrieves package deployment's logs with a given deployment ID.
+      parameters:
+      - name: deploymentId
+        in: path
+        description: A unique deployment ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomCodeDeploymentLogResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  File: ZFhiCg==
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v2/deployment/{deploymentId}/status:
+    get:
+      tags:
+      - Package Deployment
+      summary: Track package deployment status
+      description: Gets the status of the package and any available resource for the given deployment ID.
+      parameters:
+      - name: deploymentId
+        in: path
+        description: A unique deployment ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageDeploymentStatusResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: package-name
+                  Status: Inprogress
+                  DeploymentId: deployment-id
+                  ProjectStatus:
+                  - ResourceName: custom-code-1
+                    ResourceType: null
+                    Status: Inprogress
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    CustomCodeDeploymentLogResponse:
+      type: object
+      properties:
+        File:
+          type:
+          - string
+          - 'null'
+          format: byte
+      additionalProperties: false
+    ResourcePackageDeploymentHistoryResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourcePackageDeploymentHistoryResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageDeploymentStatusResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PackageDeploymentStatusResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageDeploymentHistoryResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PackageDeploymentHistoryResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CustomCodeDeploymentLogResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CustomCodeDeploymentLogResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PromoteRequest:
+      type: object
+      properties:
+        LoginUri:
+          type:
+          - string
+          - 'null'
+          description: login URI for source environment
+        ReleaseUri:
+          type:
+          - string
+          - 'null'
+          description: Release URI to promote a package on target environment
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: ClientId
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+          description: Client Secret
+      additionalProperties: false
+      description: Request to promote a package
+    PackageDeploymentResponse:
+      type: object
+      properties:
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the uploaded package
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Unique Id to track deployment status of the package/custom code project
+      additionalProperties: false
+      description: Custom code package deployment response
+    PackageDeploymentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PackageDeploymentResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    ResourceStatusInfoResponse:
+      type: object
+      properties:
+        ResourceName:
+          type:
+          - string
+          - 'null'
+          description: Name of the custom code project
+        ResourceType:
+          type:
+          - string
+          - 'null'
+          description: Type of the resource
+        Status:
+          $ref: '#/components/schemas/PackageDeploymentStatus'
+      additionalProperties: false
+      description: Resource information
+    PackageInformationResponse:
+      type: object
+      properties:
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the deployment package
+        Description:
+          type:
+          - string
+          - 'null'
+          description: More information about the package
+        ReleaseURI:
+          type:
+          - string
+          - 'null'
+          description: Release URI of the deployment package
+        ReleaseLabel:
+          type:
+          - string
+          - 'null'
+          description: Release label of the deployment package
+        Language:
+          type:
+          - string
+          - 'null'
+          description: Language used for the resources in this deployment package
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status of the deployment package
+        DeployedBy:
+          type:
+          - string
+          - 'null'
+          description: Information of the user who deployed this package
+        DeployedOn:
+          type: string
+          description: Date and time when the package was created
+          format: date-time
+      additionalProperties: false
+    PackageInformationResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PackageInformationResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageDeploymentStatus:
+      enum:
+      - Queued
+      - Inprogress
+      - Succeeded
+      - Failed
+      - RollbackQueued
+      - RollbackInprogress
+      - RollbackSucceeded
+      - RollbackFailed
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageDeploymentStatusResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Package Name
+        Status:
+          $ref: '#/components/schemas/PackageDeploymentStatus'
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Deployment Id
+        ProjectStatus:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceStatusInfoResponse'
+          description: List of Custom Code Project Status informations
+      additionalProperties: false
+      description: Custom code package deployment information
+    PackageDeploymentHistoryResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the deployment package
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Deployment Id for the package
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status of the deployment package
+        DeployedBy:
+          type:
+          - string
+          - 'null'
+          description: Information of the user who created this deployment package
+        DeployedOn:
+          type: string
+          description: Date and time when the package was deployed.
+          format: date-time
+        IsRollbackEnabled:
+          type: boolean
+        ReleaseLabel:
+          type:
+          - string
+          - 'null'
+          description: Release label of the deployment package
+        IsSnapshot:
+          type: boolean
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    ResourcePackageDeploymentHistoryResponse:
+      type: object
+      properties:
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the deployment package
+        ResourceName:
+          type:
+          - string
+          - 'null'
+          description: Name of the custom code
+        ResourceType:
+          type:
+          - string
+          - 'null'
+          description: Type of the custom code
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status of the deployment package
+        CreatedBy:
+          type:
+          - string
+          - 'null'
+          description: Information of the user who created this custom code
+        CreatedDate:
+          type: string
+          description: Date and time when the custom code was created
+          format: date-time
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

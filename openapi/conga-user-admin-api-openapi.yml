@@ -1,0 +1,2170 @@
+openapi: 3.2.0
+info:
+  title: User Management User Admin API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: User Admin
+paths:
+  /api/user-management/v1/users:
+    get:
+      tags:
+      - User Admin
+      summary: Get all users
+      description: Returns all users that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the users. **For example**: IsActive = ''true''. <p>**Note**: The criteria field (in this case, IsActive) should be indexed.</p>'
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC. <p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - UserName: SystemAdmin
+                  Id: ba6d40a5-d9c6-46db-ba89-4b3e7b98eb5f
+                  PermissionGroups: GlobalScopePermissionGroup
+                - UserName: GeneralUser
+                  Id: cbe1655c-9475-43da-9e17-ea47aea69ca1
+                  PermissionGroups: ScopePermissionGroup
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - User Admin
+      summary: Create a user
+      description: Creates a new user and returns the user's ID.
+      requestBody:
+        description: User model data to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 1bbb1b9d-9671-43dc-aab5-cc338c1bb6fc
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/bulk:
+    patch:
+      tags:
+      - User Admin
+      summary: Update multiple users
+      description: 'Updates multiple users and returns the updatedUser object. <p>**Note**: Bulk user updation is not supported for the `Integration` user type.</p>'
+      requestBody:
+        description: Details to be updated in the user model
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkUserUpdateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkUserUpdateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkUserUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - FirstName: Test
+                  LastName: user
+                  UserName: TestUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: dfba608f-bdcb-4197-a772-9651eb2253fa
+                    Name: SysAdmin
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: false
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: b693c0c8-a20c-4fc9-aecf-b99f8a955c90
+                  Name: Test user
+                  CreatedBy:
+                    Id: fa11d701-cce7-475f-85bd-1ae9df0a5792
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:34.9155611+00:00'
+                  ModifiedBy:
+                    Id: 2bb7a17b-1d59-4df7-9f24-603677d19678
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:34.9155721+00:00'
+                  ExternalId: 002i000002AWbWuGFA
+                  ETag: null
+                Errors:
+                - Message: 'This user doesn''t exist. : UserId - e6fd40f0-bd2d-46e0-aff0-5843707d22c9'
+                - Message: 'Pacific/Midway timezone not exist. : UserId - 2c52da29-0c3a-4aa2-ba71-fbc705552f9e'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - User Admin
+      summary: Create multiple users
+      description: 'Creates multiple users and returns their IDs.<p>**Note**: <ul>If a user already exists, the user ID is returned with a validation error.</ul><ul>Bulk user creation is not supported for the `Integration` user type.</ul></p>'
+      requestBody:
+        description: Users model data to be created
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User create request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/bulk-upsert:
+    put:
+      tags:
+      - User Admin
+      summary: Create and update multiple users
+      description: 'Creates and updates multiple users and returns the IDs of the users. <p>**Note**: If a user already exists (based on a Platform user record identifier), the API will update the existing user instead of creating a duplicate record , else if the user is not present new record is created.</p>'
+      requestBody:
+        description: Users model data to be created or updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObject
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Id: 4afa128c-2bad-4f1c-a338-c4e3c7c5ca2a
+                  RecordTypeAccess:
+                    NDA:
+                      Enabled: true
+                    MSA:
+                      Enabled: false
+                    Master:
+                      Enabled: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/bulk-upsert-sync:
+    put:
+      tags:
+      - User Admin
+      summary: Create and update multiple users synchronously
+      description: 'Creates and updates multiple users and returns the IDs of the users synchronously. <p>**Note**: If a user already exists (based on a Platform user record identifier), the API will update the existing user instead of creating a duplicate record , else if the user is not present new record is created.</p>'
+      requestBody:
+        description: Users model data to be created or updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserUpsertRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: SampleObject
+                  PermissionGroupName: ViewAllPermissionGroup
+                  Id: 73a7342f-7e4e-49a5-81ee-ba829388a782
+                  RecordTypeAccess:
+                    NDA:
+                      Enabled: true
+                    MSA:
+                      Enabled: false
+                    Master:
+                      Enabled: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/templates/download:
+    get:
+      tags:
+      - User Admin
+      summary: Get CSV format for user upload
+      description: Fetches the most recent user metadata, generates a .csv file with all of the user fields, and returns a template for uploading users for download.
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/upload:
+    post:
+      tags:
+      - User Admin
+      summary: Upload users
+      description: 'Accepts a .csv file containing user records as input, creates users, and returns the IDs for all newly created users.<p>**Note**: <ul>The system validates the uploaded file first. If the file has any incorrect field names, the validation will fail and an error message will be displayed in the response.</ul><ul>User upload is not supported for the `Integration` user type.</ul></p>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                usersDataFile:
+                  type: string
+                  format: binary
+            encoding:
+              usersDataFile:
+                style: form
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User create request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{integrationUserId}/secret:
+    get:
+      tags:
+      - User Admin
+      summary: Get integration user's client ID
+      description: Retrieves integration user's client ID based on the user ID.
+      parameters:
+      - name: integrationUserId
+        in: path
+        description: Integration user's ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationUserSecretGetResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    patch:
+      tags:
+      - User Admin
+      summary: Generate integration user secret
+      description: Generates the **Secret** for the provided integration user ID and returns the Client ID and Client Secret.
+      parameters:
+      - name: integrationUserId
+        in: path
+        description: Integration user's ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationUserGenerateSecretResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}:
+    delete:
+      tags:
+      - User Admin
+      summary: Deactivate a user
+      description: Deactivates a user and returns status.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User InActivate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - User Admin
+      summary: Get user details by user ID
+      description: Returns the details of a user based on the user ID.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: SystemUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: eb63dfe7-6eeb-4332-a8fc-89dd894ed519
+                    Name: SysAdmin
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: 0417dc98-a096-4bea-9c4e-6c4055cf8098
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:34.9711124+00:00'
+                  ModifiedBy:
+                    Id: d5eae47e-e7df-41f5-af1a-ec7a34dd898f
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:34.97112+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    patch:
+      tags:
+      - User Admin
+      summary: Update a user
+      description: Updates the user information for a specific user.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'Details to be updated in the user model. **Note**: To see a list of supported numbers, dates, and currency formats, use the *Timezone and Locale APIs* and the *Currency Format APIs*.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: DummySystemUser
+                  Email: dummysystemuser@conga.com
+                  Role:
+                    Id: cbecc3fc-0d00-44f8-a6ea-60cd86657a48
+                    Name: SysAdmin
+                  PermissionGroups: GlobalScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 1901 W El Los Angeles
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: a8095312-65d4-46ac-b254-673f8705e208
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:34.9629967+00:00'
+                  ModifiedBy:
+                    Id: 375e2164-a33f-495e-87b5-7b9a2374e4be
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:34.9630042+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/clone:
+    post:
+      tags:
+      - User Admin
+      summary: Clone a user
+      description: 'Clones the user based on the user ID and returns the cloned user''s ID.<p>**Note**: User clone is not supported for the `Integration` user type.</p>'
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Request model containing ExternalId and UserName fields for cloning a user.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCloneRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UserCloneRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UserCloneRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: d4d0be32-e816-4520-a784-670c0b234d95
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/permissiongroups:
+    delete:
+      tags:
+      - User Admin
+      summary: Delete permission groups from a user
+      description: Removes the permission group names from the provided user's current permission groups and returns the updatedUser object along with error messages for invalid records.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of permission groups to be deleted from a user.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: SystemUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: f45de8be-4f0a-443a-924e-e77a4eb9a64e
+                    Name: SysAdmin
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: a1949ee3-e003-437d-ab32-f466f2cbac3e
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.038746+00:00'
+                  ModifiedBy:
+                    Id: 75cf2f9e-6c54-4e44-8f2a-f28038bcf3f2
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.0387534+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - User Admin
+      summary: Assign permission group to a user
+      description: Appends the permission group name to the provided user's current permission groups and returns the updatedUser object.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of permission groups to be assigned for a user.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: SystemUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: 9f3a76df-7972-4830-828a-eee1edb5f8e0
+                    Name: SysAdmin
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: 8c77b742-afc2-42e4-9e9b-5e973ffb2a6a
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.0317101+00:00'
+                  ModifiedBy:
+                    Id: 327d457f-ce8d-4712-9a3f-5f35a059b2b9
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.031718+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/restore:
+    put:
+      tags:
+      - User Admin
+      summary: Restore a deactivated user
+      description: Based on the user ID, restores the user (if deactivated) and sends the message to auth.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User Activate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/roles:
+    get:
+      tags:
+      - User Admin
+      summary: Get a user's role
+      description: Retrieves a user's role based on the user ID and returns the status as the role name.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: SystemAdmin
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/roles/{roleId}:
+    put:
+      tags:
+      - User Admin
+      summary: Update a user's role
+      description: Updates a user's role based on the user ID and role ID passed in.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID to whom the role is to be assigned
+        required: true
+        schema:
+          type: string
+      - name: roleId
+        in: path
+        description: Role ID that is to be assigned to the specified user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: SystemUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: b0a0b882-15e0-4879-b635-825355498c43
+                    Name: ContractFacilitator
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: 9d581c8a-6a63-403b-9358-943d513f4a3b
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.0246065+00:00'
+                  ModifiedBy:
+                    Id: b41b6702-1475-4f2f-a054-8a0e5db75fcb
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.0246143+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/roles/{roleId}/exists:
+    get:
+      tags:
+      - User Admin
+      summary: Check if a user is assigned a role
+      description: Using a user ID and a role ID, returns true or false depending on whether the user is assigned a role or not.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/users/{userId}/send-welcome-email:
+    post:
+      tags:
+      - User Admin
+      summary: Re-send welcome email to new user
+      description: 'The system sends every new user a welcome email with login details. If a user is created with an incorrect email address entry, the welcome email cannot reach its intended recipient. In such instances, use this API service to re-send the welcome email and credentials. <p>**Note**: Re-send welcome email is not supported for the `Integration` user type.</p>'
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserCreateRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: The user's unique username
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s time zone ID. For example: `UTC` <p>**Note**: To see a list of supported time zones, use the Timezone and Locale APIs.</p>'
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s locale name. For example: `en-US` <p>**Note**: To see a list of supported locales, use the Timezone and Locale APIs.</p>'
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s currency. For example: `USD`. <p>**Note**: To see a list of currencies, use the Currency API.</p>'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: The user's unique record identifier from the external system
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name
+        Language:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s language. For example: `en-IN`'
+        Address:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s postal address. This parameter is raw text with no structure or sub-fields. For example: `13699 Via Varra, Broomfield, CO 80020 United States`'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+          description: The user's Organization External Id
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: 'User object specific custom field(s) **For example:** You want to add two custom fields (CustomField1_c and BooleanField_c) on the User object. See the payload example below for reference. {"CustomProperties": {"CustomField1_c": "12334", "BooleanField_c": "true"}'
+        FederationId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier used to identify user in federated authentication systems
+      additionalProperties: false
+    AssignPermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of permission group names to be assigned for the role.
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    IntegrationUserSecretGetResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/IntegrationUserSecretGetResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserUpdateRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s time zone ID. For example: `UTC` <p>**Note**: To see a list of supported time zones, use the Timezone and Locale APIs.</p>'
+        LocaleName:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s locale name. For example: `en-US` <p>**Note**: To see a list of supported locales, use the Timezone and Locale APIs.</p>'
+        LocaleDecimalSymbol:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s decimal symbol. For example: `.` <p>**Note**: To see a list of supported decimal symbols, use the Timezone and Locale APIs.</p>'
+        LocaleDigitGroup:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s digit group. For example: `123’456’789,00` <p>**Note**: To see a list of supported digit groups, use the Timezone and Locale APIs.</p>'
+        LocaleDigitGroupingSymbol:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s digit grouping symbol. For example: `,` <p>**Note**: To see a list of supported digit grouping symbols, use the Timezone and Locale APIs.</p>'
+        LocaleNegativeNumberFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s negative number format. For example: `(n)` <p>**Note**: To see a list of supported negative number formats, use the Timezone and Locale APIs.</p>'
+        LocaleLongDateFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s long date format. For example: `dddd, MMMM dd, yyyy` <p>**Note**: To see a list of supported long date formats, use the Timezone and Locale APIs.</p>'
+        LocaleShortDateFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s short date format. For example: `dd/MM/yyyy` <p>**Note**: To see a list of supported short date formats, use the Timezone and Locale APIs.</p>'
+        LocaleTimeFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s time format. For example: `h:mm tt` <p>**Note**: To see a list of supported time formats, use the Timezone and Locale APIs.</p>'
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s currency. For example: `USD`. <p>**Note**: To see a list of currencies, use the Currency API.</p>'
+        PositiveCurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s positive currency format. For example: `$n`. <p>**Note**: To see a list of supported positive currency formats, use the Currency Format API.</p>'
+        NegativeCurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s negative currency format. For example: `-$n`. <p>**Note**: To see a list of supported negative currency formats, use the Currency Format API.</p>'
+        IsSuspended:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is suspended or not.
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name
+        Language:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s language. For example: `en-IN`'
+        Address:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s postal address. This parameter is raw text with no structure or sub-fields. For example: `13699 Via Varra, Broomfield, CO 80020 United States`'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: The user's unique record identifier from the external system
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: The user's unique username
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: 'User object specific custom field(s) **For example:** You want to update two custom fields (CustomField1_c and BooleanField_c) on the User object. See the payload example below for reference. {"CustomProperties": {"CustomField1_c": "12334", "BooleanField_c": "true"}'
+        FederationId:
+          type:
+          - string
+          - 'null'
+          description: 'Determines of user type. For example: `External`, `Community`'
+        UserType:
+          $ref: '#/components/schemas/UserType'
+      additionalProperties: false
+    IntegrationUserGenerateSecretResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/IntegrationUserGenerateSecretResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DeletePermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Collection of the PermissionGroupNames to be Deleted
+      additionalProperties: false
+    UserResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserUpsertRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        UserName:
+          type:
+          - string
+          - 'null'
+        Timezone:
+          type:
+          - string
+          - 'null'
+        Locale:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        Alias:
+          type:
+          - string
+          - 'null'
+        Language:
+          type:
+          - string
+          - 'null'
+        Address:
+          type:
+          - string
+          - 'null'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        FederationId:
+          type:
+          - string
+          - 'null'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type: boolean
+        IsSuspended:
+          type: boolean
+        SmallPhotoUrl:
+          type:
+          - string
+          - 'null'
+        CurrencyFormat:
+          type:
+          - string
+          - 'null'
+        IdentityStatus:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserType:
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+      - Contact
+      type: string
+    UserCloneRequest:
+      type: object
+      properties:
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId of the user to be cloned
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: UserName of the user to be cloned
+      additionalProperties: false
+    BulkUserUpdateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The user's globally unique identifier (GUID)
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s time zone ID. For example: `UTC` <p>**Note**: To see a list of supported time zones, use the Timezone and Locale APIs.</p>'
+        LocaleName:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s locale name. For example: `en-US` <p>**Note**: To see a list of supported locales, use the Timezone and Locale APIs.</p>'
+        LocaleDecimalSymbol:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s decimal symbol. For example: `.` <p>**Note**: To see a list of supported decimal symbols, use the Timezone and Locale APIs.</p>'
+        LocaleDigitGroup:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s digit group. For example: `123’456’789,00` <p>**Note**: To see a list of supported digit groups, use the Timezone and Locale APIs.</p>'
+        LocaleDigitGroupingSymbol:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s digit grouping symbol. For example: `,` <p>**Note**: To see a list of supported digit grouping symbols, use the Timezone and Locale APIs.</p>'
+        LocaleNegativeNumberFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s negative number format. For example: `(n)` <p>**Note**: To see a list of supported negative number formats, use the Timezone and Locale APIs.</p>'
+        LocaleLongDateFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s long date format. For example: `dddd, MMMM dd, yyyy` <p>**Note**: To see a list of supported long date formats, use the Timezone and Locale APIs.</p>'
+        LocaleShortDateFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s short date format. For example: `dd/MM/yyyy` <p>**Note**: To see a list of supported short date formats, use the Timezone and Locale APIs.</p>'
+        LocaleTimeFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s time format. For example: `h:mm tt` <p>**Note**: To see a list of supported time formats, use the Timezone and Locale APIs.</p>'
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s currency. For example: `USD`. <p>**Note**: To see a list of currencies, use the Currency API.</p>'
+        PositiveCurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s positive currency format. For example: `$n`. <p>**Note**: To see a list of supported positive currency formats, use the Currency Format API.</p>'
+        NegativeCurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s negative currency format. For example: `-$n`. <p>**Note**: To see a list of supported negative currency formats, use the Currency Format API.</p>'
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name
+        Language:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s language. For example: `en-IN`'
+        Address:
+          type:
+          - string
+          - 'null'
+          description: 'The user''s postal address. This parameter is raw text with no structure or sub-fields. For example: `13699 Via Varra Broomfield, CO 80020 United States`'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: The user's unique record identifier from the external system
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: The user's user name
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: 'User object specific custom field(s) **For example:** You want to update two custom fields (CustomField1_c and BooleanField_c) on the User object. See the payload example below for reference. {"CustomProperties": {"CustomField1_c": "12334", "BooleanField_c": "true"}'
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user should be activated or deactivated during update operation.
+      additionalProperties: false
+    IntegrationUserSecretGetResponse:
+      type: object
+      properties:
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: Unique ID of the client
+      additionalProperties: false
+      description: Response model for Integration Users App Client
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    IntegrationUserGenerateSecretResponse:
+      type: object
+      properties:
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: Unique ID of the client
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+          description: The secret value for the app client
+      additionalProperties: false
+      description: Response model for Integration Users App Client
+    UserResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: FirstName of the User
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: LastName of the User
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: UserName of the User
+        Email:
+          type:
+          - string
+          - 'null'
+          description: Email of the User
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: PermissionGroups assigned to the user
+        RolePermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: RolePermissionGroups assigned to the user
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: Timezone of the User
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: Locale of the User
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: Currency of the User
+        CurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: Currency Format of the User
+        IsDeleted:
+          type: boolean
+          description: Indicates whether the user is Deleted or not
+        IsActive:
+          type: boolean
+          description: Indicates whether the user is Active or not
+        IsSuspended:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is Suspended or not
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: Alias Name of the User
+        Language:
+          type:
+          - string
+          - 'null'
+          description: Language of the User
+        SmallPhotoUrl:
+          type:
+          - string
+          - 'null'
+          description: SmallPhotoUrl of the User
+        LastLoginDate:
+          type:
+          - string
+          - 'null'
+          description: LastLoginDate of the User
+          format: date-time
+        Address:
+          type:
+          - string
+          - 'null'
+          description: Address of the User
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: PhoneNumber of the User
+        IdentityStatus:
+          type:
+          - string
+          - 'null'
+          description: IdentityStatus of the User
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+          description: Unique record identifier from organization external system
+        UserGroupsAssignedTo:
+          type:
+          - string
+          - 'null'
+        Clientid:
+          type:
+          - string
+          - 'null'
+          description: ClientId of associated to the Integration User
+        FederationId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier used to identify user in federated authentication systems
+        IsNextGenUiEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user has access to the NextGen user interface. When true, the NextGen UI is enabled; when false, the Classic UI is used.
+      additionalProperties: {}
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

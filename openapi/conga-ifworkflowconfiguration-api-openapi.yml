@@ -1,0 +1,88 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign IF Workflow Configuration API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: IFWorkflowConfiguration
+paths:
+  /v1/cs-accountConfig/ifWorkflows:
+    get:
+      tags:
+      - IFWorkflowConfiguration
+      summary: Retrieve IF workflow configuration information
+      description: Retrieves IF workflow configuration information for the current account.
+      operationId: IFWorkflowConfiguration_GetIFWorkflowConfiguration
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

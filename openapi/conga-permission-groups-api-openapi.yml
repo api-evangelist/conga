@@ -1,0 +1,491 @@
+openapi: 3.2.0
+info:
+  title: User Management Permission Groups API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Permission Groups
+paths:
+  /api/user-management/v1/permissiongroups:
+    delete:
+      tags:
+      - Permission Groups
+      summary: Delete permission groups
+      description: Removes permission group names from the stored master list, as well as any associated object, action, or scope permissions granted to that permission group if no user or role is associated with it, and returns a list of the deleted permission group's IDs and error messages for invalid records.
+      requestBody:
+        description: A list of permission groups to be deleted from the master list.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsDeleteRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsDeleteRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsDeleteRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 3a7a32fd-38ce-4c77-b467-81966a1400b6,3e6b468f-f50d-4a3b-92d2-bac5c0803281 deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Permission Groups
+      summary: Get the master list of permission groups
+      description: Returns the master list of permission groups from data storage.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionGroupsAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PermissionGroupNamesList:
+                  - DisplayValue: PermissionGroup1
+                    Value: PermissionGroup1
+                    Description: sample permission group for description
+                    PermissionGroupType: null
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  - DisplayValue: PermissionGroup2
+                    Value: PermissionGroup2
+                    Description: sample permission group for description
+                    PermissionGroupType: null
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                StatusCode: OK
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Permission Groups
+      summary: Add permission group names to the master list
+      description: Adds permission group names to the master list and returns the updated list of permission groups.
+      requestBody:
+        description: A list of permission groups to be added to the master list.<p>**Note:** The permission group name must be unique and no longer than 80 characters.</p>
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCreateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionGroupsAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PermissionGroupNamesList:
+                  - DisplayValue: PermissionGroup1
+                    Value: PermissionGroup1
+                    Description: sample permission group for description
+                    PermissionGroupType: null
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                  - DisplayValue: PermissionGroup2
+                    Value: PermissionGroup2
+                    Description: sample permission group for description
+                    PermissionGroupType: null
+                    Id: null
+                    Name: null
+                    CreatedBy: null
+                    CreatedDate: '0001-01-01T00:00:00'
+                    ModifiedBy: null
+                    ModifiedDate: '0001-01-01T00:00:00'
+                    ExternalId: null
+                    ETag: null
+                StatusCode: OK
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/permissiongroups/{permissionGroupName}/clone:
+    post:
+      tags:
+      - Permission Groups
+      summary: Clone the permission group
+      description: Clones the permission group (Object Permissions and Scopes Permissions) by passing the existing permission group as a parameter and the permission group information in the request body.
+      parameters:
+      - name: permissionGroupName
+        in: path
+        description: The name of the permission group to clone.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Permission group information for cloning and adding to the master list.<p>**Note:** The permission group name must be unique and no more than 80 characters.</p>
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCloneRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCloneRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupsCloneRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: '''PGNew'' cloned successfully with permission group ''ViewAllPermissionGroup'''
+                StatusCode: OK
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    PermissionGroup:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        DisplayValue:
+          type:
+          - string
+          - 'null'
+          description: The value displayed as a name in the list view.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value for the permission group
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the permission group
+        PermissionGroupType:
+          $ref: '#/components/schemas/PermissionGroupType'
+      additionalProperties: {}
+      description: PermissionGroupValue
+    PermissionGroupsAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PermissionGroups'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PermissionGroupType:
+      enum:
+      - Internal
+      - External
+      type: string
+    PermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNamesList:
+          uniqueItems: true
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PermissionGroup'
+          description: PermissionGroupNamesList
+      additionalProperties: false
+      description: PermissionGroups
+    PermissionGroupValue:
+      type: object
+      properties:
+        DisplayValue:
+          type:
+          - string
+          - 'null'
+          description: The value displayed as a name in the list view.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value for the permission group
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the permission group
+        PermissionGroupType:
+          $ref: '#/components/schemas/PermissionGroupType'
+      additionalProperties: false
+    PermissionGroupsCloneRequest:
+      type: object
+      properties:
+        PermissionGroupNameToClone:
+          $ref: '#/components/schemas/PermissionGroupValue'
+      additionalProperties: false
+      description: ''
+    PermissionGroupsCreateRequest:
+      type: object
+      properties:
+        PermissionGroupNamesList:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PermissionGroupValue'
+          description: Collection of permission group names
+      additionalProperties: false
+      description: ''
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PermissionGroupsDeleteRequest:
+      type: object
+      properties:
+        PermissionGroupNamesList:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Collection of the permission group names to be deleted
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,319 @@
+openapi: 3.2.0
+info:
+  title: eSignature Adobe Sign API
+  version: v1
+  description: Adobe sign
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: AdobeSign
+  description: Adobe sign
+paths:
+  /api/esign/v1/adobe/{transactionId}/audittrail:
+    get:
+      tags:
+      - AdobeSign
+      summary: Get Adobe sign events by esign transaction
+      description: "Retrieves list of events from Adobe based on the transaction ID provided in the parameters. The transaction ID is the esign ID generated during envelope creation.\n            This API returns events details as the agreement events happened during transaction, from esign transaction id will get the external id which is agreement id in Adobe."
+      parameters:
+      - name: transactionId
+        in: path
+        description: The unique transaction ID.
+        required: true
+        schema:
+          type: string
+        example: d717a075-9cbf-480c-b230-837e0e6dee75
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgreementEventListAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Envelope
+                  ExternalESignId: 30f428ae-6f49-423a-a130-2e399ca348dc
+                  ParentObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ParentObjectType: Agreement
+                  ESignProvider: DocuSign
+                  DocumentIds: 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  Id: 3a742f32-c61f-4a1e-9c66-a88bf6a821df
+                  CreatedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  CreatedDate: '2023-01-13T12:50:38'
+                  ModifiedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  ModifiedDate: '2023-01-15T12:50:38'
+                  DateSigned: '2023-01-15T12:50:38'
+                  Status: Signed
+                  RecallReason: null
+                  DateSent: '2023-01-13T12:50:38'
+                  FullySignedDocumentId: fd25d4d9-a597-4b66-aece-bacc637de514
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    AgreementEvent:
+      type: object
+      properties:
+        ParticipantRole:
+          $ref: '#/components/schemas/ParticipantRoleEnum'
+        Type:
+          $ref: '#/components/schemas/TypeEnum'
+        ActingUserEmail:
+          type:
+          - string
+          - 'null'
+        ActingUserIpAddress:
+          type:
+          - string
+          - 'null'
+        ActingUserName:
+          type:
+          - string
+          - 'null'
+        Comment:
+          type:
+          - string
+          - 'null'
+        Date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Description:
+          type:
+          - string
+          - 'null'
+        DeviceLocation:
+          $ref: '#/components/schemas/DeviceLocation'
+        DevicePhoneNumber:
+          type:
+          - string
+          - 'null'
+        DigitalSignatureInfo:
+          $ref: '#/components/schemas/DigitalSignatureInfo'
+        InitiatingUserEmail:
+          type:
+          - string
+          - 'null'
+        InitiatingUserName:
+          type:
+          - string
+          - 'null'
+        ParticipantEmail:
+          type:
+          - string
+          - 'null'
+        ParticipantId:
+          type:
+          - string
+          - 'null'
+        SynchronizationId:
+          type:
+          - string
+          - 'null'
+        VaultEventId:
+          type:
+          - string
+          - 'null'
+        VaultProviderName:
+          type:
+          - string
+          - 'null'
+        VersionId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    AgreementEventList:
+      type: object
+      properties:
+        Events:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AgreementEvent'
+      additionalProperties: false
+    DeviceLocation:
+      type: object
+      properties:
+        Latitude:
+          type:
+          - number
+          - 'null'
+          format: float
+        Longitude:
+          type:
+          - number
+          - 'null'
+          format: float
+      additionalProperties: false
+    TypeEnum:
+      enum:
+      - ACCESSCODEGENERATED
+      - ACCESSCODECONSUMED
+      - AUTOCANCELLEDCONVERSIONPROBLEM
+      - ACTIONAUTODELEGATED
+      - ACTIONCOMPLETED
+      - ACTIONCOMPLETEDHOSTED
+      - ACTIONCOMPLETEDOFFLINE
+      - ACTIONCOMPLETEDOFFLINEHOSTED
+      - ACTIONCOMPLETEDWIDGETVERIFIED
+      - ACTIONCOMPLETEDWIDGETVERIFIEDAPITOKEN
+      - ACTIONCOMPLETEDWIDGETVERIFICATIONWAIVED
+      - ACTIONDELEGATED
+      - ACTIONREPLACEDSIGNER
+      - ACTIONREQUESTED
+      - CREATED
+      - CREATEDFROMWIDGET
+      - CREATEDOFFLINE
+      - CREATEDVIAUPLOAD
+      - CREATEDVIAACROBAT
+      - CREATEDVIAREADER
+      - ACTIVATED
+      - DIGITALSIGNUIDAISIGNERCONSENT
+      - DIGSIGNED
+      - DEACTIVATED
+      - DOCUMENTSDELETED
+      - DOWNLOADED
+      - EMAILBOUNCED
+      - EMAILVIEWED
+      - EXPIRED
+      - EXPIREDAUTOMATICALLY
+      - FAXEDBYSENDER
+      - FAXINRECEIVED
+      - KBAAUTHENTICATED
+      - MODIFIED
+      - OFFLINESYNC
+      - OTHER
+      - PAID
+      - PRESIGNED
+      - RECALLED
+      - RECALLEDMAXSIGNINGKBAATTEMPTS
+      - RECALLEDMAXSIGNINGPASSWORDATTEMPTS
+      - RECALLEDMAXSIGNINGPHONEATTEMPTS
+      - REJECTED
+      - SENDERCREATEDNEWREVISION
+      - SHARED
+      - SIGNED
+      - SIGNINGURLREQUESTED
+      - UPLOADEDBYSENDER
+      - USERACKAGREEMENTMODIFIED
+      - VAULTED
+      - WEBIDENTITYAUTHENTICATED
+      - WEBIDENTITYSPECIFIED
+      - WRITTENDOWNLOAD
+      - WRITTENSIGNED
+      type: string
+    DigitalSignatureInfo:
+      type: object
+      properties:
+        Company:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AgreementEventListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/AgreementEventList'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ParticipantRoleEnum:
+      enum:
+      - SIGNER
+      - DELEGATETOSIGNER
+      - APPROVER
+      - DELEGATETOAPPROVER
+      - ACCEPTOR
+      - DELEGATETOACCEPTOR
+      - FORMFILLER
+      - DELEGATETOFORMFILLER
+      - CERTIFIEDRECIPIENT
+      - DELEGATETOCERTIFIEDRECIPIENT
+      - SHARE
+      - SENDER
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

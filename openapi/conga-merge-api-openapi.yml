@@ -1,0 +1,594 @@
+openapi: 3.2.0
+info:
+  title: Ingress Merge API
+  version: 1.0.0
+  description: This controller initiates Composer API Merge
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Merge
+  description: This controller initiates Composer API Merge
+paths:
+  /v1/Merge:
+    post:
+      tags:
+      - Merge
+      summary: Initiate the merge workflow
+      description: Translates the users' merge request inputs into data sets and initiate the merge. For more information, see [Conga Composer API Use Cases.](https://documentation.conga.com/composer/latest/conga-composer-api-use-cases-203496246.html)
+      operationId: Merge_Post
+      requestBody:
+        x-name: request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComposerMergeRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerMergeResponseModel'
+        '400':
+          description: Invalid Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - JWT: []
+  /v1/Merge/Preview/{correlationId}:
+    get:
+      tags:
+      - Merge
+      summary: Returns the url list of merged and preview documents for a given correlationId.
+      operationId: Merge_GetPreviewFiles
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        description: The Composer correlation ID (e.g., abc123_DatasetJson)
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Documents found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MergedPreviewDocument'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+      security:
+      - JWT: []
+  /v1/Merge/Upload:
+    post:
+      tags:
+      - Merge
+      summary: Initiate the merge workflow after uploading JSON data
+      description: Allows the user to upload a json file and initiate the merge request
+      operationId: Merge_Upload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                LocalTemplates:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                    format: binary
+                JsonData:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+                RequestBody:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerMergeResponseModel'
+        '400':
+          description: Invalid Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - JWT: []
+  /v1/Merge/{correlationId}/Accept:
+    get:
+      tags:
+      - Merge
+      summary: Accept merge
+      description: Once using the DS7Preview flag set to 1, and a user has placed a potential merge job in the preview state, this endpoint, alongside the corresponding correlation ID, can be used to accept said merge while it's in the preview state and proceed with the post merge acitons.
+      operationId: Merge_AcceptPreview
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeInfo'
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - JWT: []
+  /v1/Merge/{correlationId}/Reject:
+    get:
+      tags:
+      - Merge
+      summary: Reject merge
+      description: Once using the DS7Preview flag set to 1, and a user has placed a potential merge job in the preview state, this endpoint, alongside the corresponding correlation ID, can be used to reject said merge while it's in the preview state and not proceed with any post merge actions.
+      operationId: Merge_RejectPreview
+      parameters:
+      - name: correlationId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeInfo'
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - JWT: []
+  /v1/Merge/{id}:
+    get:
+      tags:
+      - Merge
+      summary: Get merge info
+      description: Gets the merge info.
+      operationId: Merge_Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Correlation ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeInfo'
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - JWT: []
+components:
+  schemas:
+    ComposerMergeResponseModel:
+      type: object
+      additionalProperties: false
+      properties:
+        correlationId:
+          type: string
+        status:
+          type: string
+        result:
+          $ref: '#/components/schemas/Result'
+    MergedPreviewDocument:
+      type: object
+      additionalProperties: false
+      properties:
+        mergedFileName:
+          type:
+          - string
+          - 'null'
+        mergedFileUri:
+          type:
+          - string
+          - 'null'
+        mergedFileSize:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        previewFileName:
+          type:
+          - string
+          - 'null'
+        previewFileUri:
+          type:
+          - string
+          - 'null'
+        previewFileSize:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    Activity:
+      type: object
+      additionalProperties: false
+      properties:
+        attachOperation:
+          type: string
+        enabled:
+          type: boolean
+        followUpDate:
+          type: string
+          format: date-time
+        saveText:
+          type: string
+        subject:
+          type: string
+    ComposerMergeRequest:
+      allOf:
+      - $ref: '#/components/schemas/ComposerMergeBaseRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          jsonData:
+            type: string
+            description: JSON payload. For more information on JSON payload use case, click [here](https://documentation.conga.com/composer/latest/generate-document-using-json-data-203491745.html)
+          dataSources:
+            type: array
+            description: Array of objects containing metadata on the payload source
+            items:
+              $ref: '#/components/schemas/DataSource2'
+    IntegrationOption:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Salesforce
+      - GoogleDrive
+      - CongaDrive
+      - Dropbox
+      - Box
+      - SharePoint
+      - OneDrive
+      - S3
+      - SFTP
+      enum:
+      - None
+      - Salesforce
+      - GoogleDrive
+      - CongaDrive
+      - Dropbox
+      - Box
+      - SharePoint
+      - OneDrive
+      - S3
+      - SFTP
+    SalesforceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        sessionId:
+          type:
+          - string
+          - 'null'
+          description: 'OPTIONAL Salesforce access token. Requires setting up a [connected app](https://documentation.conga.com/composer/latest/conga-platform/composer-api-connected-app-setup-239537625.html) in your Salesforce Org and [retrieving an access token from Salesforce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_username_password_flow.htm&type=5)
+
+            If SessionId it not provided, then Composer backend will retrieve SessionId from external connections created in Composer Settings UI.'
+        serverUrl:
+          type: string
+          description: 'REQUIRED Salesforce server URL. For example: *{{instanceUrl}}/services/Soap/50.0/{{Salesforce org ID}}*.
+
+            This field only required if SessionId provided in the request. Otherwise, Composer backend will retrieve server
+
+            URL from external connections created in Composer Settings UI.'
+        useSandbox:
+          type: boolean
+          description: 'OPTIONAL This field used when no SessionId provided in the request. This field is used to retrieve SessionId
+
+            from external Salesforce Sandbox connections created in Composer Settings UI. The default value is false.'
+        templateId:
+          type: string
+          description: Salesforce template ID.
+        masterId:
+          type: string
+          description: REQUIRED Salesforce master object record ID.
+        queryId:
+          type: string
+          description: Salesforce query ID.
+        emailTemplateId:
+          type: string
+          description: Salesforce email template ID.
+        instanceUrl:
+          type: string
+          description: Salesforce instance URL. You can get this while retiriving Salesforce access token.
+        targetOrigin:
+          type: string
+        relatedContactId:
+          type: string
+    StatusCodes:
+      type: string
+      description: ''
+      x-enumNames:
+      - Success
+      - InternalHostError
+      - NotFound
+      - BusinessRuleViolation
+      - FailedValidation
+      - SecurityException
+      - InvalidRequestdata
+      - ServiceUnavailable
+      enum:
+      - Success
+      - InternalHostError
+      - NotFound
+      - BusinessRuleViolation
+      - FailedValidation
+      - SecurityException
+      - InvalidRequestdata
+      - ServiceUnavailable
+    Result:
+      type: object
+      additionalProperties: false
+      properties:
+        statusCode:
+          $ref: '#/components/schemas/StatusCodes'
+        statusMessage:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusMessage'
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    MergeInfo:
+      type: object
+      description: Merge Information
+      additionalProperties: false
+      properties:
+        correlationId:
+          type: string
+          description: Correlation id
+        infoObject:
+          description: Info Object
+          oneOf:
+          - $ref: '#/components/schemas/InfoObject'
+        congaOrgId:
+          type: string
+          description: Conga Org id
+          format: guid
+    TemplateSourceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        integrationName:
+          type: string
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        fileId:
+          type: string
+          description: File ID that correspond to the cloud service provider's actual File ID. For more information on how to get the File ID, click [here](https://documentation.conga.com/composer/latest/conga-platform/how-to-get-file-id-for-composer-api-request-222431618.html)
+    DestinationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        integrationName:
+          type: string
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        folderId:
+          type: string
+          description: Folder ID that correspond to the cloud service provider's actual folder ID. For more information on how to get the folder ID, click [here](https://documentation.conga.com/composer/latest/how-to-get-file-id-for-composer-api-request-193698978.html)
+    StatusMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+    SaveCopy:
+      type: object
+      additionalProperties: false
+      properties:
+        enabled:
+          type:
+          - boolean
+          - 'null'
+        saveTo:
+          type: string
+    SignTransaction:
+      type: object
+      additionalProperties: false
+      properties:
+        packageId:
+          type: string
+        tagUrl:
+          type: string
+        esignTransactionId:
+          type: string
+        status:
+          type:
+          - boolean
+          - 'null'
+    Adaptation:
+      type: object
+      additionalProperties: false
+      properties:
+        pdfCommands:
+          type: boolean
+        convertToPDF:
+          type: boolean
+    DataSource2:
+      type: object
+      description: 'Array of objects containing metadata on the payload source
+
+        ps: usecase identified for webhooks in the request. Further data sources discovered will be introduced here.'
+      additionalProperties: false
+      properties:
+        type:
+          description: 'Type of data source used. Ex: Webhooks'
+          oneOf:
+          - $ref: '#/components/schemas/DataSourceType'
+        dataSourceId:
+          type: string
+          description: 'Unique source Id. Ex: WebHook Id'
+        integrationName:
+          description: Data source info
+          oneOf:
+          - $ref: '#/components/schemas/IntegrationOption'
+        parameters:
+          type: object
+          description: Key-value pair parameter collection
+          additionalProperties:
+            type: string
+    DataSourceType:
+      type: string
+      description: Type of data source used
+      x-enumNames:
+      - None
+      - Webhook
+      enum:
+      - None
+      - Webhook
+    SignCommands:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          type: string
+          description: 'Providers: Conga Sign Powered by OneSpan.'
+        payload:
+          type: string
+          description: For information on structuring the JSON payload click [here](https://developer.conga.com/doc-automation/reference/package_createpackage).
+    InfoObject:
+      type: object
+      description: Info Object
+      additionalProperties: false
+      properties:
+        signTransaction:
+          description: Sign transaction
+          oneOf:
+          - $ref: '#/components/schemas/SignTransaction'
+    ComposerMergeBaseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        salesforceRequest:
+          $ref: '#/components/schemas/SalesforceRequest'
+        activity:
+          $ref: '#/components/schemas/Activity'
+        adaptation:
+          $ref: '#/components/schemas/Adaptation'
+        signCommands:
+          $ref: '#/components/schemas/SignCommands'
+        saveCopy:
+          $ref: '#/components/schemas/SaveCopy'
+        legacyOptions:
+          type: object
+          description: Control the behavior of document generation by including parameter name and value. For more information on supported parameters for API, click [here](https://documentation.conga.com/composer/latest/conga-platform/supported-parameters-for-composer-api-195691044.html).
+          additionalProperties:
+            type: string
+        templateSources:
+          type: array
+          description: Template source details to get the template from your cloud storage provider.
+          items:
+            $ref: '#/components/schemas/TemplateSourceRequest'
+        destinations:
+          type: array
+          description: Destination details to send the generated document to your cloud storage provider.
+          items:
+            $ref: '#/components/schemas/DestinationRequest'
+        output:
+          $ref: '#/components/schemas/OutputRequest'
+        locale:
+          type: string
+    OutputRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        generateDocumentDownload:
+          type: boolean
+          description: Set this to **true** to enable document download for the merged document.
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

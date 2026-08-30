@@ -1,0 +1,607 @@
+openapi: 3.2.0
+info:
+  title: User Management Grant Login API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Grant Login
+paths:
+  /api/user-management/v1/grantlogin:
+    get:
+      tags:
+      - Grant Login
+      summary: Get all Grant Login Requests
+      description: Returns all grant logins that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: Search criteria for the grant login.
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: Field name for sorting.
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC.'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - UserId: 6aef19a8-dc6b-40d2-b0ea-d4593c9a6422
+                  UserName: null
+                  AccessDuration: 1 Day
+                  ExpiresOn: '2026-07-28T11:07:36.6266664+00:00'
+                  Status: OPEN
+                  IsCancelled: false
+                  CaseId: c329da22-adee-42b3-8c52-706b81703ad5
+                  Notes: Sample request
+                  Id: e62c818b-ef51-4827-9ebb-efa0c6382b34
+                  Name: GrantLogin
+                  CreatedBy:
+                    Id: 37d1487e-d097-4591-aa00-d656e8484ad4
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.6266788+00:00'
+                  ModifiedBy:
+                    Id: e47da62c-6702-4d42-8598-2e53ce886d32
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.6266864+00:00'
+                  ExternalId: 0363b86b-0a0c-4637-872d-68da5e0097b2
+                  ETag: null
+                StatusCode: OK
+        '404':
+          description: Not Found
+    post:
+      tags:
+      - Grant Login
+      summary: Create a Grant Login Request
+      description: Creates a Grant Login Request and returns its unique identifier (ID).
+      requestBody:
+        description: Grant Login Request model data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrantLoginCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GrantLoginCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GrantLoginCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 1dedf38d-afae-4987-9766-f36289062ba4
+                StatusCode: Created
+        '404':
+          description: Not Found
+  /api/user-management/v1/grantlogin/durations:
+    get:
+      tags:
+      - Grant Login
+      summary: Get Access durations
+      description: Retrieves all Access Durations available.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessDurationListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - DisplayValue: 1 Day
+                  Value: 1
+                  ExpirationDate: 8/11/2024
+                - DisplayValue: 3 Days
+                  Value: 3
+                  ExpirationDate: 11/11/2024
+                StatusCode: OK
+        '404':
+          description: Not Found
+  /api/user-management/v1/grantlogin/{grantLoginId}:
+    get:
+      tags:
+      - Grant Login
+      summary: Get the grant login details by ID
+      description: Fetches the grant login details based on the grant login ID.
+      parameters:
+      - name: grantLoginId
+        in: path
+        description: Grant Login ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrantLoginDetailsAPIResponse'
+              example:
+                Success: true
+                Data:
+                  UserId: 8a8d7465-5344-4214-bb88-b45f14d59cc1
+                  UserName: null
+                  AccessDuration: 1 Day
+                  ExpiresOn: '2026-07-28T11:07:36.6675675+00:00'
+                  Status: OPEN
+                  IsCancelled: false
+                  CaseId: 742ea2b6-2ab8-4352-a2d2-a9f1feb8d093
+                  Notes: Sample request
+                  Id: ebe6e983-f767-427b-9c04-f385acf68dba
+                  Name: GrantLogin
+                  CreatedBy:
+                    Id: 1f52fc01-8234-495a-b13b-7ea4bfdf9570
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.6675796+00:00'
+                  ModifiedBy:
+                    Id: 285eaca5-e376-4ba7-b84f-599885d24f50
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.6675874+00:00'
+                  ExternalId: d3ec31cb-b971-48a0-9af9-6754204da017
+                  ETag: null
+                StatusCode: OK
+        '404':
+          description: Not Found
+    put:
+      tags:
+      - Grant Login
+      summary: Cancel Grant Login Request
+      description: Cancels the Grant Login Request and returns status.
+      parameters:
+      - name: grantLoginId
+        in: path
+        description: Grant Login ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrantLoginDetailsAPIResponse'
+              example:
+                Success: true
+                Data:
+                  UserId: 4a14786f-51a1-48e1-ac69-c335e626b9c3
+                  UserName: null
+                  AccessDuration: 3 Days
+                  ExpiresOn: '2026-07-30T11:07:36.6635577+00:00'
+                  Status: CANCELLED
+                  IsCancelled: true
+                  CaseId: 89860049-6f07-46ed-b8c5-b1e8cb6b3c2d
+                  Notes: Sample request
+                  Id: d88fd662-9efe-4e0a-8bf2-115062bb7f17
+                  Name: GrantLogin
+                  CreatedBy:
+                    Id: 1cecc347-a2a1-4108-832c-43b476fb3d83
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.6635735+00:00'
+                  ModifiedBy:
+                    Id: 863c136f-00eb-41ea-a194-496e01ea2520
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.6635811+00:00'
+                  ExternalId: 5cdee7cf-6ab2-44a7-ae11-b64e55e6b173
+                  ETag: null
+                StatusCode: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User Activate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '404':
+          description: Not Found
+components:
+  schemas:
+    AccessDuration:
+      type: object
+      properties:
+        DisplayValue:
+          type:
+          - string
+          - 'null'
+          description: The value displayed as a name in the list view.
+        Value:
+          type: integer
+          description: Value for the Access Duration
+          format: int32
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          description: Expiration Date
+      additionalProperties: false
+      description: AccessDuration
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GrantLoginDetailsAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/GrantLoginDetails'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GrantLoginDetails:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        UserId:
+          type:
+          - string
+          - 'null'
+        UserName:
+          type:
+          - string
+          - 'null'
+        AccessDuration:
+          type:
+          - string
+          - 'null'
+        ExpiresOn:
+          type: string
+          format: date-time
+        Status:
+          type:
+          - string
+          - 'null'
+        IsCancelled:
+          type: boolean
+        CaseId:
+          type:
+          - string
+          - 'null'
+        Notes:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    AccessDurationListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccessDuration'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    GrantLoginCreateRequest:
+      type: object
+      properties:
+        UserId:
+          type:
+          - string
+          - 'null'
+          description: Id of the user for which grant login access is requested for.
+        AccessDuration:
+          type: integer
+          description: Duration of the days for which the grant login is requested for.
+          format: int32
+        CaseId:
+          type:
+          - string
+          - 'null'
+          description: Case Id of the Grant Login Request.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Notes for additional info on grant login access.
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

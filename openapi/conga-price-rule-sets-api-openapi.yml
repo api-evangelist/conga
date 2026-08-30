@@ -1,0 +1,416 @@
+openapi: 3.2.0
+info:
+  title: Administration Price Rule Sets API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Price Rule Sets
+paths:
+  /rule-sets:
+    delete:
+      tags:
+      - Price Rule Sets
+      summary: Delete price rule sets
+      description: 'Deletes one or more price rule sets. It can delete a maximum of 100 price rule sets. When you delete a price rule set, CPQ deletes its related price rules and price rules entries.
+
+
+
+        When executed, this API returns one or more records with the delete status of each associated record ID.'
+      requestBody:
+        description: The list of price rule sets to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Rule Sets
+      summary: Retrieve price rule sets
+      description: 'Retrieves all price rule sets, with their details. Use query parameters to further narrow down the retrieved results.
+
+
+
+        When executed, this API returns all price rule sets.'
+      parameters:
+      - name: filter
+        in: query
+        description: Optional filter parameters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Optional sort parameter
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Rule Sets
+      summary: Update price rule sets
+      description: 'Updates specific fields on one or more price rule sets. It can update any fields except price rule set ID.
+
+
+
+        When executed, this API returns the updated price rule set or price rule sets.'
+      requestBody:
+        description: The list of price rule sets with updated data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: Name of the record
+              IsActive: true
+              Category: All
+              ChargeType: Standard Price
+              Description: Description for the record
+              EnableCurrency: false
+              EnableDateRange: false
+              ExpandByDefault: true
+              Sequence: 1
+              StopProcessingMoreRules: false
+              Type: Standard
+              UseType: Line Item
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Price Rule Sets
+      summary: Create price rule sets
+      description: 'Creates one or more price rule sets.
+
+
+
+        When executed, this API returns a unique price rule set ID (string) that CPQ automatically generates.'
+      requestBody:
+        description: The list of price rule sets to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRuleset'
+      responses:
+        '200':
+          description: OK
+  /rule-sets/{Id}:
+    delete:
+      tags:
+      - Price Rule Sets
+      summary: Delete a price rule set
+      description: Deletes a single price rule set by its identifier.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price rule set to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Rule Sets
+      summary: Retrieve a price rule set
+      description: Retrieves a single price rule set by its identifier.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price rule set
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Rule Sets
+      summary: Update a price rule set
+      description: Updates a single price rule set.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price rule set to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated data of the price rule set
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: Name of the record
+              IsActive: true
+              Category: All
+              ChargeType: Standard Price
+              Description: Description for the record
+              EnableCurrency: false
+              EnableDateRange: false
+              ExpandByDefault: true
+              Sequence: 1
+              StopProcessingMoreRules: false
+              Type: Standard
+              UseType: Line Item
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    PriceRuleset:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        ApplicationMethod:
+          type:
+          - string
+          - 'null'
+        Category:
+          type:
+          - string
+          - 'null'
+        ChargeType:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EnableCurrency:
+          type:
+          - boolean
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        EnableDateRange:
+          type:
+          - boolean
+          - 'null'
+        ExclusionCriteria:
+          type:
+          - string
+          - 'null'
+        ExpandByDefault:
+          type:
+          - boolean
+          - 'null'
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        HasCriteria:
+          type:
+          - boolean
+          - 'null'
+        Incentive:
+          $ref: '#/components/schemas/LookupObject'
+        PriceList:
+          $ref: '#/components/schemas/LookupObject'
+        ProductCategory:
+          type:
+          - string
+          - 'null'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+        ProductGroup:
+          $ref: '#/components/schemas/LookupObject'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        StopProcessingMoreRules:
+          type:
+          - boolean
+          - 'null'
+        Type:
+          type:
+          - string
+          - 'null'
+        UseType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+      example:
+        Name: Name of the record
+        IsActive: true
+        Category: All
+        ChargeType: Standard Price
+        Description: Description for the record
+        EnableCurrency: false
+        EnableDateRange: false
+        ExpandByDefault: true
+        Sequence: 1
+        StopProcessingMoreRules: false
+        Type: Standard
+        UseType: Line Item
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

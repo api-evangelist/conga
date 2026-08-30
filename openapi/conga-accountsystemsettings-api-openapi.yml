@@ -1,0 +1,254 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Account System Settings API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: AccountSystemSettings
+paths:
+  /v1/cs-account/admin/accountSettings/systemSettings:
+    delete:
+      tags:
+      - AccountSystemSettings
+      summary: Deletes and resets any customized system settings.
+      description: "Deletes any system settings that you may have changed. Your system settings \nwill be returned to their default values."
+      operationId: AccountSystemSettings_DeleteAccountSystemSettings
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - AccountSystemSettings
+      summary: Retrieves your current system settings.
+      description: "Retrieves your system settings. These settings control system-level configurations \nsuch as session timeouts, transaction lifetimes, and authentication settings."
+      operationId: AccountSystemSettings_GetAccountSystemSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSystemSettings'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - AccountSystemSettings
+      summary: Update your system settings with new settings.
+      description: "Updates your account system settings with any or all changes. This call can be used to \nimplement either some of the settings that you wish to change, or to implement all of your changes."
+      operationId: AccountSystemSettings_UpdateAccountSystemSettings
+      requestBody:
+        x-name: accountSystemSettings
+        description: The system settings to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountSystemSettings'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    AccountSystemSettings:
+      type: object
+      description: 'This class contains properties for Account System Settings.
+
+        Controls system-level configurations for the account.'
+      additionalProperties: false
+      properties:
+        senderLoginMaxFailedAttempts:
+          type:
+          - integer
+          - 'null'
+          description: 'Maximum number of failed login attempts allowed before sender account is locked.
+
+            Default value is typically 10.'
+          format: int32
+        loginSessionTimeout:
+          type:
+          - integer
+          - 'null'
+          description: 'Login session timeout duration in milliseconds.
+
+            Default value is 1800000 ms (30 minutes).
+
+            After this period of inactivity, the user will be automatically logged out.'
+          format: int32
+        sessionTimeoutWarning:
+          type:
+          - integer
+          - 'null'
+          description: 'Session timeout warning duration in milliseconds.
+
+            Default value is 300000 ms (5 minutes).
+
+            This determines when to show a warning before the session expires.'
+          format: int32
+        orderLastNameFirstName:
+          type:
+          - boolean
+          - 'null'
+          description: 'Determines the order of name display.
+
+            If true, displays last name before first name (e.g., "Smith, John").
+
+            If false, displays first name before last name (e.g., "John Smith").
+
+            Default value is false.'
+        urlTokenExpiryDays:
+          type:
+          - integer
+          - 'null'
+          description: 'Number of days before URL tokens expire.
+
+            Default value is 3 days.
+
+            URL tokens are used for accessing signing ceremonies and other actions via link.'
+          format: int32
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

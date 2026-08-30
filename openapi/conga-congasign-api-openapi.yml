@@ -1,0 +1,483 @@
+openapi: 3.2.0
+info:
+  title: eSignature Conga Sign API
+  version: v1
+  description: Send transaction using Conga Sign
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: CongaSign
+  description: Send transaction using Conga Sign
+paths:
+  /api/esign/v1/congasign/send:
+    post:
+      tags:
+      - CongaSign
+      summary: Create and send a transaction
+      description: "Creates a package for Conga Sign\n            You can use the package ID to get such transaction details as envelope status, signed date, and declined reason. \n            You can use the tag URL to open the document inside the Conga Sign console, add signature tags and additional fields, and send the document to Conga Sign."
+      requestBody:
+        description: Envelope data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CongaSignRequest'
+            examples:
+              CongaSign:
+                value:
+                  Name: Conga Sign Transaction
+                  Description: Sample Description
+                  Message: Sample Message
+                  TransactionType: ESIGNING
+                  Settings:
+                    SigningOrder: SEQUENTIAL
+                    SignedDocumentDeliveryOptions: DESIGNER_PAGE
+                    Language: EnglishUS
+                    TimezoneId: GMT
+                    Reminder:
+                      IntervalInDays: 2
+                      RepetitionsCount: 3
+                      StartInDaysDelay: 1
+                    ExpireDate: '2026-09-13T00:04:52.3383702Z'
+                  Recipients:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Title: Mr.
+                    Company: Conga
+                    MobileNumber: '1234567890'
+                    AcceptOnly: false
+                    Authentication: NONE
+                    Message: Sample Message
+                  Sender:
+                    Email: test@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Title: null
+                    Company: null
+                  DocumentIds:
+                  - 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  TemplateId: null
+                  MergeFields:
+                  - Name: Field1
+                    Value: Value1
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CongaSignResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageId: T-B_kYRfOlQNSK3fv7jlNPuXF_w=
+                  TagUrl: https://coreapps.rlsprod.congacloud.com/sign/?packageId=T-B_kYRfOlQNSK3fv7jlNPuXF_w=&signerId=5b26e628-cdc3-458e-a8c9-88d53fb9e3c5&senderDesignerToken=5b26e628-cdc3-458e-a8c9-88d53fb9e3c5
+                  EsignTransactionId: 5b26e628-cdc3-458e-a8c9-88d53fb9e3c5
+                  Status: false
+                  SigningUrl: null
+                  Errors: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    CongaSignSender:
+      type: object
+      properties:
+        Email:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Company:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CongaSignRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+        TransactionType:
+          $ref: '#/components/schemas/TransactionType'
+        Settings:
+          $ref: '#/components/schemas/CongaSignSettings'
+        Recipients:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CongaSignRecipient'
+        Sender:
+          $ref: '#/components/schemas/CongaSignSender'
+        DocumentIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        TemplateId:
+          type:
+          - string
+          - 'null'
+        MergeFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CongaSignMergeField'
+      additionalProperties: false
+    CongaSignResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/CongaSignResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SigningOrder:
+      enum:
+      - PARALLEL
+      - SEQUENTIAL
+      type: string
+    CongaSignRecipient:
+      type: object
+      properties:
+        Email:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Company:
+          type:
+          - string
+          - 'null'
+        MobileNumber:
+          type:
+          - string
+          - 'null'
+        AcceptOnly:
+          type: boolean
+        Authentication:
+          $ref: '#/components/schemas/AuthenticationType'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SignedDocumentDeliveryOptions:
+      enum:
+      - DESIGNER_PAGE
+      - DIRECT
+      - SIGNING_PAGE
+      type: string
+    AuthenticationType:
+      enum:
+      - NONE
+      - SMS
+      type: string
+    CongaSignResponse:
+      type: object
+      properties:
+        PackageId:
+          type:
+          - string
+          - 'null'
+        TagUrl:
+          type:
+          - string
+          - 'null'
+        EsignTransactionId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type: boolean
+        SigningUrl:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    TransactionType:
+      enum:
+      - ESIGNING
+      - INPERSON_ESIGNING
+      - INPERSON_ELECTRONIC_NOTARIZATION
+      type: string
+    TimezoneId:
+      enum:
+      - Etc_GMT_Plus_12
+      - Pacific_Samoa
+      - US_Samoa
+      - HST
+      - Pacific_Honolulu
+      - Pacific_Marquesas
+      - Pacific_Gambier
+      - US_Alaska
+      - America_Los_Angeles
+      - America_Tijuana
+      - Canada_Pacific
+      - PST
+      - America_Vancouver
+      - America_Denver
+      - Canada_Mountain
+      - America_Phoenix
+      - CST
+      - Canada_Central
+      - US_Central
+      - America_Regina
+      - America_Chicago
+      - Canada_Saskatchewan
+      - America_Bogota
+      - America_Toronto
+      - EST
+      - US_Eastern
+      - America_Detroit
+      - America_Jamaica
+      - America_Montreal
+      - America_Panama
+      - America_Caracas
+      - America_Puerto_Rico
+      - Canada_Atlantic
+      - America_Antigua
+      - America_Barbados
+      - America_Santiago
+      - America_St_Johns
+      - CNT
+      - Canada_Newfoundland
+      - America_Argentina_Buenos_Aires
+      - Brazil_East
+      - Atlantic_South_Georgia
+      - Brazil_DeNoronha
+      - Atlantic_Azores
+      - Atlantic_Cape_Verde
+      - Africa_Casablanca
+      - GMT
+      - Etc_Greenwich
+      - Europe_London
+      - Iceland
+      - Africa_Lagos
+      - CET
+      - Europe_Paris
+      - Europe_Zurich
+      - Europe_Amsterdam
+      - Europe_Madrid
+      - Europe_Copenhagen
+      - Europe_Prague
+      - Europe_Rome
+      - Europe_Stockholm
+      - Europe_Warsaw
+      - ART
+      - Africa_Cairo
+      - Asia_Istanbul
+      - Europe_Helsinki
+      - Africa_Addis_Ababa
+      - Africa_Nairobi
+      - Asia_Tehran
+      - Asia_Dubai
+      - Europe_Moscow
+      - NET
+      - Asia_Kabul
+      - Asia_Karachi
+      - Asia_Kolkata
+      - IST
+      - Asia_Katmandu
+      - Asia_Dhaka
+      - Asia_Rangoon
+      - Asia_Bangkok
+      - Asia_Jakarta
+      - VST
+      - Asia_Hong_Kong
+      - Australia_Perth
+      - CTT
+      - Australia_Eucla
+      - Asia_Seoul
+      - Asia_Tokyo
+      - JST
+      - ACT
+      - Australia_Adelaide
+      - Australia_Darwin
+      - AET
+      - Australia_Brisbane
+      - Australia_Sydney
+      - Pacific_Kiritimati
+      type: string
+    CongaSignReminder:
+      type: object
+      properties:
+        IntervalInDays:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        RepetitionsCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        StartInDaysDelay:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: false
+    Language:
+      enum:
+      - EnglishUS
+      - Danish
+      - German
+      - EnglishUK
+      - SpanishLatinAmerica
+      - SpanishSpain
+      - French
+      - Italian
+      - Dutch
+      - Norwegian
+      - Polish
+      - Portuguese
+      - Romanian
+      - Bulgarian
+      - Russian
+      - ChineseSimplified
+      - ChineseTraditional
+      - Japanese
+      - Korean
+      - Greek
+      - Arabic
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CongaSignMergeField:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CongaSignSettings:
+      type: object
+      properties:
+        SigningOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        SignedDocumentDeliveryOptions:
+          $ref: '#/components/schemas/SignedDocumentDeliveryOptions'
+        Language:
+          $ref: '#/components/schemas/Language'
+        TimezoneId:
+          $ref: '#/components/schemas/TimezoneId'
+        Reminder:
+          $ref: '#/components/schemas/CongaSignReminder'
+        ExpireDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

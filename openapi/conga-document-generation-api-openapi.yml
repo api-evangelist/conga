@@ -1,0 +1,659 @@
+openapi: 3.2.0
+info:
+  title: Contracts Document Generation API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Document Generation
+paths:
+  /api/clm/v1/contracts/{contractId}/generate:
+    post:
+      tags:
+      - Document Generation
+      summary: Generate a document
+      description: 'Generates a new contract document using an existing template. Templates can be created using X-Author for Contracts.
+
+
+        On generating a new document, the contract status changes to "Author Contract".'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Options to generate the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocGenAttributes'
+      responses:
+        '200':
+          description: Returns details of the generated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentGenerationResultAPIResponse'
+        '400':
+          description: Value is invalid or the required value is not provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/joindocuments:
+    post:
+      tags:
+      - Document Generation
+      summary: Join documents
+      description: Merges multiple documents into a single document based on the provided document IDs. All documents to be joined must be associated with the same contract.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Join action on the selected documents with options for output document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentJoinRequest'
+      responses:
+        '200':
+          description: Returns the ID of the joined document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentJoinResponseAPIResponse'
+        '400':
+          description: Required values are missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/previewdocument:
+    post:
+      tags:
+      - Document Generation
+      summary: Preview a document
+      description: Generate a preview contract document from an existing template. Templates can be created using X-Author for Contracts.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Options to generate the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentPreviewRequest'
+            example:
+              TemplateId: fedff292-3b93-42eb-b6b4-66e6d5c44b3e
+              OutputFormat: DOCX
+              ProtectionLevel: AllowOnlyReading
+              IncludeWatermark: false
+      responses:
+        '200':
+          description: Returns the preview document's ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentPreviewResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  DocumentVersionId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  Status: true
+                  Message: Document Generated Successfully
+                  DocumentId: d945a9da-90f0-4313-8124-81b301ecb771
+                  DocumentParentId: 7cc0017e-5319-4517-8ea4-3ff6b4470ace
+                  Document: null
+                  DocumentExtension: docx
+                Warnings: null
+                Errors: null
+        '400':
+          description: Required values are missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/regenerate:
+    post:
+      tags:
+      - Document Generation
+      summary: Regenerate a document
+      description: 'Regenerates a contract document using an existing template. Templates can be created using X-Author for Contracts.
+
+
+        The contract status does not change.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Options to regenerate a document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocGenAttributes'
+      responses:
+        '200':
+          description: Returns details of the regenerated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentGenerationResultAPIResponse'
+        '400':
+          description: Required values are absent or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/supportingdocument:
+    post:
+      tags:
+      - Document Generation
+      summary: Generate a supporting document
+      description: 'Generates a new supporting document using an existing template. Templates can be created using X-Author for Contracts.
+
+
+        The contract status does not change.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Options to generate the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocGenAttributes'
+      responses:
+        '200':
+          description: Returns details of generated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentGenerationResultAPIResponse'
+        '400':
+          description: Required value is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    HeaderFooter:
+      type: object
+      properties:
+        HeaderText:
+          type:
+          - string
+          - 'null'
+          description: Custom header text to show in output document if retain header footer is set to false
+        FooterText:
+          type:
+          - string
+          - 'null'
+          description: Custom Footer text to show in output document if retain header footer is set to false
+        RetainHeaderFooter:
+          type: boolean
+          description: Retain value of header and footer from parent document in output document
+      additionalProperties: false
+      description: Header and Footer Document Generation
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    DocumentJoinRequest:
+      required:
+      - DocumentIds
+      type: object
+      properties:
+        DocumentIds:
+          type: array
+          items:
+            type: string
+          description: Documents ids of documents to be join
+        DocumentOutputOptions:
+          $ref: '#/components/schemas/OutputOptions'
+      additionalProperties: false
+      description: Request model for join documents
+    DocumentJoinResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentJoinResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    OutputOptions:
+      required:
+      - FileName
+      type: object
+      properties:
+        FileName:
+          minLength: 1
+          type: string
+          description: Join Document Name
+        ConvertToPDF:
+          type: boolean
+          description: Output document format is PDF if true and is DOCX if false/default
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        HeaderFooter:
+          $ref: '#/components/schemas/HeaderFooter'
+        DocumentType:
+          type:
+          - string
+          - 'null'
+          description: Document type selected by user for output document like Contract, Supporting, Other
+        IncludeWatermark:
+          type: boolean
+          description: Include watermark in output Document true or false
+        WatermarkText:
+          type:
+          - string
+          - 'null'
+          description: Watermark text to show in output document if value of Include Watermark is true
+      additionalProperties: false
+      description: Output options for generated documents
+    DocumentJoinResponse:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Document Join success/failure message
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: Output Document Id
+        DocumentParentId:
+          type:
+          - string
+          - 'null'
+          description: Output Document parent Id
+        DocumentExtension:
+          type:
+          - string
+          - 'null'
+          description: Output document extension
+        Status:
+          type: boolean
+          description: Success status of DocGen service
+      additionalProperties: false
+      description: Response from Document Join
+    DocumentPreviewResponse:
+      type: object
+      properties:
+        DocumentVersionId:
+          type:
+          - string
+          - 'null'
+          description: Document version ID
+        Status:
+          type: boolean
+          description: Status of the document
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Message for document preview
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: ID of the document
+        DocumentParentId:
+          type:
+          - string
+          - 'null'
+          description: ID of the document\u0027s parent document (if any)
+        Document:
+          type:
+          - string
+          - 'null'
+          description: Actual document as blob (byte array)
+          format: byte
+        DocumentExtension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the document (e.g., DOCX, PDF)
+      additionalProperties: false
+      description: Response Model for Document Preview
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
+    DocumentGenerationResult:
+      type: object
+      properties:
+        DocumentVersionId:
+          type:
+          - string
+          - 'null'
+          description: Id for Document Version
+        Status:
+          type: boolean
+          description: Status for Document Generation process
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Message for Document Generation result
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: Document Id generated as part of process
+        DocumentParentId:
+          type:
+          - string
+          - 'null'
+          description: Id of parent document associated with newly generated document
+        Document:
+          type:
+          - string
+          - 'null'
+          description: Actual Document as Blob (byte array)
+          format: byte
+        DocumentExtension:
+          type:
+          - string
+          - 'null'
+          description: Document extension i.e. DOCX, PDF
+      additionalProperties: false
+      description: Response of Document Generation
+    DocGenAttributes:
+      required:
+      - TemplateId
+      type: object
+      properties:
+        TemplateId:
+          minLength: 1
+          type: string
+          description: Template Id
+        IncludeWatermark:
+          type: boolean
+          description: Include Watermark or not
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: Output format. i.e. DOCX, PDF, PDF/A
+        WatermarkText:
+          type:
+          - string
+          - 'null'
+          description: Set WatermarkText
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+      description: Document Generation model
+    DocumentPreviewRequest:
+      required:
+      - TemplateId
+      type: object
+      properties:
+        TemplateId:
+          minLength: 1
+          type: string
+          description: Template Id
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: Output format. i.e. DOCX, PDF, PDF/A
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        IncludeWatermark:
+          type: boolean
+          description: Include Watermark or not
+      additionalProperties: false
+      description: Request Model for Preview Documents
+    DocumentGenerationResultAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentGenerationResult'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    DocumentPreviewResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentPreviewResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,2287 @@
+openapi: 3.2.0
+info:
+  title: Catalog Services API
+  version: 1.0.0
+  description: Catalog APIs to search service products
+servers:
+- url: https://rls.congacloud.com/api/catalog/v1
+security:
+- Bearer: []
+tags:
+- name: Services
+  description: Catalog APIs to search service products
+paths:
+  /services:
+    post:
+      tags:
+      - Services
+      summary: List service products
+      description: "Retrieves details of active service products associated with the provided price list ID. The API only retrieves active products with an active price list and price list item. The API also applies visibility rules and only retrieves relevant products. \n<p>The API searches, sorts, filters, and applies pagination on the retrieved result.</p><p>For example, retrieve a list of products where the product name is \"Product A\", sort the result by product name.</p><p>The API returns the list of products in a price list and details of the following fields, among others.</p><ul><li>Product Name</li><li>Product Code</li><li>Product Description</li><li>Product Family</li><li>Product Type</li><li>Configuration Type</li><li>Has Attributes</li><li>Configuration Type</li><li>Option products (if provided product is a bundle) including the default bundle options</li><li>The image associated with the product</li><li>List Price</li><li>Charge Type</li></ul>"
+      parameters:
+      - name: pricelistid
+        in: header
+        description: Enter the price list ID to retrieve the products associated with it. If an inactive price list ID is entered, the API displays a validation error.
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Contains conditional filter or filters in standard URI format to narrow the search result. For example, "eq(Product Family = 'Hardware')".
+        schema:
+          type: array
+          items:
+            type: string
+      - name: query
+        in: query
+        description: Keyword used to narrow search results. The API can match 20 characters at most. If the input string exceeds 20 characters, the API retrieves products where the product name matches the first 20 characters of search string. If the parameter is left blank, all relevant products after the filter is executed are retrieved.
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Contains a list of objects associated with the product for inclusion in the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Contains the fields and sort order for the result. Adding fields refines the result further. The default sort order is ascending by relevance.
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number of the search result to view the result from.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Contains the number of records to display on each page. The API displays 50 records per page by default. A maximum of 500 records is displayed on each page.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: cartId
+        in: header
+        description: Unique identifier of the cart
+        schema:
+          type: string
+          default: ''
+      - name: productSortEmptyFirst
+        in: query
+        description: Flag to place products with null values in the sorting field at first or last in the list.
+        schema:
+          type: boolean
+          default: false
+      - name: disableCurrencyConversion
+        in: query
+        description: Flag to enable/disable currency conversion of price list items
+        schema:
+          type: boolean
+          default: false
+      - name: configName
+        in: query
+        description: Product search response field list
+        schema:
+          type: string
+          default: ResponseFieldList_Default
+      requestBody:
+        description: Input needed to list the service products.
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.Revenue.Catalog.API.Models.CatalogError'
+components:
+  schemas:
+    Conga.Revenue.Entities.PriceList:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        accountId:
+          type:
+          - string
+          - 'null'
+        basedOnAdjustmentAmount:
+          type:
+          - number
+          - 'null'
+          format: double
+        basedOnAdjustmentType:
+          type:
+          - string
+          - 'null'
+        basedOnPriceList:
+          type:
+          - string
+          - 'null'
+        basedOnPriceListId:
+          type:
+          - string
+          - 'null'
+        contractNumber:
+          type:
+          - string
+          - 'null'
+        costModel:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        disableCurrencyAdjustment:
+          type: boolean
+        isActive:
+          type: boolean
+        effectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        type:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductFeature:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        featureSetId:
+          type:
+          - string
+          - 'null'
+        includedFeatures:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        featureSet:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.FeatureSet'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductOptionGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        contentType:
+          type:
+          - string
+          - 'null'
+        detailPage:
+          type:
+          - string
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isGlobal:
+          type:
+          - boolean
+          - 'null'
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isModifiable:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type:
+          - boolean
+          - 'null'
+        level:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        maxOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        maxTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        minTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        modifiableType:
+          type:
+          - string
+          - 'null'
+        optionGroupId:
+          type:
+          - string
+          - 'null'
+        parentOptionGroupId:
+          type:
+          - string
+          - 'null'
+        productAttributeGroupId:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        rootOptionGroupId:
+          type:
+          - string
+          - 'null'
+        rootSequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        type:
+          type:
+          - string
+          - 'null'
+        productOptionComponents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionComponent'
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        parentOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+        productAttributeGroupMember:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroupMember'
+        rootOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+        optionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductFeatureValue:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        featureId:
+          type:
+          - string
+          - 'null'
+        isIncluded:
+          type: boolean
+        productId:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        feature:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Feature'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Platform.PickListValueItem:
+      type: object
+      properties:
+        key:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: false
+    Conga.Revenue.Entities.RelatedPriceListItem:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        priceListItemId:
+          type:
+          - string
+          - 'null'
+        relatedAdjustmentAmount:
+          type:
+          - number
+          - 'null'
+          format: double
+        relatedAdjustmentType:
+          type:
+          - string
+          - 'null'
+        relatedChargeType:
+          type:
+          - string
+          - 'null'
+        relatedCustomGroup:
+          type:
+          - string
+          - 'null'
+        relatedCustomField:
+          type:
+          - string
+          - 'null'
+        relatedItem:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.PriceListItem'
+        relatedPriceListItemId:
+          type:
+          - string
+          - 'null'
+        relatedProductId:
+          type:
+          - string
+          - 'null'
+        relatedProductFamily:
+          type:
+          - string
+          - 'null'
+        relatedProductGroupId:
+          type:
+          - string
+          - 'null'
+        relationType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Catalog.API.Models.CatalogError:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Error code
+          format: int32
+        message:
+          type:
+          - string
+          - 'null'
+          description: Error Message
+        timestamp:
+          type: string
+          description: Time when the error occurred
+          format: date-time
+        additionalDetails:
+          description: Additional details about the error
+      additionalProperties: false
+      description: Error object returned by the Catalog APIs
+    Conga.Revenue.Entities.ProductGroupMember:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        productGroupId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        productGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductGroup'
+      additionalProperties: {}
+    Conga.Revenue.Entities.AttributeGroupMember:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attribute:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Attribute'
+        attributeGroupId:
+          type:
+          - string
+          - 'null'
+        attributeId:
+          type:
+          - string
+          - 'null'
+        cascadeSharedAttributeStatus:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        cascadeSharedAttributeUpdates:
+          type:
+          - string
+          - 'null'
+        displayType:
+          type:
+          - string
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isPrimary:
+          type:
+          - boolean
+          - 'null'
+        isReadOnly:
+          type:
+          - boolean
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductOptionComponent:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        allowCloning:
+          type: boolean
+        autoUpdateQuantity:
+          type: boolean
+        componentProductId:
+          type:
+          - string
+          - 'null'
+        configType:
+          type:
+          - string
+          - 'null'
+        defaultQuantityExpression:
+          type:
+          - string
+          - 'null'
+        defaultQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        inclusionCriteria:
+          type:
+          - string
+          - 'null'
+        isDefault:
+          type: boolean
+        isModifiable:
+          type: boolean
+        isRequired:
+          type: boolean
+        maxQuantityExpression:
+          type:
+          - string
+          - 'null'
+        maxQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minQuantityExpression:
+          type:
+          - string
+          - 'null'
+        minQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        parentProductId:
+          type:
+          - string
+          - 'null'
+        productOptionGroupId:
+          type:
+          - string
+          - 'null'
+        relationshipType:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        componentProductName:
+          type:
+          - string
+          - 'null'
+        componentProduct:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        parentProduct:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        productOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup'
+      additionalProperties: {}
+    Conga.Revenue.Entities.OptionGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        ancestorId:
+          type:
+          - string
+          - 'null'
+        ancestorPath:
+          type:
+          - string
+          - 'null'
+        defaultSearchOptionGroup:
+          type:
+          - boolean
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        expandedByDefault:
+          type:
+          - boolean
+          - 'null'
+        guidePage:
+          type:
+          - string
+          - 'null'
+        hideAllSearchFilters:
+          type:
+          - boolean
+          - 'null'
+        hierarchyId:
+          type:
+          - string
+          - 'null'
+        imageURL:
+          type:
+          - string
+          - 'null'
+        includeInTotalsView:
+          type:
+          - boolean
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isModifiable:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type:
+          - boolean
+          - 'null'
+        label:
+          type:
+          - string
+          - 'null'
+        largeImageURL:
+          type:
+          - string
+          - 'null'
+        longDescription:
+          type:
+          - string
+          - 'null'
+        maxOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        minOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        modifiableType:
+          type:
+          - string
+          - 'null'
+        searchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        type:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.FeatureSet:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.Attribute:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        defaultValue:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        isRequired:
+          type:
+          - boolean
+          - 'null'
+        lookupObjectName:
+          type:
+          - string
+          - 'null'
+        pickListValue:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.PickListValueItem'
+        type:
+          type:
+          - string
+          - 'null'
+        helpText:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        scale:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.PriceListItem:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        allocateGroupAdjustment:
+          type:
+          - boolean
+          - 'null'
+        allowManualAdjustment:
+          type:
+          - boolean
+          - 'null'
+        allowPriceRampOverlap:
+          type:
+          - boolean
+          - 'null'
+        allowProration:
+          type:
+          - boolean
+          - 'null'
+        autoCascadeQuantity:
+          type:
+          - boolean
+          - 'null'
+        autoCascadeSellingTerm:
+          type:
+          - boolean
+          - 'null'
+        autoRenew:
+          type:
+          - boolean
+          - 'null'
+        autoRenewalTerm:
+          type:
+          - number
+          - 'null'
+          format: double
+        autoRenewalType:
+          type:
+          - string
+          - 'null'
+        autoUpdateQuantity:
+          type:
+          - boolean
+          - 'null'
+        billingFrequency:
+          type:
+          - string
+          - 'null'
+        billingRule:
+          type:
+          - string
+          - 'null'
+        chargeType:
+          type:
+          - string
+          - 'null'
+        contractItemNumber:
+          type:
+          - string
+          - 'null'
+        contractNumber:
+          type:
+          - string
+          - 'null'
+        contractPrice:
+          type:
+          - number
+          - 'null'
+          format: double
+        cost:
+          type:
+          - number
+          - 'null'
+          format: double
+        criteria:
+          type:
+          - string
+          - 'null'
+        defaultPriceDatasource:
+          type:
+          - string
+          - 'null'
+        defaultPriceFrom:
+          type:
+          - string
+          - 'null'
+        defaultQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        defaultQuantityDatasource:
+          type:
+          - string
+          - 'null'
+        defaultQuantityFrom:
+          type:
+          - string
+          - 'null'
+        defaultSellingTerm:
+          type:
+          - number
+          - 'null'
+          format: double
+        description:
+          type:
+          - string
+          - 'null'
+        disableAssetIntegration:
+          type:
+          - boolean
+          - 'null'
+        disableCostModel:
+          type:
+          - boolean
+          - 'null'
+        disableSyncWithOpportunity:
+          type:
+          - boolean
+          - 'null'
+        effectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        enableAutoRampCreation:
+          type:
+          - boolean
+          - 'null'
+        enableCommitment:
+          type:
+          - boolean
+          - 'null'
+        enableRampCreation:
+          type:
+          - boolean
+          - 'null'
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        frequency:
+          type:
+          - string
+          - 'null'
+        hasCriteria:
+          type:
+          - boolean
+          - 'null'
+        isActive:
+          type:
+          - boolean
+          - 'null'
+        isProductActive:
+          type:
+          - boolean
+          - 'null'
+        isTaxable:
+          type:
+          - boolean
+          - 'null'
+        isTaxInclusive:
+          type:
+          - boolean
+          - 'null'
+        isQuantityReadOnly:
+          type:
+          - boolean
+          - 'null'
+        isSellingTermReadOnly:
+          type:
+          - boolean
+          - 'null'
+        isUsageTierModifiable:
+          type:
+          - boolean
+          - 'null'
+        listPrice:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxPrice:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxUsageQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minMaxPriceAppliesTo:
+          type:
+          - string
+          - 'null'
+        minPrice:
+          type:
+          - number
+          - 'null'
+          format: double
+        minUsageQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        priceIncludedInBundle:
+          type:
+          - boolean
+          - 'null'
+        priceListId:
+          type:
+          - string
+          - 'null'
+        priceMethod:
+          type:
+          - string
+          - 'null'
+        priceType:
+          type:
+          - string
+          - 'null'
+        priceUom:
+          type:
+          - string
+          - 'null'
+        productCode:
+          type:
+          - string
+          - 'null'
+        productDescription:
+          type:
+          - string
+          - 'null'
+        productFamily:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        productName:
+          type:
+          - string
+          - 'null'
+        rollupPriceToBundle:
+          type:
+          - boolean
+          - 'null'
+        relatedAdjustmentAmount:
+          type:
+          - number
+          - 'null'
+          format: double
+        relatedAdjustmentAppliesTo:
+          type:
+          - string
+          - 'null'
+        relatedAdjustmentType:
+          type:
+          - string
+          - 'null'
+        relatedAdjustmentAmountSourceId:
+          type:
+          - string
+          - 'null'
+        relatedItem:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.PriceListItem'
+        relatedPercent:
+          type:
+          - number
+          - 'null'
+          format: double
+        relatedPercentAppliesTo:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        sellingUomId:
+          type:
+          - string
+          - 'null'
+        subType:
+          type:
+          - string
+          - 'null'
+        relatedPriceListItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.RelatedPriceListItem'
+        relatedItemId:
+          type:
+          - string
+          - 'null'
+        taxable:
+          type:
+          - boolean
+          - 'null'
+        taxCodeId:
+          type:
+          - string
+          - 'null'
+        taxInclusive:
+          type:
+          - boolean
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        relatedAdjustmentSource:
+          type:
+          - string
+          - 'null'
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        priceList:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.PriceList'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Feature:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        featureSetId:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.BaseEntity:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductAttributeGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attributeGroupId:
+          type:
+          - string
+          - 'null'
+        fieldUpdateCriteriaIds:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        attributeGroupTranslationes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroupTranslation'
+        attributeGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroup'
+      additionalProperties: {}
+    Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput:
+      type: object
+      properties:
+        isPointOfSale:
+          type: boolean
+        lineItems:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+      additionalProperties: false
+    Conga.Revenue.Entities.ProductTranslation:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        family:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        productCode:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        translationName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.AttributeGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attributeMatrixId:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        threeColumnAttributeDisplay:
+          type:
+          - boolean
+          - 'null'
+        twoColumnAttributeDisplay:
+          type:
+          - boolean
+          - 'null'
+        attributeGroupMembers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroupMember'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Category:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        ancestorId:
+          type:
+          - string
+          - 'null'
+        ancestorPath:
+          type:
+          - string
+          - 'null'
+        hierarchyId:
+          type:
+          - string
+          - 'null'
+        defaultSearchCategory:
+          type: boolean
+        description:
+          type:
+          - string
+          - 'null'
+        expandedByDefault:
+          type: boolean
+        guidePage:
+          type:
+          - string
+          - 'null'
+        hideAllSearchFilters:
+          type: boolean
+        imageURL:
+          type:
+          - string
+          - 'null'
+        includeInTotalsView:
+          type: boolean
+        isHidden:
+          type: boolean
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type: boolean
+        label:
+          type:
+          - string
+          - 'null'
+        largeImageURL:
+          type:
+          - string
+          - 'null'
+        longDescription:
+          type:
+          - string
+          - 'null'
+        searchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        type:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductCategory:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        categoryId:
+          type:
+          - string
+          - 'null'
+        default:
+          type: boolean
+        defaultQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        modifiable:
+          type: boolean
+        maxQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        category:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Category'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductAttributeGroupMember:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attributeGroupId:
+          type:
+          - string
+          - 'null'
+        fieldUpdateCriteriaIds:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        productAttributeGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        groupType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductAttributeMatrixView:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        active:
+          type: boolean
+        attributeValueMatrixId:
+          type:
+          - string
+          - 'null'
+        columns:
+          type:
+          - string
+          - 'null'
+        hash:
+          type:
+          - string
+          - 'null'
+        keys:
+          type:
+          - string
+          - 'null'
+        productAttributeScope:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.AttributeGroupTranslation:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        attributeGroupTranslationName:
+          type:
+          - string
+          - 'null'
+        productAttributeGroupId:
+          type:
+          - string
+          - 'null'
+        productAttributeGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Product:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        configurationType:
+          type:
+          - string
+          - 'null'
+        customizable:
+          type:
+          - boolean
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        displayUrl:
+          type:
+          - string
+          - 'null'
+        effectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        excludeFromSitemap:
+          type: boolean
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        family:
+          type:
+          - string
+          - 'null'
+        hasAttributes:
+          type: boolean
+        hasDefaults:
+          type: boolean
+        hasOptions:
+          type: boolean
+        hasSearchAttributes:
+          type: boolean
+        imageURL:
+          type:
+          - string
+          - 'null'
+        isActive:
+          type: boolean
+        isCustomizable:
+          type: boolean
+        isTabViewEnabled:
+          type: boolean
+        disableExpandInCart:
+          type:
+          - boolean
+          - 'null'
+        allowVisualization:
+          type:
+          - boolean
+          - 'null'
+        productCode:
+          type:
+          - string
+          - 'null'
+        productType:
+          type:
+          - string
+          - 'null'
+        quantityUnitOfMeasure:
+          type:
+          - string
+          - 'null'
+        renewalLeadTime:
+          type:
+          - number
+          - 'null'
+          format: double
+        stockKeepingUnit:
+          type:
+          - string
+          - 'null'
+        uom:
+          type:
+          - string
+          - 'null'
+        version:
+          type:
+          - number
+          - 'null'
+          format: double
+        layout:
+          type:
+          - string
+          - 'null'
+        productCategories:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductCategory'
+        prices:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.PriceListItem'
+        productAttributeGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
+        productOptionGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup'
+        translations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductTranslation'
+        triggeringPrimaryLineNumbers:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        productAttributeMatrixViews:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeMatrixView'
+        productFeatureValues:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductFeatureValue'
+        productFeatures:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductFeature'
+        productGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductGroupMember'
+        productOptionGroupsForBundle:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup'
+        ruleActionId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

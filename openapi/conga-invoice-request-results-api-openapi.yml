@@ -1,0 +1,350 @@
+openapi: 3.2.0
+info:
+  title: Invoice Management Invoice Request Results API
+  version: 1.0.0
+  description: 'Controller for managing invoice request results.
+
+    Provides endpoints to retrieve invoice request result information.'
+servers:
+- url: https://rls.congacloud.com/api/invoicing/v1
+security:
+- Bearer: []
+tags:
+- name: Invoice Request Results
+  description: 'Controller for managing invoice request results.
+
+    Provides endpoints to retrieve invoice request result information.'
+paths:
+  /request-results/{id}:
+    get:
+      tags:
+      - Invoice Request Results
+      summary: Retrieves an invoice request result by its identifier.
+      parameters:
+      - name: id
+        in: path
+        description: The unique identifier of the invoice request result.
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional list of related entities to include in the response.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/InvoiceRequestResult'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceRequestResult'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceRequestResult'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /request-results/{id}/invoices:
+    get:
+      tags:
+      - Invoice Request Results
+      summary: Retrieves all invoices associated with a specific invoice request result.
+      parameters:
+      - name: id
+        in: path
+        description: The unique identifier of the invoice request result.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+components:
+  schemas:
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Invoice:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        InvoiceRequestResult:
+          $ref: '#/components/schemas/LookupObject'
+        BillTo:
+          $ref: '#/components/schemas/LookupObject'
+        BillToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ShipTo:
+          $ref: '#/components/schemas/LookupObject'
+        ShipToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        ApprovedStatus:
+          type:
+          - string
+          - 'null'
+        InvoiceDate:
+          type: string
+          format: date-time
+        DueDate:
+          type: string
+          format: date-time
+        DueIn:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        DuePastBy:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Currency:
+          type:
+          - string
+          - 'null'
+        TotalOneTimeFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalRecurringFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalEvergreenFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalUsageFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalAdjustments:
+          $ref: '#/components/schemas/CurrencyField'
+        SubTotal:
+          $ref: '#/components/schemas/CurrencyField'
+        Tax:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        InvoiceAutoNumber:
+          type:
+          - string
+          - 'null'
+        Key:
+          type:
+          - string
+          - 'null'
+        SoldTo:
+          $ref: '#/components/schemas/LookupObject'
+        SoldToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ErrorStatus:
+          type:
+          - string
+          - 'null'
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        InvoiceDocumentTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        InvoiceEmailTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        PaymentStatus:
+          type:
+          - string
+          - 'null'
+        TotalDueAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        RecordType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    InvoiceRequestResult:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        RequestName:
+          $ref: '#/components/schemas/LookupObject'
+        TotalAccountsInScope:
+          type: integer
+          format: int32
+        TotalOrdersInScope:
+          type: integer
+          format: int32
+        TotalBSRsInScope:
+          type: integer
+          format: int32
+        TotalInvoicesCreated:
+          type: integer
+          format: int32
+        TotalInvoicesAutoApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosCreated:
+          type: integer
+          format: int32
+        TotalCreditMemosApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosWithTaxProcessed:
+          type: integer
+          format: int32
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,529 @@
+openapi: 3.2.0
+info:
+  title: Administration Waterfall Rules API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Waterfall Rules
+paths:
+  /waterfall-rule-sets/{ParentId}/rules:
+    delete:
+      tags:
+      - Waterfall Rules
+      summary: Delete waterfall rules
+      description: Deletes one or more waterfall rules from a waterfall rule set. It can delete a maximum of 100 waterfall rules. When you delete a waterfall rule, CPQ deletes its related waterfall rule entries.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Waterfall Rules
+      summary: Retrieve waterfall rules
+      description: Retrieves all waterfall rules in a waterfall rule set, with their details. Use query parameters to further narrow down the retrieved results.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: An optional array of filters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: An optional sort criteria
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: An optional array of included fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Waterfall Rules
+      summary: Update waterfall rules
+      description: Updates specific fields on one or more waterfall rules. It can update any fields except waterfall rule ID.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of records to be updated
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: Name of the WaterFallRule
+              Sequence: 1
+              IsActive: true
+              AllowableAction: No Adjustments
+              PricePoints:
+              - List Price
+              - Base Price
+              AdjustmentAppliesTo: Previous
+              WaterfallRuleset:
+                Id: WaterFallRuleSet-Id
+                Name: WaterFallRuleSet-Name
+              RuleType: Dimension
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Waterfall Rules
+      summary: Create waterfall rules
+      description: Creates one or more waterfall rules for a specific waterfall rule set.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of waterfall rules to add to the collection
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WaterfallRule'
+      responses:
+        '200':
+          description: OK
+  /waterfall-rule-sets/{ParentId}/rules/{Id}:
+    delete:
+      tags:
+      - Waterfall Rules
+      summary: Delete a waterfall rule
+      description: Deletes a single waterfall rule document based on the identifier and parent waterfall ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the waterfall rule
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Waterfall Rules
+      summary: Retrieve a waterfall rule
+      description: Retrieves a single waterfall rule document based on the identifier and parent waterfall ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the waterfall rule
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Waterfall Rules
+      summary: Update a waterfall rule
+      description: Updates a single waterfall rule document based on the identifier and parent waterfall ruleset.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The identifier of the parent waterfall ruleset
+        required: true
+        schema:
+          type: string
+      - name: Id
+        in: path
+        description: The identifier of the waterfall rule
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated state of the waterfall rule
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: Name of the WaterFallRule
+              Sequence: 1
+              IsActive: true
+              AllowableAction: No Adjustments
+              PricePoints:
+              - List Price
+              - Base Price
+              AdjustmentAppliesTo: Previous
+              WaterfallRuleset:
+                Id: WaterFallRuleSet-Id
+                Name: WaterFallRuleSet-Name
+              RuleType: Dimension
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    WaterfallRule:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        AdjustmentAppliesTo:
+          type:
+          - string
+          - 'null'
+        AdjustmentChargeType:
+          type:
+          - string
+          - 'null'
+        AllowableAction:
+          type:
+          - string
+          - 'null'
+        AllowRemovalOfAdjustment:
+          type:
+          - boolean
+          - 'null'
+        ChargeTypeCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ChargeTypeCriteriaOper:
+          type:
+          - string
+          - 'null'
+        CountryCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        CountryCriteriaOper:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Dimension1:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension1ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension2:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension2ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension3:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension3ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension4:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension4ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension5:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension5ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension6:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension6ValueType:
+          type:
+          - string
+          - 'null'
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        PriceListCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        PriceListCriteriaOper:
+          type:
+          - string
+          - 'null'
+        PricePoints:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductCriteriaOper:
+          type:
+          - string
+          - 'null'
+        ProductFamilyCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductFamilyCriteriaOper:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductGroupCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ProductGroupCriteriaOper:
+          type:
+          - string
+          - 'null'
+        RegionCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        RegionCriteriaOper:
+          type:
+          - string
+          - 'null'
+        RuleSubType:
+          type:
+          - string
+          - 'null'
+        RuleType:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        StopProcessing:
+          type:
+          - boolean
+          - 'null'
+        WaterfallRuleset:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: {}
+      example:
+        Name: Name of the WaterFallRule
+        Sequence: 1
+        IsActive: true
+        AllowableAction: No Adjustments
+        PricePoints:
+        - List Price
+        - Base Price
+        AdjustmentAppliesTo: Previous
+        WaterfallRuleset:
+          Id: WaterFallRuleSet-Id
+          Name: WaterFallRuleSet-Name
+        RuleType: Dimension
+        Dimension1:
+          Id: Dimension1-Id
+          Name: Dimension1-Name
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

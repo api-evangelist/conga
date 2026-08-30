@@ -1,0 +1,898 @@
+openapi: 3.2.0
+info:
+  title: Billing Management Consumption Billing API
+  version: 1.0.0
+  description: 'Controller for CRUD operations on usage inputs, supporting rating, unrating,
+
+    and draft rating in synchronous and asynchronous modes.'
+servers:
+- url: https://rls.congacloud.com/api/billing/v1
+security:
+- Bearer: []
+tags:
+- name: Consumption Billing
+  description: 'Controller for CRUD operations on usage inputs, supporting rating, unrating,
+
+    and draft rating in synchronous and asynchronous modes.'
+paths:
+  /usage-inputs:
+    delete:
+      tags:
+      - Consumption Billing
+      summary: Deletes usage input records
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+    get:
+      tags:
+      - Consumption Billing
+      summary: List usage inputs records
+      description: Retrieves the collection of usage inputs records.
+      parameters:
+      - name: filter
+        in: query
+        description: Optional filter parameters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Optional sort parameter
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: fields
+        in: query
+        description: Optional name of the fields to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: Optional filter expression
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsageInputs'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsageInputs'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsageInputs'
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+    patch:
+      tags:
+      - Consumption Billing
+      summary: Updates usage input records
+      description: Updates multiple usage inputs records and returns the updated record IDs.
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Id\": \"Id-1\",\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 20,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Id\": \"Id-1\",\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 20,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Id\": \"Id-1\",\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 20,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+    post:
+      tags:
+      - Consumption Billing
+      summary: Creates usage input records
+      description: Add usage input records which will be used for billing calculations
+      requestBody:
+        description: The list of usage input records to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 10,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 10,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UsageInputsRequest'
+            example: "[\n  {\n    \"Type\": \"Regular\",\n    \"PeriodStartDate\": \"2024-01-01T00:00:00\",\n    \"PeriodEndDate\": \"2024-01-31T00:00:00\",\n    \"SubmissionDate\": \"2024-01-05T00:00:00\",\n    \"SubscriptionIdentifierObject\": \"AssetLineItem\",\n    \"SubscriptionIdentifierField\": \"AssetNumber\",\n    \"SubscriptionIdentifierValue\": \"Asset001\",\n    \"UnitofMeasure\": \"Each\",\n    \"Quantity\": 10,\n    \"DraftQuantity\": 10,\n    \"RatingStatus\": \"Loaded\"\n  }\n]"
+      responses:
+        '201':
+          description: Created
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /usage-inputs/estimate:
+    post:
+      tags:
+      - Consumption Billing
+      summary: Estimates draft ratings for the specified usage input records without updating their final status.
+      description: "The usage inputs can be processed in two modes: \n\nAsynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all loaded usage input records will be estimated asynchronously. \n\nThe response will include a `JobId` to track the background operation. \n\nSynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be estimated synchronously. \n\nThe response will include the batch results for the specified records. \n\n\nAutomatic async fallback: If `UsageInputRatingRequest.ProcessAllUsageInputs` is `false` but the number of values in \n`UsageInputRatingRequest.UsageInputIds` exceeds the configured threshold, the request will be processed \nasynchronously regardless of mode selection, and the response will include a `JobId`. \n\n\nThis design allows the client to control:\n\n- Whether the operation applies to all records or only a specific subset.\n\n- Whether the operation is performed synchronously or asynchronously, subject to system thresholds."
+      requestBody:
+        description: The request specifying which usage input records to estimate and how to process them.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /usage-inputs/rate:
+    post:
+      tags:
+      - Consumption Billing
+      summary: Rates the specified usage input records.
+      description: "The usage inputs can be processed in two modes: \n\nAsynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all usage input records with status as Loaded will be rated asynchronously. \n\nThe response will include a `JobId` to track the background operation. \n\nSynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be rated synchronously. \n\nThe response will include the batch results for the specified records. \n\n\nThis design allows the client to control:\n\n- Whether the operation applies to all records or only a specific subset.\n\n- Whether the operation is performed synchronously or asynchronously."
+      requestBody:
+        description: The request specifying which usage input records to rate and how to process them.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UsageInputRatingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BatchOperationResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /usage-inputs/unrate:
+    post:
+      tags:
+      - Consumption Billing
+      summary: Reverses ratings for the specified usage input records.
+      description: 'Reverses ratings for the specified usage input records.
+
+
+        '
+      requestBody:
+        description: The request specifying which usage input records should be unrated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputBaseRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UsageInputBaseRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UsageInputBaseRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseBatchResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /usage-inputs/{usageInputId}:
+    get:
+      tags:
+      - Consumption Billing
+      summary: Get a usage input record
+      description: Retrieves a single usage input record by its identifier.
+      parameters:
+      - name: usageInputId
+        in: path
+        description: The identifier of the usage input
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/UsageInputs'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageInputs'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/UsageInputs'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+components:
+  schemas:
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    UsageInputsRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier of the usage input record.
+        Type:
+          type:
+          - string
+          - 'null'
+          description: Indicates whether the input is a regular entry vs. an overage entry.
+        PeriodStartDate:
+          type:
+          - string
+          - 'null'
+          description: The start date of the usage in a usage period.
+          format: date-time
+        PeriodEndDate:
+          type:
+          - string
+          - 'null'
+          description: The end date of the usage in a usage period.
+          format: date-time
+        SubmissionDate:
+          type:
+          - string
+          - 'null'
+          description: The ‘date’ by which the usage is accumulated within a period for tracking/forecast/rating purposes.
+          format: date-time
+        SubscriptionIdentifierObject:
+          type:
+          - string
+          - 'null'
+          description: The identifier to reference a subscription.
+        SubscriptionIdentifierField:
+          type:
+          - string
+          - 'null'
+          description: Indicates the unique field to identify the subscription record (E.g., AssetNumber).
+        SubscriptionIdentifierValue:
+          type:
+          - string
+          - 'null'
+          description: The record ID of the subscription identifier chosen.
+        UnitofMeasure:
+          type:
+          - string
+          - 'null'
+          description: Indicates the unit of measure (UOM) of the quantity.
+        Quantity:
+          type:
+          - number
+          - 'null'
+          description: The quantity to be rated for this usage input record.
+          format: double
+        DraftQuantity:
+          type:
+          - number
+          - 'null'
+          description: The ‘expected’ quantity for this usage input record.
+          format: double
+        RatingStatus:
+          type:
+          - string
+          - 'null'
+          description: Indicates the status of the rating process.
+      additionalProperties: false
+      description: Represents a request to create or update usage input records
+    UsageInputRatingRequest:
+      type: object
+      properties:
+        UsageInputIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the identifiers of usage input records to process.
+        ProcessAllUsageInputs:
+          type: boolean
+          description: Gets or sets a value indicating whether all usage input records should be processed.
+      additionalProperties: false
+      description: Represents a request to rate, unrate, or estimate usage input records.
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BaseResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+    BatchOperationResponse:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        BatchResults:
+          $ref: '#/components/schemas/BaseResponseBatchResponse'
+        IsSuccess:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    UsageInputs:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Type:
+          type:
+          - string
+          - 'null'
+        PeriodStartDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        PeriodEndDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        SubmissionDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        SubscriptionIdentifierObject:
+          type:
+          - string
+          - 'null'
+        SubscriptionIdentifierField:
+          type:
+          - string
+          - 'null'
+        SubscriptionIdentifierValue:
+          type:
+          - string
+          - 'null'
+        SubscriptionIdentifierRecordID:
+          type:
+          - string
+          - 'null'
+        UnitofMeasure:
+          type:
+          - string
+          - 'null'
+        Quantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        RatedAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        DraftQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        DraftRatedAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        RatingStatus:
+          type:
+          - string
+          - 'null'
+        BillingScheduleRecord:
+          $ref: '#/components/schemas/LookupObject'
+        UsageInputNumber:
+          type:
+          - string
+          - 'null'
+        BillingHeader:
+          $ref: '#/components/schemas/LookupObject'
+        Currency:
+          type:
+          - string
+          - 'null'
+        RatingMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    BaseResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BaseResponse'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UsageInputBaseRequest:
+      type: object
+      properties:
+        UsageInputIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the identifiers of usage input records to process.
+      additionalProperties: false
+      description: Represents a request to rate, unrate, or estimate usage input records.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

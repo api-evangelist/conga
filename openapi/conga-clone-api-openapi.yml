@@ -1,0 +1,324 @@
+openapi: 3.2.0
+info:
+  title: Administration Clone API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Clone
+paths:
+  /clone/status/{id}:
+    get:
+      tags:
+      - Clone
+      summary: Retrieve deep clone status
+      description: Retrieves deep clone status.
+      parameters:
+      - name: id
+        in: path
+        description: CPQJobStatus Id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CPQJobStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CPQJobStatus'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CPQJobStatus'
+  /clone/{objectName}/supported-objects:
+    get:
+      tags:
+      - Clone
+      summary: List related cloneable objects
+      description: Gets a list of related cloneable objects for a given source entity.
+      parameters:
+      - name: objectName
+        in: path
+        description: Source object type
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloneSpecChildObject'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloneSpecChildObject'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloneSpecChildObject'
+  /{objectName}/{objectId}/clone:
+    post:
+      tags:
+      - Clone
+      summary: Create a clone of an object
+      description: Creates a clone of the object with the specified identifier.
+      parameters:
+      - name: objectName
+        in: path
+        description: The type of the object to clone
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        in: path
+        description: The identifier of the object to clone
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Dictionary of field and value to override
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: Name to override in cloned record
+              Id: New Id
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '201':
+          description: Created
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '405':
+          description: Method Not Allowed
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CloneSpecChildObject:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        ParentFieldName:
+          type:
+          - string
+          - 'null'
+        Label:
+          type:
+          - string
+          - 'null'
+        FieldsToReplace:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        GroupName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CPQJobStatus:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        JobType:
+          type:
+          - string
+          - 'null'
+        JobId:
+          type:
+          - string
+          - 'null'
+        OperationName:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        RecordId:
+          type:
+          - string
+          - 'null'
+        StartDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        CurrentStatus:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        TotalRecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        ProcessedRecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Source:
+          type:
+          - string
+          - 'null'
+        ErrorDetail:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        JobResponse:
+          type:
+          - string
+          - 'null'
+        TraceId:
+          type:
+          - string
+          - 'null'
+        Payload:
+          type:
+          - string
+          - 'null'
+        PayloadType:
+          type:
+          - string
+          - 'null'
+        ParentJob:
+          $ref: '#/components/schemas/LookupObject'
+        Duration:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        SuccessCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

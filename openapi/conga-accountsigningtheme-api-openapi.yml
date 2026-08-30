@@ -1,0 +1,209 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Account Signing Theme API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: AccountSigningTheme
+paths:
+  /v1/cs-account/signingThemes:
+    post:
+      tags:
+      - AccountSigningTheme
+      summary: Create a customized signing theme
+      description: "Creates a signing theme defined by your settings. A customized signing theme is a signing theme\ndesigned by your organization using, for example, your corporate branding.\n            \nSample request:\n            \n    POST /cs-account/signingThemes\n    {\n      \"default\": {\n        \"color\": {\n          \"signatureButton\": \"#CAEA19\",\n          \"error\": \"#3B48B5\",\n          \"signatureSticky\": \"#5940C3\",\n          \"warning\": \"#BE5718\",\n          \"primary\": \"#CAEA19\",\n          \"optionalSignatureButton\": \"#CAEA19\",\n          \"info\": \"#2E74B2\",\n          \"success\": \"#1B7445\"\n        }\n      }\n    }"
+      operationId: AccountSigningTheme_CreateSigningTheme
+      requestBody:
+        x-name: signingTheme
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigningThemeConfig'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/SigningTheme'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    delete:
+      tags:
+      - AccountSigningTheme
+      summary: Delete customized signing themes
+      description: 'Deletes a customized signing theme. A customized signing theme is a signing theme that was designed by your
+
+        organization using, for example, your corporate branding.'
+      operationId: AccountSigningTheme_DeleteSigningTheme
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - AccountSigningTheme
+      summary: Retrieve a customized signing theme
+      description: 'Retrieves a customized signing theme so that it can be used.
+
+        A customized signing theme is a signing theme that was designed by your organization using,
+
+        for example, your corporate branding.'
+      operationId: AccountSigningTheme_GetSigningTheme
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningThemeConfig'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - AccountSigningTheme
+      summary: Update a customized signing theme
+      description: "Creates a signing theme defined by your settings. A customized signing theme is a signing theme\ndesigned by your organization using, for example, your corporate branding.\n            \nSample request:\n            \n    PUT /cs-account/signingThemes\n    {\n      \"default\": {\n        \"color\": {\n          \"signatureButton\": \"#CAEA19\",\n          \"error\": \"#3B48B5\",\n          \"signatureSticky\": \"#5940C3\",\n          \"warning\": \"#BE5718\",\n          \"primary\": \"#CAEA19\",\n          \"optionalSignatureButton\": \"#CAEA19\",\n          \"info\": \"#2E74B2\",\n          \"success\": \"#1B7445\"\n        }\n      }\n    }"
+      operationId: AccountSigningTheme_UpdateSigningTheme
+      requestBody:
+        x-name: signingThemeConfig
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigningThemeConfig'
+        required: true
+        x-position: 1
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    SigningColor:
+      type: object
+      additionalProperties: {}
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    SigningThemeConfig:
+      type: object
+      description: Signing theme configuration of colors to customize the signing experience.
+      additionalProperties:
+        $ref: '#/components/schemas/SigningTheme'
+    SigningTheme:
+      type: object
+      description: Object to manage signing themes
+      additionalProperties: false
+      properties:
+        color:
+          description: Color
+          oneOf:
+          - $ref: '#/components/schemas/SigningColor'
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

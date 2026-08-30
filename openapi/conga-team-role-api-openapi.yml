@@ -1,0 +1,806 @@
+openapi: 3.2.0
+info:
+  title: Contracts Team Role API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Team Role
+paths:
+  /api/clm/v1/teamroles:
+    delete:
+      tags:
+      - Team Role
+      summary: Delete team roles
+      description: Permanently deletes the records of the provided team role IDs from the system.
+      requestBody:
+        description: List of team role IDs to be deleted
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The given team role IDs are deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResultStatusDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  64608ac0-f8d6-482e-8585-cf7f2cdb0b7b: Success
+                  d2fd6dcd-c28c-44ca-9961-b01fc00cbc6a: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: One or more team role IDs is/are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Team Role
+      summary: Create a team role
+      description: "Creates a new team role in the CLM system to assign people to duties relating to contract negotiation, management, or enforcement.\nTeam roles support mapping of both standard actions and custom actions (created by cloning standard actions) for Send for Review and Send for Signature contract actions. \nProvide the team role name, description, and optional action mappings in the request payload."
+      requestBody:
+        description: The team role to create.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRole'
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+      responses:
+        '200':
+          description: Details of the created team role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Team is responsible to review the associated contract
+                  Action:
+                  - SendforReview
+                  IsActive: true
+                  IsSeeded: false
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  Name: Reviewer
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:43.470539Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:43.4705552Z'
+                  ExternalId: null
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Required value is missing from the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/teamroles/query:
+    post:
+      tags:
+      - Team Role
+      summary: Query team role records
+      description: Returns team role records matching the query request.
+      requestBody:
+        description: Query parameters to get team role records
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQuery'
+            example:
+              Distinct: false
+              Fields: null
+              GroupBy: null
+              IncludeTotalCount: true
+              SortInfo:
+                FieldName: ContractType
+                Direction: Ascending
+              CriteriaExpression: null
+              Limit: 10
+              Skip: 0
+      responses:
+        '200':
+          description: Returns team role records that match the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    Name: Reviewer
+                    Description: Team is responsible to review the associated contract
+                    Action:
+                    - SendforReview
+                    IsActive: true
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2026-08-14T00:01:43.4921367Z'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2026-08-14T00:01:43.4921369Z'
+                    ExternalId: null
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided query is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/teamroles/{teamRoleId}:
+    delete:
+      tags:
+      - Team Role
+      summary: Delete a team role
+      description: Permanently deletes the record of the provided team role ID from the system.
+      parameters:
+      - name: teamRoleId
+        in: path
+        description: ID of the team role to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The team role is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided team role ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Team Role
+      summary: Get a team role by ID
+      description: Returns a team role record by ID.
+      parameters:
+      - name: teamRoleId
+        in: path
+        description: ID of the team role to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the team role record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Team is responsible to review the associated contract
+                  Action:
+                  - SendforReview
+                  IsActive: true
+                  IsSeeded: false
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  Name: Reviewer
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:43.4852275Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:43.4852309Z'
+                  ExternalId: null
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided team role ID is not valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Team Role
+      summary: Update an existing team role
+      description: Updates an existing team role record.
+      parameters:
+      - name: teamRoleId
+        in: path
+        description: ID of the team role to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The team role details to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRole'
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+      responses:
+        '200':
+          description: Returns the updated team role record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Team is responsible to review the associated contract
+                  Action:
+                  - SendforReview
+                  IsActive: true
+                  IsSeeded: false
+                  Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                  Name: Reviewer
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:43.4817041Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:43.4817074Z'
+                  ExternalId: null
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Provided team role ID is not valid or Provided team role details are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    StringObjectDictionaryQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TeamRole:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of Team Role
+        Action:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Actions that are associated with this Team Role
+        IsActive:
+          type: boolean
+          description: Whether the Team Role is active or not
+        IsSeeded:
+          type: boolean
+          description: Whether the Team Role is seeded (OOB) or user-created
+      additionalProperties: {}
+      description: Model for TeamRole Entity
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringResultStatusDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

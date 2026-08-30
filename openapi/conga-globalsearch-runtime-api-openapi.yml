@@ -1,0 +1,355 @@
+openapi: 3.2.0
+info:
+  title: GlobalSearch Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: GlobalSearch Runtime
+paths:
+  /api/search/v1/global/query:
+    post:
+      tags:
+      - GlobalSearch Runtime
+      summary: Global Search on configured objects
+      requestBody:
+        description: The global search request containing search term, object list, pagination settings, and exclude object options (via ExcludeObjectList).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlobalSearchRequest'
+            example:
+              SearchTerm: SomeText
+              PhraseSearch: null
+              ObjectList:
+              - ObjectName: Account
+                Select:
+                - Id
+                - Name
+                FilterCriteria: CreatedDate > '2025-01-01'
+                Skip: 0
+                Limit: 10
+                Sort:
+                  FieldName: CreatedDate
+                  Direction: Descending
+              - ObjectName: Agreement
+                Select: null
+                FilterCriteria: null
+                Skip: null
+                Limit: null
+                Sort: null
+              Skip: 0
+              Limit: 20
+              ExcludeObjectList:
+              - AgreementClause
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GlobalSearchRequest'
+            example:
+              SearchTerm: SomeText
+              PhraseSearch: null
+              ObjectList:
+              - ObjectName: Account
+                Select:
+                - Id
+                - Name
+                FilterCriteria: CreatedDate > '2025-01-01'
+                Skip: 0
+                Limit: 10
+                Sort:
+                  FieldName: CreatedDate
+                  Direction: Descending
+              - ObjectName: Agreement
+                Select: null
+                FilterCriteria: null
+                Skip: null
+                Limit: null
+                Sort: null
+              Skip: 0
+              Limit: 20
+              ExcludeObjectList:
+              - AgreementClause
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GlobalSearchRequest'
+            example:
+              SearchTerm: SomeText
+              PhraseSearch: null
+              ObjectList:
+              - ObjectName: Account
+                Select:
+                - Id
+                - Name
+                FilterCriteria: CreatedDate > '2025-01-01'
+                Skip: 0
+                Limit: 10
+                Sort:
+                  FieldName: CreatedDate
+                  Direction: Descending
+              - ObjectName: Agreement
+                Select: null
+                FilterCriteria: null
+                Skip: null
+                Limit: null
+                Sort: null
+              Skip: 0
+              Limit: 20
+              ExcludeObjectList:
+              - AgreementClause
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlobalSearchResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    GlobalSearchRequest:
+      type: object
+      properties:
+        SearchTerm:
+          type:
+          - string
+          - 'null'
+          description: The search term or keyword to search across objects. Used for search operations.
+        PhraseSearch:
+          type:
+          - boolean
+          - 'null'
+          description: "Flag indicating phrase search mode. \nIf true, the search term will be treated as an exact phrase, and results will only include records that match the entire phrase."
+        ObjectList:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/GlobalSearchQueryObject'
+          description: 'List of objects to be searched along with their specific search criteria, filters, and field selections.
+
+            Each entry in this list represents a separate object query with its own configuration.'
+        Skip:
+          type: integer
+          description: 'The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
+
+            Default is 0 if not specified.'
+          format: int32
+        Limit:
+          type: integer
+          description: 'The maximum number of records to return per page. Used for pagination along with Skip.
+
+            Default page size applies if not specified.'
+          format: int32
+        ExcludeObjectList:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'List of object identifiers or names to exclude from the global search operation.
+
+            Any objects specified here will be omitted from search results, even if they appear in ObjectList or defaults.'
+      additionalProperties: false
+      description: Global Search Request
+    GlobalSearchResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/GlobalSearchObjectResult'
+          description: GlobalSearchResponse
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GlobalSearchQueryObject:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: The name of the object to be searched. This identifies the specific entity type to query.
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names to be returned in the search results. Specifies which properties of the object should be included in the response.
+        FilterCriteria:
+          type:
+          - string
+          - 'null'
+          description: Optional filter criteria to narrow down search results. Defines conditions that records must meet to be included in the results.
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
+          format: int32
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: The maximum number of records to return. Used for pagination along with Skip.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/SortInfo'
+      additionalProperties: false
+    GlobalSearchObjectResult:
+      type: object
+      properties:
+        RecordCount:
+          type: integer
+          description: Total number of records found
+          format: int32
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+            description: Global Search Generic Records for each Object.
+          description: The list of matching records, where each record is represented as a dictionary of key-value pairs.
+      additionalProperties: false
+      description: 'Represents the result of a global search operation, including the total number of records found and the list of
+
+        matching records.'
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,6457 @@
+openapi: 3.2.0
+info:
+  title: Conga Documents API
+  version: '1.0'
+  description: 'Operations tagged Documents across 3 of this provider''s published API definitions: conga-conga-sign.json, conga-document-management.json, conga-ingress.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com/api/sign
+- url: https://rls.congacloud.com
+- url: https://rls.congacloud.com/api/ingress
+tags:
+- name: Documents
+paths:
+  /v1/cs-packages/{packageId}/documents:
+    post:
+      tags:
+      - Documents
+      summary: Add a new document to an existing package
+      description: Adds a new document to an existing package by using a document resource.
+      operationId: Documents_CreateDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                File:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+                Payload:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    delete:
+      tags:
+      - Documents
+      summary: Delete multiple documents from a package
+      description: Deletes multiple documents, identified by their documentID, from a specified package.
+      operationId: Documents_DeleteDocuments
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: documentIds
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Documents
+      summary: Update documents
+      description: Updates the documents in a package. For example, to re-order them.
+      operationId: Documents_UpdateDocuments
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: documents
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Document'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/all-documents/zip:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve zipped file containing all documents including supporting documents
+      description: 'Retrieves a zipped file that contains both signable documents and Supporting Documents.
+
+        This differs from the /zip endpoint which only returns signable documents.'
+      operationId: Documents_GetAllDocumentsZip
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: flatten
+        in: query
+        description: Flatten the pdf.
+        schema:
+          type: boolean
+          default: false
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/signConfirm:
+    post:
+      tags:
+      - Documents
+      summary: Create a signature confirmation
+      description: Confirms that the application can execute the signing process on the document.
+      operationId: Documents_CreateSignatureConfirmation
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedDocument'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/signed_documents:
+    post:
+      tags:
+      - Documents
+      summary: Sign all documents in a package
+      description: Signs all documents in a specified package.
+      operationId: Documents_SignAllDocuments
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: documents
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedDocuments'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedDocuments'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/visibility:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve document visibility information
+      description: Retrieves information about which recipients can view specific documents in a package during a Signing Ceremony.
+      operationId: Documents_GetDocumentVisibility
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentVisibilityConfiguration'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    post:
+      tags:
+      - Documents
+      summary: Update document visibility
+      description: 'Retrieves information about which recipients can view specific documents in a package during a Signing Ceremony.
+
+        The response is a Document Visibility object that contains a list of configurations. Each configuration has:
+
+        (1) the Document ID of a specific document; (2) a list of Role IDs of the signers who can view the document.
+
+        Note that: Documents not in the Document Visibility object are visible to all recipients. The Package Owner can
+
+        always see all documents in the package, regardless of its Document Visibility configuration.'
+      operationId: Documents_UpdateDocumentsVisibility
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentVisibility'
+        required: true
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/zip:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve zipped documents
+      description: Retrieves a zipped file that contains all documents that were added to the package.
+      operationId: Documents_GetZip
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: flatten
+        in: query
+        description: Flatten the pdf.
+        schema:
+          type: boolean
+          default: false
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}:
+    delete:
+      tags:
+      - Documents
+      summary: Delete a document from a package
+      description: Deletes a document from a specified package.
+      operationId: Documents_DeleteDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Documents
+      summary: Retrieve the specified document
+      description: 'Retrieves all information related to a given document, including ID, name, description, presentation index,
+
+        any associated data elements, approvals and fields.'
+      operationId: Documents_GetDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    post:
+      tags:
+      - Documents
+      summary: Update a document
+      description: Updates a single, specified document. This endpoint accepts multi-part data, or the JSON structure of a document.
+      operationId: Documents_UpdateDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Documents
+      summary: Update the specified document
+      description: Updates the specified document.
+      operationId: Documents_UpdateDocumentPut
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/fields:
+    put:
+      tags:
+      - Documents
+      summary: Replace approvals and imprint fields for a document
+      description: 'Replaces approvals and imprint fields with those provided in the request.
+
+        - If an array is not provided then nothing will be updated for that field type.
+
+        - If an empty array is provided then all fields of that type will be deleted.
+
+        - Only the editable imprint fields will be replaced.'
+      operationId: Documents_ReplaceDocumentFields
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: documentFields
+        description: Arrays of approvals and imprint fields to replace.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentFields'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentFields'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/layout:
+    post:
+      tags:
+      - Documents
+      summary: Apply a layout to a document
+      description: Applies a specific layout to a specified document. At least one parameter needs to be applied, either layoutID, or layoutName.
+      operationId: Documents_ApplyLayoutToDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      - name: layoutId
+        in: query
+        description: The unique layout id.
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 3
+      - name: layoutName
+        in: query
+        description: The unique layout name.
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 4
+      - name: removeOutOfBound
+        in: query
+        description: 'Default value : false'
+        schema:
+          type: boolean
+          default: false
+        x-position: 5
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/metadata:
+    put:
+      tags:
+      - Documents
+      summary: Update document custom metadata
+      description: 'Updates the document custom metadata by overriding it with those in the payload.
+
+        Internal metadata defined by OneSpan cannot be updated and will be ignored if included in the payload.
+
+
+        Metadata is stored as key-value pairs where keys are strings and values can be any JSON-serializable type.'
+      operationId: Documents_UpdateDocumentMetadata
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: metadata
+        description: Document metadata as key-value pairs.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Metadata'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '406':
+          description: Not Acceptable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/original:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve an original PDF document
+      description: Retrieves the original PDF document that was included in a package.
+      operationId: Documents_GetOriginalDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/pages/{index}:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve a page
+      description: Retrieves the document page you specify, returning it as a .png image file.
+      operationId: Documents_GetDocumentPageByIndex
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      - name: index
+        in: path
+        required: true
+        description: The page index.
+        schema:
+          type: integer
+          format: int32
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/documents/{documentId}/pdf:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve a specific document in PDF form
+      description: 'Retrieves a specific document. This function always returns the PDF version of the document,
+
+        even if the document was originally submitted in a different format.'
+      operationId: Documents_GetPdfDocument
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /api/document-management/v1/documents:
+    delete:
+      tags:
+      - Documents
+      summary: Delete documents by their IDs
+      description: Deletes multiple documents and returns the status of the request.
+      requestBody:
+        description: List of document IDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data:
+                  IsDeleted: true
+                  Message: d985ea31-57b8-497a-94e3-f775318a52a0,9476257e-d42b-45b4-8643-1f08fb60f1cf deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Documents
+      summary: Upload documents
+      description: 'Uploads multiple documents and returns a list of metadata for each document. The following file extentions are supported: *.doc,.docx,.pdf,.zip,.png,.rtf,.txt,.jpg,.jpeg,.msg,.xls,.xlsx*'
+      parameters:
+      - name: objectType
+        in: query
+        description: Object name
+        schema:
+          type: string
+      - name: objectId
+        in: query
+        description: Object ID
+        schema:
+          type: string
+      - name: description
+        in: query
+        description: Description
+        schema:
+          type: string
+      - name: checkoutBy
+        in: query
+        description: Checkedout by information
+        schema:
+          type: string
+      - name: checkoutDate
+        in: query
+        description: Checkedout date
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: Tags available for documents
+        schema:
+          type: array
+          items:
+            type: string
+      - name: isSearchable
+        in: query
+        description: Indicates whether the document is searchable or not
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                customProperties:
+                  type: object
+                  additionalProperties: {}
+            encoding:
+              files:
+                style: form
+              customProperties:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: c8dcc5ae-3e5b-428b-a402-deb88772b30f
+                  DocumentId: b117de29-1fc9-4a8b-aed6-c6b79bf42ce6
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: 558ddf99-7644-4206-98cf-43e738741978
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:36.9668947+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:36.966904+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/bulk:
+    get:
+      tags:
+      - Documents
+      summary: Get documents by their IDs
+      description: Retrieves multiple documents by document ID.
+      parameters:
+      - name: documentId
+        in: query
+        description: List of string values of the documentIds
+        schema:
+          type: array
+          items:
+            type: string
+      - name: ignoreInvalidIds
+        in: query
+        description: List of string values of the documentIds
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - DocumentMetadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: aa03b67d-f622-4b3e-8757-5996361e7ca9
+                    DocumentId: 29850b74-7599-4adb-86aa-200c84db8d2a
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: bf663ebd-e4a2-4588-a2d7-b3346e8a505d
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.0726532+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.0726614+00:00'
+                    ExternalId: null
+                    ETag: null
+                  BlobData: UEFO
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/multipart-uploads:
+    post:
+      tags:
+      - Documents
+      summary: Initiate a multipart upload
+      description: Initiates multipart upload and returns the upload ID, key, and document metadata.
+      requestBody:
+        description: Document request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DocumentRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitMultipartUploadResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  UploadId: '7162'
+                  Key: '1465'
+                  Metadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: 4df07ca1-8760-40a6-af5e-06be37fc4ee9
+                    DocumentId: 5d88cf57-5cf8-4f2e-accc-52881a15671e
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: 818170e0-5d93-40e4-b6d3-86ee37141c14
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.0032968+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.003305+00:00'
+                    ExternalId: null
+                    ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/objects/{objectId}:
+    get:
+      tags:
+      - Documents
+      summary: Get documents by object ID and file type
+      description: Retrieves documents by passing file type and object ID as inputs.
+      parameters:
+      - name: objectId
+        in: path
+        description: Object ID
+        required: true
+        schema:
+          type: string
+      - name: fileType
+        in: query
+        description: Type of the file
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - DocumentMetadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: ea84fc4e-9a9f-4866-9307-0d43f6a259bf
+                    DocumentId: cfe2a764-6777-4e0b-aef5-95ccd0d34397
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: 2bd9b387-f1fd-4f4a-bd6d-82da2cc23bf1
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.1140056+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.114024+00:00'
+                    ExternalId: null
+                    ETag: null
+                  BlobData: UEFO
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/objects/{objectType}/{objectId}:
+    delete:
+      tags:
+      - Documents
+      summary: Delete documents by object type and ID
+      description: Deletes documents by object type and object ID.
+      parameters:
+      - name: objectType
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        in: path
+        description: Object ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data:
+                  IsDeleted: true
+                  Message: Documents associated to 1fa0765b-91a0-4e4f-bafe-e22437a806f2 are deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    get:
+      tags:
+      - Documents
+      summary: Get documents by object type and ID
+      description: Retrieves documents by passing the object type and object ID as inputs
+      parameters:
+      - name: objectId
+        in: path
+        description: Object ID
+        required: true
+        schema:
+          type: string
+      - name: objectType
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponseListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - DocumentMetadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: 0be937b4-8ef6-439c-9cc3-6fc83709f714
+                    DocumentId: 1c9a1621-fd22-4641-8beb-3de9a71e8dc9
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: 4557ad2b-3dc6-46f6-9447-3aecb8434e87
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.088088+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.0880963+00:00'
+                    ExternalId: null
+                    ETag: null
+                  BlobData: UEFO
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/objects/{objectType}/{objectId}/versions:
+    get:
+      tags:
+      - Documents
+      summary: Get version details by object type and ID
+      description: Retrieves document version details by passing the object type and object ID as inputs.
+      parameters:
+      - name: objectId
+        in: path
+        description: Object ID
+        required: true
+        schema:
+          type: string
+      - name: objectType
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: 106a9c5d-df68-42a2-8900-5faa9704913e
+                  DocumentId: c4fc8c35-a5bf-4ce1-b758-08ece31e711d
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: 731368d1-e09f-4439-bae4-cd690010f487
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.0915395+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.0915485+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/search:
+    post:
+      tags:
+      - Documents
+      summary: Search documents using advanced query parameters
+      description: Searches for documents using the provided query parameters and returns matching document metadata.
+      parameters:
+      - name: includeTotalCount
+        in: query
+        description: Optional parameter for specifying whether the total record count should be included in the response.
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: Query parameters for document searching.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentQuery'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DocumentQuery'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DocumentQuery'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: 20f5b9d9-93e0-4120-be49-4e6b893a7856
+                  DocumentId: 01e4ef5f-db79-479b-bbb9-a0c6f854bc09
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: 2480c9a1-870d-48aa-bfaa-de957b4d5a7e
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.1107967+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.1108046+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/upload:
+    post:
+      tags:
+      - Documents
+      summary: Upload a single document
+      description: 'Uploads a single document and returns the document''s metadata. The following file extentions are supported: *.doc,.docx,.pdf,.zip,.png,.rtf,.txt,.jpg,.jpeg,.msg,.xls,.xlsx*'
+      parameters:
+      - name: objectType
+        in: query
+        description: Object name
+        schema:
+          type: string
+      - name: objectId
+        in: query
+        description: Object ID
+        schema:
+          type: string
+      - name: newVersionId
+        in: query
+        description: ID of the new document version
+        schema:
+          type: string
+      - name: description
+        in: query
+        description: Description
+        schema:
+          type: string
+      - name: checkoutBy
+        in: query
+        description: Checkedout by details
+        schema:
+          type: string
+      - name: checkoutDate
+        in: query
+        description: Checkedout date
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: Tags available for the document
+        schema:
+          type: array
+          items:
+            type: string
+      - name: documentId
+        in: query
+        description: Document ID
+        schema:
+          type: string
+      - name: isSearchable
+        in: query
+        description: Indicates whether the document is searchable or not
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                customProperties:
+                  type: object
+                  additionalProperties: {}
+            encoding:
+              file:
+                style: form
+              customProperties:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: eb028509-f9ba-43d0-b2cb-e56135a3628e
+                  DocumentId: e187f8c2-d775-4ffe-b171-6b60589a9d59
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: dabbc6d7-9c99-4922-b6b6-7a10f073eeb4
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:36.98699+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:36.9869984+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}:
+    delete:
+      tags:
+      - Documents
+      summary: Delete a document by its ID
+      description: Deletes a document and returns the status of the request.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      - name: hardDelete
+        in: query
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data:
+                  IsDeleted: true
+                  Message: 12f6e292-d07f-42a5-8680-ecaa5b600fe3 deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    put:
+      tags:
+      - Documents
+      summary: Update a document
+      description: Updates a document and returns the updated document's metadata.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      - name: newVersionId
+        in: query
+        description: ID of the new document version
+        schema:
+          type: string
+      - name: description
+        in: query
+        description: Description
+        schema:
+          type: string
+      - name: checkoutBy
+        in: query
+        description: Checkedout by details
+        schema:
+          type: string
+      - name: checkoutDate
+        in: query
+        description: Checkedout date
+        schema:
+          type: string
+      - name: isSearchable
+        in: query
+        description: Indicates whether the document is searchable
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                customProperties:
+                  type: object
+                  additionalProperties: {}
+            encoding:
+              file:
+                style: form
+              customProperties:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: 29ea5a9c-52de-4269-a1c7-7dc36dae99cd
+                  DocumentId: 0b5acffc-571b-48a2-a77a-1400318cf002
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: 0b0e116e-c4a9-4b7d-a685-eb546c3e6861
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.0352186+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.0352268+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/clone:
+    post:
+      tags:
+      - Documents
+      summary: Clone a document
+      description: Clones the document described by the document ID.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: 2c6860b3-f5ac-47f4-921b-57f1d2610ffb
+                  DocumentId: ba798000-baf6-4143-bbbd-ec33c8a4f0b8
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: ab11fb27-9584-4af1-9165-7020dd27fac4
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.0945997+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.0946081+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/exists:
+    get:
+      tags:
+      - Documents
+      summary: Check a document
+      description: Checks whether the given document (documentId) exists.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/metadata:
+    get:
+      tags:
+      - Documents
+      summary: Get a document's metadata by its ID
+      description: Retrieves the document metadata by passing a document ID as an input.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: 1c7c957a-fc8d-4bf3-bb0e-2c24809ddfcc
+                  DocumentId: 95a11e37-a026-47d7-a7d8-0c7f57d805ed
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: efe82415-5c76-40ac-9963-a94258065dbd
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.049965+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.0499733+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    put:
+      tags:
+      - Documents
+      summary: Update the document metadata information for all versions
+      description: Updates the document metadata information for all versions and returns the status of the request.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Metadata of the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentMetadataUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DocumentMetadataUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DocumentMetadataUpdateRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/multipart-uploads:
+    delete:
+      tags:
+      - Documents
+      summary: Abort a multipart upload
+      description: Aborts an incomplete multipart upload, deletes the metadata and version associated with it, and returns the status of the request.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Multipart upload data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipartUploadRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/MultipartUploadRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/MultipartUploadRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Multipart upload aborted successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Documents
+      summary: Complete multipart upload
+      description: Completes multipart upload by combining single uploaded parts and returns the status of the request.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Multipart upload data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteMultipartUploadRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CompleteMultipartUploadRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CompleteMultipartUploadRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Multipart upload completed successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    put:
+      tags:
+      - Documents
+      summary: Upload a single part of a large file
+      description: Uploads a single part of a large file and returns the Etag and part number.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      - name: key
+        in: query
+        description: The key that identifies the file location. It is defined in the multipart initiate response.
+        schema:
+          type: string
+      - name: uploadId
+        in: query
+        description: Upload ID. It is defined in the multipart initiate response.
+        schema:
+          type: string
+      - name: partNumber
+        in: query
+        description: A part number uniquely identifies a part and its position in the object you are uploading.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadPartResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ETag: '16562'
+                  PartNumber: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/versions:
+    get:
+      tags:
+      - Documents
+      summary: Retrieve document versions
+      description: Retrieves document versions by passing a document ID as an input.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Description: Desc
+                  Extension: .txt
+                  Tags: ''
+                  ObjectType: Agreement
+                  ObjectId: c2f6d533-5db5-45f4-993a-bd9f3e1b6b7e
+                  DocumentId: 744727cb-7f3d-4594-9feb-3e9a39b6b474
+                  DocumentVersion: 1
+                  IsDeleted: false
+                  CheckoutBy: ''
+                  CheckoutDate: '2022-01-01T00:00:00'
+                  FileSize: 100
+                  FileType: text/plain
+                  IsLatest: true
+                  IsSearchable: true
+                  Id: 3c96e607-44ab-4afc-85b7-bcf67e132780
+                  Name: Doc1.txt
+                  CreatedBy:
+                    Id: ''
+                    Name: ''
+                  CreatedDate: '2026-07-27T11:13:37.099533+00:00'
+                  ModifiedBy:
+                    Id: ''
+                    Name: ''
+                  ModifiedDate: '2026-07-27T11:13:37.0995415+00:00'
+                  ExternalId: null
+                  ETag: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{documentId}/versions/{versionId}:
+    delete:
+      tags:
+      - Documents
+      summary: Delete a versioned document
+      description: Deletes a document version by passing the document ID and version ID as inputs.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      - name: versionId
+        in: path
+        description: Document version ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data:
+                  IsDeleted: true
+                  Message: ad22aac7-2221-46bd-8b3b-b1a516976ef8 deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    get:
+      tags:
+      - Documents
+      summary: Get a document by its ID and version
+      description: Takes the document ID and version ID as inputs and retrieves specific document version.
+      parameters:
+      - name: documentId
+        in: path
+        description: Document ID
+        required: true
+        schema:
+          type: string
+      - name: versionId
+        in: path
+        description: Document version ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  DocumentMetadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: a1814de9-31a6-422a-816b-7d2c32724b73
+                    DocumentId: ad4040a2-f6d6-4cc6-8bfe-b279a48da95c
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: c28debbf-a4a5-499a-8c86-c7a78db81b3e
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.1027739+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.1027821+00:00'
+                    ExternalId: null
+                    ETag: null
+                  BlobData: UEFO
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{id}:
+    get:
+      tags:
+      - Documents
+      summary: Get document information by its ID
+      description: Uses the version ID to retrieve a document's metadata.
+      parameters:
+      - name: id
+        in: path
+        description: Version ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  DocumentMetadata:
+                    Description: Desc
+                    Extension: .txt
+                    Tags: ''
+                    ObjectType: Agreement
+                    ObjectId: 81d9630f-db70-40ba-b44e-7fdbfdeab08e
+                    DocumentId: 1b61b927-b033-4381-955c-83257ef41b38
+                    DocumentVersion: 1
+                    IsDeleted: false
+                    CheckoutBy: ''
+                    CheckoutDate: '2022-01-01T00:00:00'
+                    FileSize: 100
+                    FileType: text/plain
+                    IsLatest: true
+                    IsSearchable: true
+                    Id: c4beb4dd-f87d-4782-b072-06ee4631d8ea
+                    Name: Doc1.txt
+                    CreatedBy:
+                      Id: ''
+                      Name: ''
+                    CreatedDate: '2026-07-27T11:13:37.0590432+00:00'
+                    ModifiedBy:
+                      Id: ''
+                      Name: ''
+                    ModifiedDate: '2026-07-27T11:13:37.0590518+00:00'
+                    ExternalId: null
+                    ETag: null
+                  BlobData: UEFO
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/document-management/v1/documents/{id}/download:
+    get:
+      tags:
+      - Documents
+      summary: Get a document by its ID
+      description: Downloads a document by ID.
+      parameters:
+      - name: id
+        in: path
+        description: Version ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Id not provided.
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /v2/documents/convert:
+    post:
+      tags:
+      - Documents
+      summary: Convert documents' format
+      description: "Converts one or more passed documents from one format to another.\nThe generated documents can be delivered to one or more destinations.\n            \nEXAMPLE I: Convert a batch of Word documents to PDF.\n            \n    Request:\n            \n    POST /documents/convert\n    {\n        \"documents\": [\n            {\n                \"id\": \"420326c7-aaa4-4598-a072-48e8cbbe442d\"\n            },\n            {\n                \"id\": \"b04393b5-16c2-4364-9ea3-a3d3c38453e1\"\n            }\n        ],\n        \"outputConfig\": {\n            \"outputFormat\": 1\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }"
+      operationId: Documents_Convert
+      parameters:
+      - name: request
+        in: query
+        description: Convert request
+        schema:
+          $ref: '#/components/schemas/ConvertRequest'
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/generate:
+    post:
+      tags:
+      - Documents
+      summary: Generate a document from merge templates and data sources
+      description: "Generates a document by merging one or more templates with data collected from multiple sources.\n            \nEXAMPLE I: Merging a single XAuthor template with data fetched from Conga Platform and generating a PDF document as output.\n            \n    Request:\n            \n    POST /documents/generate\n    {\n        \"data\": [\n            {\n                \"entityId\": \"3ff0e051-d655-451d-abb5-a71b202cb935\",\n                \"entityName\": \"Agreement\"\n            }\n        ],\n        \"templates\": [\n            {\n                \"id\": \"79d97cc6-933b-4f2f-95b6-a64d3349f3ac\"\n            }\n        ],\n        \"outputConfig\": {\n            \"outputFormat\": 1, // 0 -> DOCX     1 -> PDF\n            \"fileName\": \"OutputDocument\"\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }\n            \nEXAMPLE II: Merging a single XAuthor template with inline data passed in the request and generating a PDF.\n            \n    Request:\n            \n    POST /documents/generate\n    {\n        \"data\": [\n            {\n                \"entityId\": \"ffe71825-6212-4438-866e-b0a7785d9e0d\",\n                \"entityName\": \"ProductConfiguration\",\n                \"Data\": \"[{\\\"ObjectName\\\":\\\"ProductConfiguration\\\",\\\"Result\\\":[{\\\"Id\\\":\\\"481450d8-9e7c-4dd7-898f-ae8cb1691b94\\\",\\\"Name\\\":\\\"481450d8-9e7c-4dd7-898f-ae8cb1691b94\\\"}]},{\\\"ObjectName\\\":\\\"LineItem\\\",\\\"Result\\\":[{\\\"Id\\\":\\\"553dc3ad-4a9a-4eb2-960e-7bb2b19e0727\\\",\\\"Name\\\":\\\"Conga Water Bottle\\\",\\\"Description\\\":\\\"Stay hydrated on the ice-cold tears of your competition.\\\",\\\"Quantity\\\":1,\\\"Product\\\":{\\\"Id\\\":\\\"9b319b18-1916-4858-b4e8-4ee2b55f83e5\\\",\\\"Name\\\":\\\"Conga Water Bottle\\\",\\\"Description\\\":null},\\\"Configuration\\\":{\\\"Id\\\":\\\"481450d8-9e7c-4dd7-898f-ae8cb1691b94\\\",\\\"Name\\\":\\\"481450d8-9e7c-4dd7-898f-ae8cb1691b94\\\"}}]}]\"\n            }\n        ],\n        \"templates\": [\n            {\n                \"id\": \"950039fe-3ca3-49be-ba89-6d8999083a28\"\n            }\n        ],\n        \"outputConfig\": {\n            \"outputFormat\": 1,\n            \"fileName\": \"OutputDocument\"\n        }\n    }"
+      operationId: Documents_Generate
+      parameters:
+      - name: request
+        in: query
+        description: Merge request
+        schema:
+          $ref: '#/components/schemas/MergeRequest'
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/join:
+    post:
+      tags:
+      - Documents
+      summary: Join documents from multiple sources
+      description: "Joins documents fetched from multiple sources into a single document.\nThe joined document can be delivered to one or more destinations.\n            \nEXAMPLE I: Fetching Word documents from the Conga Platform and generating a combined PDF.\n            \n    Request:\n            \n    POST /documents/join\n    {\n        \"documents\": [\n            {\n                \"id\": \"420326c7-aaa4-4598-a072-48e8cbbe442d\"\n            },\n            {\n                \"id\": \"b04393b5-16c2-4364-9ea3-a3d3c38453e1\"\n            }\n        ],\n        \"outputConfig\": {\n            \"outputFormat\": 1,\n            \"fileName\": \"JoinedDocument\"\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }"
+      operationId: Documents_Join
+      parameters:
+      - name: request
+        in: query
+        description: Join request
+        schema:
+          $ref: '#/components/schemas/JoinRequest'
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/process:
+    post:
+      tags:
+      - Documents
+      operationId: Documents_Process
+      parameters:
+      - name: request
+        in: query
+        schema:
+          $ref: '#/components/schemas/ProcessRequest'
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/protect:
+    post:
+      tags:
+      - Documents
+      summary: Change document protection
+      description: "Applies protection to, or removes it from, one or more documents fetched from one or more sources.\nGenerated documents can be delivered to one or more destinations.\n            \nEXAMPLE I: Apply an edit restriction to Word documents stored on the Conga Revenue Lifecycle Platform.\n            \n    Request:\n            \n    POST /documents/protect\n    {\n        \"documents\": [\n            {\n                \"id\": \"420326c7-aaa4-4598-a072-48e8cbbe442d\"\n            },\n            {\n                \"id\": \"b04393b5-16c2-4364-9ea3-a3d3c38453e1\"\n            }\n        ],\n        \"wordProtectionConfig\": {\n            \"RestrictionType\": 3, // NoProtection -> -1 | AllowOnlyRevisions -> 0 | AllowOnlyComments -> 1 | AllowOnlyFormFields -> 2\n            \"restrictionPassword\": \"Your password goes here\"\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }"
+      operationId: Documents_Protect
+      parameters:
+      - name: request
+        in: query
+        description: Protect request
+        schema:
+          $ref: '#/components/schemas/ProtectRequest'
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/{documentId}/convert:
+    post:
+      tags:
+      - Documents
+      summary: Convert a document's format
+      description: "Converts the passed document from one format to another.\t\nThe generated document can be delivered to one or more destinations.\n            \nEXAMPLE I: Convert the passed document to PDF format.\n            \n    Request:\n            \n    POST /documents/420326c7-aaa4-4598-a072-48e8cbbe442d/convert\n    {\n        \"outputConfig\": {\n            \"outputFormat\": 1\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }"
+      operationId: Documents_Convert2
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        description: Document ID
+        schema:
+          type: string
+        x-position: 1
+      - name: request
+        in: query
+        description: Document convert request
+        schema:
+          $ref: '#/components/schemas/DocumentConvertRequest'
+        x-position: 2
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/{documentId}/process:
+    post:
+      tags:
+      - Documents
+      operationId: Documents_Process2
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: request
+        in: query
+        schema:
+          $ref: '#/components/schemas/DocumentProcessRequest'
+        x-position: 2
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+  /v2/documents/{documentId}/protect:
+    post:
+      tags:
+      - Documents
+      summary: Change document protection
+      description: "Applies or removes protection from the passed document.\nThe generated document can be delivered to one or more destinations.\n            \nEXAMPLE I: Apply edit restrictions to a Word document in the Conga Revenue Lifecycle Platform.\n            \n    Request:\n            \n    POST /documents/420326c7-aaa4-4598-a072-48e8cbbe442d/protect\n    {\n        \"wordProtectionConfig\": {\n            \"RestrictionType\": 3,\n            \"restrictionPassword\": \"Your password goes here\"\n        }\n    }\n            \n    Response:\n    {\n        \"job\": {\n            \"status\": 0,\n            \"errorReason\": null,\n            \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n            \"createdDate\": \"2023-07-15T12:41:27.1363101Z\",\n        },\n        \"success\": true,\n        \"statusCode\": 202,\n        \"message\": \"Successfully queued the request\"\n    }"
+      operationId: Documents_Protect2
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        description: Document ID
+        schema:
+          type: string
+        x-position: 1
+      - name: request
+        in: query
+        description: Document protect request
+        schema:
+          $ref: '#/components/schemas/DocumentProtectRequest'
+        x-position: 2
+      responses:
+        '200':
+          description: Returns the job request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+        '400':
+          description: The passed request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '401':
+          description: The token is missing or the user lacks permission to perform the action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGenWorkflowAsyncResponse'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+components:
+  schemas:
+    Document:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          description: Status of the document
+        approvals:
+          type: array
+          description: List of approvals for the document
+          items:
+            $ref: '#/components/schemas/Approval'
+        data:
+          type: object
+          description: Custom data for the document
+          additionalProperties: {}
+        description:
+          type: string
+          description: Document description
+        external:
+          description: External integration provider settings
+          oneOf:
+          - $ref: '#/components/schemas/External'
+        extract:
+          type:
+          - boolean
+          - 'null'
+        tagged:
+          type:
+          - boolean
+          - 'null'
+          description: Tagged
+        extractionTypes:
+          type: array
+          description: ExtractionTypes
+          items:
+            type: string
+        fields:
+          type: array
+          description: List of fields in the document
+          items:
+            $ref: '#/components/schemas/Field'
+        id:
+          type: string
+          description: Unique id of the document
+        index:
+          type:
+          - integer
+          - 'null'
+          description: Index of the document within the package
+          format: int32
+        name:
+          type: string
+          description: The document name
+        pages:
+          type: array
+          description: List of page objects within the document
+          items:
+            $ref: '#/components/schemas/Page'
+        size:
+          type:
+          - integer
+          - 'null'
+          description: The size of the document in bytes
+          format: int32
+        signedHash:
+          type: string
+          description: Signed hash
+        signerVerificationToken:
+          type: string
+          description: "SignerVerificationToken\n "
+    SignedDocument:
+      allOf:
+      - $ref: '#/components/schemas/Document'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            type: string
+            description: The status of the document
+          fields:
+            type: array
+            description: The fields in the document
+            items:
+              $ref: '#/components/schemas/Field'
+          name:
+            type: string
+            description: The document name
+          size:
+            type: integer
+            description: The size of the document in bytes
+            format: int32
+          description:
+            type: string
+            description: Document description
+          index:
+            type: integer
+            description: Index
+            format: int32
+          id:
+            type: string
+            description: Id
+          data:
+            type: object
+            description: Custom meta data
+            additionalProperties: {}
+          signedHash:
+            type: string
+            description: SignedHash
+          extract:
+            type:
+            - boolean
+            - 'null'
+          extractionTypes:
+            type: array
+            description: ExtractionTypes
+            items:
+              type: string
+          tagged:
+            type:
+            - boolean
+            - 'null'
+            description: Tagged
+          external:
+            description: External
+            oneOf:
+            - $ref: '#/components/schemas/External'
+          approvals:
+            type: array
+            description: Approvals
+            items:
+              $ref: '#/components/schemas/Approval'
+          signerVerificationToken:
+            type: string
+            description: SignerVerificationToken
+          pages:
+            type: array
+            description: Pages
+            items:
+              $ref: '#/components/schemas/Page'
+          handdrawn:
+            type: string
+            description: Hand drawn signature string (base64)
+    ImprintField:
+      type: object
+      description: Imprint Field class
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          description: The Imprint Field value
+        name:
+          type: string
+          description: Imprint Field name.
+        type:
+          description: Imprint Field type.
+          oneOf:
+          - $ref: '#/components/schemas/ImprintFieldType'
+        id:
+          type: string
+          description: Imprint Field Id.
+        data:
+          type: object
+          description: Custom data for the Imprint Field
+          additionalProperties: {}
+        page:
+          type: integer
+          description: The document page where the Imprint Field is located
+          format: int32
+        left:
+          type: number
+          description: X coordinate of the Imprint Field
+          format: double
+        subtype:
+          description: Imprint Field subtype
+          oneOf:
+          - $ref: '#/components/schemas/ImprintFieldSubType'
+        width:
+          type: number
+          description: Imprint Field width.
+          format: double
+        top:
+          type: number
+          description: Y coordinate of the Imprint Field
+          format: double
+        height:
+          type: number
+          description: Imprint Field height.
+          format: double
+        binding:
+          type: string
+          description: Imprint Field Binding
+        editable:
+          type: boolean
+          description: Determines if Imprint Field is to be editable
+        horizontalTextAlignment:
+          type: string
+          description: Horizontal text alignment of the Imprint Field
+        tooltip:
+          type: string
+          description: Tooltip of the Imprint Field
+        notary:
+          type: boolean
+          description: Notary of the Imprint Field
+        fontSize:
+          type:
+          - integer
+          - 'null'
+          description: Font Size of the Imprint Field
+          format: int32
+        formattedValue:
+          type: string
+          description: Formatted Value of the Imprint Field
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    SignedDocuments:
+      type: object
+      description: Object to manage signing documents via api
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of documents
+          items:
+            $ref: '#/components/schemas/Document'
+        handdrawn:
+          type: string
+          description: Hand drawn signature string
+    External:
+      type: object
+      description: External integration provider settings.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Provider metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: External integration Id.
+        provider:
+          type: string
+          description: Provider method.
+        providerName:
+          type: string
+          description: Provider name.
+    AnchorPointType:
+      type: string
+      description: ''
+      x-enumNames:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+      enum:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+    Field:
+      type: object
+      description: Approval fields object.
+      additionalProperties: false
+      properties:
+        binding:
+          type: string
+          description: Binding
+        data:
+          type: object
+          description: Custom data for the field
+          additionalProperties: {}
+        extract:
+          type: boolean
+          description: Determines if field is to be extracted
+        extractAnchor:
+          description: Field extraction anchor.
+          oneOf:
+          - $ref: '#/components/schemas/ExtractAnchor'
+        height:
+          type: number
+          description: Field height.
+          format: double
+        id:
+          type: string
+          description: Field Id.
+        left:
+          type: number
+          description: X coordinate of the field
+          format: double
+        name:
+          type: string
+          description: Field name.
+        page:
+          type: integer
+          description: The document page where the field is located
+          format: int32
+        subtype:
+          type: string
+          description: Field subtype
+        top:
+          type: number
+          description: Y coordinate of the field
+          format: double
+        type:
+          description: Field type.
+          oneOf:
+          - $ref: '#/components/schemas/FieldType'
+        validation:
+          description: Field validation information
+          oneOf:
+          - $ref: '#/components/schemas/FieldValidation'
+        value:
+          type: string
+          description: The field value
+        fontSize:
+          type:
+          - integer
+          - 'null'
+          description: Field font size.
+          format: int32
+        width:
+          type: number
+          description: Field width.
+          format: double
+    Approval:
+      type: object
+      description: Signing Approval object.
+      additionalProperties: false
+      properties:
+        accepted:
+          type:
+          - string
+          - 'null'
+          description: Date of approval acceptance.
+          format: date-time
+        data:
+          type: object
+          description: Additional approval ata properties.
+          additionalProperties: {}
+        fields:
+          type: array
+          description: Approval Signature/Input fields.
+          items:
+            $ref: '#/components/schemas/Field'
+        id:
+          type: string
+          description: The unique approval Id.
+        name:
+          type: string
+          description: The unique approval name.
+        role:
+          type: string
+          description: The approval role name.
+        signed:
+          type:
+          - string
+          - 'null'
+          description: The approval signed date.
+          format: date-time
+        optional:
+          type: boolean
+          description: Check if for optional information.
+        enforceCaptureSignature:
+          type: boolean
+          description: Check if required on Capture Signature
+        disabled:
+          type: boolean
+          description: Check if disabled for approval.
+        fromFile:
+          type: boolean
+          description: Check if signature is uploaded From File.
+        fromFileData:
+          type: object
+          description: Additional approval From File data properties.
+          additionalProperties: {}
+    FieldValidation:
+      type: object
+      description: Field validation object
+      additionalProperties: false
+      properties:
+        enum:
+          type: array
+          items:
+            type: string
+        errorCode:
+          type:
+          - integer
+          - 'null'
+          description: Field validation error code.
+          format: int32
+        errorMessage:
+          type: string
+          description: "Field validation error message.\n            "
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation maximum length.
+          format: int32
+        minLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation minimum length.
+          format: int32
+        pattern:
+          type: string
+          description: Pattern
+        required:
+          type: boolean
+          description: Determines if field is required
+        group:
+          type: string
+          description: Field validation group.
+        minimumRequired:
+          type:
+          - integer
+          - 'null'
+          description: Minimum Required (Grouped Checkboxes)
+          format: int32
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    Metadata:
+      type: object
+      description: 'Metadata object for storing custom key-value pairs on documents.
+
+        Internal metadata defined by OneSpan cannot be updated and will be ignored.'
+      additionalProperties: {}
+    DocumentVisibility:
+      type: object
+      description: Object to manage document visibility
+      additionalProperties: false
+      properties:
+        configurations:
+          type: array
+          description: List of DocumentVisibilityConfigurations
+          items:
+            $ref: '#/components/schemas/DocumentVisibilityConfiguration'
+        id:
+          type: string
+          description: The id of the document
+        data:
+          type: object
+          description: Custom data related to document
+          additionalProperties: {}
+        name:
+          type: string
+          description: The name of the document
+    ImprintFieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - INPUT
+      enum:
+      - INPUT
+    DocumentVisibilityConfiguration:
+      type: object
+      description: Object to manage document visibility
+      additionalProperties: false
+      properties:
+        documentUid:
+          type: string
+          description: Document Id
+        roleUids:
+          type: array
+          description: List of Role Ids that can view the identified Document
+          items:
+            type: string
+    Page:
+      type: object
+      description: Object representing a page in a document
+      additionalProperties: false
+      properties:
+        height:
+          type:
+          - number
+          - 'null'
+          description: Page height
+          format: double
+        id:
+          type: string
+          description: Unique page id
+        index:
+          type:
+          - integer
+          - 'null'
+          description: Index of the page within the document
+          format: int32
+        left:
+          type:
+          - number
+          - 'null'
+          description: Page left
+          format: double
+        top:
+          type:
+          - number
+          - 'null'
+          description: Page top
+          format: double
+        version:
+          type:
+          - integer
+          - 'null'
+          description: Version
+          format: int32
+        width:
+          type:
+          - number
+          - 'null'
+          description: Page width
+          format: double
+    DocumentFields:
+      type: object
+      description: 'Document Fields object containing approvals and imprint fields.
+
+        Used for replacing all fields on a document.'
+      additionalProperties: false
+      properties:
+        approvals:
+          type:
+          - array
+          - 'null'
+          description: 'List of approval objects for the document.
+
+            If array is not provided, approvals won''t be updated.
+
+            If empty array is provided, all approvals will be deleted.'
+          items:
+            $ref: '#/components/schemas/Approval'
+        imprintFields:
+          type:
+          - array
+          - 'null'
+          description: 'List of imprint field objects for the document.
+
+            If array is not provided, imprint fields won''t be updated.
+
+            If empty array is provided, all editable imprint fields will be deleted.'
+          items:
+            $ref: '#/components/schemas/ImprintField'
+    ExtractAnchor:
+      type: object
+      description: Text extraction anchor object.
+      additionalProperties: false
+      properties:
+        anchorPoint:
+          description: Which corner of the specified character to use as the base for calculating position
+          oneOf:
+          - $ref: '#/components/schemas/AnchorPointType'
+        characterIndex:
+          type: integer
+          description: The index of the character within the Anchor Text that will be used to calculate position
+          format: int32
+        height:
+          type: integer
+          description: The height of the field position to be calculated
+          format: int32
+        index:
+          type: integer
+          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
+          format: int32
+        leftOffset:
+          type: integer
+          description: An absolute offset applied to the final x value
+          format: int32
+        text:
+          type: string
+          description: The exact string that will be searched for in the uploaded document
+        topOffset:
+          type: integer
+          description: An absolute offset applied to the final y value
+          format: int32
+        width:
+          type: integer
+          description: The width of the field position to be calculated
+          format: int32
+    FieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+      enum:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+    ImprintFieldSubType:
+      type: string
+      description: ''
+      x-enumNames:
+      - LABEL
+      enum:
+      - LABEL
+    DocumentRequest:
+      type: object
+      properties:
+        DocumentName:
+          type:
+          - string
+          - 'null'
+          description: Document name
+        ObjectType:
+          type:
+          - string
+          - 'null'
+          description: Object type for uploading/storing document **For example :** Agreement
+        ObjectId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the object
+        Tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Additioal information about document
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Document description
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+          description: Checkout by
+        CheckoutDate:
+          type:
+          - string
+          - 'null'
+          description: Checkout Date
+          format: date-time
+        NewVersionId:
+          type:
+          - string
+          - 'null'
+          description: New version Id for document
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document specific additional properties **For instance :* {Property Name, Property Value}
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
+      additionalProperties: false
+      description: Schema for document
+    UploadPartResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UploadPartResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DocumentMetadataUpdateRequest:
+      type: object
+      properties:
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+          description: Checkout by
+        CheckoutDate:
+          type:
+          - string
+          - 'null'
+          description: Checkout date
+          format: date-time
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description for document
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document specific additional properties **For instance :* {Property Name, Property Value}
+        Tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Additional information about document
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
+      additionalProperties: false
+      description: Request to update metadata/schema information of the document
+    UploadPartResponse:
+      type: object
+      properties:
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier (entity tag)
+        PartNumber:
+          type: integer
+          description: Part number
+          format: int32
+      additionalProperties: false
+      description: Upload part response
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+    DocumentMetadataListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    InitMultipartUploadResponse:
+      type: object
+      properties:
+        UploadId:
+          type:
+          - string
+          - 'null'
+          description: A unique identfier used for consecutive request for multipart upload.
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Storage document key
+        Metadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+      additionalProperties: false
+      description: Init multipart upload response
+    DocumentResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DocumentQuery:
+      type: object
+      properties:
+        Criteria:
+          type:
+          - string
+          - 'null'
+          description: Criteria based on which documents will be fetched
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of documents to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of documents to be skipped
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+      additionalProperties: false
+    DocumentResponse:
+      type: object
+      properties:
+        DocumentMetadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+        BlobData:
+          type:
+          - string
+          - 'null'
+          format: byte
+      additionalProperties: false
+    MultipartUploadRequest:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Multipart upload key
+        UploadId:
+          type:
+          - string
+          - 'null'
+          description: Upload request identifier
+      additionalProperties: false
+      description: Multipart uplaod request
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    InitMultipartUploadResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/InitMultipartUploadResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DocumentMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/DocumentMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DocumentMetadata:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        Extension:
+          type:
+          - string
+          - 'null'
+          description: File Extension **For example :** .doc, .docx, .pdf etc
+        Tags:
+          type:
+          - string
+          - 'null'
+          description: Additioal information about document
+        ObjectType:
+          type:
+          - string
+          - 'null'
+          description: Object type for uploading/storing document **For example :** Agreement
+        ObjectId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the object for which the document is stored
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        DocumentVersion:
+          type: integer
+          description: Version number
+          format: int32
+        IsDeleted:
+          type: boolean
+          description: Document deleted flag
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+          description: Checkout by
+        CheckoutDate:
+          type: string
+          description: Checkout date
+          format: date-time
+        FileSize:
+          type: integer
+          description: Document file size
+          format: int64
+        FileType:
+          type:
+          - string
+          - 'null'
+          description: Document file type **For example :** txt/plain
+        IsLatest:
+          type: boolean
+          description: Is latest document flag
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+          description: Gets or sets a value indicating whether the item can be included in search operations.
+      additionalProperties: {}
+      description: Document metadata
+    CompleteMultipartUploadRequest:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Multipart upload key
+        UploadId:
+          type:
+          - string
+          - 'null'
+          description: Upload request identifier
+        ETags:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+          description: A collection of unique identifiers (entity tags).
+      additionalProperties: false
+      description: Complete multipart upload request
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    DocumentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/DocumentResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PdfImageCompressionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Auto
+      - Jpeg
+      enum:
+      - Auto
+      - Jpeg
+    ConvertRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+          hasDocumentSources:
+            type: boolean
+    JobEntity:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            oneOf:
+            - $ref: '#/components/schemas/JobStatus'
+          startTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          endTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          duration:
+            type:
+            - number
+            - 'null'
+            format: double
+          progress:
+            type: number
+            format: double
+          errorReason:
+            type:
+            - string
+            - 'null'
+          result:
+            type:
+            - object
+            - 'null'
+            additionalProperties: {}
+    SortParams:
+      type: object
+      additionalProperties: false
+      properties:
+        fieldName:
+          type: string
+        direction:
+          $ref: '#/components/schemas/SortDirection'
+    ProtectRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          wordProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions'
+          pdfProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions2'
+          documentId:
+            type:
+            - string
+            - 'null'
+          fileName:
+            type:
+            - string
+            - 'null'
+          documentMetadata:
+            type:
+            - object
+            - 'null'
+            additionalProperties: {}
+          hasDocumentSources:
+            type: boolean
+    PaginationParams:
+      type: object
+      additionalProperties: false
+      properties:
+        skip:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    AttachmentQuery:
+      allOf:
+      - $ref: '#/components/schemas/ObjectQuery'
+      - type: object
+        additionalProperties: false
+    DocumentProtectRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          wordProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions'
+          pdfProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions2'
+          documentMetadata:
+            type:
+            - object
+            - 'null'
+            additionalProperties: {}
+    AttachmentSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseAttachmentSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type:
+            - string
+            - 'null'
+          url:
+            type:
+            - string
+            - 'null'
+          attachmentType:
+            type:
+            - string
+            - 'null'
+    PdfStandard:
+      type: string
+      description: ''
+      x-enumNames:
+      - Pdf17
+      - Pdf20
+      - PdfA1a
+      - PdfA1b
+      - PdfA2a
+      - PdfA2u
+      - PdfA4
+      - PdfUa1
+      enum:
+      - Pdf17
+      - Pdf20
+      - PdfA1a
+      - PdfA1b
+      - PdfA2a
+      - PdfA2u
+      - PdfA4
+      - PdfUa1
+    AttachmentInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        attachmentType:
+          type:
+          - string
+          - 'null'
+        templateType:
+          type:
+          - string
+          - 'null'
+        additionalProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    DocGenWorkflowAsyncResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          job:
+            oneOf:
+            - $ref: '#/components/schemas/JobEntity'
+    BaseDocGenResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        actionName:
+          type:
+          - string
+          - 'null'
+        isError:
+          type: boolean
+        success:
+          type: boolean
+          deprecated: true
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type:
+          - string
+          - 'null'
+    HeaderOptions:
+      allOf:
+      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
+      - type: object
+        additionalProperties: false
+        properties:
+          headerText:
+            type:
+            - string
+            - 'null'
+    QueryResult:
+      type: object
+      additionalProperties: false
+      properties:
+        queryId:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        result:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        recordCount:
+          type: integer
+          format: int32
+    PicklistEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type:
+          - string
+          - 'null'
+        displayText:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type: integer
+          format: int32
+        isDeprecated:
+          type: boolean
+    WatermarkDirection:
+      type: string
+      description: ''
+      x-enumNames:
+      - Horizontal
+      - Diagonal
+      enum:
+      - Horizontal
+      - Diagonal
+    BaseDocGenWorkflowRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenRequest'
+      - type: object
+        x-abstract: true
+        additionalProperties: false
+        properties:
+          documentDestinations:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentDestination'
+          sourceType:
+            type:
+            - string
+            - 'null'
+          sourceName:
+            type:
+            - string
+            - 'null'
+          source:
+            oneOf:
+            - $ref: '#/components/schemas/BaseSourceConfig'
+          sourceConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/BaseSourceConfig'
+          saveDocumentOptions:
+            oneOf:
+            - $ref: '#/components/schemas/SaveDocumentsParameters'
+          workflowRequester:
+            oneOf:
+            - $ref: '#/components/schemas/WorkflowRequesterInfo'
+          additionalProperties:
+            type:
+            - object
+            - 'null'
+            additionalProperties:
+              type: string
+    BaseTemplateSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+    QueryCondition:
+      type: object
+      additionalProperties: false
+      properties:
+        parameter:
+          type: string
+        operator:
+          $ref: '#/components/schemas/ConditionalOperator'
+        value:
+          type: string
+    WatermarkOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        watermarkText:
+          type:
+          - string
+          - 'null'
+        direction:
+          oneOf:
+          - $ref: '#/components/schemas/WatermarkDirection'
+        textColor:
+          type:
+          - string
+          - 'null'
+        fontFamily:
+          type:
+          - string
+          - 'null'
+        fontSize:
+          type: number
+          format: float
+        isSemiTrasparent:
+          type: boolean
+        image:
+          type:
+          - string
+          - 'null'
+          format: byte
+        imageScale:
+          type: number
+          format: double
+        isWashout:
+          type: boolean
+        removeWatermark:
+          type:
+          - boolean
+          - 'null'
+    DocumentOutputConfiguration:
+      type: object
+      additionalProperties: false
+      properties:
+        outputFormat:
+          oneOf:
+          - $ref: '#/components/schemas/DocumentType'
+        documentId:
+          type:
+          - string
+          - 'null'
+        fileName:
+          type:
+          - string
+          - 'null'
+        watermarkText:
+          type:
+          - string
+          - 'null'
+        removeWatermark:
+          type:
+          - boolean
+          - 'null'
+        watermarkOptions:
+          oneOf:
+          - $ref: '#/components/schemas/WatermarkOptions'
+        headerText:
+          type:
+          - string
+          - 'null'
+        footerText:
+          type:
+          - string
+          - 'null'
+        headerFooterOptions:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterOptions'
+        culture:
+          type:
+          - string
+          - 'null'
+        timezone:
+          type:
+          - string
+          - 'null'
+        collectionSeparator:
+          type:
+          - string
+          - 'null'
+        documentMetadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        wordOutputConfig:
+          oneOf:
+          - $ref: '#/components/schemas/WordOutputConfig'
+        pdfOutputConfig:
+          oneOf:
+          - $ref: '#/components/schemas/PdfOutputConfig'
+        compressClauseBaseValue:
+          type: boolean
+    HeaderFooterStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        fontFamily:
+          type:
+          - string
+          - 'null'
+        textColor:
+          type:
+          - string
+          - 'null'
+        isBold:
+          type:
+          - boolean
+          - 'null'
+        isItalic:
+          type:
+          - boolean
+          - 'null'
+        fontSize:
+          type:
+          - number
+          - 'null'
+          format: double
+        textAlignment:
+          oneOf:
+          - $ref: '#/components/schemas/TextAlignment'
+        styleId:
+          type:
+          - string
+          - 'null'
+    ProtectionOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        restrictionType:
+          oneOf:
+          - $ref: '#/components/schemas/EditRestrictionType'
+        restrictionPassword:
+          type:
+          - string
+          - 'null'
+        trackRevisions:
+          type:
+          - boolean
+          - 'null'
+        removeRestriction:
+          type:
+          - boolean
+          - 'null'
+    ObjectQuery:
+      type: object
+      additionalProperties: false
+      properties:
+        queryId:
+          type: string
+        objectName:
+          type:
+          - string
+          - 'null'
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        filters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/QueryCondition'
+        conditionJoinType:
+          $ref: '#/components/schemas/ConditionJoinType'
+        sortParams:
+          oneOf:
+          - $ref: '#/components/schemas/SortParams'
+        paginationParams:
+          oneOf:
+          - $ref: '#/components/schemas/PaginationParams'
+        subQuery:
+          type: boolean
+        subQueryType:
+          $ref: '#/components/schemas/SubQueryType'
+        parentQuerySource:
+          type:
+          - string
+          - 'null'
+        parentQueryId:
+          type:
+          - string
+          - 'null'
+        referenceColumnName:
+          type: string
+    PdfCompressionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Flate
+      enum:
+      - None
+      - Flate
+    FooterOptions:
+      allOf:
+      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
+      - type: object
+        additionalProperties: false
+        properties:
+          footerText:
+            type:
+            - string
+            - 'null'
+          addPageNoInFooter:
+            type:
+            - boolean
+            - 'null'
+    ConditionJoinType:
+      type: string
+      description: ''
+      x-enumNames:
+      - AND
+      - OR
+      enum:
+      - AND
+      - OR
+    DataSource:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DataSpec'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        dataSetName:
+          type:
+          - string
+          - 'null'
+        order:
+          type: integer
+          format: int32
+    HeaderFooterActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Replace
+      - Append
+      - CarryFirst
+      - Remove
+      enum:
+      - Replace
+      - Append
+      - CarryFirst
+      - Remove
+    Metadata_2:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+    SaveDocumentsParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        documentSaveType:
+          type:
+          - string
+          - 'null'
+        outputFormat:
+          type:
+          - string
+          - 'null'
+        isUpdate:
+          type: boolean
+        saveAsync:
+          type: boolean
+        linkEntityId:
+          type:
+          - string
+          - 'null'
+        linkEntityName:
+          type:
+          - string
+          - 'null'
+        metadataId:
+          type:
+          - string
+          - 'null'
+        isPreview:
+          type: boolean
+        isNonMergeAction:
+          type: boolean
+        isDocumentVersionEnabled:
+          type: boolean
+    DocumentProcessRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+    BaseEntity:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    DocumentType:
+      type: string
+      description: ''
+      x-enumNames:
+      - DOCX
+      - PDF
+      - GDOC
+      - DOC
+      - HTML
+      - RTF
+      - TXT
+      enum:
+      - DOCX
+      - PDF
+      - GDOC
+      - DOC
+      - HTML
+      - RTF
+      - TXT
+    TemplateSource:
+      type: object
+      additionalProperties: false
+      properties:
+        templates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TemplateSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/TemplateQuery'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentSourceType:
+          type:
+          - string
+          - 'null'
+        contentSourceName:
+          type:
+          - string
+          - 'null'
+        contentSource:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    BaseHeaderFooterOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        style:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        wrapInContentControl:
+          type: boolean
+    BaseSourceConfig:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+        name:
+          type:
+          - string
+          - 'null'
+    HeaderFooterLayout:
+      type: object
+      additionalProperties: false
+      properties:
+        headerHeight:
+          type:
+          - number
+          - 'null'
+          format: double
+        footerHeight:
+          type:
+          - number
+          - 'null'
+          format: double
+        topMargin:
+          type:
+          - number
+          - 'null'
+          format: double
+        bottomMargin:
+          type:
+          - number
+          - 'null'
+          format: double
+        leftMargin:
+          type:
+          - number
+          - 'null'
+          format: double
+        rightMargin:
+          type:
+          - number
+          - 'null'
+          format: double
+    DataSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseDataSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          entityId:
+            type:
+            - string
+            - 'null'
+          entityName:
+            type:
+            - string
+            - 'null'
+          entityData:
+            oneOf:
+            - $ref: '#/components/schemas/EntityData'
+          data:
+            type:
+            - string
+            - 'null'
+          dataType:
+            type:
+            - string
+            - 'null'
+          referenceKey:
+            type:
+            - string
+            - 'null'
+    FieldMetadata:
+      allOf:
+      - $ref: '#/components/schemas/Metadata_2'
+      - type: object
+        additionalProperties: false
+        properties:
+          dataType:
+            $ref: '#/components/schemas/CommonDataType'
+          defaultValue: {}
+          isPrimary:
+            type: boolean
+          isRequired:
+            type: boolean
+          isUnique:
+            type: boolean
+          isSortable:
+            type: boolean
+          isDeprecated:
+            type: boolean
+          isCalculated:
+            type: boolean
+          scale:
+            type: number
+            format: double
+          length:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          lookupObjectName:
+            type:
+            - string
+            - 'null'
+          picklistName:
+            type:
+            - string
+            - 'null'
+          complexMetadataName:
+            type:
+            - string
+            - 'null'
+    WorkflowRequesterInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        workflowRequesterId:
+          type:
+          - string
+          - 'null'
+        workflowRequesterName:
+          type:
+          - string
+          - 'null'
+        replyChannel:
+          type:
+          - string
+          - 'null'
+    PdfOutputConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        pdfOutputStandard:
+          oneOf:
+          - $ref: '#/components/schemas/PdfStandard'
+        textCompressionType:
+          oneOf:
+          - $ref: '#/components/schemas/PdfCompressionType'
+        imageCompressionType:
+          oneOf:
+          - $ref: '#/components/schemas/PdfImageCompressionType'
+        protection:
+          oneOf:
+          - $ref: '#/components/schemas/ProtectionOptions2'
+        acceptRevisions:
+          type:
+          - boolean
+          - 'null'
+        removeComments:
+          type:
+          - boolean
+          - 'null'
+    HttpResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        bodyWriter:
+          $ref: '#/components/schemas/PipeWriter'
+    TemplateSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type:
+            - string
+            - 'null'
+          url:
+            type:
+            - string
+            - 'null'
+          referenceKey:
+            type:
+            - string
+            - 'null'
+          storageType:
+            type:
+            - string
+            - 'null'
+          cache:
+            type: boolean
+          useCache:
+            type: boolean
+    BaseAttachmentSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+    PipeWriter:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        canGetUnflushedBytes:
+          type: boolean
+        unflushedBytes:
+          type: integer
+          format: int64
+    EditRestrictionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - ReadOnly
+      - NoProtection
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - ReadOnly
+      - NoProtection
+    DocumentSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocumentSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type:
+            - string
+            - 'null'
+          url:
+            type:
+            - string
+            - 'null'
+          documentType:
+            type:
+            - string
+            - 'null'
+          contentLink:
+            type:
+            - string
+            - 'null'
+          storageType:
+            type:
+            - string
+            - 'null'
+          cache:
+            type:
+            - boolean
+            - 'null'
+          useCache:
+            type:
+            - boolean
+            - 'null'
+    AttachmentSource:
+      type: object
+      additionalProperties: false
+      properties:
+        attachments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AttachmentSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/AttachmentQuery'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    PicklistMetadata:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        entries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+    WordOutputConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        hideContentControl:
+          type:
+          - boolean
+          - 'null'
+        unLockSmartItems:
+          type:
+          - boolean
+          - 'null'
+        protection:
+          oneOf:
+          - $ref: '#/components/schemas/ProtectionOptions'
+        removeComments:
+          type: boolean
+    CommonDataType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Identifier
+      - AutoNumber
+      - Number
+      - Integer
+      - Double
+      - Float
+      - Currency
+      - Decimal
+      - DateTime
+      - Date
+      - Time
+      - Boolean
+      - Text
+      - Email
+      - Url
+      - Xml
+      - Picklist
+      - MultiPicklist
+      - Lookup
+      - Complex
+      - ComplexArray
+      - Formula
+      enum:
+      - Identifier
+      - AutoNumber
+      - Number
+      - Integer
+      - Double
+      - Float
+      - Currency
+      - Decimal
+      - DateTime
+      - Date
+      - Time
+      - Boolean
+      - Text
+      - Email
+      - Url
+      - Xml
+      - Picklist
+      - MultiPicklist
+      - Lookup
+      - Complex
+      - ComplexArray
+      - Formula
+    AttachmentSet:
+      type: object
+      additionalProperties: false
+      properties:
+        setId:
+          type:
+          - string
+          - 'null'
+        attachments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AttachmentInfo'
+    JoinRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          joinOptions:
+            oneOf:
+            - $ref: '#/components/schemas/JoinOptions'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+    JoinWatermarkActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Retain
+      - Remove
+      enum:
+      - Retain
+      - Remove
+    DocumentQuery_2:
+      allOf:
+      - $ref: '#/components/schemas/ObjectQuery'
+      - type: object
+        additionalProperties: false
+    SortDirection:
+      type: string
+      description: ''
+      x-enumNames:
+      - Ascending
+      - Descending
+      enum:
+      - Ascending
+      - Descending
+    ProtectionOptions2:
+      type: object
+      additionalProperties: false
+      properties:
+        forbidAll:
+          type:
+          - boolean
+          - 'null'
+        allowAll:
+          type:
+          - boolean
+          - 'null'
+        allowPrinting:
+          type:
+          - boolean
+          - 'null'
+        allowCopying:
+          type:
+          - boolean
+          - 'null'
+        allowCommenting:
+          type:
+          - boolean
+          - 'null'
+        allowFormFilling:
+          type:
+          - boolean
+          - 'null'
+        allowAssembling:
+          type:
+          - boolean
+          - 'null'
+        allowChangingContent:
+          type:
+          - boolean
+          - 'null'
+        allowScreenReaders:
+          type:
+          - boolean
+          - 'null'
+        allowDegradedPrinting:
+          type:
+          - boolean
+          - 'null'
+        ownerPassword:
+          type:
+          - string
+          - 'null'
+    BaseDocGenRequest:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    JoinHeaderFooterActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Retain
+      - CarryFirst
+      - Remove
+      enum:
+      - Retain
+      - CarryFirst
+      - Remove
+    ProcessRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          processOptions:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessOptions'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+          hasDocumentSources:
+            type: boolean
+    ProcessOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        processMetadata:
+          type:
+          - boolean
+          - 'null'
+    SubQueryType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Collection
+      - Single
+      enum:
+      - Collection
+      - Single
+    EntityData:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/QueryResult'
+        schemas:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EntityMetadata'
+    BaseDataSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+    EntityMetadata:
+      allOf:
+      - $ref: '#/components/schemas/Metadata_2'
+      - type: object
+        additionalProperties: false
+        properties:
+          fields:
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldMetadata'
+          picklists:
+            type: array
+            items:
+              $ref: '#/components/schemas/PicklistMetadata'
+          complexFields:
+            type: array
+            items:
+              $ref: '#/components/schemas/ComplexFieldMetadata'
+          primaryFields:
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldMetadata'
+    ConditionalOperator:
+      type: string
+      description: ''
+      x-enumNames:
+      - Equals
+      - GreaterThan
+      - GreatherThanOrEqual
+      - LessThan
+      - LessThanOrEqual
+      - NotEqual
+      - In
+      - NotIn
+      - Contains
+      - NotContains
+      enum:
+      - Equals
+      - GreaterThan
+      - GreatherThanOrEqual
+      - LessThan
+      - LessThanOrEqual
+      - NotEqual
+      - In
+      - NotIn
+      - Contains
+      - NotContains
+    JoinOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        actionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinActionType'
+        headerFooterActionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinHeaderFooterActionType'
+        watermarkActionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinWatermarkActionType'
+        preserveRedlines:
+          type:
+          - boolean
+          - 'null'
+        joinMetadata:
+          type:
+          - boolean
+          - 'null'
+    ComplexFieldMetadata:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+    HeaderFooterOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        headerOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/HeaderOptions'
+        footerOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FooterOptions'
+        headerStyle:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        footerStyle:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        headerText:
+          type:
+          - string
+          - 'null'
+        footerText:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        actionType:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterActionType'
+        wrapInContentControl:
+          type: boolean
+        addPageNoInFooter:
+          type:
+          - boolean
+          - 'null'
+        layout:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterLayout'
+    DocumentDestination:
+      type: object
+      additionalProperties: false
+      properties:
+        destinationType:
+          type:
+          - string
+          - 'null'
+        destinationName:
+          type:
+          - string
+          - 'null'
+        destination:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentDestinationType:
+          type:
+          - string
+          - 'null'
+        contentDestinationName:
+          type:
+          - string
+          - 'null'
+        contentDestination:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+    JobStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+      enum:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+    DocumentConvertRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+    MergeRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          templates:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/TemplateSpec'
+          data:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DataSpec'
+          dataSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DataSource'
+          templateSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/TemplateSource'
+          attachments:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AttachmentSpec'
+          attachmentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AttachmentSource'
+          attachmentSets:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AttachmentSet'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+          hasDataSources:
+            type: boolean
+          hasTemplateSources:
+            type: boolean
+    TextAlignment:
+      type: string
+      description: ''
+      x-enumNames:
+      - Left
+      - Center
+      - Right
+      - Justify
+      - Distributed
+      enum:
+      - Left
+      - Center
+      - Right
+      - Justify
+      - Distributed
+    DocumentSource:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/DocumentQuery_2'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentSourceType:
+          type:
+          - string
+          - 'null'
+        contentSourceName:
+          type:
+          - string
+          - 'null'
+        contentSource:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    JoinActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - New
+      - Continuous
+      enum:
+      - New
+      - Continuous
+    TemplateQuery:
+      allOf:
+      - $ref: '#/components/schemas/ObjectQuery'
+      - type: object
+        additionalProperties: false
+    BaseDocumentSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-conga-sign.json
+- conga-document-management.json
+- conga-ingress.json

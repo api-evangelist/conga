@@ -1,0 +1,718 @@
+openapi: 3.2.0
+info:
+  title: Ingress Solution API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Solution
+paths:
+  /v1/Solution:
+    post:
+      tags:
+      - Solution
+      summary: Creates a new solution.
+      operationId: Solution_CreateSolution
+      requestBody:
+        x-name: payload
+        description: The solution creation payload containing the data for the new solution.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionPayloadCreateRequest'
+        required: true
+        x-position: 1
+      responses:
+        '201':
+          description: 201 Created if successful, 400 Bad Request if there was an issue with the creation, or 500 for internal server errors.
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Solution
+      summary: Retrieves all solutions with optional pagination and search filter.
+      operationId: Solution_GetAllSolutions
+      parameters:
+      - name: searchName
+        in: query
+        description: Optional search term for solution name.
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: pageNumber
+        in: query
+        description: Optional page number for pagination.
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 2
+      - name: pageSize
+        in: query
+        description: Optional page size for pagination.
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 3
+      responses:
+        '200':
+          description: 200 OK with a list of solutions, 400 Bad Request if the input is invalid, or 500 for internal server errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionListResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Solution/languages:
+    get:
+      tags:
+      - Solution
+      summary: Get coding languages for the solution's deploy step
+      operationId: Solution_GetLanguages
+      responses:
+        '200':
+          description: 200 for successfull
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Solution/salesforce_contacts:
+    get:
+      tags:
+      - Solution
+      summary: Search Saleforce contacts with the given search term.
+      operationId: Solution_SalesforceContacts
+      parameters:
+      - name: search
+        in: query
+        schema:
+          type: string
+        x-position: 1
+      - name: environment
+        in: query
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: 200 for successfull
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Solution/snippet:
+    post:
+      tags:
+      - Solution
+      summary: Retrieves the code snippet for a specific language and solution.
+      operationId: Solution_GetSnippet
+      requestBody:
+        x-name: payload
+        description: The payload of the snippet model.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnippetModel'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: '200 OK with the code snippet if successful,
+
+            400 if language is invalid or input params are missing or incorrect,
+
+            404 Not Found if the solution doesn''t exist,
+
+            or 500 Internal Server Error for unexpected errors.'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Solution/{id}:
+    delete:
+      tags:
+      - Solution
+      summary: Deletes a solution by its ID.
+      operationId: Solution_DeleteSolution
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the solution to delete.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '204':
+          description: 204 No Content if successful, 404 Not Found if not found, or 500 for internal server errors.
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Solution
+      summary: Retrieves a single solution by its ID.
+      operationId: Solution_GetSolutionById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the solution to retrieve.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: 200 OK if successful, 404 Not Found if not found, or 500 for internal server errors.
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - Solution
+      summary: Partially updates an existing solution by its ID (PATCH).
+      operationId: Solution_PatchSolution
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the solution to patch.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: payload
+        description: The payload containing the fields to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionPayloadPatchRequest'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: 200 OK if successful, or 404 Not Found if the solution does not exist.
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    DeliveryOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        composerOutputOptions:
+          type: string
+        congaSignAPI:
+          $ref: '#/components/schemas/CongaSignAPI'
+        congaSignSalesforceConnector:
+          $ref: '#/components/schemas/CongaSignSalesforceConnector'
+        email:
+          $ref: '#/components/schemas/Email'
+        download:
+          type: boolean
+    Email:
+      type: object
+      additionalProperties: false
+      properties:
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        bcc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        additionalTo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        subject:
+          type: string
+        emailTemplateId:
+          type: string
+        isOn:
+          type: boolean
+    EmailRecipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+    ComposerParameterType:
+      type: string
+      description: ''
+      x-enumNames:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
+      enum:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
+    Solution:
+      type: object
+      additionalProperties: false
+      properties:
+        outputBehaviors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Behavior'
+        templateId:
+          type: string
+        templates:
+          type: array
+          items:
+            type: string
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Destination'
+        emailTemplateId:
+          type: string
+    HighVolumeDeliveryOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        highVolumeOutputOptions:
+          type: string
+        highVolumeEmailTemplateId:
+          type: string
+        highVolumeSFTPFilePath:
+          type: string
+    CongaSignSalesforceConnector:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        salesforceOrg:
+          type: string
+        signingOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationType:
+          $ref: '#/components/schemas/ExpirationType'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        isOn:
+          type: boolean
+    SnippetModel:
+      type: object
+      additionalProperties: false
+      properties:
+        solution:
+          $ref: '#/components/schemas/Solution'
+        deliveryOptions:
+          $ref: '#/components/schemas/DeliveryOptions'
+        highVolumeDeliveryOptions:
+          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
+        connector:
+          type: string
+        highVolumeConnector:
+          type: string
+        language:
+          type: string
+        baseUrl:
+          type: string
+        type:
+          $ref: '#/components/schemas/ComposerParameterType'
+        locale:
+          type: string
+        emailFrom:
+          type: string
+    SolutionListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SolutionResponse'
+        recordCount:
+          type: integer
+          format: int32
+        totalRecords:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    Behavior:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        parameterName:
+          type: string
+    Recipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        order:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        id:
+          type:
+          - string
+          - 'null'
+    SolutionPayloadCreateRequest:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+    ExpirationType:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Date
+      - Days
+      enum:
+      - None
+      - Date
+      - Days
+    DataModel:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+    SolutionResponse:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+        properties:
+          createdDate:
+            type: string
+            format: date-time
+          createdBy:
+            $ref: '#/components/schemas/LookupObject'
+          modifiedDate:
+            type: string
+            format: date-time
+          modifiedBy:
+            $ref: '#/components/schemas/LookupObject'
+          status:
+            type: string
+          isDeleted:
+            type: boolean
+          congaOrgId:
+            type: string
+    SolutionBase:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        environment:
+          type: string
+        region:
+          type: string
+        highVolumeApiLanguage:
+          type: string
+        composerApiLanguage:
+          type: string
+        dataModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataModel'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        outputBehaviors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Behavior'
+        deliveryOptions:
+          $ref: '#/components/schemas/DeliveryOptions'
+        highVolumeDeliveryOptions:
+          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Destination'
+        customBrandingId:
+          type: string
+    Destination:
+      type: object
+      additionalProperties: false
+      properties:
+        isEnabled:
+          type: boolean
+        integrationName:
+          type: string
+        filePath:
+          type: string
+    SolutionPayloadPatchRequest:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            type: string
+    Template:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          description: Template Id
+    SigningOrder:
+      type: string
+      description: ''
+      x-enumNames:
+      - Parallel
+      - Serial
+      enum:
+      - Parallel
+      - Serial
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+    CongaSignAPI:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        signingOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        expirationType:
+          $ref: '#/components/schemas/ExpirationType'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        emailSubject:
+          type:
+          - string
+          - 'null'
+        emailBody:
+          type:
+          - string
+          - 'null'
+        isOn:
+          type: boolean
+        sender:
+          oneOf:
+          - $ref: '#/components/schemas/Sender'
+    Sender:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName:
+          type:
+          - string
+          - 'null'
+        lastName:
+          type:
+          - string
+          - 'null'
+        email:
+          type:
+          - string
+          - 'null'
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

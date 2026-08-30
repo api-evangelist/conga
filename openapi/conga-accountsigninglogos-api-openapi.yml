@@ -1,0 +1,151 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Account Signing Logos API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: AccountSigningLogos
+paths:
+  /v1/cs-account/admin/signingLogos:
+    post:
+      tags:
+      - AccountSigningLogos
+      summary: Retrieve an account's signing ceremony logos
+      description: "Adds, updates or deletes an account's customized signing ceremony logos. To add or update a signing ceremony logo for a language, pass the base-64 decoded image (data URI) with the language.\nTo delete all signing ceremony logos, provide an empty {} request body.\n            \nNote that\n1. The image has to be one of the following formats - jpeg, png, gif, bmp or svg.\n2. The maximum supported size for an image is 1MB\n3. The recommended dimensions for a Signing Ceremony logo is 258px X 40 px."
+      operationId: AccountSigningLogos_CreateAccountSigningLogos
+      requestBody:
+        x-name: logoData
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SigningLogo'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: List of SigningLogo models.
+        '204':
+          description: No Content
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - AccountSigningLogos
+      summary: Add, update, or delete signing ceremony logos
+      description: 'Retrieves an account''s customized logo for use during the signing ceremony. In addition, the corresponding
+
+        language for the account is retrieved.'
+      operationId: AccountSigningLogos_GetAccountSigningLogos
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfSigningLogo'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    ResultOfSigningLogo:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/SigningLogo'
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    SigningLogo:
+      type: object
+      description: Object to manage a signing logo
+      additionalProperties: false
+      properties:
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        image:
+          type: string
+          description: Image
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

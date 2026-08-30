@@ -1,0 +1,672 @@
+openapi: 3.2.0
+info:
+  title: User Management Organization External Integration API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Organization External Integration
+paths:
+  /api/user-management/v1/integrations:
+    delete:
+      tags:
+      - Organization External Integration
+      summary: Delete external identifiers
+      description: Deletes external identifiers.
+      requestBody:
+        description: Unique record IDs of external system
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Organization External Integration
+      summary: Get a list of external integration identifiers
+      description: Returns all external integration identifiers that meet the specified criteria, with support for sorting and pagination.
+      parameters:
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. For example: Type.<p>**Note:** The sort field (in this case, Type) must be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (ascending or descending) of the data. For example: ASC or DESC<p>**Note:** If the sort field parameter is specified, the default sort order is DESC.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: 'The number of records to return. Default value: 10.'
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Organization External Integration
+      summary: Add an external identifier
+      description: Add an organization's external integration identifier.
+      parameters:
+      - name: ExternalId
+        in: query
+        description: Unique record identifiers from the external system
+        schema:
+          type: string
+      - name: Type
+        in: query
+        description: Type of the external system
+        schema:
+          type: string
+      - name: Description
+        in: query
+        description: Description of the external integration identifier
+        schema:
+          type: string
+      - name: Provider
+        in: query
+        description: Identity provider of external integration
+        schema:
+          type: string
+      - name: DefaultIdp
+        in: query
+        description: Set the default identity provider
+        schema:
+          type: boolean
+      - name: SAMLMetadataLocationURL
+        in: query
+        description: The SAML IDP's metadata information location(URL). For more information on how to get the URL, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        schema:
+          type: string
+      - name: SAMLExternalOrgIdClaimType
+        in: query
+        description: The SAML IDP's external org ID claim type. For more information on how to get this, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        schema:
+          type: string
+      - name: EmailDomain
+        in: query
+        description: Email domain of the external integration identifier
+        schema:
+          type: string
+      - name: DisplayName
+        in: query
+        description: SAML provider Display Name
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                SAMLMetadataFile:
+                  type: string
+                  description: SAML Metadata File
+                  format: binary
+            encoding:
+              SAMLMetadataFile:
+                style: form
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Organization External Integration
+      summary: Update external identifiers
+      description: Updates an organization's external integration identifiers.
+      requestBody:
+        description: Details about external integration identifiers
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/integrations/identity-providers:
+    get:
+      tags:
+      - Organization External Integration
+      summary: Get all identity providers (IdPs)
+      description: Retrieves all identity providers.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDPMasterListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Name: Salesforce
+                  ACRName: idp:Salesforce
+                - Name: Salesforce Sandbox
+                  ACRName: idp:SalesforceSandbox
+                - Name: Microsoft
+                  ACRName: idp:Microsoft
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/integrations/{externalIntegrationId}:
+    delete:
+      tags:
+      - Organization External Integration
+      summary: Remove external identifiers
+      description: Updates an organization's external integration and removes external identifiers.
+      parameters:
+      - name: externalIntegrationId
+        in: path
+        description: Organization ID is the external integration ID. It is onboarded as "OrganizationID" from the organization's demographics.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Unique record IDs of external system
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Organization External Integration
+      summary: Get external identifiers
+      description: Returns the external identifiers of an external integration.
+      parameters:
+      - name: externalIntegrationId
+        in: path
+        description: Organization ID is the external integration ID. It is onboarded as "OrganizationID" from the organization's demographics.
+        required: true
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. For example: Type.<p>**Note:** The sort field (in this case, Type) must be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (ascending or descending) of the data. For example: ASC or DESC<p>**Note:** If the sort field parameter is specified, the default sort order is DESC.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: 'The number of records to return. Default value: 10.'
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Organization External Integration
+      summary: Add external identifiers
+      description: Add an organization's external integration identifiers.
+      parameters:
+      - name: externalIntegrationId
+        in: path
+        description: Organization ID is the external integration ID. It is onboarded as "OrganizationID" from the organization's demographics.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details about external organization
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationCreateRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Organization External Integration
+      summary: Update external identifiers
+      description: Updates an organization's external integration identifiers.
+      parameters:
+      - name: externalIntegrationId
+        in: path
+        description: Organization ID is the external integration ID. It is onboarded as "OrganizationID" from the organization's demographics.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details about external integration identifiers
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/OrganizationExternalIntegrationUpdateRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/integrations/{id}:
+    patch:
+      tags:
+      - Organization External Integration
+      summary: Update an external integration identifier
+      description: Updates an organization's external integration identifier.
+      parameters:
+      - name: id
+        in: path
+        description: External integration ID
+        required: true
+        schema:
+          type: string
+      - name: ExternalId
+        in: query
+        description: Unique record identifiers from the external system
+        schema:
+          type: string
+      - name: Type
+        in: query
+        description: Type of the external system
+        schema:
+          type: string
+      - name: Description
+        in: query
+        description: Description of the external integration identifier
+        schema:
+          type: string
+      - name: Provider
+        in: query
+        description: Identity provider of external integration
+        schema:
+          type: string
+      - name: DefaultIdp
+        in: query
+        description: Set the default identity provider
+        schema:
+          type: boolean
+      - name: SAMLMetadataLocationURL
+        in: query
+        description: The SAML IDP's metadata information location(URL). For more information on how to get the URL, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        schema:
+          type: string
+      - name: SAMLExternalOrgIdClaimType
+        in: query
+        description: The SAML IDP's external org ID claim type. For more information on how to get this, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        schema:
+          type: string
+      - name: EmailDomain
+        in: query
+        description: Email domain of the external integration identifier
+        schema:
+          type: string
+      - name: DisplayName
+        in: query
+        description: SAML provider Display Name
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                SAMLMetadataFile:
+                  type: string
+                  description: SAML Metadata File
+                  format: binary
+            encoding:
+              SAMLMetadataFile:
+                style: form
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ExternalIntegrationIdentifierUpdateRequest:
+      type: object
+      properties:
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: Unique record identifiers from the external system
+        Type:
+          type:
+          - string
+          - 'null'
+          description: Type of the external system
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the external integration identifier
+        DefaultIdp:
+          type:
+          - boolean
+          - 'null'
+          description: Enable default identity provider
+          default: false
+        EmailDomain:
+          type:
+          - string
+          - 'null'
+          description: Email domain of the external integration identifier
+      additionalProperties: false
+    IDPMasterListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/IDPMaster'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ExternalIntegrationIdentifierCreateRequest:
+      type: object
+      properties:
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: Unique record identifiers from the external system
+        Type:
+          type:
+          - string
+          - 'null'
+          description: Type of the external system
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the external integration identifier
+        Provider:
+          type:
+          - string
+          - 'null'
+          description: Identity provider of external integration
+        DefaultIdp:
+          type: boolean
+          description: Set the default identity provider
+        SAMLMetadataLocationURL:
+          type:
+          - string
+          - 'null'
+          description: The SAML IDP's metadata information location(URL). For more information on how to get the URL, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        SAMLExternalOrgIdClaimType:
+          type:
+          - string
+          - 'null'
+          description: The SAML IDP's external org ID claim type. For more information on how to get this, click [here.](https://documentation.conga.com/congaplatform/latest/getting-saml-identity-provider-settings-235406458.html)
+        EmailDomain:
+          type:
+          - string
+          - 'null'
+          description: Email domain of the external integration identifier
+        SAMLMetadataFile:
+          type:
+          - string
+          - 'null'
+          description: SAML Metadata File
+          format: binary
+        DisplayName:
+          type:
+          - string
+          - 'null'
+          description: SAML provider Display Name
+      additionalProperties: false
+    OrganizationExternalIntegrationCreateRequest:
+      type: object
+      properties:
+        ExternalIntegrationIdentifiers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExternalIntegrationIdentifierCreateRequest'
+          description: Unique record ID of the external system
+      additionalProperties: false
+    OrganizationExternalIntegrationUpdateRequest:
+      type: object
+      properties:
+        ExternalIntegrationIdentifiers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExternalIntegrationIdentifierUpdateRequest'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    IDPMaster:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        ACRName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

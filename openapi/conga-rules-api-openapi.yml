@@ -1,0 +1,1201 @@
+openapi: 3.2.0
+info:
+  title: Approvals Rules API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: Rules
+paths:
+  /v1/rules:
+    get:
+      tags:
+      - Rules
+      summary: Search rules
+      description: Searches rules by name using a filter string.
+      operationId: Rules_GetAll
+      parameters:
+      - name: businessObjectName
+        in: query
+        required: true
+        description: The business object name
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 3
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 4
+      - name: sort_by_field
+        in: query
+        description: The field to sort by
+        schema:
+          type: string
+          default: ModifiedDate
+        x-position: 5
+      - name: sort_direction
+        in: query
+        description: The direction to sort based on the field
+        schema:
+          default: DESC
+          oneOf:
+          - $ref: '#/components/schemas/SortDirection'
+        x-position: 6
+      - name: active
+        in: query
+        description: Active rules
+        schema:
+          type:
+          - boolean
+          - 'null'
+        x-position: 7
+      responses:
+        '200':
+          description: List of ApprovalRule with the search string in their name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalsAPIResponseOfListOfApprovalRule'
+      security:
+      - oauth2: []
+      - Bearer: []
+    post:
+      tags:
+      - Rules
+      summary: Save an approval rule
+      description: Writes an approval rule definition.
+      operationId: Rules_Save
+      requestBody:
+        x-name: requestRulePayload
+        description: The ApprovalRule to be saved
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRuleDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The ApprovalRuleDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/validate:
+    get:
+      tags:
+      - Rules
+      summary: Validate a rule name
+      description: Validates a rule name against existing rule names. Requires a rule name and business object type in the request. Responds with a Boolean (true if name already exists).
+      operationId: Rules_Validate
+      parameters:
+      - name: ruleName
+        in: query
+        required: true
+        description: rule name to be validated
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: businessObjectType
+        in: query
+        required: true
+        description: the business object type
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      responses:
+        '200':
+          description: True if the named rule does not exist and is available
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}:
+    delete:
+      tags:
+      - Rules
+      summary: Delete an approval rule
+      description: Deletes an approval rule by ID.
+      operationId: Rules_DeleteById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: 'Boolean: Deleted Records Status'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - Rules
+      summary: Get an approval rule
+      description: Gets an approval rule by ID.
+      operationId: Rules_GetById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The ApprovalRuleDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/activate:
+    post:
+      tags:
+      - Rules
+      summary: Activate an approval rule
+      description: Activates an approval rule by ID.
+      operationId: Rules_Activate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The ApprovalRuleDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/clone:
+    post:
+      tags:
+      - Rules
+      summary: Clone an approval rule
+      description: Clone an approval rule by ID.
+      operationId: Rules_Clone
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The ApprovalRuleDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/deactivate:
+    post:
+      tags:
+      - Rules
+      summary: Deactivate an approval rule
+      description: Deactivates an approval rule by ID.
+      operationId: Rules_Deactivate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The ApprovalRuleDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/rule-entries/{ruleEntryId}:
+    delete:
+      tags:
+      - Rules
+      summary: Delete an approval rule entry
+      description: Deletes an approval rule entry by rule ID and rule entry ID.
+      operationId: Rules_DeleteRuleEntryById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      - name: ruleEntryId
+        in: path
+        required: true
+        description: The approval rule entry ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: 'Boolean: True if delete is successful.'
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/rule-entries/{ruleEntryId}/activate:
+    post:
+      tags:
+      - Rules
+      summary: Activate an approval rule entry
+      description: Activates an approval rule entry by rule ID and rule entry ID.
+      operationId: Rules_ActivateRuleEntryById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      - name: ruleEntryId
+        in: path
+        required: true
+        description: The approval rule entry ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: The ApprovalRule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/rule-entries/{ruleEntryId}/deactivate:
+    post:
+      tags:
+      - Rules
+      summary: Deactivate an approval rule entry
+      description: Deactivates an approval rule entry by rule ID and rule entry ID.
+      operationId: Rules_DeactivateRuleEntryById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      - name: ruleEntryId
+        in: path
+        required: true
+        description: The approval rule entry ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: The ApprovalRule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRuleDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/rules/{id}/sequence/{ruleSequenceId}/unreferenced-steps:
+    get:
+      tags:
+      - Rules
+      summary: Get rule entry dependencies
+      description: Provides rule entries that may be defined as dependencies for the current rule entry.
+      operationId: Rules_GetUnreferencedSteps
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval rule ID
+        schema:
+          type: string
+        x-position: 1
+      - name: ruleSequenceId
+        in: path
+        required: true
+        description: The rule sequence ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: Unreferenced rule entry sequences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    ApprovalRuleDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRule'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntryDTO'
+    EscalationDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        EscalationLevel:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        EscalationToId:
+          type:
+          - string
+          - 'null'
+        EscalationToType:
+          type:
+          - string
+          - 'null'
+        EscalationToName:
+          type:
+          - string
+          - 'null'
+        CustomAssignee:
+          oneOf:
+          - $ref: '#/components/schemas/CustomAssigneePayload'
+        Id:
+          type:
+          - string
+          - 'null'
+    ApprovalRuleEntryDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssigneeDTO'
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ReminderDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        Id:
+          type:
+          - string
+          - 'null'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    SortDirection:
+      type: string
+      description: ''
+      x-enumNames:
+      - ASC
+      - DESC
+      enum:
+      - ASC
+      - DESC
+    ApprovalRule:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPercent:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPolicy:
+            type:
+            - string
+            - 'null'
+          BusinessObject:
+            type:
+            - string
+            - 'null'
+          ContinuePolicyApprovalOnAReject:
+            type:
+            - boolean
+            - 'null'
+          RuleCriteria:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension1ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension2Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension2ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension3Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension3ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension4Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension4ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension5Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension5ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension6Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension6ValueType:
+            type:
+            - string
+            - 'null'
+          EffectiveDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          ExpirationDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          MatchRule:
+            type:
+            - string
+            - 'null'
+          RuleType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StopProcessingMoreRules:
+            type:
+            - boolean
+            - 'null'
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntry'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+    Reminder:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Sequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          TimeDurationUnit:
+            type:
+            - string
+            - 'null'
+          ReminderForId:
+            type:
+            - string
+            - 'null'
+          ReminderForType:
+            type:
+            - string
+            - 'null'
+    CustomAssigneePayload:
+      type: object
+      description: CustomAssigneePayload
+      additionalProperties: false
+      properties:
+        CustomObject:
+          type: string
+          description: CustomObject
+        CustomField:
+          type: string
+          description: CustomField
+        CustomAssigneeAdvancedLogic:
+          type:
+          - string
+          - 'null'
+          description: CustomAssigneeAdvancedLogic
+        AssigneeNameExpression:
+          type:
+          - string
+          - 'null'
+          description: Parsed Expression to be shown in UI
+        FreeFormEnabled:
+          type: boolean
+          description: Custom object filter free form expression
+        FreeFormExpression:
+          type:
+          - string
+          - 'null'
+          description: FreeFormExpression
+        CustomAssigneeFilters:
+          type:
+          - array
+          - 'null'
+          description: Custom assignee filters
+          items:
+            $ref: '#/components/schemas/CustomAssigneeFilterPayload'
+    ApprovalRuleAssigneeDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRuleAssignee'
+      - type: object
+        additionalProperties: {}
+        properties:
+          CustomAssigneePayload:
+            oneOf:
+            - $ref: '#/components/schemas/CustomAssigneePayload'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/EscalationDTO'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ReminderDTO'
+    CustomAssigneeFilterPayload:
+      type: object
+      description: CustomAssigneeFilterPayload
+      additionalProperties: false
+      properties:
+        FilterFieldName:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameType:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameRefTo:
+          type:
+          - string
+          - 'null'
+        FilterFieldOperator:
+          type:
+          - string
+          - 'null'
+        FilterFieldValue:
+          type:
+          - string
+          - 'null'
+        FilterFieldValueBindField:
+          type:
+          - string
+          - 'null'
+        UseBindFieldEnabled:
+          type: boolean
+    Escalation:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          EscalationLevel:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          EscalationForId:
+            type:
+            - string
+            - 'null'
+          EscalationForType:
+            type:
+            - string
+            - 'null'
+          EscalationToId:
+            type:
+            - string
+            - 'null'
+          EscalationToType:
+            type:
+            - string
+            - 'null'
+          EscalationToName:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          StepId:
+            type:
+            - string
+            - 'null'
+          Rule:
+            type:
+            - string
+            - 'null'
+          RuleStep:
+            type:
+            - string
+            - 'null'
+          ExpectedDaysToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedHoursToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedMinutesToComplete:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleEntry:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleAssignee:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Id:
+            type:
+            - string
+            - 'null'
+          Name:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          RuleEntryId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeDependsOn:
+            type:
+            - string
+            - 'null'
+          AssigneeSequence:
+            type: number
+            format: double
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type: boolean
+          SkipUnresolvedAssignee:
+            type: boolean
+          EscalationEnabled:
+            type:
+            - boolean
+            - 'null'
+          ReminderEnabled:
+            type:
+            - boolean
+            - 'null'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/Reminder'
+    ApprovalsAPIResponseOfListOfApprovalRule:
+      type: object
+      additionalProperties: false
+      properties:
+        Success:
+          type: boolean
+          description: Whether or not the request was successful
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          description: The total number of records
+          format: int64
+        TotalTime:
+          type: number
+          description: The total time taken
+          format: float
+        Data:
+          type:
+          - array
+          - 'null'
+          description: The list of items
+          items:
+            $ref: '#/components/schemas/ApprovalRule'
+        Errors:
+          type:
+          - array
+          - 'null'
+          description: The list of errors
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        StatusCode:
+          type: integer
+          description: The HTTP status code
+          format: int32
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+          description: Whether or not the result has more records
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

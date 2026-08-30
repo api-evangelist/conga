@@ -1,0 +1,2411 @@
+openapi: 3.2.0
+info:
+  title: Approvals Process API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: Process
+paths:
+  /v1/process:
+    get:
+      tags:
+      - Process
+      summary: Search approval processes
+      description: Searches approval processes by business object name and optional criteria, returning results up to the stated or default limit.
+      operationId: Process_GetAll
+      parameters:
+      - name: businessObjectName
+        in: query
+        required: true
+        description: The business object name
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 3
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 4
+      - name: sort_by_field
+        in: query
+        description: The field to sort by
+        schema:
+          type: string
+          default: ModifiedDate
+        x-position: 5
+      - name: sort_direction
+        in: query
+        description: The direction to sort based on the field
+        schema:
+          default: DESC
+          oneOf:
+          - $ref: '#/components/schemas/SortDirection'
+        x-position: 6
+      - name: active
+        in: query
+        description: Retrieve active processes
+        schema:
+          type:
+          - boolean
+          - 'null'
+        x-position: 7
+      responses:
+        '200':
+          description: A list of all processes for a search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalsAPIResponseOfListOfApprovalProcessInfoDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+    post:
+      tags:
+      - Process
+      summary: Create an approval process
+      description: Creates an approval process.
+      operationId: Process_Save
+      requestBody:
+        x-name: approvalProcess
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalProcessLiteDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: ApprovalProcess
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/reorder-processes:
+    post:
+      tags:
+      - Process
+      summary: Reorder a list of approval processes
+      description: The order of the processes provided in the payload will determine the new sequence after reorder.
+      operationId: Process_ReorderProcess
+      requestBody:
+        x-name: processList
+        description: A list of the processes to be re-ordered
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApprovalProcessInfoDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: A list of the reordered approval processes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetOfApprovalProcess'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/stats:
+    get:
+      tags:
+      - Process
+      summary: Count active and inactive processes
+      description: Counts a business object's active and inactive processes.
+      operationId: Process_GetActiveInactiveCount
+      parameters:
+      - name: businessObjectName
+        in: query
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      responses:
+        '200':
+          description: A dictionary object with `active` and `inActive` as keys
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/validate:
+    get:
+      tags:
+      - Process
+      summary: Check for a process
+      description: Checks for a process by name.
+      operationId: Process_Validate
+      parameters:
+      - name: approvalProcessName
+        in: query
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: businessObjectType
+        in: query
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      responses:
+        '200':
+          description: Returns `true` if the named process does not exist and the process name is available.
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}:
+    delete:
+      tags:
+      - Process
+      summary: Delete an approval process
+      description: Deletes an approval process by its ID.
+      operationId: Process_DeleteById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Boolean (true if deleted)
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - Process
+      summary: Get an approval process
+      description: Returns an approval process object by its ID.
+      operationId: Process_GetById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The globally unique approval process platform ID.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Returns an approval process object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+    put:
+      tags:
+      - Process
+      summary: Update an approval process
+      description: Updates an approval process by its ID.
+      operationId: Process_UpdateById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: request
+        description: The approval process request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalProcessLiteDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: An approval process definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessLiteDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/activate:
+    post:
+      tags:
+      - Process
+      summary: Activate an approval process
+      description: Activates an approval process by its ID.
+      operationId: Process_Activate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: An approval process definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessInfoDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/clone:
+    post:
+      tags:
+      - Process
+      summary: Clone an approval process
+      description: Clones an approval process by its ID.
+      operationId: Process_Clone
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: An approval process definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessInfoDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/deactivate:
+    post:
+      tags:
+      - Process
+      summary: Deactivate an approval process
+      description: Deactivates an approval process by its ID.
+      operationId: Process_Deactivate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: An approval process definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessInfoDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/process-steps:
+    get:
+      tags:
+      - Process
+      summary: Get approval process steps
+      description: Retrieves the steps for an approval process.
+      operationId: Process_GetApprovalProcessSteps
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: A list of approval process steps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessStepDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/process-steps/{processStepId}:
+    delete:
+      tags:
+      - Process
+      summary: Delete an approval process step
+      description: Deletes an approval process step by its ID.
+      operationId: Process_DeleteProcessStepById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: processStepId
+        in: path
+        required: true
+        description: The approval process step ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: An entire approval process and steps, without the deleted step
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    put:
+      tags:
+      - Process
+      summary: Update an approval process step by ID
+      description: Updates an approval process step by ID, using several required parameters.
+      operationId: Process_UpdateProcessStepById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: processStepId
+        in: path
+        required: true
+        description: The process step ID
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: request
+        description: The approval process step request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessStepRequest'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: An approval process definition including the updated step
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/process-steps/{processStepId}/activate:
+    post:
+      tags:
+      - Process
+      summary: Activate an approval process step
+      description: Activates an approval process step, by process and step IDs.
+      operationId: Process_ActivateStepById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: processStepId
+        in: path
+        required: true
+        description: The approval process step ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: An approval process definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/process-steps/{processStepId}/deactivate:
+    post:
+      tags:
+      - Process
+      summary: Deactivate a process step
+      description: Deactivates a process step by approval process ID.
+      operationId: Process_DeactivateStepById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: processStepId
+        in: path
+        required: true
+        description: The approval process step ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: An approval process definition, listing active steps without the deactivated step.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalProcessResponse'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/process-steps/{processStepId}/step-dependencies:
+    get:
+      tags:
+      - Process
+      summary: List all step dependencies
+      description: Retrieves the names of all steps that the given step is dependent on.
+      operationId: Process_GetDependentSteps
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: processStepId
+        in: path
+        required: true
+        description: The approval process step ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: A list of all step names that the given step depends on
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/step-groups/{stepGroupId}/reorder:
+    post:
+      tags:
+      - Process
+      summary: Reorder approval process steps
+      description: Reorders the steps in an approval process.
+      operationId: Process_ReorderSteps
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: stepGroupId
+        in: path
+        required: true
+        description: The process step group ID
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: processStepGroup
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessStepGroupDTO'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: Updated group information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessStepGroupDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/process/{id}/unreferenced-steps:
+    get:
+      tags:
+      - Process
+      summary: Get this step's dependencies
+      description: Retrieves dependencies, by step name, that are available to the current step.
+      operationId: Process_GetUnreferencedStepsById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The approval process ID
+        schema:
+          type: string
+        x-position: 1
+      - name: currentStepId
+        in: query
+        description: The globally unique identfier for the current step.
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      responses:
+        '200':
+          description: A list of possible stepNames that this step could depend on.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    ApprovalProcessLiteDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalProcess'
+      - type: object
+        description: Approval Process DTO
+        additionalProperties: {}
+        properties:
+          Name:
+            type: string
+          BackupAdminUser:
+            oneOf:
+            - $ref: '#/components/schemas/BackupAdminUser'
+          ProcessEntryCriterias:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessEntryCriteriaDTO'
+          ProcessUpdateActions:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessUpdateActionDTO'
+          ProcessStepGroup:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessStepGroupLiteDTO'
+    ProcessStepGroupDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessStepGroupLiteDTO'
+      - type: object
+        additionalProperties: {}
+        properties:
+          CreatedDate:
+            type: string
+            format: date-time
+          ModifiedDate:
+            type: string
+            format: date-time
+          ProcessSteps:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessStepDTO'
+    EscalationDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        EscalationLevel:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        EscalationToId:
+          type:
+          - string
+          - 'null'
+        EscalationToType:
+          type:
+          - string
+          - 'null'
+        EscalationToName:
+          type:
+          - string
+          - 'null'
+        CustomAssignee:
+          oneOf:
+          - $ref: '#/components/schemas/CustomAssigneePayload'
+        Id:
+          type:
+          - string
+          - 'null'
+    ReminderDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        Id:
+          type:
+          - string
+          - 'null'
+    ProcessEntryCriteria:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type: string
+        Active:
+          type:
+          - boolean
+          - 'null'
+        Field:
+          type:
+          - string
+          - 'null'
+        ComparisonType:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        FieldKeyValue:
+          type:
+          - string
+          - 'null'
+        BooleanOperator:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    ProcessStepGroupLiteDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessStepGroup'
+      - type: object
+        description: " Apttus Approvals Management\n ProcessStepGroupDTO\n\n @2017 Apttus Inc. All rights reserved.\n\n "
+        additionalProperties: {}
+        properties:
+          CreatedDate:
+            type: string
+            format: date-time
+          ModifiedDate:
+            type: string
+            format: date-time
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    ProcessUpdateAction:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        ActionType:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        FieldName:
+          type:
+          - string
+          - 'null'
+        FieldNameSource:
+          type:
+          - string
+          - 'null'
+        FieldUpdateType:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        FieldKeyValue:
+          type:
+          - string
+          - 'null'
+    ApprovalRule:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPercent:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          ApprovalPolicy:
+            type:
+            - string
+            - 'null'
+          BusinessObject:
+            type:
+            - string
+            - 'null'
+          ContinuePolicyApprovalOnAReject:
+            type:
+            - boolean
+            - 'null'
+          RuleCriteria:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension1ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension2Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension2ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension3Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension3ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension4Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension4ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension5Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension5ValueType:
+            type:
+            - string
+            - 'null'
+          Dimension6Id:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRuleDimension'
+          Dimension6ValueType:
+            type:
+            - string
+            - 'null'
+          EffectiveDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          ExpirationDate:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          MatchRule:
+            type:
+            - string
+            - 'null'
+          RuleType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StopProcessingMoreRules:
+            type:
+            - boolean
+            - 'null'
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntry'
+    ApprovalRuleEntry:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalRuleAssignees:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleAssignee'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApprovalRuleId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          Condition:
+            type:
+            - string
+            - 'null'
+          ConditionFieldNames:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          Dimension1Value:
+            type:
+            - string
+            - 'null'
+          Dimension2Value:
+            type:
+            - string
+            - 'null'
+          Dimension3Value:
+            type:
+            - string
+            - 'null'
+          Dimension4Value:
+            type:
+            - string
+            - 'null'
+          Dimension5Value:
+            type:
+            - string
+            - 'null'
+          Dimension6Value:
+            type:
+            - string
+            - 'null'
+          EntryLabel:
+            type:
+            - string
+            - 'null'
+          IncludePrevious:
+            type:
+            - boolean
+            - 'null'
+          Value:
+            type:
+            - string
+            - 'null'
+          ValueType:
+            type:
+            - string
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          SequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ProcessStepEntryCriteriaDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessStepEntryCriteria'
+      - type: object
+        additionalProperties: false
+    BackupAdminUser:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Initials:
+          type:
+          - string
+          - 'null'
+    ApprovalsAPIResponseOfListOfApprovalProcessInfoDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Success:
+          type: boolean
+          description: Whether or not the request was successful
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          description: The total number of records
+          format: int64
+        TotalTime:
+          type: number
+          description: The total time taken
+          format: float
+        Data:
+          type:
+          - array
+          - 'null'
+          description: The list of items
+          items:
+            $ref: '#/components/schemas/ApprovalProcessInfoDTO'
+        Errors:
+          type:
+          - array
+          - 'null'
+          description: The list of errors
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        StatusCode:
+          type: integer
+          description: The HTTP status code
+          format: int32
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+          description: Whether or not the result has more records
+    ProcessStepRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - Active
+      - EscalationEnabled
+      - ReminderEnabled
+      - StepName
+      - StepType
+      - AssigneeType
+      properties:
+        ApprovalProcessId:
+          type:
+          - string
+          - 'null'
+        ProcessName:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        ProcessStepGroupId:
+          type:
+          - string
+          - 'null'
+        CustomAssigneePayload:
+          oneOf:
+          - $ref: '#/components/schemas/CustomAssigneePayload'
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Active:
+          type: boolean
+        ApproverType:
+          type:
+          - string
+          - 'null'
+        AssigneeDescription:
+          type:
+          - string
+          - 'null'
+        AutoComplete:
+          type: boolean
+        EscalationEnabled:
+          type: boolean
+        ReminderEnabled:
+          type: boolean
+        AutoReapprovalCriteria:
+          type:
+          - string
+          - 'null'
+        ChildObjectType:
+          type:
+          - string
+          - 'null'
+        CriteriaFieldNames:
+          type:
+          - string
+          - 'null'
+        DependsOn:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        DisplayFieldNameHeader:
+          type:
+          - string
+          - 'null'
+        DisplayFieldNames:
+          type:
+          - string
+          - 'null'
+        FilterConditionDescription:
+          type:
+          - string
+          - 'null'
+        FilterLogic:
+          type:
+          - string
+          - 'null'
+        HierarchyDriver:
+          type:
+          - string
+          - 'null'
+        KeyFieldNames:
+          type:
+          - string
+          - 'null'
+        NotifyOnly:
+          type: boolean
+        SendEmail:
+          type: boolean
+        SendChat:
+          type:
+          - boolean
+          - 'null'
+        StepName:
+          type: string
+          minLength: 1
+        StepType:
+          type: string
+          minLength: 1
+        SubmissionComment1Enabled:
+          type: boolean
+        SubmissionComment2Enabled:
+          type: boolean
+        SubmissionComment3Enabled:
+          type: boolean
+        SubmissionCommentsEnabled:
+          type: boolean
+        SkipUnresolvedAssignee:
+          type: boolean
+        AssigneeId:
+          type:
+          - string
+          - 'null'
+        AssigneeType:
+          type: string
+          minLength: 1
+        CCEmailRecipients:
+          type:
+          - string
+          - 'null'
+        Escalation:
+          oneOf:
+          - $ref: '#/components/schemas/EscalationDTO'
+        Reminders:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReminderDTO'
+        StepEntryCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ProcessStepEntryCriteriaDTO'
+    SortDirection:
+      type: string
+      description: ''
+      x-enumNames:
+      - ASC
+      - DESC
+      enum:
+      - ASC
+      - DESC
+    CustomAssigneePayload:
+      type: object
+      description: CustomAssigneePayload
+      additionalProperties: false
+      properties:
+        CustomObject:
+          type: string
+          description: CustomObject
+        CustomField:
+          type: string
+          description: CustomField
+        CustomAssigneeAdvancedLogic:
+          type:
+          - string
+          - 'null'
+          description: CustomAssigneeAdvancedLogic
+        AssigneeNameExpression:
+          type:
+          - string
+          - 'null'
+          description: Parsed Expression to be shown in UI
+        FreeFormEnabled:
+          type: boolean
+          description: Custom object filter free form expression
+        FreeFormExpression:
+          type:
+          - string
+          - 'null'
+          description: FreeFormExpression
+        CustomAssigneeFilters:
+          type:
+          - array
+          - 'null'
+          description: Custom assignee filters
+          items:
+            $ref: '#/components/schemas/CustomAssigneeFilterPayload'
+    ProcessStepGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          GroupName:
+            type:
+            - string
+            - 'null'
+          GroupSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          Steps:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessStep'
+    ProcessStep:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          Active:
+            type:
+            - boolean
+            - 'null'
+          ApproverType:
+            type:
+            - string
+            - 'null'
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type:
+            - boolean
+            - 'null'
+          EscalationEnabled:
+            type: boolean
+          ReminderEnabled:
+            type: boolean
+          AutoReapprovalCriteria:
+            type:
+            - string
+            - 'null'
+          AutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          ChildObjectType:
+            type:
+            - string
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          DisplayFieldNameHeader:
+            type:
+            - string
+            - 'null'
+          DisplayFieldNames:
+            type:
+            - string
+            - 'null'
+          FilterConditionDescription:
+            type:
+            - string
+            - 'null'
+          FilterLogic:
+            type:
+            - string
+            - 'null'
+          HierarchyDriver:
+            type:
+            - string
+            - 'null'
+          KeyFieldNames:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          StepLabel:
+            type:
+            - string
+            - 'null'
+          StepName:
+            type:
+            - string
+            - 'null'
+          StepSequenceNumber:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          StepSequenceVisual:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          StepType:
+            type:
+            - string
+            - 'null'
+          SkipUnresolvedAssignee:
+            type: boolean
+          SubmissionComment1Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionComment2Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionComment3Enabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          CCEmailRecipients:
+            type:
+            - string
+            - 'null'
+          AssigneeName:
+            type:
+            - string
+            - 'null'
+          Rule:
+            oneOf:
+            - $ref: '#/components/schemas/ApprovalRule'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type: array
+            items:
+              $ref: '#/components/schemas/Reminder'
+          StepEntryCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProcessStepEntryCriteria'
+          DependencyKey:
+            type:
+            - string
+            - 'null'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+    ProcessEntryCriteriaDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessEntryCriteria'
+      - type: object
+        description: Represents an ProcessEntryCriteriaDTO.
+        additionalProperties: false
+        properties:
+          FieldLabel:
+            type:
+            - string
+            - 'null'
+    ApprovalRuleAssignee:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Id:
+            type:
+            - string
+            - 'null'
+          Name:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          RuleEntryId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeDependsOn:
+            type:
+            - string
+            - 'null'
+          AssigneeSequence:
+            type: number
+            format: double
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type: boolean
+          SkipUnresolvedAssignee:
+            type: boolean
+          EscalationEnabled:
+            type:
+            - boolean
+            - 'null'
+          ReminderEnabled:
+            type:
+            - boolean
+            - 'null'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/Reminder'
+    Reminder:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Sequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          TimeDurationUnit:
+            type:
+            - string
+            - 'null'
+          ReminderForId:
+            type:
+            - string
+            - 'null'
+          ReminderForType:
+            type:
+            - string
+            - 'null'
+    ApprovalProcessResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ObjectName:
+            type:
+            - string
+            - 'null'
+          ObjectType:
+            type:
+            - string
+            - 'null'
+          Active:
+            type: boolean
+          AdhocStepAutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          ApprovalSummaryPage:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalStatusLabel:
+            type:
+            - string
+            - 'null'
+          BackupAdminUserId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ConsolidateApprovals:
+            type:
+            - boolean
+            - 'null'
+          ConsolidateNotifications:
+            type:
+            - boolean
+            - 'null'
+          ContextType:
+            type:
+            - string
+            - 'null'
+          ContinuePendingApprovalsOnAReject:
+            type:
+            - boolean
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          CustomMyApprovalsPage:
+            type:
+            - string
+            - 'null'
+          CustomPreviewPage:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          EnableApprovedRequestDelete:
+            type:
+            - boolean
+            - 'null'
+          EntryCriteriaFilterLogic:
+            type:
+            - string
+            - 'null'
+          IsAdhoc:
+            type: boolean
+          EscalationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReminderEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ErrorEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AssignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CancellationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CommentsEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RequestForInformationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RejectionEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          NotifyonlyEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReassignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ProcessAutoEscalate:
+            type:
+            - boolean
+            - 'null'
+          ProcessEscalateToId:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToName:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToType:
+            type:
+            - string
+            - 'null'
+          ProcessExpectedDaysToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedHoursToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedMinutesToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessName:
+            type:
+            - string
+            - 'null'
+          RequireCommentsOnReject:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnApprove:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnRecall:
+            type:
+            - boolean
+            - 'null'
+          RecallCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          ApproveCommentLabel:
+            type:
+            - string
+            - 'null'
+          RejectCommentLabel:
+            type:
+            - string
+            - 'null'
+          RecallCommentLabel:
+            type:
+            - string
+            - 'null'
+          SubmissionComment1Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment2Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment3Label:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          SubmissionCommentsMandatory:
+            type:
+            - boolean
+            - 'null'
+          SubmissionCommentsEnabledCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          SubmissionCommentsPerStep:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsType:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNameHeader:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNames:
+            type:
+            - string
+            - 'null'
+          IsDeleted:
+            type: boolean
+          ProcessEntryCriterias:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessEntryCriteria'
+          ProcessUpdateActions:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessUpdateAction'
+          ProcessStepGroup:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessStepGroup'
+    ApprovalProcessInfoDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: ApprovalProcessInfoDTO
+        additionalProperties: false
+        properties:
+          Id:
+            type: string
+            description: The id the approval process
+          Name:
+            type: string
+            description: The name of the approval process
+          Active:
+            type: boolean
+            description: Indicates whether the process is active
+          IsAdhoc:
+            type: boolean
+            description: Indicates whether the process is the Adhoc type. If false, process is the rule-driven type.
+          ObjectName:
+            type: string
+            description: The name of the business object for the process
+          ObjectType:
+            type: string
+            description: The type of the business object for the process
+          ProcessDesc:
+            type:
+            - string
+            - 'null'
+            description: Optional description of the process
+          ProcessName:
+            type: string
+            description: The name of the process
+          ProcessType:
+            type: string
+            description: The type of the process
+          Sequence:
+            type:
+            - number
+            - 'null'
+            description: The sequence number for the process
+            format: double
+          CustomProperties:
+            type:
+            - object
+            - 'null'
+            description: Custom properties of the process
+            additionalProperties: {}
+    ProcessStepDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessStep'
+      - type: object
+        description: ProcessStepDTO
+        additionalProperties: {}
+        properties:
+          StepEntryCriteria:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessStepEntryCriteriaDTO'
+          CustomAssigneePayload:
+            oneOf:
+            - $ref: '#/components/schemas/CustomAssigneePayload'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/EscalationDTO'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ReminderDTO'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    CustomAssigneeFilterPayload:
+      type: object
+      description: CustomAssigneeFilterPayload
+      additionalProperties: false
+      properties:
+        FilterFieldName:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameType:
+          type:
+          - string
+          - 'null'
+        FilterFieldNameRefTo:
+          type:
+          - string
+          - 'null'
+        FilterFieldOperator:
+          type:
+          - string
+          - 'null'
+        FilterFieldValue:
+          type:
+          - string
+          - 'null'
+        FilterFieldValueBindField:
+          type:
+          - string
+          - 'null'
+        UseBindFieldEnabled:
+          type: boolean
+    SetOfApprovalProcess:
+      type: array
+      items:
+        $ref: '#/components/schemas/ApprovalProcess'
+    ProcessUpdateActionDTO:
+      allOf:
+      - $ref: '#/components/schemas/ProcessUpdateAction'
+      - type: object
+        description: " Apttus Approvals Management\n ProcessUpdateActionDTO\n\n @2017 Apttus Inc. All rights reserved.\n\n "
+        additionalProperties: false
+        properties:
+          FieldLabel:
+            type:
+            - string
+            - 'null'
+    ProcessStepEntryCriteria:
+      type: object
+      additionalProperties: false
+      properties:
+        BooleanOperator:
+          type:
+          - string
+          - 'null'
+        Comments:
+          type:
+          - string
+          - 'null'
+        ComparisonType:
+          type:
+          - string
+          - 'null'
+        Field:
+          type:
+          - string
+          - 'null'
+        FieldObject:
+          type:
+          - string
+          - 'null'
+        FieldObjectSource:
+          type:
+          - string
+          - 'null'
+        FieldValue:
+          type:
+          - string
+          - 'null'
+        FieldValueObject:
+          type:
+          - string
+          - 'null'
+        FieldValueObjectSource:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    Escalation:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          EscalationLevel:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          EscalationForId:
+            type:
+            - string
+            - 'null'
+          EscalationForType:
+            type:
+            - string
+            - 'null'
+          EscalationToId:
+            type:
+            - string
+            - 'null'
+          EscalationToType:
+            type:
+            - string
+            - 'null'
+          EscalationToName:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          StepId:
+            type:
+            - string
+            - 'null'
+          Rule:
+            type:
+            - string
+            - 'null'
+          RuleStep:
+            type:
+            - string
+            - 'null'
+          ExpectedDaysToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedHoursToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedMinutesToComplete:
+            type:
+            - string
+            - 'null'
+    ApprovalProcess:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          ObjectName:
+            type:
+            - string
+            - 'null'
+          ObjectType:
+            type:
+            - string
+            - 'null'
+          Active:
+            type: boolean
+          AdhocStepAutoReapprove:
+            type:
+            - boolean
+            - 'null'
+          ApprovalSummaryPage:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalStatusLabel:
+            type:
+            - string
+            - 'null'
+          ConsolidateApprovals:
+            type:
+            - boolean
+            - 'null'
+          BackupAdminUserId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ConsolidateNotifications:
+            type:
+            - boolean
+            - 'null'
+          ContextType:
+            type:
+            - string
+            - 'null'
+          ContinuePendingApprovalsOnAReject:
+            type:
+            - boolean
+            - 'null'
+          CriteriaFieldNames:
+            type:
+            - string
+            - 'null'
+          CustomMyApprovalsPage:
+            type:
+            - string
+            - 'null'
+          CustomPreviewPage:
+            type:
+            - string
+            - 'null'
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          Description:
+            type:
+            - string
+            - 'null'
+          EnableApprovedRequestDelete:
+            type:
+            - boolean
+            - 'null'
+          EntryCriteriaFilterLogic:
+            type:
+            - string
+            - 'null'
+          IsAdhoc:
+            type: boolean
+          EscalationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReminderEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          AssignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CancellationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RequestForInformationEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          RejectionEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          CommentsEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          NotifyonlyEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ReassignmentEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ErrorEmailTemplate:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          ProcessAutoEscalate:
+            type:
+            - boolean
+            - 'null'
+          ProcessEscalateToId:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToName:
+            type:
+            - string
+            - 'null'
+          ProcessEscalateToType:
+            type:
+            - string
+            - 'null'
+          ProcessExpectedDaysToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedHoursToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessExpectedMinutesToComplete:
+            type:
+            - number
+            - 'null'
+            format: double
+          ProcessName:
+            type:
+            - string
+            - 'null'
+          RequireCommentsOnReject:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnApprove:
+            type:
+            - boolean
+            - 'null'
+          RequireCommentsOnRecall:
+            type:
+            - boolean
+            - 'null'
+          RecallCommentsEnabled:
+            type:
+            - boolean
+            - 'null'
+          Sequence:
+            type:
+            - number
+            - 'null'
+            format: double
+          ApproveCommentLabel:
+            type:
+            - string
+            - 'null'
+          RejectCommentLabel:
+            type:
+            - string
+            - 'null'
+          RecallCommentLabel:
+            type:
+            - string
+            - 'null'
+          SubmissionComment1Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment2Label:
+            type:
+            - string
+            - 'null'
+          SubmissionComment3Label:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsEnabled:
+            type: boolean
+          SubmissionCommentsMandatory:
+            type: boolean
+          SubmissionCommentsEnabledCount:
+            type:
+            - number
+            - 'null'
+            format: decimal
+          SubmissionCommentsPerStep:
+            type:
+            - string
+            - 'null'
+          SubmissionCommentsType:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNameHeader:
+            type:
+            - string
+            - 'null'
+          SummaryPageFieldNames:
+            type:
+            - string
+            - 'null'
+          IsDeleted:
+            type: boolean
+          ProcessEntryCriterias:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessEntryCriteria'
+          ProcessUpdateActions:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ProcessUpdateAction'
+          ProcessStepGroup:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessStepGroup'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

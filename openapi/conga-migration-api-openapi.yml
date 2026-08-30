@@ -1,0 +1,313 @@
+openapi: 3.2.0
+info:
+  title: Ingress Migration API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Migration
+paths:
+  /v1/Migration/RunSolutionStatusFix:
+    post:
+      tags:
+      - Migration
+      summary: 'Runs the ComposerSolution status migration job.
+
+        Finalized records using status "Draft" will be updated to "Complete".'
+      operationId: Migration_RunMigration
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerResponse'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
+    ResponseStatusCode:
+      type: string
+      description: Application-specific error code identified by Composer UI\
+      x-enumNames:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+      enum:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+    Errors:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
+          oneOf:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
+    HttpStatusCode:
+      type: string
+      description: ''
+      x-enumNames:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - Ambiguous
+      - MovedPermanently
+      - Moved
+      - Found
+      - Redirect
+      - SeeOther
+      - RedirectMethod
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableContent
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MultipleChoices
+      - MovedPermanently
+      - MovedPermanently
+      - Found
+      - Found
+      - SeeOther
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - RedirectKeepVerb
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

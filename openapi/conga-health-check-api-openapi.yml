@@ -1,0 +1,123 @@
+openapi: 3.2.0
+info:
+  title: Conversion Management Health Check API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Health Check
+paths:
+  /api/conversion-management/v1/health/live:
+    get:
+      tags:
+      - Health Check
+      summary: Check for liveness
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckSummary'
+              example:
+                Status: Healthy
+                ServiceVersion: 22.6.0.34
+                Duration: 1.9753
+        '503':
+          description: Service Temporarily Unavailable
+  /api/conversion-management/v1/health/ready:
+    get:
+      tags:
+      - Health Check
+      summary: Check for readiness
+      parameters:
+      - name: deepCheck
+        in: query
+        style: form
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckSummary'
+              example:
+                Status: Healthy
+                ServiceVersion: 22.6.0.34
+                ComponentHealthSummary:
+                - Name: Index Cache
+                  Status: Healthy
+                  Duration: 314.4967
+                - Name: Data Cache
+                  Status: Healthy
+                  Duration: 385.204
+                - Name: Data Config
+                  Status: Healthy
+                  Duration: 418.9651
+                - Name: Queue
+                  Status: Healthy
+                  Duration: 446.0765
+                - Name: Topic
+                  Status: Healthy
+                  Duration: 373.9502
+                Duration: 460.0827
+        '503':
+          description: Service Temporarily Unavailable
+components:
+  schemas:
+    ComponentHealthCheckSummary:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        Error:
+          type:
+          - string
+          - 'null'
+        Result:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Duration:
+          type: number
+          format: double
+      additionalProperties: false
+    HealthCheckSummary:
+      type: object
+      properties:
+        Status:
+          type:
+          - string
+          - 'null'
+        ServiceVersion:
+          type:
+          - string
+          - 'null'
+        ComponentHealthSummary:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ComponentHealthCheckSummary'
+        Duration:
+          type: number
+          format: double
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

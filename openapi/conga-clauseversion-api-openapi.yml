@@ -1,0 +1,179 @@
+openapi: 3.2.0
+info:
+  title: X-Author Clause Version API
+  version: v1
+  description: This class contains API endpoints for clause's version-related operations.
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: ClauseVersion
+  description: This class contains API endpoints for clause's version-related operations.
+paths:
+  /api/xauthor/v1/clauses/{clauseId}/versions/{clauseVersionId}/richtext-content:
+    get:
+      tags:
+      - ClauseVersion
+      summary: Get clause content as text or HTML
+      parameters:
+      - name: clauseId
+        in: path
+        description: clause Id associated with clause version
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: clause Id associated with clause version
+      - name: clauseVersionId
+        in: path
+        description: Clause version Id to get content
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Clause version Id to get content
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.MarkedContent'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.MarkedContent'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.MarkedContent'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Core.Model.LocaleInfo:
+      type: object
+      properties:
+        lcidString:
+          type:
+          - string
+          - 'null'
+        languageCode:
+          type:
+          - string
+          - 'null'
+        languageName:
+          type:
+          - string
+          - 'null'
+        localeFilePath:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        useSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        defaultLocale:
+          type:
+          - string
+          - 'null'
+        defaultDateFormat:
+          type:
+          - string
+          - 'null'
+        defaultPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        defaultUseSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        currencyIsoCode:
+          type:
+          - string
+          - 'null'
+        currencySymbol:
+          type:
+          - string
+          - 'null'
+        currencyPrecision:
+          type: integer
+          format: int32
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.ClauseLocaleInfo:
+      type: object
+      properties:
+        clauseCurrencyPrecision:
+          type:
+          - string
+          - 'null'
+        localizationEnabled:
+          type: boolean
+        localeInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.MarkedContent:
+      type: object
+      properties:
+        content:
+          type:
+          - string
+          - 'null'
+        properties:
+          type:
+          - string
+          - 'null'
+        fieldCCIds:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        fieldLocalInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+        clauseLocalInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ClauseLocaleInfo'
+        clauseContentType:
+          type:
+          - string
+          - 'null'
+        validationMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

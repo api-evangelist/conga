@@ -1,0 +1,313 @@
+openapi: 3.2.0
+info:
+  title: Audit Field History Tracking API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Field History Tracking
+paths:
+  /api/audit/v1/objects/{objectName}/records/{recordId}/field-history-tracking:
+    post:
+      tags:
+      - Field History Tracking
+      summary: Get audit history for a record
+      description: Retrieves the audit history for a specific record. It returns a list of all changes made to the specified fields of the record.
+      parameters:
+      - name: objectName
+        in: path
+        description: 'Object name from which the field history needs to be fetched. It can only contain underscores and alphanumeric characters. **For example**: PaymentTool, PaymentToolHistory.'
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: 'A globally unique identifier (GUID) of the record. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: 'The start date for the history. Only changes made on or after this date will be retrieved. **For example**: 2019-09-01'
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        description: 'The end date for the history. Only changes made on or before this date will be retrieved. **For example**: 2019-09-01 <p>**Note**:End Date should be greater than Start Date.</p>'
+        schema:
+          type: string
+          format: date-time
+      - name: modifiedByName
+        in: query
+        description: 'The name of the user who updated the record. **For example**: admin.'
+        schema:
+          type: string
+      - name: modifiedById
+        in: query
+        description: 'The ID of the user who updated the record. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) for the data.<p>**Note**: The default sort order is **Descending** if the sort field parameter is not specified.</p>'
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      requestBody:
+        description: 'Comma-separated list of fields present in the object that are configured for audit history. **For example**: Name, IsActive.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditHistoryResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    AuditHistoryResponse:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        RecordId:
+          type:
+          - string
+          - 'null'
+        FieldTrackingHistory:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldTrackingHistory'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FieldTrackingHistory:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OldValue: {}
+        NewValue: {}
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+      additionalProperties: false
+    AuditHistoryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/AuditHistoryResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

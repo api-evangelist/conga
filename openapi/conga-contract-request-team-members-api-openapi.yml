@@ -1,0 +1,714 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract Request Team Members API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract Request Team Members
+paths:
+  /api/clm/v1/requests/{contractRequestId}/teammembers:
+    post:
+      tags:
+      - Contract Request Team Members
+      summary: Add contract request team members
+      description: Adds one or more team members to a contract request and assigns them a team role.
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details of the team members to add
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContractTeamMembersRequest'
+            example:
+            - TeamMemberType: User
+              TeamMember: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+              TeamRole:
+                Id: 5d901366-812f-4b17-a659-a8639d35e059
+                Name: Reviewer
+            - TeamMemberType: User
+              TeamMember: 19eb46f3-5cfc-4639-852d-860dc48080f7
+              TeamRole:
+                Id: 1abde864-dc94-4191-b9fd-4d9d20ee0e3d
+                Name: Signer
+            - TeamMemberType: UserGroup
+              TeamMember: 1434eeaa-949d-42d9-bc85-dc0296f5e8ba
+              TeamRole:
+                Id: 5d901366-812f-4b17-a659-a8639d35e059
+                Name: Reviewer
+            - TeamMemberType: Contact
+              TeamMember: 7a0be37e-9504-473b-8e3a-fdef9170ddd3
+              TeamRole:
+                Id: 5d901366-812f-4b17-a659-a8639d35e059
+                Name: Reviewer
+            - TeamMemberType: ExternalMember
+              TeamMember: dave@gmail.com
+              TeamRole:
+                Id: 5d901366-812f-4b17-a659-a8639d35e059
+                Name: Reviewer
+      responses:
+        '200':
+          description: Details of the team members added to the contract request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRequestTeamMembers'
+              example:
+                Success: true
+                Data:
+                  User:
+                    Id: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+                    Name: John
+                  UserGroup:
+                    Id: 7a8b9c0d-1234-5678-abcd-ef0123456789
+                    Name: Engineering Team
+                  Contact:
+                    Id: e1f2a3b4-c5d6-7890-1234-567890abcdef
+                    Name: Jane Doe
+                  ExternalMember: null
+                  TeamRole:
+                    Id: 1abde864-dc94-4191-b9fd-4d9d20ee0e3d
+                    Name: Reviewer
+                  ContractRequest: 11e6b63b-d131-4982-a1c6-addb6a8adbac
+                  Id: f6834579-0fd5-4d17-b24e-c5b8e9550f7d
+                  Name: Contract Request Team Member
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.8073561Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.8073719Z'
+                  ExternalId: EXT-001
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract request ID or team member details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/requests/{contractRequestId}/teammembers/by-action/{actionName}:
+    get:
+      tags:
+      - Contract Request Team Members
+      summary: Get contract request team members by action
+      description: Retrieves a list of team members assigned to a contract request who are associated with a specific contract action.
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      - name: actionName
+        in: path
+        description: Action name associated with team role
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of team members assigned for the given contract request and associated with the given action
+        '400':
+          description: Invalid contract request ID or Invalid action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/requests/{contractRequestId}/teammembers/query:
+    post:
+      tags:
+      - Contract Request Team Members
+      summary: Get all team members of a contract request
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryTeamMember'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryTeamMember'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryTeamMember'
+      responses:
+        '200':
+          description: Returns the list of team members
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRequestTeamMembersListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - User:
+                    Id: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+                    Name: John
+                  UserGroup:
+                    Id: 7a8b9c0d-1234-5678-abcd-ef0123456789
+                    Name: Engineering Team
+                  Contact:
+                    Id: e1f2a3b4-c5d6-7890-1234-567890abcdef
+                    Name: Jane Doe
+                  ExternalMember: null
+                  TeamRole:
+                    Id: 1abde864-dc94-4191-b9fd-4d9d20ee0e3d
+                    Name: Reviewer
+                  ContractRequest: 11e6b63b-d131-4982-a1c6-addb6a8adbac
+                  Id: a06f03d4-5426-4000-b172-08a542f2df77
+                  Name: Contract Request Team Member
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.8441269Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.8441295Z'
+                  ExternalId: EXT-001
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract request ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/requests/{contractRequestId}/teammembers/{teamMemberId}:
+    delete:
+      tags:
+      - Contract Request Team Members
+      summary: Remove a team member from a contract request
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      - name: teamMemberId
+        in: path
+        description: ID of the team member to remove
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The team member is removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract request ID or team member ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    get:
+      tags:
+      - Contract Request Team Members
+      summary: Get contract request team member details
+      description: Retrieves details of a specific team member assigned to a contract request, including their associated team role.
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      - name: teamMemberId
+        in: path
+        description: ID of the team member
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the details of the team member and associated team role.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRequestTeamMembers'
+              example:
+                Success: true
+                Data:
+                  User:
+                    Id: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+                    Name: John
+                  UserGroup:
+                    Id: 7a8b9c0d-1234-5678-abcd-ef0123456789
+                    Name: Engineering Team
+                  Contact:
+                    Id: e1f2a3b4-c5d6-7890-1234-567890abcdef
+                    Name: Jane Doe
+                  ExternalMember: null
+                  TeamRole:
+                    Id: 1abde864-dc94-4191-b9fd-4d9d20ee0e3d
+                    Name: Reviewer
+                  ContractRequest: 11e6b63b-d131-4982-a1c6-addb6a8adbac
+                  Id: 60ecfa9c-0145-48c7-9d84-abd9583e3177
+                  Name: Contract Request Team Member
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.8209635Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.8209657Z'
+                  ExternalId: EXT-001
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract request ID or teammember ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Contract Request Team Members
+      summary: Update contract request team member details
+      description: Updates the details of a specific team member assigned to a contract request.
+      parameters:
+      - name: contractRequestId
+        in: path
+        description: ID of the contract request
+        required: true
+        schema:
+          type: string
+      - name: teamMemberId
+        in: path
+        description: ID of the team member to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details of the team member to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractTeamMembersRequest'
+            example:
+              TeamMemberType: User
+              TeamMember: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+              TeamRole:
+                Id: 5d901366-812f-4b17-a659-a8639d35e059
+                Name: Reviewer
+      responses:
+        '200':
+          description: Details of the updated team member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRequestTeamMembers'
+              example:
+                Success: true
+                Data:
+                  User:
+                    Id: 3908f6d0-5309-4432-ab6e-1289d4aaf876
+                    Name: John
+                  UserGroup:
+                    Id: 7a8b9c0d-1234-5678-abcd-ef0123456789
+                    Name: Engineering Team
+                  Contact:
+                    Id: e1f2a3b4-c5d6-7890-1234-567890abcdef
+                    Name: Jane Doe
+                  ExternalMember: null
+                  TeamRole:
+                    Id: 1abde864-dc94-4191-b9fd-4d9d20ee0e3d
+                    Name: Reviewer
+                  ContractRequest: 11e6b63b-d131-4982-a1c6-addb6a8adbac
+                  Id: 40312ee1-be06-4d4b-accd-9a924d2cce19
+                  Name: Contract Request Team Member
+                  CreatedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  CreatedDate: '2026-08-14T00:01:42.8159674Z'
+                  ModifiedBy:
+                    Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                    Name: user
+                  ModifiedDate: '2026-08-14T00:01:42.8159709Z'
+                  ExternalId: EXT-001
+                  ETag: null
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract request ID or Invalid team member Id or Invalid team member details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    ContractTeamMembersRequest:
+      type: object
+      properties:
+        TeamMemberType:
+          $ref: '#/components/schemas/TeamMemberType'
+        TeamMember:
+          type:
+          - string
+          - 'null'
+          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: false
+      description: Model for Contract Team Members Request
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ContractRequestTeamMembersListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractRequestTeamMembers'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    CustomQueryTeamMember:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SearchText:
+          type:
+          - string
+          - 'null'
+          description: Search text to search team members by name or email
+      additionalProperties: false
+      description: Custom Query for Team Member search
+    ContractRequestTeamMembers:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        User:
+          $ref: '#/components/schemas/LookupObject'
+        UserGroup:
+          $ref: '#/components/schemas/LookupObject'
+        Contact:
+          $ref: '#/components/schemas/LookupObject'
+        ExternalMember:
+          type:
+          - string
+          - 'null'
+          description: External Email Id assigned to the contract request as a team member
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+        ContractRequest:
+          type:
+          - string
+          - 'null'
+          description: Contract Request for which the user or user group is assigned
+      additionalProperties: {}
+      description: Model for Contract Request Team Members
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TeamMemberType:
+      enum:
+      - User
+      - UserGroup
+      - Contact
+      - ExternalMember
+      type: string
+      description: Defines types of Contract Team member
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

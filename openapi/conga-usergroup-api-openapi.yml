@@ -1,0 +1,388 @@
+openapi: 3.2.0
+info:
+  title: Approvals User Group API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: UserGroup
+paths:
+  /v1/user-group:
+    post:
+      tags:
+      - UserGroup
+      summary: Create a user group
+      description: Creates a new user group with the provided details. Returns the created user group object with its assigned ID.
+      operationId: UserGroup_CreateUserGroup
+      requestBody:
+        x-name: userGroup
+        description: User group to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroup'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The created user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - UserGroup
+      summary: List user groups
+      description: Gets a list of all user groups
+      operationId: UserGroup_GetUserGroups
+      parameters:
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 2
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 3
+      responses:
+        '200':
+          description: A list of user groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+    put:
+      tags:
+      - UserGroup
+      summary: Update a user group
+      description: Updates an existing user group with new information. Provide the user group ID and updated fields in the request body. Returns the updated user group object.
+      operationId: UserGroup_UpdateUserGroup
+      requestBody:
+        x-name: userGroup
+        description: User group to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroup'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The updated user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{groupId}/members:
+    post:
+      tags:
+      - UserGroup
+      summary: Add a member
+      description: Adds a member to an existing user group.
+      operationId: UserGroup_AddUserGroupMember
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: request
+        description: User group member to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupMemberPayloadDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: The added member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupMember'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - UserGroup
+      summary: List user group members
+      description: Lists all members of the given user group.
+      operationId: UserGroup_GetUserGroupMembers
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: A list of user group members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroupMember'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{groupId}/members/{memberId}:
+    delete:
+      tags:
+      - UserGroup
+      summary: Delete a member by ID
+      description: Deletes the user group member identified in the request.
+      operationId: UserGroup_DeleteUserGroupMemberById
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      - name: memberId
+        in: path
+        required: true
+        description: User group member ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: True if the delete succeeded; else false.
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{id}:
+    delete:
+      tags:
+      - UserGroup
+      summary: Delete a user group by ID
+      description: Deletes the user group.
+      operationId: UserGroup_DeleteUserGroupById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: True or False depends on if the delete succeeded
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - UserGroup
+      summary: List a user group's membership
+      description: 'Returns the user group (ID, name, email) with all members. Each member contains: ID, name, type (User or Group), member ID, and group ID.'
+      operationId: UserGroup_GetUserGroupById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The user group and its members.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupWithMembers'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    UserGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Email:
+            type:
+            - string
+            - 'null'
+          IsSendEmailToMembers:
+            type: boolean
+          ParentUserGroups:
+            type:
+            - string
+            - 'null'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    OwnerType:
+      type: string
+      description: ''
+      x-enumNames:
+      - User
+      - UserGroup
+      enum:
+      - User
+      - UserGroup
+    UserGroupMember:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          UserGroupId:
+            type:
+            - string
+            - 'null'
+          MemberId:
+            type:
+            - string
+            - 'null'
+          MemberType:
+            $ref: '#/components/schemas/OwnerType'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    AddGroupMemberPayloadDTO:
+      type: object
+      description: AddGroupMemberPayloadDTO
+      additionalProperties: false
+      required:
+      - MemberId
+      - MemberType
+      properties:
+        MemberId:
+          type: string
+          description: MemberId
+          minLength: 1
+        MemberType:
+          type: string
+          description: MemberType
+          minLength: 1
+    UserGroupWithMembers:
+      allOf:
+      - $ref: '#/components/schemas/UserGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          members:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/UserGroupMember'
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

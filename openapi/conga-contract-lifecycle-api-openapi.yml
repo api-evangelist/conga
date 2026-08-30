@@ -1,0 +1,615 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract Lifecycle API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract Lifecycle
+paths:
+  /api/clm/v1/contracts/{contractId}/activate:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Activate a contract
+      description: 'Activates a contract or brings it into effect after it has been finalized and signed by stakeholders.
+
+        Activating a contract ensures that key dates and events are monitored by the system and that all in-effect contracts are included in appropriate searches and views.
+
+        To activate a contract, the contract status must be fully signed, and the contract''s Contract Start Date and Contract End Date fields must have valid dates.
+
+
+        Activation changes the contract''s status changes to Activated. The Activated By field is updated to the current user and the  Activated Date field is updated to the current date.
+
+
+        Additionally, this operation deletes any documents that were not selected at the time of activation.'
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to be activated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of document IDs selected at the time of activation
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: The contract is activated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The contract ID is invalid or the contract is in an invalid state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/amend:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Amend a contract
+      description: 'Amends a contract. During the term of a contract, there may be a need to modify its language or terms. This API creates a new version of the contract record after amendment. The new, amended record shares the same base contract number as the original, but with an incremented decimal, and all data from the original version is copied to the new version.
+
+
+        To amend a contract, the contract''s status must be Activated, Superseded, or Being Terminated.
+
+
+        On amendment (success), the status of the original contract changes to "Being Amended".'
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to be amended
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns contract ID of the newly created contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 640d07f2-e6b3-4793-bc18-96df910d97b8
+                Warnings: null
+                Errors: null
+        '400':
+          description: Contract ID is invalid or the contract is in an invalid state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/cancel:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Cancel a contract
+      description: Cancels a contract. To cancel a contract, the status category of the contract must be Request, In Authoring, In Signatures or In Filing. On cancellation, the contract status is changed to Canceled.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to be canceled
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract is canceled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The contract ID is invalid or the contract is in an invalid state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/clone:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Clone a contract
+      description: Clones an existing contract, creating a new contract version. All data from the original version is copied to the new version. The status of the original contract does not change.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns contract ID of the newly created contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 73ddd3b7-4f08-4c07-a1de-06fd4db7ef4b
+                Warnings: null
+                Errors: null
+        '400':
+          description: Contract ID is invalid or the contract has an invalid status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/expire:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Expire a contract
+      description: Expires a contract when the contract term ends. To mark a contract as expired, its status must be Activated, Superseded, or Being Terminated. On expiration, the contract's status is changed to Expired.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract is expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The contract ID is invalid or the contract has an invalid status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/renew:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Renew a contract
+      description: 'Renews a contract at the end of the term. The renewed contract (new contract) shares the same base contract number as the original contract with an incremented decimal. All data from the original is copied to the renewed contract.
+
+        The new contract''s start date is set to the original contract''s end date.
+
+
+        To be renewable, a contract''s status must be Activated, Superseded, or Being Terminated.
+
+
+        On renewal (success), the original contract''s status changes to Being Renewed.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns contract ID of the newly created contract
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: e35ab943-3c1a-4a78-ba55-267f92de9015
+                Warnings: null
+                Errors: null
+        '400':
+          description: Contract ID is invalid or the contract has an invalid status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/submitrequest:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Submit Request
+      description: Submits a request to process the contract based on the steps defined in the agreement rule.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID of the contract to be processed.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract has been processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The contract ID is invalid or the contract did not match any submission rules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/terminate:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Terminate a contract
+      description: Terminates an executed contract. To be terminated, a contract must have an Activated status. On contract termination, any related amended and renewed agreements are terminated along with the contract. Like the contract's status, those contracts' status is changed to Terminated.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The contract is terminated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID is invalid or the contract has an invalid status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/update-contract-lifecycle-status:
+    post:
+      tags:
+      - Contract Lifecycle
+      summary: Update contract status by lifecycle action
+      description: Updates the contract's status and status category based on the specified lifecycle action and record type.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Request containing lifecycle action and record type
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStatusByLifeCycleActionRequest'
+      responses:
+        '200':
+          description: The contract status is updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Success
+                Warnings: null
+                Errors: null
+        '400':
+          description: Invalid contract ID or parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    UpdateStatusByLifeCycleActionRequest:
+      type: object
+      properties:
+        LifeCycleAction:
+          type:
+          - string
+          - 'null'
+          description: Contract life cycle action like CREATE, GENERATE etc..
+        RecordType:
+          type:
+          - string
+          - 'null'
+          description: Contract record type like MSA, NDA etc..
+      additionalProperties: false
+      description: Request model for updating contract status by lifecycle action
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1012 @@
+openapi: 3.2.0
+info:
+  title: Extensibility Conga Hooks Rules API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Conga Hooks Rules
+paths:
+  /api/extensibility/v1/servicehooks/rules:
+    get:
+      tags:
+      - Conga Hooks Rules
+      summary: Retrieve all service hooks rules
+      description: Returns service hooks rules that meet the parameter conditions.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the rule <p>**For Example**: `Name=''SampleRule''`.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view
+        schema:
+          type: integer
+          format: int32
+      - name: sortField
+        in: query
+        description: Field name for sorting
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction of the result set <p>(ASC or DESC)</p>
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceHooksRuleGetResponse'
+              example:
+                Success: true
+                Data:
+                - Name: Name
+                  EventTypes:
+                  - Update
+                  ObjectName: Name_Of_Object
+                  IsActive: true
+                  Condition: Condition_On_Which_Rule_Will_Get_executed
+                  CustomCodeDetails:
+                    Id: Project_Id
+                    Parameters: null
+                    MethodName: null
+                    ClassName: Name_Of_Class
+                    ProjectName: Name_Of_Project
+                  ScheduleDetails: null
+                  RuleType: DataChange
+                  ModifiedOn: '0001-01-01T00:00:00'
+                - Name: Name
+                  EventTypes:
+                  - Update
+                  ObjectName: Name_Of_Object
+                  IsActive: true
+                  Condition: null
+                  CustomCodeDetails:
+                    Id: Project_Id
+                    Parameters:
+                    - Parameters
+                    MethodName: Name_Of_Method
+                    ClassName: Name_Of_Class
+                    ProjectName: Name_Of_Project
+                  ScheduleDetails:
+                    JobType: Cron
+                    Frequency: Daily
+                    ExecutionTimeUtc: '2026-08-14T00:04:15.9019949Z'
+                  RuleType: Schedule
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Conga Hooks Rules
+      summary: Create a new service hooks rule
+      description: Validates and creates the data change or schedule rule and returns the rule information.
+      requestBody:
+        description: Service hooks rule details to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceHooksRuleCreateResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Name
+                  EventTypes:
+                  - Update
+                  ObjectName: Name_Of_Object
+                  IsActive: true
+                  Condition: Condition_Expression
+                  CustomCodeDetails:
+                    Id: null
+                    Parameters: null
+                    MethodName: null
+                    ClassName: Name_Of_Class
+                    ProjectName: Name_Of_Project
+                  ScheduleDetails: null
+                  RuleType: DataChange
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/rules/cancellation/settings:
+    get:
+      tags:
+      - Conga Hooks Rules
+      summary: Get service hooks cancellation token setting configuration
+      description: Fetches service hooks cancellation token setting configuration details.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackCustomCodeSettingsResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ExecutionAbortTimeout: 1000
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Conga Hooks Rules
+      summary: Upsert service hooks cancellation token setting configuration
+      description: If a cancellation token setting is already configured, it is updated; otherwise, a new one is created.
+      requestBody:
+        description: CustomCodeGuardrail configuration data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/rules/supported-event-types:
+    get:
+      tags:
+      - Conga Hooks Rules
+      summary: Retrieve all supported event types in service hook rules
+      description: Fetches all supported event types.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: newsampleApi deleted successfully.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/rules/{name}:
+    delete:
+      tags:
+      - Conga Hooks Rules
+      summary: Delete a service hooks rule
+      description: Validates and removes the given service hooks rule.
+      parameters:
+      - name: name
+        in: path
+        description: Service hooks rule name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 4ef10131-33cd-48fd-a9bb-9f163be96193 deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Conga Hooks Rules
+      summary: Retrieve a service hooks rule by name
+      description: Retrieves the service hooks rule details for the given name.
+      parameters:
+      - name: name
+        in: path
+        description: Service hooks rule name to get the rule details
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceHooksRuleGetResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Name
+                  EventTypes: []
+                  ObjectName: Name_Of_Object
+                  IsActive: true
+                  Condition: Condition_On_Which_Rule_Will_Get_executed
+                  CustomCodeDetails:
+                    Id: Project_Id
+                    Parameters: null
+                    MethodName: null
+                    ClassName: Class_Name
+                    ProjectName: Project_Name
+                  ScheduleDetails: null
+                  RuleType: DataChange
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    patch:
+      tags:
+      - Conga Hooks Rules
+      summary: Update a service hooks rule
+      description: Validates and updates the service hooks rule and returns the updated rule information.
+      parameters:
+      - name: name
+        in: path
+        description: Service hooks rule name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Service hooks rule details to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksRuleUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceHooksRuleUpdateResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Name
+                  EventTypes:
+                  - Update
+                  ObjectName: Name_Of_Object
+                  IsActive: true
+                  Condition: Condition_Expression
+                  CustomCodeDetails:
+                    Id: null
+                    Parameters: null
+                    MethodName: null
+                    ClassName: Name_Of_Class
+                    ProjectName: Name_Of_Project
+                  ScheduleDetails: null
+                  RuleType: DataChange
+                  ModifiedOn: '0001-01-01T00:00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ServiceHooksRuleUpdateRequest:
+      type: object
+      properties:
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Condition:
+          type:
+          - string
+          - 'null'
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetail'
+      additionalProperties: false
+    ServiceHooksRuleUpdateResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetailModel'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+        ModifiedOn:
+          type: string
+          format: date-time
+      additionalProperties: false
+    SchedulerFrequency:
+      enum:
+      - Daily
+      - Weekly
+      - Monthly
+      - Yearly
+      - Hourly
+      type: string
+    CustomCodeSettingsRequest:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          description: Time interval, in milliseconds, to abort the custom code's execution
+          format: int32
+      additionalProperties: false
+      description: Request model for custom code settings
+    ScheduleDetailModel:
+      type: object
+      properties:
+        JobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        Frequency:
+          $ref: '#/components/schemas/Frequency'
+        ExecutionTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+    ServiceHooksRuleCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetail'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+      additionalProperties: false
+    ScheduledJobType:
+      enum:
+      - Cron
+      - OneTime
+      type: string
+    ServiceHooksRuleCreateResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetailModel'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+        ModifiedOn:
+          type: string
+          format: date-time
+      additionalProperties: false
+    ServiceHooksRuleType:
+      enum:
+      - DataChange
+      - Schedule
+      type: string
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    CallbackCustomCodeSettingsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ScheduleDetail:
+      type: object
+      properties:
+        JobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        Frequency:
+          $ref: '#/components/schemas/SchedulerFrequency'
+        ExecutionTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+    CustomCodeDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Parameters:
+          type:
+          - array
+          - 'null'
+          items: {}
+        MethodName:
+          type:
+          - string
+          - 'null'
+        ClassName:
+          type:
+          - string
+          - 'null'
+        ProjectName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Frequency:
+      enum:
+      - Daily
+      - Weekly
+      - Monthly
+      - Yearly
+      - EveryMinute
+      - Hourly
+      type: string
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ServiceHooksRuleGetResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetailModel'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+        ModifiedOn:
+          type: string
+          format: date-time
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

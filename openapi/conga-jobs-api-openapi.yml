@@ -1,0 +1,125 @@
+openapi: 3.2.0
+info:
+  title: Ingress Jobs API
+  version: 1.0.0
+  description: Handles actions related to workflow jobs
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Jobs
+  description: Handles actions related to workflow jobs
+paths:
+  /v2/jobs/{id}:
+    get:
+      tags:
+      - Jobs
+      summary: Get job information
+      description: "Returns information for a given job.\n            \nEXAMPLE I: Getting the response information of a completed job.\n            \n    Request:\n            \n    GET /jobs/64d30d4a-5c89-4d9f-a5c8-b8453af5c280\n            \n    Response:\n            \n    {\n        \"id\": \"64d30d4a-5c89-4d9f-a5c8-b8453af5c280\",\n        \"status\": 3,\n        \"result\": {\n            \"Documents\": [\n                \"id\": \"5042d67f-21e6-4691-8f79-02446d3cd11c\",\n                \"name\": \"oupput-filename.pdf\",\n                \"entityId\": \"3ff0e051-d655-451d-abb5-a71b202cb935\",\n                \"entityName\": \"Agreement\",\n                \"parentDocumentId\": \"bfc3a050-895e-4d0e-a1a1-777d094082fa\",\n                \"fileType\": \"application/pdf\",\n                \"fileSize\": 181239,\n                \"extension\": \".pdf\",\n                \"createdDate\": \"2023-07-15T12:42:18.147\",\n                \"modifiedDate\": \"2023-07-15T12:42:18.147\"\n            ]\n        }\n    }"
+      operationId: Jobs_Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The job ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the job information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEntity'
+      security:
+      - JWT: []
+components:
+  schemas:
+    JobStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+      enum:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+    BaseEntity:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    JobEntity:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            oneOf:
+            - $ref: '#/components/schemas/JobStatus'
+          startTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          endTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          duration:
+            type:
+            - number
+            - 'null'
+            format: double
+          progress:
+            type: number
+            format: double
+          errorReason:
+            type:
+            - string
+            - 'null'
+          result:
+            type:
+            - object
+            - 'null'
+            additionalProperties: {}
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

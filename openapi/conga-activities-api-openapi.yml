@@ -1,0 +1,170 @@
+openapi: 3.2.0
+info:
+  title: Approvals Activities API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: Activities
+paths:
+  /v1/activities/{objectType}/{objectId}:
+    get:
+      tags:
+      - Activities
+      summary: Get approval activities for a context object
+      description: Gets all approval activities for a context object.
+      operationId: Activities_GetActivities
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The context object ID
+        schema:
+          type: string
+        x-position: 2
+      - name: isExternalId
+        in: query
+        description: True if object ID is an external ID
+        schema:
+          type: boolean
+        x-position: 3
+      - name: order
+        in: query
+        description: Order for list of comments by date. Supported orders are ASC or DESC. Default is DESC
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 4
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 5
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 6
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 7
+      responses:
+        '200':
+          description: A list of comments for the context object, including date and commenter information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalComments'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    ApprovalComments:
+      type: object
+      additionalProperties: false
+      properties:
+        CommenterName:
+          type:
+          - string
+          - 'null'
+        CommenterId:
+          type:
+          - string
+          - 'null'
+        Comment:
+          type:
+          - string
+          - 'null'
+        DateCommentAdded:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        RequestId:
+          type:
+          - string
+          - 'null'
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        Type:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Detail:
+          type:
+          - string
+          - 'null'
+        Instance:
+          type:
+          - string
+          - 'null'
+        Extensions:
+          type: object
+          additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

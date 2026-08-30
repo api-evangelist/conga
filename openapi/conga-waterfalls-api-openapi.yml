@@ -1,0 +1,367 @@
+openapi: 3.2.0
+info:
+  title: Administration Waterfalls API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Waterfalls
+paths:
+  /waterfalls:
+    delete:
+      tags:
+      - Waterfalls
+      summary: Delete waterfalls
+      description: Deletes multiple waterfalls.
+      requestBody:
+        description: The list of waterfalls to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Waterfalls
+      summary: Retrieve waterfalls
+      description: Retrieves the collection of waterfalls.
+      parameters:
+      - name: filter
+        in: query
+        description: Optional filter parameters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Optional sort parameter
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Waterfalls
+      summary: Update waterfalls
+      description: Updates multiple waterfalls.
+      requestBody:
+        description: The list of waterfalls with updated data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: Name of the WaterFall
+              Description: Description
+              IsActive: true
+              Sequence: 1
+              PricePoints:
+              - Name: PricePoint-Name
+                Sequence: 1
+                IsNetPrice: true
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Waterfalls
+      summary: Create waterfalls
+      description: Creates multiple waterfalls.
+      requestBody:
+        description: The list of waterfall to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Waterfall'
+      responses:
+        '200':
+          description: OK
+  /waterfalls/{Id}:
+    delete:
+      tags:
+      - Waterfalls
+      summary: Delete a waterfall
+      description: Deletes a single waterfall by its identifier.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the waterfall to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Waterfalls
+      summary: Retrieve a waterfall
+      description: Retrieves a single waterfall by its identifier.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the waterfall
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Waterfall'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Waterfall'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Waterfall'
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Waterfalls
+      summary: Update a waterfall
+      description: Updates a single waterfall.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the waterfall to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated data of the waterfall
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: Name of the WaterFall
+              Description: Description
+              IsActive: true
+              Sequence: 1
+              PricePoints:
+              - Name: PricePoint-Name
+                Sequence: 1
+                IsNetPrice: true
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    Waterfall:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        PricePoints:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PricePoint'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+      example:
+        Name: Name of the WaterFall
+        Description: Description
+        IsActive: true
+        Sequence: 1
+        PricePoints:
+        - Name: PricePoint-Name
+          Sequence: 1
+          IsNetPrice: true
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PricePoint:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        IsNetPrice:
+          type:
+          - boolean
+          - 'null'
+        IsRebate:
+          type:
+          - boolean
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,585 @@
+openapi: 3.2.0
+info:
+  title: Approvals Adhoc Process API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: AdhocProcess
+paths:
+  /v1/adhoc-process:
+    post:
+      tags:
+      - AdhocProcess
+      summary: Define an ad hoc process
+      description: Posts ad hoc process definition and returns the defined process information.
+      operationId: AdhocProcess_Save
+      requestBody:
+        x-name: request
+        description: AdhocProcessDefnPayloadDTO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/adhoc-process/submit:
+    post:
+      tags:
+      - AdhocProcess
+      summary: Submit adhoc approval
+      description: Submits adhoc approval for the given object ID and type.
+      operationId: AdhocProcess_Submit
+      requestBody:
+        x-name: submitPayload
+        description: The objectId, objectType, comments, and attachment IDs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdhocSubmitApprovalRequest'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Returns the RuntimeApprovalsResponse payload, containing all request and approval information for the submitted object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/adhoc-process/{objectType}/{objectId}:
+    delete:
+      tags:
+      - AdhocProcess
+      summary: Delete the adhoc Approvals
+      description: Delete the adhoc Approvals.
+      operationId: AdhocProcess_DeleteAdhocProcessDefinition
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: Boolean (`true` if deleted)
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - AdhocProcess
+      summary: Get an ad hoc process
+      description: Gets the ad hoc process associated with a given context object type and identifier after it has been saved but before it has been submitted.
+      operationId: AdhocProcess_GetAdhocProcessDefinition
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The unique context object identifier
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: Ad hoc process definition. AdhocProcessDefnPayloadDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/adhoc-process/{objectType}/{objectId}/post-submit:
+    get:
+      tags:
+      - AdhocProcess
+      summary: Get a submitted ad hoc process
+      description: Gets an ad hoc process definition after it has been submitted.
+      operationId: AdhocProcess_PostSubmit
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The unique context object identifier
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: AdhocProcessDefnPayloadDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/adhoc-process/{objectType}/{objectId}/resubmit:
+    post:
+      tags:
+      - AdhocProcess
+      summary: Resubmit an ad hoc process
+      description: Submits all data from an ad hoc process that has already been submitted.
+      operationId: AdhocProcess_ReSubmitApproval
+      parameters:
+      - name: objectType
+        in: path
+        required: true
+        description: The context object type
+        schema:
+          type: string
+        x-position: 1
+      - name: objectId
+        in: path
+        required: true
+        description: The unique context object identifier
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: inputPayload
+        description: AdhocProcessDefnPayloadDTO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: AdhocProcessDefnPayloadDTO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdhocProcessDefnPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    AdhocProcessDefnPayloadDTO:
+      type: object
+      description: AdhocProcessDefinition Payload DTO encapsulates the information for the generated approval requests, analogous to ad hoc process payloads.
+      additionalProperties: false
+      properties:
+        AdhocGroups:
+          type:
+          - array
+          - 'null'
+          description: Represents generated parent approval requests as an ad hoc group.
+          items:
+            $ref: '#/components/schemas/GroupPayloadDTO'
+        AdhocInfo:
+          description: AdhocInfo encapsulates such information as comments and attachments used during ad hoc process submissions.
+          oneOf:
+          - $ref: '#/components/schemas/AdhocApprovalProcessInfoDTO'
+        AllowApprovedRequestDelete:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether approved requests are to be deleted in flight during an ad hoc edit.
+        AutoReApprovalEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether auto-reapprovals are enabled for ad hoc processes.
+        RequireCommentsOnReject:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether the rejection comments are mandatory.
+        ApprovalStatus:
+          type:
+          - string
+          - 'null'
+          description: Approval status for the approval cycle
+        RequireCommentsOnApprove:
+          type:
+          - boolean
+          - 'null'
+          description: Specifies whether the approval comments are mandatory.
+        submission_comments:
+          type:
+          - string
+          - 'null'
+          description: Comments associated with submission
+          example: Example submission comments
+        submission_comments_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable submission comments
+          example: true
+        submission_comments_mandatory:
+          type:
+          - boolean
+          - 'null'
+          description: Make submission comments mandatory
+          example: true
+        submission_comment1_label:
+          type:
+          - string
+          - 'null'
+          description: Submission comment 1 Label
+          example: Custom comment 1 Label
+        submission_date:
+          type:
+          - string
+          - 'null'
+          description: Date the submission occurred
+          format: date-time
+          example: '2023-04-10T22:08:42.756215Z'
+    AdhocApprovalProcessInfo:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AttachmentIds:
+            type:
+            - string
+            - 'null'
+          DisplayFields:
+            type:
+            - string
+            - 'null'
+          DisplayHeaderFields:
+            type:
+            - string
+            - 'null'
+          ProcessComments:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+    AdhocApprovalProcessInfoDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
+      - type: object
+        description: AdhocApprovalProcessInfoDTO for response payload
+        additionalProperties: {}
+        properties:
+          DisplayFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayFieldsInfo have more information about each field in DisplayFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          DisplayHeaderFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessId
+          ApprovalProcessName:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessName
+    GroupPayloadDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RequestId:
+            type:
+            - string
+            - 'null'
+          Status:
+            type:
+            - string
+            - 'null'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    AdhocApprovalGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocApprovalProcessInfoId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          GroupName:
+            type:
+            - string
+            - 'null'
+          GroupSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ApproverList:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AdhocApprover'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Sequence:
+            type: integer
+            format: int32
+    AdhocSubmitApprovalRequest:
+      type: object
+      description: SubmitApprovalRequest
+      additionalProperties: false
+      required:
+      - ObjectId
+      - ObjectType
+      properties:
+        ObjectId:
+          type: string
+          description: Object Id
+          minLength: 1
+          example: 8655C092-0AAA-423C-AF98-32D8246E494C
+        ObjectType:
+          type: string
+          description: Object Type
+          minLength: 1
+          example: Opportunity
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example submit approval request comments
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+          description: A list of attachments separated by a comma
+          example: attachmentId1,attachmentId2
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    AdhocApprover:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocGroupId:
+            oneOf:
+            - $ref: '#/components/schemas/AdhocApprovalGroup'
+          ApproverSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalEnabled:
+            type:
+            - boolean
+            - 'null'
+          IsReviewer:
+            type:
+            - boolean
+            - 'null'
+          SendEmail:
+            type:
+            - boolean
+            - 'null'
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeMailId:
+            type:
+            - string
+            - 'null'
+          AssigneeName:
+            type:
+            - string
+            - 'null'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          Sequence:
+            type: integer
+            format: int32
+    FieldDTO:
+      type: object
+      description: FieldDTO encapsulates the field level information like label, value, datatype
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name for the field
+        label:
+          type:
+          - string
+          - 'null'
+          description: Display Name for the field
+        value:
+          description: Value for the field
+        type:
+          type:
+          - string
+          - 'null'
+          description: Data type for the field
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

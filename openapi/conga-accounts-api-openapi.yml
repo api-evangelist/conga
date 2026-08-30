@@ -1,0 +1,2312 @@
+openapi: 3.2.0
+info:
+  title: Conga Accounts API
+  version: '1.0'
+  description: 'Operations tagged Accounts across 3 of this provider''s published API definitions: conga-administration.json, conga-conga-sign.json, conga-contracts.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+- url: https://rls.congacloud.com/api/sign
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+tags:
+- name: Accounts
+paths:
+  /accounts/active:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieve active account
+      description: Retrieves active account pricelist
+      operationId: Accounts
+      parameters:
+      - name: accountId
+        in: header
+        description: Account id
+        schema:
+          type: string
+      - name: storeFrontId
+        in: header
+        description: StoreFront id
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Account'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/RevenueException'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueException'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/RevenueException'
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com/api/revenue-admin/v1
+  /v1/cs-account/usage:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieve account usage information
+      description: Retrieves usage information for the current account.
+      operationId: Accounts_GetAccountUsage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /api/clm/v1/accounts/{accountId}/contracts/hierarchy/query:
+    post:
+      tags:
+      - Accounts
+      summary: Get contract hierarchy for an account using query
+      parameters:
+      - name: accountId
+        in: path
+        description: Account Id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'Query object containing optional filtering (`CriteriaExpression`),
+
+          sorting (`SortInfo`), and field selection (`Fields`).'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryCommon'
+      responses:
+        '200':
+          description: Hierarchy contracts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    Name: Reviewer
+                    Description: Team is responsible to review the associated contract
+                    Action:
+                    - SendforReview
+                    IsActive: true
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2026-08-14T00:01:41.5186442Z'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2026-08-14T00:01:41.5186447Z'
+                    ExternalId: null
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Required value is missing from the request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/accounts/{accountId}/contracts/{contractId}/hierarchy/query:
+    post:
+      tags:
+      - Accounts
+      summary: Get hierarchy starting from a specific contract under an account
+      parameters:
+      - name: accountId
+        in: path
+        description: Account Id
+        required: true
+        schema:
+          type: string
+      - name: contractId
+        in: path
+        description: Contract Id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Optional sorting and field selection
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryHierarchyChild'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryHierarchyChild'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryHierarchyChild'
+      responses:
+        '200':
+          description: Contract hierarchy tree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryQueryResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  RecordCount: 1
+                  Data:
+                  - Id: 0c4dadb2-a7ee-4672-bfa3-3c9ee2ac85d1
+                    Name: Reviewer
+                    Description: Team is responsible to review the associated contract
+                    Action:
+                    - SendforReview
+                    IsActive: true
+                    CreatedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    CreatedDate: '2026-08-14T00:01:41.5292849Z'
+                    ModifiedBy:
+                      Id: d717a075-9cbf-480c-b230-837e0e6dee75
+                      Name: user
+                    ModifiedDate: '2026-08-14T00:01:41.5292853Z'
+                    ExternalId: null
+                  NextCursor: null
+                  StatusCode: OK
+                Warnings: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+components:
+  schemas:
+    RuntimeTypeHandle:
+      type: object
+      properties:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    FieldInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Attributes:
+          $ref: '#/components/schemas/FieldAttributes'
+        FieldType:
+          $ref: '#/components/schemas/Type'
+        IsInitOnly:
+          type: boolean
+          readOnly: true
+        IsLiteral:
+          type: boolean
+          readOnly: true
+        IsNotSerialized:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        IsPinvokeImpl:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        FieldHandle:
+          $ref: '#/components/schemas/RuntimeFieldHandle'
+      additionalProperties: false
+    SecurityRuleSet:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    CustomAttributeTypedArgument:
+      type: object
+      properties:
+        ArgumentType:
+          $ref: '#/components/schemas/Type'
+        Value: {}
+      additionalProperties: false
+    ParameterAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 61440
+      type: integer
+      format: int32
+    FieldAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 32768
+      - 38144
+      type: integer
+      format: int32
+    MemberTypes:
+      enum:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 191
+      type: integer
+      format: int32
+    Assembly:
+      type: object
+      properties:
+        DefinedTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TypeInfo'
+          readOnly: true
+        ExportedTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        CodeBase:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+          deprecated: true
+        EntryPoint:
+          $ref: '#/components/schemas/MethodInfo'
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ImageRuntimeVersion:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        IsDynamic:
+          type: boolean
+          readOnly: true
+        Location:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ReflectionOnly:
+          type: boolean
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        IsFullyTrusted:
+          type: boolean
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        EscapedCodeBase:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+          deprecated: true
+        ManifestModule:
+          $ref: '#/components/schemas/Module'
+        Modules:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Module'
+          readOnly: true
+        GlobalAssemblyCache:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        HostContext:
+          type: integer
+          format: int64
+          readOnly: true
+        SecurityRuleSet:
+          $ref: '#/components/schemas/SecurityRuleSet'
+      additionalProperties: false
+    MethodBase:
+      type: object
+      properties:
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    IntPtr:
+      type: object
+      additionalProperties: false
+    PropertyInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        PropertyType:
+          $ref: '#/components/schemas/Type'
+        Attributes:
+          $ref: '#/components/schemas/PropertyAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        CanRead:
+          type: boolean
+          readOnly: true
+        CanWrite:
+          type: boolean
+          readOnly: true
+        GetMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        SetMethod:
+          $ref: '#/components/schemas/MethodInfo'
+      additionalProperties: false
+    CustomAttributeNamedArgument:
+      type: object
+      properties:
+        MemberInfo:
+          $ref: '#/components/schemas/MemberInfo'
+        TypedValue:
+          $ref: '#/components/schemas/CustomAttributeTypedArgument'
+        MemberName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        IsField:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    MemberInfo:
+      type: object
+      properties:
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    TypeInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        IsInterface:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Namespace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        AssemblyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        Module:
+          $ref: '#/components/schemas/Module'
+        IsNested:
+          type: boolean
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        DeclaringMethod:
+          $ref: '#/components/schemas/MethodBase'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        UnderlyingSystemType:
+          $ref: '#/components/schemas/Type'
+        IsTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsArray:
+          type: boolean
+          readOnly: true
+        IsByRef:
+          type: boolean
+          readOnly: true
+        IsPointer:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericParameter:
+          type: boolean
+          readOnly: true
+        IsGenericTypeParameter:
+          type: boolean
+          readOnly: true
+        IsGenericMethodParameter:
+          type: boolean
+          readOnly: true
+        IsGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsSZArray:
+          type: boolean
+          readOnly: true
+        IsVariableBoundArray:
+          type: boolean
+          readOnly: true
+        IsByRefLike:
+          type: boolean
+          readOnly: true
+        IsFunctionPointer:
+          type: boolean
+          readOnly: true
+        IsUnmanagedFunctionPointer:
+          type: boolean
+          readOnly: true
+        HasElementType:
+          type: boolean
+          readOnly: true
+        GenericTypeArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        GenericParameterPosition:
+          type: integer
+          format: int32
+          readOnly: true
+        GenericParameterAttributes:
+          $ref: '#/components/schemas/GenericParameterAttributes'
+        Attributes:
+          $ref: '#/components/schemas/TypeAttributes'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsImport:
+          type: boolean
+          readOnly: true
+        IsSealed:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsClass:
+          type: boolean
+          readOnly: true
+        IsNestedAssembly:
+          type: boolean
+          readOnly: true
+        IsNestedFamANDAssem:
+          type: boolean
+          readOnly: true
+        IsNestedFamily:
+          type: boolean
+          readOnly: true
+        IsNestedFamORAssem:
+          type: boolean
+          readOnly: true
+        IsNestedPrivate:
+          type: boolean
+          readOnly: true
+        IsNestedPublic:
+          type: boolean
+          readOnly: true
+        IsNotPublic:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsAutoLayout:
+          type: boolean
+          readOnly: true
+        IsExplicitLayout:
+          type: boolean
+          readOnly: true
+        IsLayoutSequential:
+          type: boolean
+          readOnly: true
+        IsAnsiClass:
+          type: boolean
+          readOnly: true
+        IsAutoClass:
+          type: boolean
+          readOnly: true
+        IsUnicodeClass:
+          type: boolean
+          readOnly: true
+        IsCOMObject:
+          type: boolean
+          readOnly: true
+        IsContextful:
+          type: boolean
+          readOnly: true
+        IsEnum:
+          type: boolean
+          readOnly: true
+        IsMarshalByRef:
+          type: boolean
+          readOnly: true
+        IsPrimitive:
+          type: boolean
+          readOnly: true
+        IsValueType:
+          type: boolean
+          readOnly: true
+        IsSignatureType:
+          type: boolean
+          readOnly: true
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        StructLayoutAttribute:
+          $ref: '#/components/schemas/StructLayoutAttribute'
+        TypeInitializer:
+          $ref: '#/components/schemas/ConstructorInfo'
+        TypeHandle:
+          $ref: '#/components/schemas/RuntimeTypeHandle'
+        GUID:
+          type: string
+          format: uuid
+          readOnly: true
+        BaseType:
+          $ref: '#/components/schemas/Type'
+        IsSerializable:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        IsVisible:
+          type: boolean
+          readOnly: true
+        GenericTypeParameters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        DeclaredConstructors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ConstructorInfo'
+          readOnly: true
+        DeclaredEvents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EventInfo'
+          readOnly: true
+        DeclaredFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldInfo'
+          readOnly: true
+        DeclaredMembers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MemberInfo'
+          readOnly: true
+        DeclaredMethods:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MethodInfo'
+          readOnly: true
+        DeclaredNestedTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TypeInfo'
+          readOnly: true
+        DeclaredProperties:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PropertyInfo'
+          readOnly: true
+        ImplementedInterfaces:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+      additionalProperties: false
+    ParameterInfo:
+      type: object
+      properties:
+        Attributes:
+          $ref: '#/components/schemas/ParameterAttributes'
+        Member:
+          $ref: '#/components/schemas/MemberInfo'
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ParameterType:
+          $ref: '#/components/schemas/Type'
+        Position:
+          type: integer
+          format: int32
+          readOnly: true
+        IsIn:
+          type: boolean
+          readOnly: true
+        IsLcid:
+          type: boolean
+          readOnly: true
+        IsOptional:
+          type: boolean
+          readOnly: true
+        IsOut:
+          type: boolean
+          readOnly: true
+        IsRetval:
+          type: boolean
+          readOnly: true
+        DefaultValue:
+          readOnly: true
+        RawDefaultValue:
+          readOnly: true
+        HasDefaultValue:
+          type: boolean
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    StructLayoutAttribute:
+      type: object
+      properties:
+        TypeId:
+          readOnly: true
+        Value:
+          $ref: '#/components/schemas/LayoutKind'
+      additionalProperties: false
+    ModuleHandle:
+      type: object
+      properties:
+        MDStreamVersion:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    LayoutKind:
+      enum:
+      - 0
+      - 2
+      - 3
+      type: integer
+      format: int32
+    ICustomAttributeProvider:
+      type: object
+      additionalProperties: false
+    PropertyAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 62464
+      type: integer
+      format: int32
+    GenericParameterAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 28
+      type: integer
+      format: int32
+    Account:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        AccountNumber:
+          type:
+          - string
+          - 'null'
+        AccountSource:
+          type:
+          - string
+          - 'null'
+        AnnualRevenue:
+          $ref: '#/components/schemas/CurrencyField'
+        BillingAddress:
+          type:
+          - string
+          - 'null'
+        BillingCity:
+          type:
+          - string
+          - 'null'
+        BillingCountry:
+          type:
+          - string
+          - 'null'
+        BillingCountryCode:
+          type:
+          - string
+          - 'null'
+        BillingPostalCode:
+          type:
+          - string
+          - 'null'
+        BillingPreference:
+          $ref: '#/components/schemas/LookupObject'
+        BillingState:
+          type:
+          - string
+          - 'null'
+        BillingStreet:
+          type:
+          - string
+          - 'null'
+        ChannelProgramLevelName:
+          type:
+          - string
+          - 'null'
+        ChannelProgramName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Fax:
+          type:
+          - string
+          - 'null'
+        Industry:
+          type:
+          - string
+          - 'null'
+        IsCustomerPortal:
+          type:
+          - boolean
+          - 'null'
+        IsPartner:
+          type:
+          - boolean
+          - 'null'
+        Owner:
+          $ref: '#/components/schemas/LookupObject'
+        Ownership:
+          type:
+          - string
+          - 'null'
+        Parent:
+          $ref: '#/components/schemas/LookupObject'
+        Phone:
+          type:
+          - string
+          - 'null'
+        PhotoUrl:
+          type:
+          - string
+          - 'null'
+        PriceList:
+          $ref: '#/components/schemas/LookupObject'
+        Rating:
+          type:
+          - string
+          - 'null'
+        ShippingAddress:
+          type:
+          - string
+          - 'null'
+        ShippingCity:
+          type:
+          - string
+          - 'null'
+        ShippingCountry:
+          type:
+          - string
+          - 'null'
+        ShippingCountryCode:
+          type:
+          - string
+          - 'null'
+        ShippingPostalCode:
+          type:
+          - string
+          - 'null'
+        ShippingState:
+          type:
+          - string
+          - 'null'
+        ShippingStreet:
+          type:
+          - string
+          - 'null'
+        Site:
+          type:
+          - string
+          - 'null'
+        Type:
+          type:
+          - string
+          - 'null'
+        Website:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    CustomAttributeData:
+      type: object
+      properties:
+        AttributeType:
+          $ref: '#/components/schemas/Type'
+        Constructor:
+          $ref: '#/components/schemas/ConstructorInfo'
+        ConstructorArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeTypedArgument'
+          readOnly: true
+        NamedArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeNamedArgument'
+          readOnly: true
+      additionalProperties: false
+    Type:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        IsInterface:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Namespace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        AssemblyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        Module:
+          $ref: '#/components/schemas/Module'
+        IsNested:
+          type: boolean
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        DeclaringMethod:
+          $ref: '#/components/schemas/MethodBase'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        UnderlyingSystemType:
+          $ref: '#/components/schemas/Type'
+        IsTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsArray:
+          type: boolean
+          readOnly: true
+        IsByRef:
+          type: boolean
+          readOnly: true
+        IsPointer:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericParameter:
+          type: boolean
+          readOnly: true
+        IsGenericTypeParameter:
+          type: boolean
+          readOnly: true
+        IsGenericMethodParameter:
+          type: boolean
+          readOnly: true
+        IsGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsSZArray:
+          type: boolean
+          readOnly: true
+        IsVariableBoundArray:
+          type: boolean
+          readOnly: true
+        IsByRefLike:
+          type: boolean
+          readOnly: true
+        IsFunctionPointer:
+          type: boolean
+          readOnly: true
+        IsUnmanagedFunctionPointer:
+          type: boolean
+          readOnly: true
+        HasElementType:
+          type: boolean
+          readOnly: true
+        GenericTypeArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        GenericParameterPosition:
+          type: integer
+          format: int32
+          readOnly: true
+        GenericParameterAttributes:
+          $ref: '#/components/schemas/GenericParameterAttributes'
+        Attributes:
+          $ref: '#/components/schemas/TypeAttributes'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsImport:
+          type: boolean
+          readOnly: true
+        IsSealed:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsClass:
+          type: boolean
+          readOnly: true
+        IsNestedAssembly:
+          type: boolean
+          readOnly: true
+        IsNestedFamANDAssem:
+          type: boolean
+          readOnly: true
+        IsNestedFamily:
+          type: boolean
+          readOnly: true
+        IsNestedFamORAssem:
+          type: boolean
+          readOnly: true
+        IsNestedPrivate:
+          type: boolean
+          readOnly: true
+        IsNestedPublic:
+          type: boolean
+          readOnly: true
+        IsNotPublic:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsAutoLayout:
+          type: boolean
+          readOnly: true
+        IsExplicitLayout:
+          type: boolean
+          readOnly: true
+        IsLayoutSequential:
+          type: boolean
+          readOnly: true
+        IsAnsiClass:
+          type: boolean
+          readOnly: true
+        IsAutoClass:
+          type: boolean
+          readOnly: true
+        IsUnicodeClass:
+          type: boolean
+          readOnly: true
+        IsCOMObject:
+          type: boolean
+          readOnly: true
+        IsContextful:
+          type: boolean
+          readOnly: true
+        IsEnum:
+          type: boolean
+          readOnly: true
+        IsMarshalByRef:
+          type: boolean
+          readOnly: true
+        IsPrimitive:
+          type: boolean
+          readOnly: true
+        IsValueType:
+          type: boolean
+          readOnly: true
+        IsSignatureType:
+          type: boolean
+          readOnly: true
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        StructLayoutAttribute:
+          $ref: '#/components/schemas/StructLayoutAttribute'
+        TypeInitializer:
+          $ref: '#/components/schemas/ConstructorInfo'
+        TypeHandle:
+          $ref: '#/components/schemas/RuntimeTypeHandle'
+        GUID:
+          type: string
+          format: uuid
+          readOnly: true
+        BaseType:
+          $ref: '#/components/schemas/Type'
+        IsSerializable:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        IsVisible:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    TypeAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 16
+      - 24
+      - 32
+      - 128
+      - 256
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 65536
+      - 131072
+      - 196608
+      - 262144
+      - 264192
+      - 1048576
+      - 12582912
+      type: integer
+      format: int32
+    RuntimeMethodHandle:
+      type: object
+      properties:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    ConstructorInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+      additionalProperties: false
+    MethodImplAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 4096
+      - 65535
+      type: integer
+      format: int32
+    MethodAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 53248
+      type: integer
+      format: int32
+    EventInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Attributes:
+          $ref: '#/components/schemas/EventAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        AddMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RemoveMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RaiseMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        IsMulticast:
+          type: boolean
+          readOnly: true
+        EventHandlerType:
+          $ref: '#/components/schemas/Type'
+      additionalProperties: false
+    Module:
+      type: object
+      properties:
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        FullyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        MDStreamVersion:
+          type: integer
+          format: int32
+          readOnly: true
+        ModuleVersionId:
+          type: string
+          format: uuid
+          readOnly: true
+        ScopeName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ModuleHandle:
+          $ref: '#/components/schemas/ModuleHandle'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    CallingConventions:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 32
+      - 64
+      type: integer
+      format: int32
+    Exception:
+      type: object
+      properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    EventAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      type: integer
+      format: int32
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    MethodInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        ReturnParameter:
+          $ref: '#/components/schemas/ParameterInfo'
+        ReturnType:
+          $ref: '#/components/schemas/Type'
+        ReturnTypeCustomAttributes:
+          $ref: '#/components/schemas/ICustomAttributeProvider'
+      additionalProperties: false
+    RuntimeFieldHandle:
+      type: object
+      properties:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    RevenueException:
+      type: object
+      properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    StringObjectDictionaryQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    CustomQueryCommon:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: 'Criteria expression used to filter records.
+
+            Example: "Status = ''Active''"'
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'List of fields to be retrieved in the response.
+
+            If not specified, default fields may be returned.'
+      additionalProperties: false
+      description: 'Custom query model for Contract Hierarchy (by Account) API.
+
+        Contains only the required query parameters for hierarchy retrieval.'
+    CustomQueryHierarchyChild:
+      type: object
+      properties:
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the fields to be retrieved.
+      additionalProperties: false
+      description: 'Custom query model for Contract Hierarchy API.
+
+        Contains only required fields for this API.'
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- conga-administration.json
+- conga-conga-sign.json
+- conga-contracts.json

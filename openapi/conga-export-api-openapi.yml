@@ -1,0 +1,420 @@
+openapi: 3.2.0
+info:
+  title: Conga Export API
+  version: v1
+  description: 'Operations tagged Export across 2 of this provider''s published API definitions: conga-cart-v1.json, conga-contracts.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+tags:
+- name: Export
+  description: Export cart data (line items) as CSV.
+paths:
+  /api/cart/v1/carts/{cartId}/export:
+    post:
+      tags:
+      - Export
+      summary: Export line items from a cart as a downloadable CSV file.
+      description: 'Exports all line items associated with the specified cartId.
+
+        The resulting CSV contains:
+
+        <list type="bullet"><item><description>Cart header fields</description></item><item><description>Primary line items</description></item><item><description>Secondary line items (options, charge types, etc.)</description></item></list>
+
+        Provide `primaryLineNumbers` and `lineNumbers` in the request body.'
+      parameters:
+      - name: cartId
+        in: path
+        description: Unique identifier of the cart.
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: 'A list of related objects to include in search results. Related objects for inclusion can be: line-items.pricelist, line-items.pricelistitem, line-items.product.'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Add conditional sorting in standard URI format to narrow the sort result.
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: Request payload containing primary line numbers and line numbers.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ExportRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ExportRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ExportRequest'
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/clm/v1/objects/export/{fileName}/{format}:
+    post:
+      tags:
+      - Export
+      summary: Export query results to Excel/CSV
+      description: 'Executes a query against a single object type and exports the results to the specified format (Excel or CSV).
+
+        The query supports filtering, sorting, and field selection.'
+      parameters:
+      - name: fileName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: format
+        in: path
+        description: ''
+        required: true
+        schema:
+          $ref: '#/components/schemas/AllowedTemplateDocumentFormats'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResultAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/clm/v1/objects/multiple/export/{fileName}/{format}:
+    post:
+      tags:
+      - Export
+      summary: Export search results to Excel/CSV
+      parameters:
+      - name: fileName
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      - name: format
+        in: path
+        description: ''
+        required: true
+        schema:
+          $ref: '#/components/schemas/AllowedTemplateDocumentFormats'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleObjectsSearchQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResultAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+components:
+  schemas:
+    Conga.Revenue.Cart.Manager.Model.ExportRequest:
+      type: object
+      properties:
+        primaryLineNumbers:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int32
+        lineNumbers:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int32
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    FileResultAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+          format: binary
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    AllowedTemplateDocumentFormats:
+      enum:
+      - csv
+      - xlsx
+      type: string
+    MultipleObjectsQuery:
+      type: object
+      properties:
+        Query:
+          $ref: '#/components/schemas/SearchQuery'
+        IsPrimaryObject:
+          type: boolean
+          description: Whether Primary object or not
+        ReferenceAliasName:
+          type:
+          - string
+          - 'null'
+          description: Reference Alias Name of related object
+      additionalProperties: false
+      description: Multiple Objects Query
+    MultipleObjectsSearchQuery:
+      type: object
+      properties:
+        DocumentSearchText:
+          type:
+          - string
+          - 'null'
+          description: Document search text
+        MultipleObjectSearchQueries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MultipleObjectsQuery'
+          description: Array of Search queries for Multiple Objects
+      additionalProperties: false
+      description: Multiple Objects Query
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        OrderBy:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    SearchQuery:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of the Object
+        Criteria:
+          type:
+          - string
+          - 'null'
+          description: Criteria to filter Object
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Properties to select
+        Distinct:
+          type: boolean
+          description: Property indicating if query should fetch distinct records
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Limit for number of records
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Skip specified number of records
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group by provided properties
+      additionalProperties: false
+      description: Search Query
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- conga-cart-v1.json
+- conga-contracts.json

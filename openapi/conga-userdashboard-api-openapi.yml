@@ -1,0 +1,419 @@
+openapi: 3.2.0
+info:
+  title: Approvals User Dashboard API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: UserDashboard
+paths:
+  /v1/user-dashboard/approvals-count:
+    get:
+      tags:
+      - UserDashboard
+      summary: Count user's approvals
+      description: Gets the number of approvals for the user.
+      operationId: UserDashboard_GetCount
+      parameters:
+      - name: filter
+        in: query
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      responses:
+        '200':
+          description: The list of user approvals for the dashboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardApprovalsCountDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-dashboard/approvals-status:
+    get:
+      tags:
+      - UserDashboard
+      summary: Get user dashboard approval details
+      description: Returns a list of approval requests that match the selected status and filters. It also provides the total number of records for that status.
+      operationId: UserDashboard_GetStatus
+      parameters:
+      - name: status
+        in: query
+        required: true
+        description: Request status for query. Supported statuses are Assigned, Approved, and Rejected
+        schema:
+          oneOf:
+          - $ref: '#/components/schemas/UserDashboardStatusType'
+        x-position: 1
+      - name: filter
+        in: query
+        description: Query to search for requests
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 2
+      responses:
+        '200':
+          description: The SearchResult response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-dashboard/getdata:
+    post:
+      tags:
+      - UserDashboard
+      summary: Get dashboard approvals and business object data
+      description: Gets approval data for a specified business object, including object metadata, approval counts by status, and optionally the business object records
+      operationId: UserDashboard_GetDashboardData
+      requestBody:
+        x-name: requestPayload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardApprovalsRequestDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: An object containing the business object name and label, approval counts by status, and optionally the queried business object records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardApprovalsCountDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-dashboard/{businessObject}/approvals-count:
+    get:
+      tags:
+      - UserDashboard
+      summary: Get Approval Count for BusinessObject
+      description: Get Approval Count for BusinessObject.
+      operationId: UserDashboard_GetDashboardCount
+      parameters:
+      - name: businessObject
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Approval status Count for BusinessObject
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardApprovalsCountDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    QueryResponseOfDictionaryOfStringAndObject:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          RecordCount:
+            type:
+            - integer
+            - 'null'
+            format: int64
+          Data:
+            type:
+            - array
+            - 'null'
+            items:
+              type: object
+              additionalProperties: {}
+          HasMoreRecords:
+            type:
+            - boolean
+            - 'null'
+          NextCursor:
+            type:
+            - string
+            - 'null'
+    BaseResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+    UserDashboardStatusType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Assigned
+      - Approved
+      - Rejected
+      enum:
+      - Assigned
+      - Approved
+      - Rejected
+    DashboardApprovalsRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        DashboardCountOnly:
+          type: boolean
+        BusinessObject:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Distinct:
+          type:
+          - boolean
+          - 'null'
+        Limit:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Sort:
+          oneOf:
+          - $ref: '#/components/schemas/Sort'
+    DashboardApprovalsCountDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        ObjectLabel:
+          type:
+          - string
+          - 'null'
+        CountDetails:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: integer
+            format: int32
+        ObjectData:
+          oneOf:
+          - $ref: '#/components/schemas/QueryResponseOfDictionaryOfStringAndObject'
+    Sort:
+      type: object
+      additionalProperties: false
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OrderBy:
+          type:
+          - string
+          - 'null'
+    SearchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        SerializedResultEntities:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        TotalNumberOfRecords:
+          type: integer
+          format: int32
+        MoreRecords:
+          type: boolean
+    HttpStatusCode:
+      type: string
+      description: ''
+      x-enumNames:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - Ambiguous
+      - MovedPermanently
+      - Moved
+      - Found
+      - Redirect
+      - SeeOther
+      - RedirectMethod
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableContent
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MultipleChoices
+      - MovedPermanently
+      - MovedPermanently
+      - Found
+      - Found
+      - SeeOther
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - RedirectKeepVerb
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

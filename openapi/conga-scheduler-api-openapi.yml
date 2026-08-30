@@ -1,0 +1,1307 @@
+openapi: 3.2.0
+info:
+  title: Scheduler API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Scheduler
+paths:
+  /api/scheduler/v1/jobs:
+    get:
+      tags:
+      - Scheduler
+      summary: List scheduled jobs
+      description: Returns scheduled job details.
+      parameters:
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, all the scheduled job records are considered.</p>'
+        schema:
+          type: string
+      - name: continuationToken
+        in: query
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: The page number of the current page for which the records will be fetched and displayed.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobListResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobListResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobListResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/cron:
+    post:
+      tags:
+      - Scheduler
+      summary: Create a new cron scheduled job
+      description: Creates a new cron scheduled job and returns the job name.
+      requestBody:
+        description: Request details about creating cron scheduled job
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobCreateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/export:
+    post:
+      tags:
+      - Scheduler
+      summary: Export all scheduled jobs
+      description: Exports all scheduled job information in a zip file, based on the appNamespace parameter.
+      parameters:
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      requestBody:
+        description: List of the scheduled job to be exported
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/onetime:
+    post:
+      tags:
+      - Scheduler
+      summary: Create a one-time scheduled job
+      description: Creates a new scheduled job and returns the job's name.
+      requestBody:
+        description: Request details about creating one time scheduled job
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OneTimeScheduledJobCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OneTimeScheduledJobCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/OneTimeScheduledJobCreateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}:
+    delete:
+      tags:
+      - Scheduler
+      summary: Delete a scheduled job
+      description: Deletes a scheduled job and its execution history by job name.
+      parameters:
+      - name: jobName
+        in: path
+        description: Scheduled job's name
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+    get:
+      tags:
+      - Scheduler
+      summary: Get scheduled job details
+      description: Returns the scheduled job details based on the job name.
+      parameters:
+      - name: jobName
+        in: path
+        description: Scheduled job name
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/cron:
+    put:
+      tags:
+      - Scheduler
+      summary: Update the scheduled job
+      description: Updates and returns the scheduled job information or an appropriate error message.
+      parameters:
+      - name: jobName
+        in: path
+        description: Name of the scheduled job to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Request details about updating cron scheduled job
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CronScheduledJobUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/disable:
+    put:
+      tags:
+      - Scheduler
+      summary: Disable the scheduled job
+      description: Disables a scheduled job by job name.
+      parameters:
+      - name: jobName
+        in: path
+        description: Job name
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/enable:
+    put:
+      tags:
+      - Scheduler
+      summary: Enable scheduled job
+      description: Enables a named scheduled job.
+      parameters:
+      - name: jobName
+        in: path
+        description: Name of the scheduled job to be enabled
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/execute:
+    post:
+      tags:
+      - Scheduler
+      summary: Execute the scheduled job
+      description: Executes and returns the executed scheduled job or an appropriate error message.
+      parameters:
+      - name: jobName
+        in: path
+        description: Name of the scheduled job to be executed
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/execution-history:
+    get:
+      tags:
+      - Scheduler
+      summary: Get scheduled job execution history
+      description: Returns the scheduled job execution history.
+      parameters:
+      - name: jobName
+        in: path
+        description: Scheduled job's name
+        required: true
+        schema:
+          type: string
+      - name: AppNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+      - name: PageNumber
+        in: query
+        description: The page number of the current page for which the records will be fetched and displayed
+        schema:
+          type: integer
+          format: int32
+      - name: PageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobExecutionHistoryListResponseAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobExecutionHistoryListResponseAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJobExecutionHistoryListResponseAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+  /api/scheduler/v1/jobs/{jobName}/export:
+    get:
+      tags:
+      - Scheduler
+      summary: Export a scheduled job
+      description: Returns scheduled job information by name in a ZIP file.
+      parameters:
+      - name: jobName
+        in: path
+        description: Scheduled job's name
+        required: true
+        schema:
+          type: string
+      - name: appNamespace
+        in: query
+        description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        schema:
+          type: string
+          default: default
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+components:
+  schemas:
+    DayOfWeek:
+      enum:
+      - Sunday
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+      type: string
+    ScheduledJobExecutionHistoryListResponse:
+      type: object
+      properties:
+        JobName:
+          type:
+          - string
+          - 'null'
+        JobRecurrence:
+          $ref: '#/components/schemas/JobRecurrence'
+        CreatedDate:
+          type: string
+          format: date-time
+        ActionType:
+          $ref: '#/components/schemas/ActionType'
+        State:
+          $ref: '#/components/schemas/ScheduledJobState'
+        CronExpression:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        CronDescription:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ScheduleExpression:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        ScheduledJobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        TotalCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        StartDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExecutionHistoryRecords:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ScheduledJobGetExecutionHistory'
+      additionalProperties: false
+    ScheduledJobListResponse:
+      type: object
+      properties:
+        HasMoreRecords:
+          type: boolean
+        ContinuationToken:
+          type:
+          - string
+          - 'null'
+        TotalCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        ScheduledJobs:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ScheduledJob'
+      additionalProperties: false
+    ScheduledJob:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        JobName:
+          type:
+          - string
+          - 'null'
+        AppNamespace:
+          type:
+          - string
+          - 'null'
+        JobRecurrence:
+          $ref: '#/components/schemas/JobRecurrence'
+        Payload:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        FilterAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        CreatedDate:
+          type: string
+          format: date-time
+        CronExpression:
+          type:
+          - string
+          - 'null'
+        CronDescription:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        State:
+          $ref: '#/components/schemas/ScheduledJobState'
+        ActionType:
+          $ref: '#/components/schemas/ActionType'
+        ExecutionDateTime:
+          type: string
+          format: date-time
+        ExecutionDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ScheduledJobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        Version:
+          type:
+          - string
+          - 'null'
+        StartDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        TimezoneId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CronScheduledJobUpdateRequest:
+      type: object
+      properties:
+        JobRecurrence:
+          $ref: '#/components/schemas/JobRecurrence'
+        CronExpression:
+          type:
+          - string
+          - 'null'
+          description: The Cron expression for the scheduled job
+        AppNamespace:
+          type:
+          - string
+          - 'null'
+          description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        Payload:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: The additional payload that will be passed in as a message when the Scheduled job runs
+        FilterAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: The Filter attributes to filter the messages
+        JobName:
+          type:
+          - string
+          - 'null'
+          description: The Scheduler Job Name
+        StartDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          description: The scheduled job's execution time, expressed as a Cron job
+          format: date-time
+        EndDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          description: The date and time to stop executing the scheduled Cron job
+          format: date-time
+        TimezoneId:
+          type:
+          - string
+          - 'null'
+          description: The timezone in which the cron expression is evaluated.
+      additionalProperties: false
+    ExecutionType:
+      enum:
+      - Schedule
+      - OnDemand
+      type: string
+    ScheduledJobResponse:
+      type: object
+      properties:
+        JobName:
+          type:
+          - string
+          - 'null'
+        State:
+          $ref: '#/components/schemas/ScheduledJobState'
+      additionalProperties: false
+    ScheduledJobType:
+      enum:
+      - Cron
+      - OneTime
+      type: string
+    ScheduledJobResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ScheduledJobResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ScheduledJobHistoryStatus:
+      enum:
+      - Inprogress
+      - Succeeded
+      - Failed
+      - Queued
+      type: string
+    CronScheduledJobCreateRequest:
+      type: object
+      properties:
+        AppNamespace:
+          type:
+          - string
+          - 'null'
+          description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        Payload:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: The additional payload that will be passed in as a message when the Scheduled job runs
+        FilterAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: The Filter attributes to filter the messages
+        JobName:
+          type:
+          - string
+          - 'null'
+          description: The Scheduler Job Name
+        ActionType:
+          $ref: '#/components/schemas/ActionType'
+        JobRecurrence:
+          $ref: '#/components/schemas/JobRecurrence'
+        CronExpression:
+          type:
+          - string
+          - 'null'
+          description: The Cron expression for the scheduled job
+        StartDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          description: The scheduled job's execution time, expressed as a Cron job
+          format: date-time
+        EndDateTimeUtc:
+          type:
+          - string
+          - 'null'
+          description: The date and time to stop executing the scheduled Cron job
+          format: date-time
+        TimezoneId:
+          type:
+          - string
+          - 'null'
+          description: The timezone in which the cron expression is evaluated.
+      additionalProperties: false
+    ScheduledJobListResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ScheduledJobListResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ScheduledJobState:
+      enum:
+      - Enabled
+      - Disabled
+      type: string
+    JobRecurrence:
+      type: object
+      properties:
+        Frequency:
+          $ref: '#/components/schemas/Frequency'
+        Interval:
+          type: integer
+          format: int32
+        AtMinute:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        AtHour:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        OnDay:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        DayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+      additionalProperties: false
+    ScheduledJobAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ScheduledJob'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ScheduledJobGetExecutionHistory:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Error:
+          type:
+          - string
+          - 'null'
+        TraceId:
+          type:
+          - string
+          - 'null'
+        Status:
+          $ref: '#/components/schemas/ScheduledJobHistoryStatus'
+        ExecutionDateTime:
+          type: string
+          format: date-time
+        ExecutionDateTimeUtc:
+          type: string
+          format: date-time
+        ExecutionType:
+          $ref: '#/components/schemas/ExecutionType'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Frequency:
+      enum:
+      - Daily
+      - Weekly
+      - Monthly
+      - Yearly
+      - EveryMinute
+      - Hourly
+      type: string
+    OneTimeScheduledJobCreateRequest:
+      type: object
+      properties:
+        AppNamespace:
+          type:
+          - string
+          - 'null'
+          description: 'Namespace for sorting jobs. It is a folder where the scheduled jobs for a specific category belong. <p>The namespace parameter is optional: if it is left blank, the scheduled job record in the default namespace is considered.</p>'
+        Payload:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: The additional payload that will be passed in as a message when the Scheduled job runs
+        FilterAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: The Filter attributes to filter the messages
+        JobName:
+          type:
+          - string
+          - 'null'
+          description: The Scheduler Job Name
+        ActionType:
+          $ref: '#/components/schemas/ActionType'
+        ExecutionDateTimeUtc:
+          type: string
+          description: The UTC date time at which the scheduled job will run
+          format: date-time
+      additionalProperties: false
+    ActionType:
+      enum:
+      - PublishMessage
+      - ExecuteCustomCode
+      - Webhook
+      type: string
+    ScheduledJobExecutionHistoryListResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ScheduledJobExecutionHistoryListResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,954 @@
+openapi: 3.2.0
+info:
+  title: Ingress Draft API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: Draft
+paths:
+  /v1/Draft:
+    post:
+      tags:
+      - Draft
+      summary: Saves a solution draft before it proceeds to the Deploy tab.
+      operationId: Draft_CreateDraft
+      requestBody:
+        x-name: draft
+        description: The draft solution data.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftSolutionRequest'
+        required: true
+        x-position: 1
+      responses:
+        '201':
+          description: 201 Created with the draft GUID if successful, or appropriate error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Draft/{id}:
+    get:
+      tags:
+      - Draft
+      summary: Retrieves a draft solution by its ID.
+      operationId: Draft_GetDraftById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the draft to retrieve.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: 200 OK if successful, 404 Not Found if not found, or 500 for internal server errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftIdResponseOfComposerSolution'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    DeliveryOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        composerOutputOptions:
+          type: string
+        congaSignAPI:
+          $ref: '#/components/schemas/CongaSignAPI'
+        congaSignSalesforceConnector:
+          $ref: '#/components/schemas/CongaSignSalesforceConnector'
+        email:
+          $ref: '#/components/schemas/Email'
+        download:
+          type: boolean
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
+    CongaSignSalesforceConnector2:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        salesforceOrg:
+          type: string
+        signingOrder:
+          type: string
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationType:
+          type: string
+        recipients:
+          type: string
+    Email:
+      type: object
+      additionalProperties: false
+      properties:
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        bcc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        additionalTo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        subject:
+          type: string
+        emailTemplateId:
+          type: string
+        isOn:
+          type: boolean
+    DataModel2:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+    DraftIdResponseOfComposerSolution:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponseOfComposerSolution'
+      - type: object
+        description: Represents a draft ID response model that extends ComposerResponse with a generic value
+        additionalProperties: false
+    EmailRecipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+    HighVolumeDeliveryOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        highVolumeOutputOptions:
+          type: string
+        highVolumeEmailTemplateId:
+          type: string
+        highVolumeSFTPFilePath:
+          type: string
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        createdBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        modifiedDate:
+          type: string
+          format: date-time
+        externalId:
+          type:
+          - string
+          - 'null'
+        eTag:
+          type:
+          - string
+          - 'null'
+        customProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    CongaSignSalesforceConnector:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        salesforceOrg:
+          type: string
+        signingOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationType:
+          $ref: '#/components/schemas/ExpirationType'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        isOn:
+          type: boolean
+    EmailRecipient2:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+    Destination2:
+      type: object
+      additionalProperties: false
+      properties:
+        isEnabled:
+          type: boolean
+        integrationName:
+          type: string
+        filePath:
+          type: string
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    Behavior:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        parameterName:
+          type: string
+    Recipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        order:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        id:
+          type:
+          - string
+          - 'null'
+    ExpirationType:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Date
+      - Days
+      enum:
+      - None
+      - Date
+      - Days
+    ComposerResponseOfComposerSolution:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponse'
+      - type: object
+        description: Represents the result of some operation, with status information and possibly a value and an error.
+        additionalProperties: false
+        properties:
+          data:
+            description: 'A safe version of Data that returns null if the result is a failure.
+
+              This is used for serialization only.'
+            oneOf:
+            - $ref: '#/components/schemas/ComposerSolution'
+    ResponseStatusCode:
+      type: string
+      description: Application-specific error code identified by Composer UI\
+      x-enumNames:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+      enum:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+    DataModel:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+    DraftSolutionRequest:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        description: Create Draft Solution Request Payload
+        additionalProperties: false
+        properties:
+          status:
+            type: string
+            description: Solution Status - should always be "Draft" for a draft solution
+    Template2:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+    SolutionBase:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        environment:
+          type: string
+        region:
+          type: string
+        highVolumeApiLanguage:
+          type: string
+        composerApiLanguage:
+          type: string
+        dataModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataModel'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        outputBehaviors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Behavior'
+        deliveryOptions:
+          $ref: '#/components/schemas/DeliveryOptions'
+        highVolumeDeliveryOptions:
+          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Destination'
+        customBrandingId:
+          type: string
+    Errors:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
+          oneOf:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
+    CongaSignAPI2:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        signingOrder:
+          type: string
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        expirationType:
+          type: string
+        recipients:
+          type: string
+        emailSubject:
+          type:
+          - string
+          - 'null'
+        emailBody:
+          type:
+          - string
+          - 'null'
+    Destination:
+      type: object
+      additionalProperties: false
+      properties:
+        isEnabled:
+          type: boolean
+        integrationName:
+          type: string
+        filePath:
+          type: string
+    Template:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          description: Template Id
+    ComposerSolution:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          description:
+            type: string
+          status:
+            type: string
+          isDeleted:
+            type: boolean
+          congaOrgId:
+            type: string
+          emailTemplateId:
+            type: string
+          environment:
+            type: string
+          region:
+            type: string
+          customBrandingId:
+            type: string
+          highVolumeApiLanguage:
+            type: string
+          composerApiLanguage:
+            type: string
+          to:
+            type: array
+            items:
+              $ref: '#/components/schemas/EmailRecipient2'
+          cc:
+            type: array
+            items:
+              $ref: '#/components/schemas/EmailRecipient2'
+          bcc:
+            type: array
+            items:
+              $ref: '#/components/schemas/EmailRecipient2'
+          additionalTo:
+            type: array
+            items:
+              $ref: '#/components/schemas/EmailRecipient2'
+          templates:
+            type: array
+            items:
+              $ref: '#/components/schemas/Template2'
+          dataModels:
+            type: array
+            items:
+              $ref: '#/components/schemas/DataModel2'
+          destinations:
+            type: array
+            items:
+              $ref: '#/components/schemas/Destination2'
+          subject:
+            type: string
+          highVolumeOutputOptions:
+            type: string
+          composerOutputOptions:
+            type: string
+          highVolumeEmailTemplateId:
+            type: string
+          highVolumeSFTPFilePath:
+            type: string
+          congaSignAPI:
+            oneOf:
+            - $ref: '#/components/schemas/CongaSignAPI2'
+          congaSignSalesforceConnector:
+            oneOf:
+            - $ref: '#/components/schemas/CongaSignSalesforceConnector2'
+          outputBehaviors:
+            type: string
+    SigningOrder:
+      type: string
+      description: ''
+      x-enumNames:
+      - Parallel
+      - Serial
+      enum:
+      - Parallel
+      - Serial
+    Sender:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName:
+          type:
+          - string
+          - 'null'
+        lastName:
+          type:
+          - string
+          - 'null'
+        email:
+          type:
+          - string
+          - 'null'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+    CongaSignAPI:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        signingOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        expirationType:
+          $ref: '#/components/schemas/ExpirationType'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        emailSubject:
+          type:
+          - string
+          - 'null'
+        emailBody:
+          type:
+          - string
+          - 'null'
+        isOn:
+          type: boolean
+        sender:
+          oneOf:
+          - $ref: '#/components/schemas/Sender'
+    HttpStatusCode:
+      type: string
+      description: ''
+      x-enumNames:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - Ambiguous
+      - MovedPermanently
+      - Moved
+      - Found
+      - Redirect
+      - SeeOther
+      - RedirectMethod
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableContent
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MultipleChoices
+      - MovedPermanently
+      - MovedPermanently
+      - Found
+      - Found
+      - SeeOther
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - RedirectKeepVerb
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+    DraftResponse:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponse'
+      - type: object
+        description: Represents a draft response model that extends ComposerResponse
+        additionalProperties: false
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

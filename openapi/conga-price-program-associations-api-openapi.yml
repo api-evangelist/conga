@@ -1,0 +1,292 @@
+openapi: 3.2.0
+info:
+  title: Incentive Administration Price Program Associations API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/incentive-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Price Program Associations
+paths:
+  /business-objects/{businessObjectId}/price-program-associations:
+    delete:
+      tags:
+      - Price Program Associations
+      summary: Disassociate a businessObject from price programs based on the given businessObjectId and priceProgramIds.
+      description: Deletes IncentiveAssociation based on businessObjectId and priceProgramIds.
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: BusinessObject Id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceProgramIdsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/PriceProgramIdsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/PriceProgramIdsRequest'
+      responses:
+        '200':
+          description: OK
+  /business-objects/{businessObjectId}/price-programs:
+    get:
+      tags:
+      - Price Program Associations
+      summary: List price program details which are associated with the given businessObjectId
+      description: List Price Program details.
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: BusinessObject Id
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: An optional array of filters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: An optional sort criteria
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: field
+        in: query
+        description: Pass Comma separated multiple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: Filter Expression
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /price-program-associations:
+    post:
+      tags:
+      - Price Program Associations
+      summary: Associate price program to businessObjects
+      description: Creates multiple associations.
+      requestBody:
+        description: The list of price program associations
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveAssociation'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveAssociation'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncentiveAssociation'
+      responses:
+        '200':
+          description: OK
+  /price-programs/{priceProgramId}/business-objects:
+    get:
+      tags:
+      - Price Program Associations
+      summary: List businessObject details which are associated with the given priceProgramId
+      description: List BusinessObject Details.
+      parameters:
+      - name: priceProgramId
+        in: path
+        description: PriceProgram Id
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: BusinessObject Type
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: An optional array of filters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: An optional sort criteria
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: field
+        in: query
+        description: Pass Comma separated multiple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: Filter Expression
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /price-programs/{priceProgramId}/price-program-associations:
+    delete:
+      tags:
+      - Price Program Associations
+      summary: Disassociate a price program from businessObjects based on the given priceProgramId and businessObjectIds.
+      description: Deletes IncentiveAssociation based on priceProgramId and businessObjectIds.
+      parameters:
+      - name: priceProgramId
+        in: path
+        description: Price Program Id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessObjectIdsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BusinessObjectIdsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BusinessObjectIdsRequest'
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    BusinessObjectIdsRequest:
+      type: object
+      properties:
+        BusinessObjectIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    PriceProgramIdsRequest:
+      type: object
+      properties:
+        PriceProgramIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    IncentiveAssociation:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Incentive:
+          $ref: '#/components/schemas/LookupObject'
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+        BusinessObjectId:
+          type:
+          - string
+          - 'null'
+        ContractNumber:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

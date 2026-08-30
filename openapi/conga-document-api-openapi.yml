@@ -1,0 +1,994 @@
+openapi: 3.2.0
+info:
+  title: X-Author Document API
+  version: v1
+  description: This class contains API endpoints for Document.
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Document
+  description: This class contains API endpoints for Document.
+paths:
+  /api/xauthor/v1/documents/content/convert/opcxml-to-html:
+    post:
+      tags:
+      - Document
+      summary: Convert document content from OPC XML format to HTML
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The document conversion request containing OPC XML content
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.ContentConversionRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.ContentConversionRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.ContentConversionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.ContentConversionRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/content/no-datepicker:
+    post:
+      tags:
+      - Document
+      summary: Convert SDT elements to text
+      description: 'This API checks the document for SDT (Structured Document Tag) elements like date pickers or drop-down lists from Microsoft Word''s Developer tab,
+
+        removes such content controls, and converts them to plain text elements. The API then opens the converted checked-out document in a new Word instance.
+
+        OfficeJS does not support SDT elements except rich text format (RTF) fields (https://docs.microsoft.com/en-us/javascript/api/word/word.contentcontrolcollection?view=word-js-preview)'
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: Content of the document
+        content:
+          application/json-patch+json:
+            schema:
+              type:
+              - string
+              - 'null'
+              description: Content of the document
+              format: byte
+          application/json:
+            schema:
+              type:
+              - string
+              - 'null'
+              description: Content of the document
+              format: byte
+          text/json:
+            schema:
+              type:
+              - string
+              - 'null'
+              description: Content of the document
+              format: byte
+          application/*+json:
+            schema:
+              type:
+              - string
+              - 'null'
+              description: Content of the document
+              format: byte
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/metadata:
+    post:
+      tags:
+      - Document
+      summary: Get agreement details
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documentFile:
+                  type:
+                  - string
+                  - 'null'
+                  description: The document to get the metadata details
+                  format: binary
+            encoding:
+              documentFile:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentDetailsResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentDetailsResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentDetailsResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/suggested-filename:
+    post:
+      tags:
+      - Document
+      summary: Get the name of a document file
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The request
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentFileNameRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentFileNameRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentFileNameRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentFileNameRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentFileNameResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentFileNameResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.Contracts.DocumentFileNameResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}:
+    get:
+      tags:
+      - Document
+      summary: Get document or attachment by ID
+      description: Gets document/attachment for the given attachment ID.
+      parameters:
+      - name: attachmentId
+        in: path
+        description: The attachment identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The attachment identifier
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Document'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Document'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Document'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/clauses:
+    get:
+      tags:
+      - Document
+      summary: Get document Clauses by attachment ID
+      description: Gets Clauses in a document/attachment for the given attachment ID.
+      parameters:
+      - name: attachmentId
+        in: path
+        description: The attachment identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The attachment identifier
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.XAuthor.Common.Model.DocumentClauseInfo'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.XAuthor.Common.Model.DocumentClauseInfo'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conga.XAuthor.Common.Model.DocumentClauseInfo'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content:
+    get:
+      tags:
+      - Document
+      summary: Get document content by attachment
+      description: Gets the document content by attachment ID. Responses are curated for Windows and Mac.
+      parameters:
+      - name: attachmentId
+        in: path
+        description: The attachment identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The attachment identifier
+      - name: isRemoveProtection
+        in: query
+        description: if set to {true} [is remove protection]
+        schema:
+          type: boolean
+          description: if set to {true} [is remove protection]
+          default: false
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+            text/json:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content-body:
+    get:
+      tags:
+      - Document
+      summary: Get document content body
+      description: Gets the document content as string and as content bytes for the given attachment ID.
+      parameters:
+      - name: attachmentId
+        in: path
+        description: Attachment identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Attachment identifier
+      - name: isRemoveProtection
+        in: query
+        description: remove protection or not
+        schema:
+          type: boolean
+          description: remove protection or not
+          default: false
+      - name: xaAddinLoadType
+        in: query
+        description: XA addin deployment type
+        schema:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.XAAddInLoadType'
+      - name: updateDocumentTitle
+        in: query
+        description: Update document title
+        schema:
+          type: boolean
+          description: Update document title
+          default: false
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content-body-metadata-extracted:
+    get:
+      tags:
+      - Document
+      parameters:
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: isRemoveProtection
+        in: query
+        schema:
+          type: boolean
+          default: false
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentBodyModel'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content-metadata:
+    get:
+      tags:
+      - Document
+      summary: Get content metadata
+      parameters:
+      - name: attachmentId
+        in: path
+        description: ''
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: ''
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentMetadata'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentMetadata'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentMetadata'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content/onedrive-stream:
+    post:
+      tags:
+      - Document
+      summary: Get document in Word online
+      parameters:
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: WordOnlineDocumentRequest Object
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.WordOnlineDocumentRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.WordOnlineDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.WordOnlineDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.WordOnlineDocumentRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.OneDriveResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.OneDriveResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.OneDriveResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/content/stream:
+    get:
+      tags:
+      - Document
+      summary: Get the docx octet stream
+      parameters:
+      - name: attachmentId
+        in: path
+        description: attachment Id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: attachment Id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+            text/json:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/documents/{attachmentId}/size:
+    get:
+      tags:
+      - Document
+      summary: Get file size in MB of the attachment by ID
+      parameters:
+      - name: attachmentId
+        in: path
+        description: The attachment identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The attachment identifier
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
+            application/json:
+              schema:
+                type: integer
+                format: int64
+            text/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Common.Enum.XAAddInLoadType:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Enum.DocumentExtension:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.OneDriveResponse:
+      type: object
+      properties:
+        webUrl:
+          type:
+          - string
+          - 'null'
+        errorMessage:
+          type:
+          - string
+          - 'null'
+        errorCode:
+          type:
+          - string
+          - 'null'
+        document_Name:
+          type:
+          - string
+          - 'null'
+        base64:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.WordOnlineDocumentRequest:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        accessToken:
+          type:
+          - string
+          - 'null'
+        isRemoveProtection:
+          type: boolean
+        base64:
+          type:
+          - string
+          - 'null'
+        documentName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.Contracts.DocumentFileNameResponse:
+      type: object
+      properties:
+        fileName:
+          type:
+          - string
+          - 'null'
+        retainDocumentNameForAllSaveOptions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.DocumentFileNameRequest:
+      type: object
+      properties:
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        agreementId:
+          type:
+          - string
+          - 'null'
+        templateId:
+          type:
+          - string
+          - 'null'
+        objectVersion:
+          type:
+          - string
+          - 'null'
+        versionType:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.VersionTypeEnum'
+        replaceActionElement:
+          type: boolean
+        fileType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.DocumentFormat'
+        isVersionAware:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.Contracts.DocumentDetailsResponse:
+      type: object
+      properties:
+        agreementId:
+          type:
+          - string
+          - 'null'
+        documentId:
+          type:
+          - string
+          - 'null'
+        documentVersionId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Core.Model.ContentConversionRequest:
+      type: object
+      properties:
+        opcXMLContent:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.DocumentMetadata:
+      type: object
+      properties:
+        metadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+      additionalProperties: false
+    Conga.XAuthor.Common.Model.DocumentClauseInfo:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        currentText:
+          type:
+          - string
+          - 'null'
+        libraryText:
+          type:
+          - string
+          - 'null'
+        clauseId:
+          type:
+          - string
+          - 'null'
+        clauseReferenceId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.DocumentFormat:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.VersionTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.Document:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        contentType:
+          type:
+          - string
+          - 'null'
+        body:
+          type:
+          - string
+          - 'null'
+        owner:
+          type:
+          - string
+          - 'null'
+        parentId:
+          type:
+          - string
+          - 'null'
+        lastModifiedBy:
+          type:
+          - string
+          - 'null'
+        lastModified:
+          type:
+          - string
+          - 'null'
+        createdByDate:
+          type:
+          - string
+          - 'null'
+        createdBy:
+          type:
+          - string
+          - 'null'
+        documentVersionId:
+          type:
+          - string
+          - 'null'
+        contentBytes:
+          type:
+          - string
+          - 'null'
+          format: byte
+        version:
+          type:
+          - string
+          - 'null'
+        size:
+          type:
+          - string
+          - 'null'
+        contextObjectId:
+          type:
+          - string
+          - 'null'
+        fileExtension:
+          type:
+          - string
+          - 'null'
+        fileType:
+          type:
+          - string
+          - 'null'
+        fileSize:
+          type: integer
+          format: int64
+        clauseFormat:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.DocumentExtension'
+        htmlContent:
+          type:
+          - string
+          - 'null'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        clauseConfigName:
+          type:
+          - string
+          - 'null'
+        configReferenceId:
+          type:
+          - string
+          - 'null'
+        isMasterClause:
+          type: boolean
+        gDocUrl:
+          type:
+          - string
+          - 'null'
+        action:
+          type:
+          - string
+          - 'null'
+        documentInfo:
+          type:
+          - string
+          - 'null'
+        metadataFileId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.DocumentBodyModel:
+      type: object
+      properties:
+        body:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        protectionMode:
+          type:
+          - string
+          - 'null'
+        contentBytes:
+          type:
+          - string
+          - 'null'
+          format: byte
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

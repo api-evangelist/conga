@@ -1,0 +1,1176 @@
+openapi: 3.2.0
+info:
+  title: Data Opportunity API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Opportunity
+paths:
+  /api/data/v1/Opportunity:
+    get:
+      tags:
+      - Opportunity
+      summary: Get all opportunity records
+      description: Returns a list of all records for the given object.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the users. **For example**: IsActive = ''true''. <p>**Note**: The criteria field (in this case, IsActive) should be indexed.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: 'Number of records in each page. **For example**: 5, It will display 5 records on each page.'
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: 'Number of pages to be fetched. **For example**: 2, It will fetch the second page with the number of records (mentioned in the pageSize parameter).<p>**Note**:The page Index starts from 1.</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction for the data.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: 95dabd23-df92-4fe8-81c3-8015e968b3c2
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    post:
+      tags:
+      - Opportunity
+      summary: Insert a new opportunity record
+      description: Validates the record details and inserts if it does not exist in the given object.
+      parameters:
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. For example: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID, and externalId must be schema fields). The schema and metadata can be generated using the Schema Manager APIs.</p>\n             Refer to the following table to understand the behavior when you pass ID and/or External ID.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Create a record using the ID field value as provided in the payload. | ExternalId unique validation |\n             | Yes            | No                     | Create a record using the ID field value as provided in the payload and set the ExternalId to null. | NA |\n             | No             | Yes                    | Generate a new GUID and create a record using the ID field value with the new GUID value. | ExternalId unique validation |\n             | No             | No                     | Generate a new GUID and create a record using the ID field value with the new GUID value and set the ExternalId to null. | NA |"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequestExample'
+            example: '{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"}'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: e94d5eb4-c88e-463a-8065-6c0e6ef4eeb2
+                StatusCode: Created
+        '400':
+          description: Found unknown field(s)
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: User doesn't have permission on 'account_p' object.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/Opportunity/bulk:
+    delete:
+      tags:
+      - Opportunity
+      summary: Delete multiple opportunity records
+      description: Removes multiple records from the given object.
+      parameters:
+      - name: DeleteByField
+        in: query
+        description: 'The field to use for deleting the record. <p>**Note**: Default value set to Id.</p>'
+        schema:
+          $ref: '#/components/schemas/DeleteByField'
+      - name: DeleteBehaviour
+        in: query
+        description: whether to do  a soft/hard delete record or not
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      - name: IncludeDeleteResultStatus
+        in: query
+        description: 'Set to true to get the delete status in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: 'Multiple record IDs to be deleted. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: 'DeletedRecordIds : [a1111a4e-3d31-4b98-84b6-123bcadb553d,3030cb96-fc43-401e-a2ec-da73eafbca73]'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    patch:
+      tags:
+      - Opportunity
+      summary: Upsert multiple opportunity records
+      description: Validates the record details and updates if the ID already exists in the provided object, else inserts if it does not.
+      parameters:
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        description: 'Set to true to enforce optimistic locking. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: UpdateByField
+        in: query
+        description: 'The field to use for updating the record. <p>**Note**: Default value set to Id.</p>'
+        schema:
+          $ref: '#/components/schemas/UpdateByField'
+      requestBody:
+        description: "Details about the record. **For example**: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID. and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you want to upsert records by ID field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `ID` if it exists, and ensure that the `externalId` is unique. | ExternalId unique validation |\n             | Yes            | No                     | Update the record using the `ID` if it exists, and ensure that the `externalId` is unique. | NA |\n             | No             | Yes                    | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` is unique. | ExternalId unique validation |\n             | No             | No                     | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` remains null. | NA |\n             Refer to the following table to understand the behavior when you want to upsert records by externalId field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `externalId` if it exists. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | Yes            | No                     | Update the record using the `ID` if it exists, keeping `externalId` unchanged. If the `ID` does not exist, create a new record with that ID, and set the `externalId` to null. | NA |\n             | No             | Yes                    | Update the record using the `externalId` if it exists. | NA |\n             | No             | No                     | Generate a new GUID to use as the ID, create a new record with ID, and ensure the `externalId` remains null. | NA |"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    post:
+      tags:
+      - Opportunity
+      summary: Insert multiple opportunity records
+      description: Validates the object record details and creates multiple records in the given object.
+      parameters:
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: `Name = \"Mark\"`, `Description = \"Description\"`, `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID, and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you pass ID and/or External ID.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Create records using the ID field value as provided in the payload. | ExternalId unique validation |\n             | Yes            | No                     | Create records using the ID field value as provided in the payload and set the ExternalId to null. | NA |\n             | No             | Yes                    | Generate new GUIDs and create records using the ID field value with the new GUID value. | ExternalId unique validation |\n             | No             | No                     | Generate new GUIDs and create records using the ID field value with the new GUID value and set the ExternalId to null. | NA |"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequestExample'
+            example: '[{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"},{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"}]'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - 04448912-ec07-464e-a834-01104c9e6133
+                - ea57cd70-101f-4ac8-9431-e0c2f2cbc6f4
+                - e16db7ba-5da4-4177-9171-a8afd434af3c
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Opportunity
+      summary: Update multiple opportunity records
+      description: Validates the object record details and updates multiple records in the given object.
+      parameters:
+      - name: UpdateByField
+        in: query
+        description: 'The field to use for updating the record. <p>**Note**: Default value set to ID.</p>'
+        schema:
+          $ref: '#/components/schemas/UpdateByField'
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: Name = \"Mark\", Description = \"Description\", `ID = \"263rd72c-edfc-4dc5-b72f-45104fe5ef43\"`, `externalId = \"4614d72c-edfd-4dc5-b72f-45104fe5ef43\"`.\n             <p>**Note**: The fields/properties must be part of the schema/metadata created for the custom object (in this case, Name, Description, ID. and externalId must be fields in the schema). The schema and metadata can be generated using the Schema Manager API.</p>\n             Refer to the following table to understand the behavior when you want to update records by ID field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `ID` if it exists, and ensure the `externalId` is unique. | ExternalId unique validation |\n             | Yes            | No                     | Update the record using the `ID` if it exists, and ensure the `externalId` is unique. | NA |\n             | No             | Yes                    | Invalid scenario. Throw a validation error. | Throw a validation error if the ID is not found, indicating that the ID must exist. |\n             | No             | No                     | Invalid scenario. Throw a validation error. | NA |\n             Refer to the following table to understand the behavior when you want to update records by externalId field.\n            \n             | ID in payload? | ExternalId in payload? | Behavior | Validation |\n             |----------------|------------------------|----------|------------|\n             | Yes            | Yes                    | Update the record using the `externalId` if it exists. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | Yes            | No                     | Invalid scenario. Throw a validation error. | Throw a validation error indicating that the externalId must exist. |\n             | No             | Yes                    | Update the record using the `externalId` if it exists. | NA |\n             | No             | No                     | Invalid scenario. Throw a validation error. | Throw a validation error indicating that the externalId must exist. |"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequestExample'
+            example: '[{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"},{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"}]'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/Opportunity/by-externalId/{externalId}:
+    delete:
+      tags:
+      - Opportunity
+      summary: Delete a opportunity record by externalId
+      description: Validates the record based on the External ID and removes it from the given object.
+      parameters:
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 27a6a4a6-41c0-4e2a-b56d-355bb4ab2e09.'
+        required: true
+        schema:
+          type: string
+      - name: deleteBehaviour
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    get:
+      tags:
+      - Opportunity
+      summary: Get a opportunity record using externalId
+      description: Checks the externalId in the given object and fetches the record if it exists.
+      parameters:
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Opportunity
+      summary: Update a opportunity record by externalId
+      description: Updates the record based on the object, externalId, and the details of the record that you want to update.
+      parameters:
+      - name: externalId
+        in: path
+        description: 'External ID of the record. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: "Details about the record. **For example**: Name = \"Mark\", Description = \"Description\".\n             /// <p>**Note**: The fields/properties should be part of the schema/metadata created for the object(in this case, Name and Description should be a field in schema). The schema/metadata can be generated using schema manager API.</p>\n             Refer to the following table to understand the behavior when you pass ID in the payload.\n            \n             | ID in payload? | Behavior | Validation |\n             |----------------|----------|------------|\n             | Yes            | Update a record by `externalId`. | The record's ID must match the ID provided in the payload. If not, give an error. Do not allow the ID to be updated in any case. |\n             | No             | Update a record by `externalId`. | NA |"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequestExample'
+            example: '{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"}'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/Opportunity/query:
+    post:
+      tags:
+      - Opportunity
+      summary: Execute single query
+      description: Validates and executes the query request for the given object and specifying whether the total record count should be included in the response.
+      parameters:
+      - name: IncludeTotalCount
+        in: query
+        description: 'Set to true to get the total count of records in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: after
+        in: query
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        description: Actual query to be executed
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: c078a7ab-182b-4681-ad61-545c46a2bcfe
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+  /api/data/v1/Opportunity/recordtypes:
+    get:
+      tags:
+      - Opportunity
+      summary: Get all opportunity record types
+      description: Retrieves a list of all record types for the given object.
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/Opportunity/summary:
+    get:
+      tags:
+      - Opportunity
+      summary: Get object opportunity record count and size on disk
+      description: Returns a count of all records for the given object, and it's size on disk.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 1
+                Data:
+                - Name: System Admin
+                  Id: 4c003591-f7c7-4b04-b887-57e25f42aa91
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/Opportunity/{id}:
+    delete:
+      tags:
+      - Opportunity
+      summary: Delete a opportunity record
+      description: Validates the record based on the record ID and removes it from the given object.
+      parameters:
+      - name: id
+        in: path
+        description: 'Actual record ID. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      - name: deleteBehaviour
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeleteBehaviour'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    get:
+      tags:
+      - Opportunity
+      summary: Get a opportunity record using opportunity record ID
+      description: Checks the record ID in the given object and fetches the record if it exists.
+      parameters:
+      - name: id
+        in: path
+        description: 'Actual record ID. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Record not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+    put:
+      tags:
+      - Opportunity
+      summary: Update a opportunity record
+      description: Updates the record based on the object, record ID, and the details of the record that you want to update.
+      parameters:
+      - name: id
+        in: path
+        description: 'Actual record ID. **For example**: 2614d72c-edfc-4dc5-b72f-45104fe5ef43.'
+        required: true
+        schema:
+          type: string
+      - name: IncludeRecordPayloadInResponse
+        in: query
+        description: 'Set to true to get the payload in response. <p>**Note**: Default value set to false.</p>'
+        schema:
+          type: boolean
+      - name: EnforceOptimisticLocking
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        description: 'Details about the record. **For example**: Name = "Mark", Description = "Description". <p>**Note**: The fields/properties should be part of the schema/metadata created for the object(in this case, Name and Description should be a field in schema). The schema/metadata can be generated using schema manager API.</p>'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityRequestExample'
+            example: '{"Name":"Opportunity","Account":{"Id":"Guid","Name":"Account Name"},"Contact":{"Id":"Guid","Name":"Contact Name"},"Description":"Test","FiscalYear":"2022","ForecastCategory":"Forecast Category","ForecastCategoryName":"Forecast Category Name","HasOpportunityLineItem":"true","HasOpenActivity":false,"LeadSource":"Lead Source","StageName":"Stage Name","TotalOpportunityQuantity":"11111.11"}'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    OpportunityRequestExample:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name for the record
+        Account:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: Account Id and Name associated with record
+        Contact:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: Contact Id and Name associated with record
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description for the record
+        FiscalYear:
+          type:
+          - string
+          - 'null'
+          description: Financial reporting year
+        ForecastCategory:
+          type:
+          - string
+          - 'null'
+          description: Forcast category for record
+        ForecastCategoryName:
+          type:
+          - string
+          - 'null'
+          description: Name of forcast category for record
+        HasOpportunityLineItem:
+          type:
+          - string
+          - 'null'
+          description: Has opportunity lineitem
+        HasOpenActivity:
+          type: boolean
+          description: Has open activity
+        LeadSource:
+          type:
+          - string
+          - 'null'
+          description: Lead source for record
+        StageName:
+          type:
+          - string
+          - 'null'
+          description: Stage Name for record
+        TotalOpportunityQuantity:
+          type:
+          - string
+          - 'null'
+          description: Total opportuninty qunatity for record
+      additionalProperties: false
+      description: Opportunity Request Example
+    UpdateByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    Query:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of object on which querying needs to be done.
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The fields which are to be displayed.
+        Distinct:
+          type: boolean
+          description: Select true to get distinct records
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of records to be skipped.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names which are to be grouped.
+      additionalProperties: false
+      description: Schema Model for Query
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+      description: Sort information for records.
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DeleteByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    DeleteBehaviour:
+      enum:
+      - SoftDelete
+      - HardDelete
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

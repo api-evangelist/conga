@@ -1,0 +1,453 @@
+openapi: 3.2.0
+info:
+  title: Assets API
+  version: 1.0.0
+  description: Controller to manage assets
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Assets
+  description: Controller to manage assets
+paths:
+  /api/asset/v1/assets:
+    get:
+      tags:
+      - Assets
+      summary: List asset line items
+      description: Retrieves all asset line items for the given account(s).
+      parameters:
+      - name: accountIds
+        in: query
+        description: List of accounts
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: "Specify the sort order and a sort field separated by any of these characters: \" \", \",\", \"(\", \")\", \";\". Sort order is ascending by default\n            <p><ul><li> Sample input to sort by Quantity field in descending order: `desc Quantity`</li><li> Sample input to sort by Quantity field in ascending order: `Quantity`</li></ul></p>"
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search results.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: "Specifies a logical expression to combine multiple filter conditions, use numbers to reference filter indexes (1-based) with logical operators (AND, OR). Example:\n            <p><ul><li> \"1 AND 2\" - Both first and second filters must be satisfied</li><li> \"(1 OR 2) AND 3\" - Either first or second filter must be satisfied, and third filter must be satisfied</li><li>  Leave empty to apply all filters with AND logic by default</li></ul></p>"
+        schema:
+          type: string
+      - name: cartId
+        in: query
+        description: The cart's unique identifier
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Specify the page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Specify the number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 25
+      - name: fetchTopLevelBundlesOnly
+        in: query
+        description: Indicates whether only a root-level bundle or standalone asset must be fetched.
+        schema:
+          type: boolean
+          default: false
+      - name: productSearchString
+        in: query
+        description: Searches against product fields to filter assets.
+        schema:
+          type: string
+      - name: fetchAttributes
+        in: query
+        description: Indicates whether attribute must be fetched.
+        schema:
+          type: boolean
+          default: false
+      - name: rootLineItemFilter
+        in: query
+        description: "Indicates filters that should be applied only to root line items. \n           <remarks>\n           Ensure the `fetchTopLevelBundlesOnly` flag is set to `true` when passing a root filter.\n           If not provided, the API will automatically default it to `true`.\n           </remarks>"
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+  /api/asset/v1/assets/group-summary:
+    get:
+      tags:
+      - Assets
+      summary: Fetch grouping summary of asset line items
+      description: Retrieves Grouped summary of asset line items for the given account(s) based on the grouping field.
+      parameters:
+      - name: accountIds
+        in: query
+        description: List of accounts
+        schema:
+          type: array
+          items:
+            type: string
+      - name: groupingField
+        in: query
+        description: Asset Line Item Field Api name to group assets by
+        schema:
+          type: string
+      - name: cartId
+        in: query
+        description: The cart's unique identifier
+        schema:
+          type: string
+      - name: productSearchString
+        in: query
+        description: Searches against product fields to filter assets.
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search results.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: "Specifies a logical expression to combine multiple filter conditions, use numbers to reference filter indexes (1-based) with logical operators (AND, OR). Example:\n            <p><ul><li> \"1 AND 2\" - Both first and second filters must be satisfied</li><li> \"(1 OR 2) AND 3\" - Either first or second filter must be satisfied, and third filter must be satisfied</li><li>  Leave empty to apply all filters with AND logic by default</li></ul></p>"
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+  /api/asset/v1/assets/related-purchases:
+    post:
+      tags:
+      - Assets
+      summary: List related purchased assets for given asset ids
+      description: Retrieves all related purchased assets for the given assetId(s).
+      parameters:
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search results.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: "Specifies a logical expression to combine multiple filter conditions, use numbers to reference filter indexes (1-based) with logical operators (AND, OR). Example:\n            <p><ul><li> \"1 AND 2\" - Both first and second filters must be satisfied</li><li> \"(1 OR 2) AND 3\" - Either first or second filter must be satisfied, and third filter must be satisfied</li><li>  Leave empty to apply all filters with AND logic by default</li></ul></p>"
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Specify the page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Specify the number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 25
+      - name: productSearchString
+        in: query
+        description: Searches against product fields to filter assets.
+        schema:
+          type: string
+      requestBody:
+        description: List of assets
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/asset/v1/assets/{cartId}:
+    get:
+      tags:
+      - Assets
+      summary: List asset line items
+      description: Retrieves all asset line items for the given account(s).
+      parameters:
+      - name: cartId
+        in: path
+        description: The cart's unique identifier
+        required: true
+        schema:
+          type: string
+      - name: accountIds
+        in: query
+        description: List of accounts
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: "Specify the sort order and a sort field separated by any of these characters: \" \", \",\", \"(\", \")\", \";\". Sort order is ascending by default\n            <p><ul><li> Sample input to sort by Quantity field in descending order: `desc Quantity`</li><li> Sample input to sort by Quantity field in ascending order: `Quantity`</li></ul></p>"
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search results.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: "Specifies a logical expression to combine multiple filter conditions, use numbers to reference filter indexes (1-based) with logical operators (AND, OR). Example:\n            <p><ul><li> \"1 AND 2\" - Both first and second filters must be satisfied</li><li> \"(1 OR 2) AND 3\" - Either first or second filter must be satisfied, and third filter must be satisfied</li><li>  Leave empty to apply all filters with AND logic by default</li></ul></p>"
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Specify the page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Specify the number of records per page
+        schema:
+          type: integer
+          format: int32
+          default: 25
+      - name: fetchTopLevelBundlesOnly
+        in: query
+        description: Indicates whether only a root-level bundle or standalone asset must be fetched.
+        schema:
+          type: boolean
+          default: false
+      - name: productSearchString
+        in: query
+        description: Searches against product fields to filter assets.
+        schema:
+          type: string
+      - name: fetchAttributes
+        in: query
+        description: Indicates whether attribute must be fetched.
+        schema:
+          type: boolean
+          default: false
+      - name: rootLineItemFilter
+        in: query
+        description: "Indicates filters that should be applied only to root line items. \n           <remarks>\n           Ensure the `fetchTopLevelBundlesOnly` flag is set to `true` when passing a root filter.\n           If not provided, the API will automatically default it to `true`.\n           </remarks>"
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+      deprecated: true
+  /api/asset/v1/terminate-preview:
+    post:
+      tags:
+      - Assets
+      summary: Calculates metrics for asset termination based on the provided termination date
+      requestBody:
+        description: Asset Terminate Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Asset.Manager.Model.AssetTerminateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Asset.Manager.Model.AssetTerminateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Asset.Manager.Model.AssetTerminateRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/asset/v1/{assetId}/coterm:
+    get:
+      tags:
+      - Assets
+      summary: Get assets by co-termination criteria
+      description: Retrieves assets with identical values in specified criteria fields within the same account. Primarily used to amend asset co-termination during quantity changes.
+      parameters:
+      - name: assetId
+        in: path
+        description: Input AssetLineItem ID for which you want to fetch the co-termination assets based on PurchaseIdentificationCriteria. This asset ID must be from a primary line item and not from an option line.
+        required: true
+        schema:
+          type: string
+      - name: accountId
+        in: query
+        description: Sold to the asset's account ID.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+  /api/asset/v1/{parentAssetId}/assets:
+    get:
+      tags:
+      - Assets
+      summary: Get child asset line items
+      description: Retrieves all the child asset line items (primary, secondary, and option) associated with a parent bundle (excluding the parent bundle record).
+      parameters:
+      - name: parentAssetId
+        in: path
+        description: Root bundle/standalone asset ID
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Add conditional filters in standard URI format to narrow the search result.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: page
+        in: query
+        description: Specify the page number.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Specify the number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 25
+      - name: fetchAttributes
+        in: query
+        description: Indicates whether attribute must be fetched.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Conga.Revenue.Asset.Manager.Model.AssetTerminateRequest:
+      type: object
+      properties:
+        AssetIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        AssetTerminationDate:
+          type: string
+          format: date-time
+        LineItemFieldsToBeUpdated:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

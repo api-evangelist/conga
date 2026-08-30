@@ -1,0 +1,929 @@
+openapi: 3.2.0
+info:
+  title: Data Record Share API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Record Share
+paths:
+  /api/data/v1/objects/{objectName}/{recordId}/access-level:
+    put:
+      tags:
+      - Record Share
+      summary: Update a shared record's access level
+      description: Updates the access level, such as View or Edit, for a shared record based on the provided object name and record ID.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be shared. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Access Level update details.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordShareInfo'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RecordShareInfo'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RecordShareInfo'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id: 95158186-aa5a-47f4-91da-9959ceb44a14
+                  Name: 7966eaf2-4ba6-444e-b719-10441bc94d37_7c39062b-6c18-42b7-9a42-df282fa2b631
+                  UserId: 7c39062b-6c18-42b7-9a42-df282fa2b631
+                  UserGroupId: null
+                  AccessLevel: View
+                  ObjectId: 7966eaf2-4ba6-444e-b719-10441bc94d37
+                  IsActive: true
+                  CreatedBy:
+                    Id: 96ee7908-cb72-4b8a-9ad3-0ce16f4541de
+                    Name: System Admin
+                  ModifiedBy:
+                    Id: 96ee7908-cb72-4b8a-9ad3-0ce16f4541de
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:14:17.693+00:00'
+                  ModifiedDate: '2026-07-27T11:14:17.693+00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/objects/{objectName}/{recordId}/share:
+    post:
+      tags:
+      - Record Share
+      summary: Share a record
+      description: This bulk request API shares a record with users and user groups based on the provided object name and record ID and sends an email notification to the user or user group.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be shared. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Record sharing details.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareRecordRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ShareRecordRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ShareRecordRequest'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordShareTrackingInfoListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - ObjectName: null
+                  RecordId: 54ec5137-8d7c-4382-84cf-0d48917520d4
+                  TrackingId: fcba843b-4b5c-4af8-a82e-6403976fa18c
+                  Status: STARTED
+                  MemberId: 244806e1-fd1f-41f8-aeef-4bf6093566aa
+                  MemberType: User
+                  ShouldSendEmail: true
+                  EmailMessage: Record shared.
+                  Id: fcba843b-4b5c-4af8-a82e-6403976fa18c
+                  Name: fcba843b-4b5c-4af8-a82e-6403976fa18c
+                  CreatedBy:
+                    Id: 9255543e-c97c-4df5-93de-afd5e5b38f8d
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:14:17.690+00:00'
+                  ModifiedBy:
+                    Id: 9255543e-c97c-4df5-93de-afd5e5b38f8d
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:14:17.690+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: Accepted
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/objects/{objectName}/{recordId}/sharing-info:
+    get:
+      tags:
+      - Record Share
+      summary: Get a record's sharing information
+      description: Gets sharing information about a record, including which users or user groups have access to it and their corresponding permission levels, based on the object name and record ID.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be shared. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: 'Number of records in each page. **For example**: 5, It will display 5 records on each page.'
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: 'Number of pages to be fetched. **For example**: 2, It will fetch the second page with the number of records (mentioned in the pageSize parameter).<p>**Note**:The page Index starts from 1.</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: IsActive. <p>**Note**: The sort field (in this case, IsActive) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction for the data.
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Id: cc7a776c-3ba4-4720-b35c-2ff6611c1354
+                  Name: 9bdd12b4-cd36-4e61-8123-24e68c76c08b_7e4f951d-b91a-4bb9-aaf5-f87c43178811
+                  UserId: 7e4f951d-b91a-4bb9-aaf5-f87c43178811
+                  UserGroupId: null
+                  AccessLevel: View
+                  ObjectId: 9bdd12b4-cd36-4e61-8123-24e68c76c08b
+                  IsActive: true
+                  CreatedBy:
+                    Id: 29cc74fd-9688-4bde-81ad-646de0c377f0
+                    Name: System Admin
+                  ModifiedBy:
+                    Id: 29cc74fd-9688-4bde-81ad-646de0c377f0
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:14:17.703+00:00'
+                  ModifiedDate: '2026-07-27T11:14:17.703+00:00'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/objects/{objectName}/{recordId}/un-share:
+    delete:
+      tags:
+      - Record Share
+      summary: Un-share a record
+      description: Removes access to a record for a user or user group based on the given object name and record ID.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be shared. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Un-share record details.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnShareRecordRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UnShareRecordRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UnShareRecordRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Unsharing e417bdf7-53d0-4044-9d59-a87d3b0f9fd2 record with d1ccae3a-d1a4-4d77-a3a8-40382e65c02e User is successful.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/objects/{objectName}/{recordId}/{trackingId}/sharing-status:
+    get:
+      tags:
+      - Record Share
+      summary: Get a record's sharing status
+      description: Gets the status of a record shared with a user group, such as `STARTED`, `IN PROGRESS`, or `SUCCESS`, based on the object name, record ID, and tracking ID.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be shared. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      - name: trackingId
+        in: path
+        description: The unique tracking ID returned during the sharing of a record.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordShareTrackingInfoAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ObjectName: null
+                  RecordId: 4d247124-abae-41d1-be98-6edcfb20be9e
+                  TrackingId: a8ef4489-9dc6-4369-987b-3ed5408aaf11
+                  Status: SUCCESS
+                  MemberId: ac28400d-dd3e-4f92-942d-d7f9a65935e4
+                  MemberType: User
+                  ShouldSendEmail: true
+                  EmailMessage: Record shared.
+                  Id: a8ef4489-9dc6-4369-987b-3ed5408aaf11
+                  Name: a8ef4489-9dc6-4369-987b-3ed5408aaf11
+                  CreatedBy:
+                    Id: 3ffaac20-4e37-45e4-9dc2-c2feebb93c3a
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:14:17.710+00:00'
+                  ModifiedBy:
+                    Id: 3ffaac20-4e37-45e4-9dc2-c2feebb93c3a
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:14:17.710+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+  /api/data/v1/objects/{objectName}/{recordId}/{userId}/access-level:
+    get:
+      tags:
+      - Record Share
+      summary: Get a user's access details for a shared record
+      description: Retrieves the access details for a specific user on a given record, including permission levels such as View, Edit, or Delete.
+      parameters:
+      - name: objectName
+        in: path
+        description: The name of the business object the record belongs to. For example, `Agreement`.
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        description: The unique ID of the record to be checked. For example, `6a2f9e0d-aef6-432f-998b-66cbc673c793`.
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: The ID of the user whose access details are being retrieved.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccessDetailsOnRecordAPIResponse'
+              example:
+                Success: true
+                Data:
+                  IsSharingEnabled: true
+                  IsRecordShared: true
+                  RecordAccessDetail:
+                    View: true
+                    Edit: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+components:
+  schemas:
+    RecordShareTrackingInfo:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        RecordId:
+          type:
+          - string
+          - 'null'
+        TrackingId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        MemberId:
+          type:
+          - string
+          - 'null'
+        MemberType:
+          type:
+          - string
+          - 'null'
+        ShouldSendEmail:
+          type: boolean
+        EmailMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordShareInfo:
+      type: object
+      properties:
+        RecordShareType:
+          $ref: '#/components/schemas/OwnerType'
+        UserId:
+          type:
+          - string
+          - 'null'
+        UserGroupId:
+          type:
+          - string
+          - 'null'
+        AccessLevel:
+          $ref: '#/components/schemas/SharedObjectAccessLevel'
+      additionalProperties: false
+    OwnerType:
+      enum:
+      - User
+      - UserGroup
+      type: string
+    UserAccessDetailsOnRecord:
+      type: object
+      properties:
+        IsSharingEnabled:
+          type: boolean
+        IsRecordShared:
+          type:
+          - boolean
+          - 'null'
+        RecordAccessDetail:
+          $ref: '#/components/schemas/RecordAccessDetail'
+      additionalProperties: false
+    RecordAccessDetail:
+      type: object
+      properties:
+        View:
+          type: boolean
+        Edit:
+          type: boolean
+      additionalProperties: false
+    UserAccessDetailsOnRecordAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserAccessDetailsOnRecord'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordShareTrackingInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecordShareTrackingInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SharedObjectAccessLevel:
+      enum:
+      - View
+      - Edit
+      type: string
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    ShareRecordRequest:
+      type: object
+      properties:
+        RecordShareInfo:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecordShareInfo'
+        IsSendEmailNotification:
+          type: boolean
+          description: Should we send an email to the user/usergroup the record is shared with.
+        EmailMessage:
+          type:
+          - string
+          - 'null'
+          description: Email message body to be sent to the user/usergroup when the record is shared.
+      additionalProperties: false
+    UnShareRecordRequest:
+      type: object
+      properties:
+        RecordShareType:
+          $ref: '#/components/schemas/OwnerType'
+        UserId:
+          type:
+          - string
+          - 'null'
+          description: User to whom the record is shared with. Should be provided when RecordShareType is User.
+        UserGroupId:
+          type:
+          - string
+          - 'null'
+          description: User Group to which the record is shared with. Should be provided when RecordShareType is UserGroup.
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordShareTrackingInfoAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/RecordShareTrackingInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

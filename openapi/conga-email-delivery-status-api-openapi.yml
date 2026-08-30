@@ -1,0 +1,448 @@
+openapi: 3.2.0
+info:
+  title: Email Delivery Status API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Email Delivery Status
+paths:
+  /api/email/v1/emails/jobs/{jobId}:
+    get:
+      tags:
+      - Email Delivery Status
+      summary: Get delivery status of an email by JobId
+      description: Fetches delivery status based on JobId.
+      parameters:
+      - name: jobId
+        in: path
+        description: 'JobId: Unique id used to track email.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailJobStatusResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  JobId: job2
+                  State: Completed
+                  Recipient: c@conga.com
+                  EmailStatusDetails:
+                    Status: Delivered
+                    Events:
+                    - Event: Delivered
+                      Reason: null
+                      Timestamp: '2026-07-27T11:12:10.8140534Z'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Verified
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: InternalServerError
+  /api/email/v1/emails/status/batch:
+    post:
+      tags:
+      - Email Delivery Status
+      summary: Email Status by EmailSendId and Recipients
+      description: Fetches delivery status based on EmailSendId and Recipients.
+      requestBody:
+        description: Request object containing EmailSendId and Recipients.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailDeliveryStatusBatchRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/EmailDeliveryStatusBatchRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/EmailDeliveryStatusBatchRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailStatusBatchResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  EmailSendId: guid1
+                  Jobs:
+                  - Recipient: a@conga.com
+                    JobId: job1
+                    State: InProgress
+                    EmailStatusDetails: null
+                  - Recipient: c@conga.com
+                    JobId: job2
+                    State: Completed
+                    EmailStatusDetails:
+                      Status: Delivered
+                      Events:
+                      - Event: Delivered
+                        Reason: null
+                        Timestamp: '2026-07-27T11:12:10.8047143Z'
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Verified
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: InternalServerError
+components:
+  schemas:
+    EmailStatusBatchResponse:
+      type: object
+      properties:
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+        Jobs:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusResponse'
+      additionalProperties: false
+    ProviderStatus:
+      enum:
+      - Delivered
+      - NotDelivered
+      type: string
+    EmailJobStatusResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/EmailJobStatusResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Event:
+      enum:
+      - Processed
+      - Delivered
+      - Deferred
+      - Drop
+      - Bounce
+      - Blocked
+      - Failed
+      - Open
+      - Click
+      type: string
+    EmailJobStatusResponse:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        State:
+          type:
+          - string
+          - 'null'
+        Recipient:
+          type:
+          - string
+          - 'null'
+        Reason:
+          type:
+          - string
+          - 'null'
+        EmailStatusDetails:
+          $ref: '#/components/schemas/EmailStatusDetails'
+      additionalProperties: false
+    EmailStatusResponse:
+      type: object
+      properties:
+        Recipient:
+          type:
+          - string
+          - 'null'
+        JobId:
+          type:
+          - string
+          - 'null'
+        State:
+          type:
+          - string
+          - 'null'
+        EmailStatusDetails:
+          $ref: '#/components/schemas/EmailStatusDetails'
+      additionalProperties: false
+    EmailDeliveryStatusBatchRequest:
+      type: object
+      properties:
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+        Recipients:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    EmailStatusBatchResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/EmailStatusBatchResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    EmailStatusDetails:
+      type: object
+      properties:
+        Status:
+          $ref: '#/components/schemas/ProviderStatus'
+        Events:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusEvent'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    EmailStatusEvent:
+      type: object
+      properties:
+        Event:
+          $ref: '#/components/schemas/Event'
+        Reason:
+          type:
+          - string
+          - 'null'
+        Timestamp:
+          type: string
+          format: date-time
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

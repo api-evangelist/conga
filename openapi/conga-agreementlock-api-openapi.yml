@@ -1,0 +1,308 @@
+openapi: 3.2.0
+info:
+  title: X-Author Agreement Lock API
+  version: v1
+  description: This class contains API endpoints for Agreement Document's Lock.
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: AgreementLock
+  description: This class contains API endpoints for Agreement Document's Lock.
+paths:
+  /api/xauthor/v1/contracts/{contractId}/documents/lock-status:
+    post:
+      tags:
+      - AgreementLock
+      summary: Get lock status
+      description: When an agreement is open, it is locked by the specific user for editing and cannot be checked out by anyone else. This API gets the current lock status of the agreement based on the agreement ID provided in the parameters.
+      parameters:
+      - name: contractId
+        in: path
+        description: contractId
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contractId
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The document lock parameters
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/contracts/{contractId}/documents/release-lock:
+    post:
+      tags:
+      - AgreementLock
+      summary: Release an agreement lock
+      description: Releases the agreement's lock based on the agreement ID provided in the parameters. After the lock is released, the user cannot edit the agreement or check it in.
+      parameters:
+      - name: contractId
+        in: path
+        description: contractId
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contractId
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The document lock parameters
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DocumentLockParams'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/contracts/{contractId}/documents/{documentid}/acquire-lock:
+    post:
+      tags:
+      - AgreementLock
+      summary: Lock an agreement
+      description: Locks the agreement identified in the parameters. With the lock acquired, the user can edit the agreement document and check it in.
+      parameters:
+      - name: contractId
+        in: path
+        description: contractId
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contractId
+      - name: documentid
+        in: path
+        description: Document id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Document id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The document lock parameters
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CheckOutRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CheckOutRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CheckOutRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CheckOutRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LockStatus'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Core.Model.DocumentLockParams:
+      type: object
+      properties:
+        agreementId:
+          type:
+          - string
+          - 'null'
+        agreementVersion:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        documentGuid:
+          type:
+          - string
+          - 'null'
+        agreementDocVersionId:
+          type:
+          - string
+          - 'null'
+        protectionType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ProtectionType'
+        templateId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.CheckOutRequest:
+      type: object
+      properties:
+        agreementVersion:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        protectionType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ProtectionType'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.LockStatus:
+      type: object
+      properties:
+        isAgreementLocked:
+          type: boolean
+        lockedBy:
+          type:
+          - string
+          - 'null'
+        lockedDate:
+          type:
+          - string
+          - 'null'
+        isAgreementLockedByLoggedInUser:
+          type: boolean
+        agreementId:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        documentGuid:
+          type:
+          - string
+          - 'null'
+        agreementName:
+          type:
+          - string
+          - 'null'
+        agreementVersion:
+          type:
+          - string
+          - 'null'
+        agreementDocVersionId:
+          type:
+          - string
+          - 'null'
+        isDocumentUnderReview:
+          type: boolean
+        documentName:
+          type:
+          - string
+          - 'null'
+        auditLogProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.ProtectionType:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - -1
+      type: integer
+      format: int32
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

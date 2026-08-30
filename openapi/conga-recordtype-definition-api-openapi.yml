@@ -1,0 +1,333 @@
+openapi: 3.2.0
+info:
+  title: Schema Manager RecordType Definition API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: RecordType Definition
+paths:
+  /api/schema/v1/objects/{objectName}/recordtype-entries:
+    post:
+      tags:
+      - RecordType Definition
+      summary: Create a record type picklist entry
+      description: Validates and creates a picklist entry (value detail) for a given object's record type.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Input for creating a record type picklist entry
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypeEntryCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RecordTypeEntryCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RecordTypeEntryCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PicklistEntryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Value: Advertisement
+                  DisplayText: AdvertisementDisplayText
+                  Sequence: 0
+                  IsDeprecated: false
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/schema/v1/objects/{objectName}/recordtype-entries/bulk:
+    put:
+      tags:
+      - RecordType Definition
+      summary: Update record type picklist entries
+      description: Validates and updates the picklist entries (value details) for a given object's record type.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Input for updating a record type picklist entries
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypeEntryUpdateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypeEntryUpdateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordTypeEntryUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PicklistEntryListAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Value: Advertisement
+                  DisplayText: AdvertisementDisplayText
+                  Sequence: 0
+                  IsDeprecated: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    PicklistEntryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordTypeEntryUpdateRequest:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of the picklist entry
+        DisplayText:
+          type:
+          - string
+          - 'null'
+          description: Display text of the picklist entry
+        Sequence:
+          type: integer
+          description: Sequence of the picklist entry
+          format: int32
+        IsDeprecated:
+          type: boolean
+          description: Indicates if the picklist entry is deprecated.
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PicklistEntryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PicklistEntry'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordTypeEntryCreateRequest:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of the picklist entry
+        DisplayText:
+          type:
+          - string
+          - 'null'
+          description: Display text of the picklist entry
+        Sequence:
+          type: integer
+          description: Sequence of the picklist entry
+          format: int32
+      additionalProperties: false
+    PicklistEntry:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+        DisplayText:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

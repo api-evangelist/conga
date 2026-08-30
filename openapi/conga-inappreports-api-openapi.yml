@@ -1,0 +1,381 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign In App Reports API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: InAppReports
+paths:
+  /v1/cs-inappreports/reports:
+    delete:
+      tags:
+      - InAppReports
+      summary: Delete the specified report files (csv)
+      description: Deletes the specified report files (csv).
+      operationId: InAppReports_DeleteAllInAppReports
+      parameters:
+      - name: fileName
+        in: query
+        style: form
+        explode: true
+        description: 'The csv report file names. '
+        schema:
+          type: array
+          items:
+            type: string
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - InAppReports
+      summary: Retrieve reports by date and type
+      description: Retrieves reports for the specified dates and report type for all accounts.
+      operationId: InAppReports_GetAllInAppReports
+      parameters:
+      - name: fromDate
+        in: query
+        description: 'The start of the report date range. '
+        schema:
+          type: string
+          format: date-time
+        x-position: 1
+      - name: toDate
+        in: query
+        description: 'The end of the report date range. '
+        schema:
+          type: string
+          format: date-time
+        x-position: 2
+      - name: reportType
+        in: query
+        description: "The type of reports. Default is ALL.\n            Available values : ALL, TRANSACTION, ACCOUNT"
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InAppReports'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-inappreports/reports/summaries:
+    get:
+      tags:
+      - InAppReports
+      summary: Retrieve report summaries by date and report type
+      description: Retrieves report summaries for the specified dates and report type for all accounts.
+      operationId: InAppReports_GetAllInAppReportSummaries
+      parameters:
+      - name: fromDate
+        in: query
+        description: 'The start of the report date range. '
+        schema:
+          type: string
+          format: date-time
+        x-position: 1
+      - name: toDate
+        in: query
+        description: 'The end of the report date range. '
+        schema:
+          type: string
+          format: date-time
+        x-position: 2
+      - name: reportType
+        in: query
+        description: "The type of reports. Default is ALL.\n            Available values : ALL, TRANSACTION, ACCOUNT"
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportData'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-inappreports/reports/{fileName}:
+    delete:
+      tags:
+      - InAppReports
+      summary: Delete a report file by ID (csv)
+      description: Deletes the specified report file by ID (csv).
+      operationId: InAppReports_DeleteInAppReportById
+      parameters:
+      - name: fileName
+        in: query
+        description: 'The csv report file names. '
+        schema:
+          type: string
+        x-position: 1
+      - name: fileName
+        in: path
+        required: true
+        description: 'The csv report file names. '
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - InAppReports
+      summary: Retrieve a report file (csv)
+      description: Retrieves the specified report file (csv).
+      operationId: InAppReports_GetInAppReportById
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        description: 'The specific file to retrieve. '
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-inappreports/zip/reports:
+    get:
+      tags:
+      - InAppReports
+      summary: Retrieve zipped csv reports
+      description: Retrieves the specified report files (csv) as a zip file.
+      operationId: InAppReports_GetInAppReportAsZip
+      parameters:
+      - name: fileName
+        in: query
+        style: form
+        explode: true
+        description: 'The csv report file names. '
+        schema:
+          type: array
+          items:
+            type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    ReportData:
+      type: object
+      description: Report data, including modification date, size, uri, and type of content.
+      additionalProperties: false
+      properties:
+        lastModified:
+          type:
+          - string
+          - 'null'
+          description: Date of last modification for report.
+          format: date-time
+        size:
+          type: integer
+          description: Report size (in bytes).
+          format: int32
+        uri:
+          type: string
+          description: The report URI.
+        contentType:
+          type: string
+          description: The report content type.
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    InAppReports:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+          description: url
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

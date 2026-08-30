@@ -1,0 +1,406 @@
+openapi: 3.2.0
+info:
+  title: Administration Attribute Matrix Entries API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Attribute Matrix Entries
+paths:
+  /attribute-matrices/{ParentId}/entries:
+    delete:
+      tags:
+      - Attribute Matrix Entries
+      summary: Delete attribute matrix entries
+      description: Deletes multiple attribute matrix entries.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of attribute matrix entries to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Attribute Matrix Entries
+      summary: Retrieve attribute matrix entries
+      description: Retrieves the list of attribute matrix entries.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: The filter array
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: The sort string
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The maximum number of entries to return
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: The array of includes
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Attribute Matrix Entries
+      summary: Update attribute matrix entries
+      description: Updates multiple attribute matrix entries.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of untyped attribute matrix entries to update
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: AttributeMatrixEntryName
+              Attributes:
+              - Name: AttributeName
+                Value: Value
+                Sequence: 1
+              Sequence: 1
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Attribute Matrix Entries
+      summary: Create attribute matrix entries
+      description: Creates multiple attribute matrix entries.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of attribute matrix entries to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeMatrixEntry'
+      responses:
+        '200':
+          description: OK
+  /attribute-matrices/{ParentId}/entries/export:
+    get:
+      tags:
+      - Attribute Matrix Entries
+      summary: Get the list of AttributeMatrixEntries as a CSV file.
+      description: Exports attribute matrix entries to a CSV file. Retrieves all entries for the specified parent attribute matrix and generates a CSV file with attribute names as headers and corresponding values in rows. If no entries exist, the CSV file will contain only the header row with attribute names from the parent matrix definition. The exported file is named "AVMEntries-{ParentId}.csv".
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /attribute-matrices/{ParentId}/entries/import:
+    post:
+      tags:
+      - Attribute Matrix Entries
+      summary: Create AttributeMatrixEntries using a CSV file.
+      description: This API imports attribute matrix entries from a CSV file. The CSV file should have attribute names as column headers in the first row, followed by rows containing the corresponding attribute values. Each data row creates a new AttributeMatrixEntry with an auto-generated GUID, a name in the format "AVMEntry-{GUID}", and attributes mapped from the CSV columns. Empty values are treated as null. The file must have a .csv extension.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: CSV file constaining the list of AttributeMatrixEntries to create
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: OK
+  /attribute-matrices/{ParentId}/entries/{id}:
+    delete:
+      tags:
+      - Attribute Matrix Entries
+      summary: Delete an attribute matrix entry
+      description: Deletes an attribute matrix entry.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the attribute matrix entry to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Attribute Matrix Entries
+      summary: Retrieve an attribute matrix entry
+      description: Retrieves a single attribute matrix entry by ID.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the attribute matrix entry
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Attribute Matrix Entries
+      summary: Update an attribute matrix entry
+      description: Updates an existing attribute matrix entry.
+      parameters:
+      - name: ParentId
+        in: path
+        description: The parent identifier
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the attribute matrix entry to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated attribute matrix entry
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: AttributeMatrixEntryName
+              Attributes:
+              - Name: AttributeName
+                Value: Value
+                Sequence: 1
+              Sequence: 1
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    AttributeMatrixEntry:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        AttributeMatrix:
+          $ref: '#/components/schemas/LookupObject'
+        Attributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AttributeMatrixEntryAttributes'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+      example:
+        Name: AttributeMatrixEntryName
+        Attributes:
+        - Name: AttributeName
+          Value: Value
+          Sequence: 1
+        Sequence: 1
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AttributeMatrixEntryAttributes:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

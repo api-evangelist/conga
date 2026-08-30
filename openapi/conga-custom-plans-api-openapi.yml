@@ -1,0 +1,479 @@
+openapi: 3.2.0
+info:
+  title: Billing Management Custom Plans API
+  version: 1.0.0
+  description: 'Controller for managing generic custom billing plans.
+
+    Provides endpoints to create, retrieve, and delete custom plans.'
+servers:
+- url: https://rls.congacloud.com/api/billing/v1
+security:
+- Bearer: []
+tags:
+- name: Custom Plans
+  description: 'Controller for managing generic custom billing plans.
+
+    Provides endpoints to create, retrieve, and delete custom plans.'
+paths:
+  /custom-plans:
+    delete:
+      tags:
+      - Custom Plans
+      summary: Delete custom plan records
+      description: Deletes one or more custom plans along with their associated plan line items.
+      requestBody:
+        description: A list of custom plan identifiers to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+        '207':
+          description: Multi-Status
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseWrapper'
+        '500':
+          description: Internal Server Error
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /custom-plans/search:
+    post:
+      tags:
+      - Custom Plans
+      summary: Retrieve custom plans and their line items
+      description: This API endpoint allows users to search and fetch custom plans and their corresponding line items. This endpoint is typically used in billing workflows where users need to retrieve customized plans and their detailed line items for invoicing, reporting, or subscription management.
+      parameters:
+      - name: includes
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        description: A list of search criteria for custom plans and their line items
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomPlanAndLineItemRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomPlanAndLineItemRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomPlanAndLineItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomPlan'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomPlan'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomPlan'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+  /custom-plans/{customPlanId}:
+    get:
+      tags:
+      - Custom Plans
+      summary: Retrieve a custom plan record
+      description: Retrieves the details of a custom plan based on its unique identifier. This API is typically used when users need to fetch detailed information about a specific custom plan, optionally including related data for comprehensive insights.
+      parameters:
+      - name: customPlanId
+        in: path
+        description: The identifier of the custom plan
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/CustomPlan'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomPlan'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/CustomPlan'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ErrorApiResponse'
+components:
+  schemas:
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    PlanLineItem:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomPlan:
+          $ref: '#/components/schemas/LookupObject'
+        PeriodStartDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        PeriodEndDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ReadyForInvoiceDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Percent:
+          type: number
+          format: double
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        MilestoneExpectedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Comments:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        Amount:
+          $ref: '#/components/schemas/CurrencyField'
+      additionalProperties: {}
+    ResponseWrapper:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Created/Updated record Id on processed in a transaction
+      additionalProperties: false
+    CustomPlan:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Proposal:
+          $ref: '#/components/schemas/LookupObject'
+        Order:
+          $ref: '#/components/schemas/LookupObject'
+        Description:
+          type:
+          - string
+          - 'null'
+        NumberOfInstallments:
+          type: integer
+          format: int32
+        PlanTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        PlanType:
+          type:
+          - string
+          - 'null'
+        PeriodsNeeded:
+          type: boolean
+        BasedOn:
+          type:
+          - string
+          - 'null'
+        ComputationMethod:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        BillingAmountCriterion:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        TotalBillableAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        ProductConfiguration:
+          $ref: '#/components/schemas/LookupObject'
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+        BusinessObjectId:
+          type:
+          - string
+          - 'null'
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanLineItem'
+          description: Child collection of PlanLineItem (included when 'Items' is requested via the includes parameter).
+      additionalProperties: {}
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CustomPlanAndLineItemRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Id
+        NameContaining:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Name
+        OrderId:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item having given Order Id
+        OrderLineItemId:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item having given Order Line Item Ids
+        ProposalId:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item having given Proposal Id
+        LineItemId:
+          type:
+          - string
+          - 'null'
+          description: Retrieving Custom Plan and Plan Line Item having given Line Item Ids
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

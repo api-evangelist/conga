@@ -1,0 +1,698 @@
+openapi: 3.2.0
+info:
+  title: Extensibility Conga Hooks API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Conga Hooks
+paths:
+  /api/extensibility/v1/servicehooks/datachangerules:
+    get:
+      tags:
+      - Conga Hooks
+      summary: Retrieve all data change rules
+      description: Returns data change rules that meet the parameter conditions.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the rule <p>**For Example**: `Name=''SampleRule''`.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view
+        schema:
+          type: integer
+          format: int32
+      - name: sortField
+        in: query
+        description: Field name for sorting
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: Sort direction of the result set <p>(ASC or DESC)</p>
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Conga Hooks
+      summary: Insert a new data change rule
+      description: Validates and inserts the data change rule and returns the rule information.
+      requestBody:
+        description: Data change rule details to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/datachangerules/cancellation/settings:
+    get:
+      tags:
+      - Conga Hooks
+      summary: Get ServiceHooks cancellation token setting configuration
+      description: Fetches ServiceHooks cancellation token setting configuration details.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackCustomCodeSettingsResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  ExecutionAbortTimeout: 1000
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Conga Hooks
+      summary: Upsert ServiceHooks cancellation token setting configuration
+      description: If a cancellation token setting is already configured, it is updated; otherwise, a new one is created.
+      requestBody:
+        description: CustomCodeGuardrail configuration data to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CustomCodeSettingsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/datachangerules/supported-event-types:
+    get:
+      tags:
+      - Conga Hooks
+      summary: Retrieve all supported event types in service hook rules
+      description: Fetches all supported event types.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: newsampleApi deleted successfully.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+  /api/extensibility/v1/servicehooks/datachangerules/{name}:
+    delete:
+      tags:
+      - Conga Hooks
+      summary: Delete a data change rule
+      description: Validates and removes the given data change rule.
+      parameters:
+      - name: name
+        in: path
+        description: Data change rule name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: Name_Of_Service_Hook
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Conga Hooks
+      summary: Retrieve a data change rule by name
+      description: Retrieves the data change rule details for the given name.
+      parameters:
+      - name: name
+        in: path
+        description: Data change rule name to get the rule details
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Conga Hooks
+      summary: Update a data change rule
+      description: Validates and updates the data change rule and returns the updated rule information.
+      parameters:
+      - name: name
+        in: path
+        description: Data change rule name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Data change rule details to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ServiceHooksDataChangeRuleRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestErrorResponseExampleAPIResponse'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Message: Bad Request Error Message
+                StatusCode: BadRequest
+                NextCursor: null
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    ServiceHooksDataChangeRuleRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetail:
+          $ref: '#/components/schemas/CustomCodeDetailRequest'
+      additionalProperties: false
+      description: Data change custom code rule request
+    CustomCodeSettingsRequest:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          description: Time interval, in milliseconds, to abort the custom code's execution
+          format: int32
+      additionalProperties: false
+      description: Request model for custom code settings
+    CallbackCustomCodeSettingsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CustomCodeDetailRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Custom code detail id
+        ClassName:
+          type:
+          - string
+          - 'null'
+          description: Fully qualified class name
+        ProjectName:
+          type:
+          - string
+          - 'null'
+          description: Project name
+      additionalProperties: false
+      description: Custom code detail request
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,295 @@
+openapi: 3.2.0
+info:
+  title: X-Author Clause Comparison API
+  version: v1
+  description: This class contains API endpoints for clause semantic comparison
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: ClauseComparison
+  description: This class contains API endpoints for clause semantic comparison
+paths:
+  /api/xauthor/v1/clause/compare:
+    post:
+      tags:
+      - ClauseComparison
+      summary: The Api is used to initiate the clause semantic comparison request
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: Clause Comaprison request consist of clause id , extracted text and standard text
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Request.ClauseComparisonRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Request.ClauseComparisonRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Request.ClauseComparisonRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Request.ClauseComparisonRequest'
+      responses:
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/clause/compare/statuses:
+    get:
+      tags:
+      - ClauseComparison
+      summary: The API is used to get the comparison status on the basis of comparison id , it can give for multiple ids
+      parameters:
+      - name: comparisonIds
+        in: query
+        description: Its contains the list of comparison id
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Its contains the list of comparison id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/clause/compare/{comparisonId}/results:
+    get:
+      tags:
+      - ClauseComparison
+      summary: It returns the result after the semantic comparison is completed
+      parameters:
+      - name: comparisonId
+        in: path
+        description: The comparison id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The comparison id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResultsResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResultsResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResultsResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/clause/compare/{comparisonId}/status:
+    get:
+      tags:
+      - ClauseComparison
+      summary: The API is used to get the comparison status on the basis of comparison id
+      parameters:
+      - name: comparisonId
+        in: path
+        description: Comparison id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Comparison id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonSimilarity:
+      type: object
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonData:
+      type: object
+      properties:
+        differences:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonDifference'
+        similarities:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonSimilarity'
+        similarityScore:
+          type: number
+          format: double
+        standardClause:
+          type:
+          - string
+          - 'null'
+        extractedClause:
+          type:
+          - string
+          - 'null'
+        clauseId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Request.ClauseComparisonRequest:
+      type: object
+      properties:
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        clauseId:
+          type:
+          - string
+          - 'null'
+        extractedText:
+          type:
+          - string
+          - 'null'
+        standardText:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ClauseComparisonResultsResponse:
+      type: object
+      properties:
+        status:
+          type:
+          - string
+          - 'null'
+        results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonResult'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonDifference:
+      type: object
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+        standardClause:
+          type:
+          - string
+          - 'null'
+        extractedClause:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonResult:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.DTO.ClauseComparison.Response.ComparisonData'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

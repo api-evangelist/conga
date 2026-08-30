@@ -1,0 +1,490 @@
+openapi: 3.2.0
+info:
+  title: Reviewer API
+  version: v1
+  description: Conga Reviewer APIs
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Reviewer
+  description: Conga Reviewer APIs
+paths:
+  /api/review/v1/{reviewtype}/{reviewid}/reviewers:
+    get:
+      tags:
+      - Reviewer
+      summary: Get reviewers
+      description: This API retrieves the status details of all the reviewers and assocated details corresponding to a review request.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The unique identifier of a review process
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewerStatusResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewerStatusResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewerStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Reviewer
+      summary: Add reviewers
+      description: Adds reviewers to a review process that has already started. You must identify the review and pass an addreviewerrequest parameter. The API returns a list of reviewer IDs.
+      parameters:
+      - name: reviewid
+        in: path
+        description: The unique identifier of a review
+        required: true
+        schema:
+          type: string
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      requestBody:
+        description: Add Reviewer Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+            text/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/review/v1/{reviewtype}/{reviewid}/reviewers/{reviewerid}:
+    delete:
+      tags:
+      - Reviewer
+      summary: Cancel a reviewer
+      description: Cancels the review process for an individual reviewer and revokes their permission to review the document. You must pass the IDs of the review and the reviewer and you can designate an email template for the message sent after you cancel the review.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The unique identifier of a review
+        required: true
+        schema:
+          type: string
+      - name: reviewerid
+        in: path
+        description: The unique identifier of a reviewer
+        required: true
+        schema:
+          type: string
+      - name: emailTemplateId
+        in: query
+        description: Unique ID designating an email template
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      responses:
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/review/v1/{reviewtype}/{reviewid}/reviewers/{reviewerid}/end:
+    post:
+      tags:
+      - Reviewer
+      summary: End a reviewer's review
+      description: This API ends the review process for an individual user and revokes permission to review a document. You must pass the reviewID and reviewerID parameters to identify the review and the reviewer. You can designate an email template for the message sent after you revoke review permission.
+      parameters:
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: reviewid
+        in: path
+        description: The unique identifier of a review
+        required: true
+        schema:
+          type: string
+      - name: reviewerid
+        in: path
+        description: The unique identifier of a reviewer
+        required: true
+        schema:
+          type: string
+      - name: emailTemplateId
+        in: query
+        description: EmailTemplateId allows you to designate an existing email template to send after you cancel a review.
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      responses:
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum:
+      enum:
+      - External
+      - Internal
+      type: string
+    Conga.Review.Service.Application.Models.LookUp:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
+      enum:
+      - Email
+      - User
+      - Contact
+      type: string
+    Conga.Review.Service.Application.Commands.StartReview.Reviewer:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        MemberId:
+          type:
+          - string
+          - 'null'
+        RecipientType:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.RecipientTypeEnum'
+        RecipientId:
+          type:
+          - string
+          - 'null'
+        ReviewerType:
+          $ref: '#/components/schemas/Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.ReviewerStatusResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        ReviewerName:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        RecipientId:
+          type:
+          - string
+          - 'null'
+        RecipientType:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        SharedURL:
+          type:
+          - string
+          - 'null'
+        Comment:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CreatedDate:
+          type:
+          - string
+          - 'null'
+        CompletedBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CompletedDate:
+          type:
+          - string
+          - 'null'
+        CancelledBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        CancelDate:
+          type:
+          - string
+          - 'null'
+        ModifiedBy:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+        ModifiedDate:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest:
+      type: object
+      properties:
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
+          description: The list of reviewers to add to the review.
+        EmailTemplateId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the email template to use when notifying reviewers.
+      additionalProperties: false
+      description: This class represents a Request for adding reviewers to a review.
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

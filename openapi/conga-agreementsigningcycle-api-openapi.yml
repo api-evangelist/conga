@@ -1,0 +1,208 @@
+openapi: 3.2.0
+info:
+  title: eSignature Agreement Signing Cycle API
+  version: v1
+  description: Provides endpoints for managing and retrieving agreement signing cycles.
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: AgreementSigningCycle
+  description: Provides endpoints for managing and retrieving agreement signing cycles.
+paths:
+  /api/esign/v1/agreement/{agreementId}/signing-cycle:
+    get:
+      tags:
+      - AgreementSigningCycle
+      summary: Retrieves a list of agreement signing cycles based on the specified signing provider type and agreement ID.
+      parameters:
+      - name: agreementId
+        in: path
+        description: The unique identifier of the agreement.
+        required: true
+        schema:
+          type: string
+      - name: signProviderType
+        in: query
+        description: Sign provider
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgreementSigningCyclesResponseListAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecipientDetail:
+      type: object
+      properties:
+        email:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        statusFailureReason:
+          type:
+          - string
+          - 'null'
+        signProviderLevelStatus:
+          type:
+          - string
+          - 'null'
+        role:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TimeZoneInformation:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AgreementSigningCyclesResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AgreementSigningCyclesResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AgreementSigningCyclesResponse:
+      type: object
+      properties:
+        eSignTransactionId:
+          type:
+          - string
+          - 'null'
+        externalESignId:
+          type:
+          - string
+          - 'null'
+        documentName:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        signProviderLevelStatus:
+          type:
+          - string
+          - 'null'
+        signingProvider:
+          type:
+          - string
+          - 'null'
+        sentDate:
+          type:
+          - string
+          - 'null'
+        expiryDate:
+          type:
+          - string
+          - 'null'
+        timeZoneInfo:
+          $ref: '#/components/schemas/TimeZoneInformation'
+        recipientDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecipientDetail'
+      additionalProperties: false
+    SignProviderType:
+      enum:
+      - AdobeSign
+      - CongaSign
+      - DocuSign
+      - WetSign
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

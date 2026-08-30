@@ -1,0 +1,674 @@
+openapi: 3.2.0
+info:
+  title: Ingress Custom Branding API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: CustomBranding
+paths:
+  /v1/CustomBranding:
+    get:
+      tags:
+      - CustomBranding
+      summary: Get all uploaded customBrandings
+      operationId: CustomBranding_GetAllCustomBrandings
+      parameters:
+      - name: customName
+        in: query
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: pageNumber
+        in: query
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 2
+      - name: pageSize
+        in: query
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 3
+      responses:
+        '200':
+          description: 200 OK with a list of logos, 400 Bad Request if the input is invalid, or 500 for internal server errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomBrandingListResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    post:
+      tags:
+      - CustomBranding
+      summary: Uploads a logo file with a custom name.
+      operationId: CustomBranding_UploadCustomBranding
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+                CustomName:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '201':
+          description: 201 Created if successful, 400 Bad Request if validation fails, 500 if an internal error occurs.
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/CustomBranding/{id}:
+    delete:
+      tags:
+      - CustomBranding
+      operationId: CustomBranding_DeleteCustomBranding
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    get:
+      tags:
+      - CustomBranding
+      summary: Get logo file details by ID
+      operationId: CustomBranding_GetCustomBrandingById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: 200 OK if successful, 404 Not Found if not found, or 500 for internal server errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerResponseOfCustomBrandingEntity'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerResponse'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerResponse'
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - CustomBranding
+      summary: Updates a logo's image and/or custom name by ID.
+      operationId: CustomBranding_UpdateCustomBranding
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The ID of the  to update.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Logo:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+                CustomName:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: 200 OK if successful, 400 BadRequest for invalid input, 404 NotFound if logo doesn't exist, or 500 InternalServerError.
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/CustomBranding/{id}/download:
+    get:
+      tags:
+      - CustomBranding
+      operationId: CustomBranding_DownloadLogoFileById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    Stream:
+      allOf:
+      - $ref: '#/components/schemas/MarshalByRefObject'
+      - type: object
+        x-abstract: true
+        additionalProperties: false
+        properties:
+          canTimeout:
+            type: boolean
+          readTimeout:
+            type: integer
+            format: int32
+          writeTimeout:
+            type: integer
+            format: int32
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
+    MarshalByRefObject:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    ResponseStatusCode:
+      type: string
+      description: Application-specific error code identified by Composer UI\
+      x-enumNames:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+      enum:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    ComposerResponseOfCustomBrandingEntity:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponse'
+      - type: object
+        description: Represents the result of some operation, with status information and possibly a value and an error.
+        additionalProperties: false
+        properties:
+          data:
+            description: 'A safe version of Data that returns null if the result is a failure.
+
+              This is used for serialization only.'
+            oneOf:
+            - $ref: '#/components/schemas/CustomBrandingEntity'
+    CustomBrandingEntity:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        logoMimeType:
+          type: string
+        logoPath:
+          type: string
+        customName:
+          type:
+          - string
+          - 'null'
+        lastModifiedDate:
+          type: string
+          format: date-time
+        logoImage:
+          oneOf:
+          - $ref: '#/components/schemas/Stream'
+        logoFileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
+    Errors:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
+          oneOf:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
+    HttpStatusCode:
+      type: string
+      description: ''
+      x-enumNames:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - Ambiguous
+      - MovedPermanently
+      - Moved
+      - Found
+      - Redirect
+      - SeeOther
+      - RedirectMethod
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableContent
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MultipleChoices
+      - MovedPermanently
+      - MovedPermanently
+      - Found
+      - Found
+      - SeeOther
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - RedirectKeepVerb
+      - RedirectKeepVerb
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+    CustomBrandingListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomBrandingEntity'
+        recordCount:
+          type: integer
+          format: int32
+        totalRecords:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

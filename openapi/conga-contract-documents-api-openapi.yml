@@ -1,0 +1,1847 @@
+openapi: 3.2.0
+info:
+  title: Contracts Contract Documents API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Contract Documents
+paths:
+  /api/clm/v1/contracts/createoffline:
+    post:
+      tags:
+      - Contract Documents
+      summary: Create an offline contract document
+      description: 'Creates a new contract record based on an imported third-party contract document and attaches the original document to the new contract.
+
+
+        On success, the contract status changes to "Author Contract".'
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                documentAttributes:
+                  type: object
+                  additionalProperties: {}
+                contract:
+                  type: object
+                  additionalProperties: {}
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+            encoding:
+              file:
+                style: form
+              documentAttributes:
+                style: form
+              contract:
+                style: form
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract data or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/createoffline/large:
+    post:
+      tags:
+      - Contract Documents
+      summary: Creates an offline contract and imports a large document linked to it.
+      description: 'Creates a new contract record based on an imported third-party contract document and attaches the original document to the new contract.
+
+
+        On success, the contract status changes to "Author Contract".'
+      requestBody:
+        description: "An object containing document-specific details, including the file name, file path of the large document and contract details required to create the contract.\n            to be imported."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/storeexecuted:
+    post:
+      tags:
+      - Contract Documents
+      summary: Create a contract from an executed contract
+      description: 'Creates a new contract record from the provided executed contract document.
+
+
+        On success, the contract status changes to "Activated".'
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                documentAttributes:
+                  type: object
+                  additionalProperties: {}
+                contract:
+                  type: object
+                  additionalProperties: {}
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+            encoding:
+              file:
+                style: form
+              documentAttributes:
+                style: form
+              contract:
+                style: form
+      responses:
+        '200':
+          description: Returns contract document details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract data or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/storeexecuted/large:
+    post:
+      tags:
+      - Contract Documents
+      summary: Store an executed large document.
+      description: "Stores an executed large document for the specified contract ID. This operation allows the user to upload or reference \na document that is already uploaded to a filestore, and it links the document to the contract."
+      requestBody:
+        description: "An object containing document-specific details, including the file name and file path of the large document \n            to be stored."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ContractLargeDocumentRequest'
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents:
+    delete:
+      tags:
+      - Contract Documents
+      summary: Delete documents by contract ID
+      description: Deletes one or more documents associated with a specific contract. You can provide a list of document IDs to delete specific documents, or omit the list to delete all documents linked to the contract. The API permanently removes the document data while retaining the metadata with the "IsDeleted" flag set to true. The API returns a confirmation of the deletion status.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of Document IDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Returns confirmation that the document is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID or document ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    post:
+      tags:
+      - Contract Documents
+      summary: Create a new contract document
+      description: "Creates a new contract document for the provided contract ID. \n\nOn success, the contract status changes to \"Author Contract\" if the contract's previous status was \"Request\"."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                documentAttributes:
+                  type: object
+                  additionalProperties: {}
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+            encoding:
+              file:
+                style: form
+              documentAttributes:
+                style: form
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/large:
+    post:
+      tags:
+      - Contract Documents
+      summary: Upload a large contract document
+      description: "Uploads a large document to the specified contract ID.\nThis API allows you to reference a document that is already uploaded to the filestore and link it to the contract. \nProvide the file name, file path, and optional document attributes in the request payload."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/query:
+    post:
+      tags:
+      - Contract Documents
+      summary: Query contract documents
+      description: Executes a query request against document records, returning matching records.
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryBase'
+      responses:
+        '200':
+          description: Returns contract documents that match the provided query.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentSearchResponseAPIResponse'
+        '400':
+          description: The provided contract ID or query is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/querywithreview:
+    post:
+      tags:
+      - Contract Documents
+      summary: Query contract documents for status and version
+      description: Executes a query request against the document records and returns matching records with review status and document versions.
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomQueryWithReviewStatus'
+      responses:
+        '200':
+          description: Returns contract documents that match the provided query.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractDocumentResponseAPIResponse'
+        '400':
+          description: The provided contract ID or query is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/relateddocuments:
+    get:
+      tags:
+      - Contract Documents
+      summary: Get a contract's related documents
+      description: Fetches all related documents for the provided contract ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the list of contract's related documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRelatedDocumentsResponseListAPIResponse'
+        '400':
+          description: The provided contract ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/{documentId}:
+    get:
+      tags:
+      - Contract Documents
+      summary: Get document details
+      description: Fetches document details for the provided document ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns document details for the provided document ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAPIResponse'
+        '400':
+          description: The provided contract ID or document ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    put:
+      tags:
+      - Contract Documents
+      summary: Update a contract
+      description: "Updates the contract document for the provided document ID. \n\nThis API creates a new version ID with the same document ID and retains the previous version."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document to be updated
+        required: true
+        schema:
+          type: string
+      - name: description
+        in: query
+        description: Description for the update
+        schema:
+          type: string
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: Returns updated contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID, document ID, or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/{documentId}/protect:
+    post:
+      tags:
+      - Contract Documents
+      summary: Protect a document
+      description: 'Protects a document. This API takes a copy of the document with the provided document ID, applies the respective document protection based on the given action, and returns the copy.
+
+
+        Document protection is applicable only for "DOCX" documents.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: Document ID on which to apply protection
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Document action and user-selected protection level (if 'User Defined' option is configured).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtectDocumentRequest'
+      responses:
+        '200':
+          description: Returns the copy of protection applied document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtectDocumentResponseListAPIResponse'
+        '400':
+          description: Required values are not provided or provided values are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/{documentId}/versions:
+    delete:
+      tags:
+      - Contract Documents
+      summary: Delete document versions
+      description: 'Deletes documents based on provided document version IDs for a specified contract ID.
+
+
+        This API permanently deletes the document data but document metadata is retained in the system with the "IsDeleted" flag set to true.'
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of document versions
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Returns confirmation that the documents are deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+              example:
+                Success: true
+                Data: true
+                Warnings: null
+                Errors: null
+        '400':
+          description: The provided contract ID, document ID, or version ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/documents/{documentId}/versions/{documentMetadataId}:
+    get:
+      tags:
+      - Contract Documents
+      summary: Get document by ID and version
+      description: Fetches document details for the provided document ID and version ID.
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      - name: documentId
+        in: path
+        description: ID of the document to be fetched
+        required: true
+        schema:
+          type: string
+      - name: documentMetadataId
+        in: path
+        description: ID of the document version to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns document details for the provided document ID and version ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAPIResponse'
+        '400':
+          description: The provided contract ID, document ID, or version ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/importoffline:
+    post:
+      tags:
+      - Contract Documents
+      summary: Import an offline contract document
+      description: "Creates a new contract document for the provided contract ID based on imported third-party paper.\n            \nOn success, the contract status changes to \"Author Contract\"."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                documentAttributes:
+                  type: object
+                  additionalProperties: {}
+            example:
+              Name: Reviewer
+              Description: Team is responsible to review the associated contract
+              Action:
+              - SendForReview
+              IsActive: true
+            encoding:
+              file:
+                style: form
+              documentAttributes:
+                style: form
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+  /api/clm/v1/contracts/{contractId}/importoffline/large:
+    post:
+      tags:
+      - Contract Documents
+      summary: Import a large document.
+      description: "Imports a large document for the specified contract ID. This operation allows the user to upload or reference \na document that is already uploaded to a filestore, and it links the document to the contract."
+      parameters:
+      - name: contractId
+        in: path
+        description: ID of the contract
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: "An object containing document-specific details, including the file name and file path of the large document \n            to be imported."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/LargeDocumentRequest'
+      responses:
+        '200':
+          description: Returns the newly created contract document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentMetadataAPIResponse'
+        '400':
+          description: The provided contract ID or file data is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Error Message
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Warnings: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+components:
+  schemas:
+    ContractRelatedDocumentsResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractRelatedDocumentsResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    Document:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        DocumentMetadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+        BlobData:
+          type:
+          - string
+          - 'null'
+          description: Actual document as a blob (byte array)
+          format: byte
+      additionalProperties: {}
+      description: Represents documents associated with contracts and agreements
+    ProtectDocumentRequest:
+      type: object
+      properties:
+        DocumentAction:
+          $ref: '#/components/schemas/DocumentAction'
+        UserSelectedProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+      description: Request model for Protect Document
+    DocumentAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/Document'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
+    CustomQueryWithReviewStatus:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        IncludeReviewStatus:
+          type: boolean
+          description: Require Review Status
+        IncludeDocumentVersions:
+          type: boolean
+          description: Require Document Versions
+      additionalProperties: false
+      description: Custom Query
+    ContractDocumentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractDocumentResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ContractDocumentResponse:
+      type: object
+      properties:
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractDocument'
+          description: Documents
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          description: RecordCount
+          format: int64
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+      additionalProperties: false
+      description: Response for Documents with Action and Status
+    DocumentAction:
+      enum:
+      - PREVIEW
+      - GENERATE
+      - AUTO_GENERATE
+      - GENERATE_SUPPORTING_DOCUMENT
+      - REGENERATE
+      - CREATE_OFFLINE
+      - IMPORT_OFFLINE
+      - SAVE_INTERNAL_VERSION
+      - SAVE_EXTERNAL_VERSION
+      - SAVE_FINAL_VERSION
+      - SEND_FOR_REVIEW
+      - SEND_FOR_SIGNATURE
+      - JOIN
+      - SAVE_UPDATE_VERSION
+      type: string
+      description: Enum for Document Actions
+    ProtectDocumentResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ProtectDocumentResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ProtectDocumentResponse:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: Id of document on which protection is applied
+        ProtectedDocument:
+          type:
+          - string
+          - 'null'
+          description: Copy of protected document in Base64 string format
+      additionalProperties: false
+      description: Response Model for Protected Document
+    DocumentSearchResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentSearchResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    ContractDocument:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Extension:
+          type:
+          - string
+          - 'null'
+        Tags:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        DocumentVersion:
+          type: integer
+          format: int32
+        IsDeleted:
+          type: boolean
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+        CheckoutDate:
+          type: string
+          format: date-time
+        FileSize:
+          type: integer
+          format: int64
+        FileType:
+          type:
+          - string
+          - 'null'
+        IsLatest:
+          type: boolean
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Review Status
+        DocumentVersions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractDocument'
+          description: Contract Document Versions
+        Framework:
+          type:
+          - string
+          - 'null'
+          description: Compliance enrichment (populated only by querywithcompliance; null otherwise)
+        Verdict:
+          type:
+          - string
+          - 'null'
+        PassCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        WarningCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        FailCount:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        CompletedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: {}
+      description: Document with Origin Action and Review Status
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    CustomQueryBase:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+      additionalProperties: false
+      description: Base Class for Custom Query
+    ContractRelatedDocumentsResponse:
+      type: object
+      properties:
+        DocumentMetadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+        RelationshipType:
+          type:
+          - string
+          - 'null'
+          description: Relationship with Contract Id
+      additionalProperties: false
+      description: Contract Related Documents Response
+    LargeDocumentRequest:
+      required:
+      - FileName
+      - FilePath
+      type: object
+      properties:
+        FileName:
+          minLength: 1
+          type: string
+          description: The name of the file to be imported.
+        FilePath:
+          minLength: 1
+          type: string
+          description: The path where the file is stored in the filestore.
+        DocumentAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document attributes like description, tags, etc.
+        WorksheetId:
+          type:
+          - string
+          - 'null'
+          description: Worksheet ID for DAI processing
+        ProcessDAI:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to indicate if DAI processing should be performed
+          default: false
+        ContractType:
+          type:
+          - string
+          - 'null'
+          description: Contract type needed during import offline when DAI processing is enabled.
+        MetadataChecksum:
+          type:
+          - string
+          - 'null'
+          description: Checksum calculated for the file. Used by DiscoveryAgent for duplicate detection.
+      additionalProperties: false
+      description: Request Model for Large documents
+    DocumentMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentMetadata'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentMetadata:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Extension:
+          type:
+          - string
+          - 'null'
+        Tags:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        DocumentVersion:
+          type: integer
+          format: int32
+        IsDeleted:
+          type: boolean
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+        CheckoutDate:
+          type: string
+          format: date-time
+        FileSize:
+          type: integer
+          format: int64
+        FileType:
+          type:
+          - string
+          - 'null'
+        IsLatest:
+          type: boolean
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: {}
+    DocumentSearchResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    ContractLargeDocumentRequest:
+      required:
+      - Contract
+      - FileName
+      - FilePath
+      type: object
+      properties:
+        FileName:
+          minLength: 1
+          type: string
+          description: The name of the file to be imported.
+        FilePath:
+          minLength: 1
+          type: string
+          description: The path where the file is stored in the filestore.
+        DocumentAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document attributes like description, tags, etc.
+        WorksheetId:
+          type:
+          - string
+          - 'null'
+          description: Worksheet ID for DAI processing
+        ProcessDAI:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to indicate if DAI processing should be performed
+          default: false
+        ContractType:
+          type:
+          - string
+          - 'null'
+          description: Contract type needed during import offline when DAI processing is enabled.
+        MetadataChecksum:
+          type:
+          - string
+          - 'null'
+          description: Checksum calculated for the file. Used by DiscoveryAgent for duplicate detection.
+        Contract:
+          type: object
+          additionalProperties: {}
+          description: Contract details associated with the document.
+      additionalProperties: false
+      description: Request Model for Large documents with contract
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

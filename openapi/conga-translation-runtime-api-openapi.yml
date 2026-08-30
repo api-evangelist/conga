@@ -1,0 +1,563 @@
+openapi: 3.2.0
+info:
+  title: Localization Translation Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Translation Runtime
+paths:
+  /api/localization/v1/translations/modules/{module}/bulk:
+    get:
+      tags:
+      - Translation Runtime
+      summary: Get translations by Module
+      description: Gets translations for the given module.
+      parameters:
+      - name: module
+        in: path
+        description: 'A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.'
+        required: true
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to retrieve at once. If not specified, the default page size is 2000 records.
+        schema:
+          type: integer
+          format: int32
+      - name: cursor
+        in: query
+        description: The position of the last retrieved record.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationsResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Translations:
+                  - Key: ACCESS_DENIES
+                    Locale: en-US
+                    Module: CLM
+                    Value: Access denied
+                    CreatedBy:
+                      Id: cb6da05e-41f1-4a4b-9c5f-8ade4be365aa
+                      Name: Admin admin
+                    CreatedDate: 7/27/2026 11:08:51 AM
+                    ModifiedBy: null
+                    ModifiedDate: null
+                  - Key: ACCESS_GRANTED
+                    Locale: en-US
+                    Module: CLM
+                    Value: Access granted
+                    CreatedBy:
+                      Id: 7c77bfbb-0cd7-41ec-a04e-b12f76b1cfb6
+                      Name: Admin admin
+                    CreatedDate: 7/27/2026 11:08:51 AM
+                    ModifiedBy: null
+                    ModifiedDate: null
+                  Cursor: null
+                  HasMoreRecords: false
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /api/localization/v1/translations/{module}/bulk:
+    post:
+      tags:
+      - Translation Runtime
+      summary: Get translated values for the user's locale
+      description: Retrieves the translated values for the given module and list of keys.
+      parameters:
+      - name: module
+        in: path
+        description: 'A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A list of unique keys of the translation module specified above.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkTranslationRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BulkTranslationRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BulkTranslationRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkTranslationResponseListAPIResponse'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/localization/v1/translations/{module}/bulk/parameters:
+    post:
+      tags:
+      - Translation Runtime
+      summary: Get translated values with parameters for the user's locale
+      description: Retrieves the translated values with parameters for the given module and list of keys.
+      parameters:
+      - name: module
+        in: path
+        description: 'A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A list of unique keys of the translation module specified above each accociated with message paramerter(s).
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ParameterizedBulkTranslationRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ParameterizedBulkTranslationRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ParameterizedBulkTranslationRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkTranslationResponseListAPIResponse'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/localization/v1/translations/{module}/{key}:
+    get:
+      tags:
+      - Translation Runtime
+      summary: Get translated value for the user's locale
+      description: Retrieves the translated value for the given module and key.
+      parameters:
+      - name: module
+        in: path
+        description: 'A classifier for the translation; for example: `CLM.DOC_GEN` or `CPQ.CART`.'
+        required: true
+        schema:
+          type: string
+      - name: key
+        in: path
+        description: A unique key for the specified module.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+  /api/localization/v1/translations/{module}/{key}/parameters:
+    get:
+      tags:
+      - Translation Runtime
+      summary: Get translated value and user locale
+      description: Retrieves the translated value based on the input combination (Module, Key, and Parameters) given in the parameters.
+      parameters:
+      - name: module
+        in: path
+        description: 'Contains the module name for which the translated value is to be fetched; for example: `CLM.DOC_GEN` or `CPQ.CART`.'
+        required: true
+        schema:
+          type: string
+      - name: key
+        in: path
+        description: A unique key for the specified module.
+        required: true
+        schema:
+          type: string
+      - name: parameters
+        in: query
+        description: Message paramaters/variables.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Translation:
+      type: object
+      properties:
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: An identifier of a language and region; for example, en-US. You can get a list of locales from the User Management APIs.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: A classifier for the translation. for example, CLM.DOC_GEN or CPQ.CART.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: The actual value of translation.
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type:
+          - string
+          - 'null'
+          description: Date of creation.
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type:
+          - string
+          - 'null'
+          description: Last modified date.
+        Key:
+          type:
+          - string
+          - 'null'
+          description: A Unique Identifier
+      additionalProperties: false
+      description: Translation model
+    BulkTranslationResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BulkTranslationResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BulkTranslationResponse:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: A unique identfier value.
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: An identifier of a language and region; for example, en-US. You can get a list of locales from the User Management APIs.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: The translated value of the key passed in the request.
+        Status:
+          $ref: '#/components/schemas/ResultStatus'
+      additionalProperties: false
+      description: Bulk Translation Response
+    TranslationsResponse:
+      type: object
+      properties:
+        Translations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Translation'
+        Cursor:
+          type:
+          - string
+          - 'null'
+        HasMoreRecords:
+          type: boolean
+      additionalProperties: false
+      description: Translations Response
+    TranslationsResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/TranslationsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BulkTranslationRequest:
+      type: object
+      properties:
+        Keys:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: A List of unique keys.
+      additionalProperties: false
+      description: Model for Bulk Translation Request
+    ParameterizedBulkTranslationRequest:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: A unique key.
+        Parameters:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: An array of values associated with the translation.
+      additionalProperties: false
+      description: Bulk translation request with parameter values.
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ResultStatus:
+      enum:
+      - Success
+      - Fail
+      - NotFound
+      - Invalid
+      - Conflict
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

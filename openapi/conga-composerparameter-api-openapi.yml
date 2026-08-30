@@ -1,0 +1,210 @@
+openapi: 3.2.0
+info:
+  title: Ingress Composer Parameter API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/ingress
+security:
+- JWT: []
+tags:
+- name: ComposerParameter
+paths:
+  /v1/Parameter:
+    get:
+      tags:
+      - ComposerParameter
+      summary: Retrieves all parameters with optional pagination and search filter.
+      operationId: ComposerParameter_GetAllParameters
+      parameters:
+      - name: searchName
+        in: query
+        description: Optional search term for  Name or ParameterName.
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: pageNumber
+        in: query
+        description: Optional page number for pagination.
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 2
+      - name: pageSize
+        in: query
+        description: Optional page size for pagination.
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        x-position: 3
+      responses:
+        '200':
+          description: 200 OK with a list of parameters, 400 Bad Request if the input is invalid, or 500 for internal server errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComposerParameterListResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+  /v1/Parameter/{id}:
+    get:
+      tags:
+      - ComposerParameter
+      operationId: ComposerParameter_GetParameterById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+components:
+  schemas:
+    FixedValue:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+        caption:
+          type: string
+    ComposerParameterListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComposerParameter'
+        recordCount:
+          type: integer
+          format: int32
+        totalRecords:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ComposerParameter:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        culture:
+          type: string
+        parameterName:
+          type: string
+        description:
+          type: string
+        additionalRequirements:
+          type: string
+        categoryID:
+          type: integer
+          format: int32
+        placeholderText:
+          type: string
+        example:
+          type: string
+        isDeleted:
+          type: boolean
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+        fixedValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/FixedValue'
+        type:
+          $ref: '#/components/schemas/ComposerParameterType'
+        categoryName:
+          type: string
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    ComposerParameterType:
+      type: string
+      description: ''
+      x-enumNames:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
+      enum:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

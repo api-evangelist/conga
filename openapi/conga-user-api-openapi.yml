@@ -1,0 +1,2249 @@
+openapi: 3.2.0
+info:
+  title: Conga User API
+  version: v1
+  description: 'Operations tagged User across 3 of this provider''s published API definitions: conga-review.json, conga-user-management.json, conga-x-author.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+tags:
+- name: User
+  description: User Search APIs
+paths:
+  /api/review/v1/office365/active-directory-users:
+    get:
+      tags:
+      - User
+      summary: Gets existing users from search text
+      parameters:
+      - name: searchText
+        in: query
+        description: Search string for looking up matching user profiles.
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ADReviewUsers'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ADReviewUsers'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ADReviewUsers'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/review/v1/{reviewtype}/reviewers/query:
+    get:
+      tags:
+      - User
+      summary: Search users
+      description: Retreives user details matching your search string. You must pass a search string in the searchText parameter.
+      parameters:
+      - name: searchText
+        in: query
+        description: Search string for looking up matching user profiles.
+        required: true
+        schema:
+          type: string
+      - name: reviewtype
+        in: path
+        description: Supported review types are Office365 and Normal.
+        required: true
+        schema:
+          type: string
+      - name: ExternalToken
+        in: header
+        description: Token required to communicate with external review provider like Office365. (It's not required for Normal flow)
+        required: true
+        allowEmptyValue: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User profiles matching the requested search text.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewUser'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewUser'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.Review.Service.Application.Models.ReviewUser'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Users matching the description not found.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/actionpermissions:
+    get:
+      tags:
+      - User
+      summary: Get all action permissions for the current user
+      description: Returns a list of all object action permissions available for the current user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringStringBooleanDictionaryDictionaryAPIResponse'
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/currency:
+    get:
+      tags:
+      - User
+      summary: Get logged-in user's currency
+      description: Returns currency information for the current logged-in user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: USD
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/currency-format:
+    get:
+      tags:
+      - User
+      summary: Get logged-in user's currency format
+      description: Returns currency format information for the current logged-in user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyFormatAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PositiveCurrencyFormat: $n
+                  NegativeCurrencyFormat: -$n
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/info:
+    get:
+      tags:
+      - User
+      summary: Get logged-in user information
+      description: 'Returns information about the current logged-in user.<p>**Note**: If the locale, currency, and time zone information are not available at the user level, this endpoint retrieves them from the organization level.</p>'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  FirstName: system
+                  LastName: user
+                  UserName: SystemUser
+                  Email: systemuser@conga.com
+                  Role:
+                    Id: bb30e755-ee85-43e2-a845-415205376997
+                    Name: SysAdmin
+                  PermissionGroups: ScopePermissionGroup
+                  RolePermissionGroups: null
+                  Timezone: null
+                  Locale: null
+                  Currency: null
+                  CurrencyFormat: null
+                  IsDeleted: false
+                  IsActive: true
+                  IsSuspended: null
+                  Alias: null
+                  Language: null
+                  SmallPhotoUrl: null
+                  LastLoginDate: null
+                  Address: 71 ST. NICHOLAS DRIVE
+                  PhoneNumber: null
+                  IdentityStatus: null
+                  UserType: External
+                  AdminPermissions: null
+                  OrganizationExternalId: null
+                  UserGroupsAssignedTo: null
+                  Clientid: null
+                  FederationId: null
+                  IsNextGenUiEnabled: null
+                  Id: null
+                  Name: null
+                  CreatedBy:
+                    Id: a6252613-182a-49bf-8f1e-7bade283c930
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:36.2744182+00:00'
+                  ModifiedBy:
+                    Id: a1790def-e1f4-44a3-a6ee-f0b74da0065e
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:36.2744259+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/locale:
+    get:
+      tags:
+      - User
+      summary: Get logged-in user's locale
+      description: Returns the locale information for the current logged-in user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocaleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  DisplayName: English (United States)
+                  Name: en-US
+                  NumberFormat:
+                    DecimalSymbol: .
+                    DigitGroup: 123,456,789.00
+                    DigitGroupingSymbol: ','
+                    NegativeNumberFormat: '- n'
+                  DateFormat:
+                    LongDateFormat: dddd, MMMM d, yyyy
+                    ShortDateFormat: M/d/yyyy
+                    TimeFormat: h:mm tt
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/object-access/users:
+    get:
+      tags:
+      - User
+      summary: Get users with full access on given objects
+      description: Fetches users who have full access on all objects passed as input.
+      parameters:
+      - name: objectNames
+        in: query
+        description: The list containing object names for which users with full access needs to be fetched.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - UserName: SystemAdmin
+                  Id: 61906481-9288-404d-8b4e-f66e202f2124
+                  PermissionGroups: GlobalScopePermissionGroup
+                - UserName: GeneralUser
+                  Id: 37572e96-90f8-4ed2-9211-6c9f44b909e4
+                  PermissionGroups: ScopePermissionGroup
+                StatusCode: OK
+        '400':
+          description: Bad Request
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/actionpermissions:
+    post:
+      tags:
+      - User
+      summary: Get bulk action permissions
+      description: Retrieves the details of action permissions on the object names.
+      requestBody:
+        description: Objects for which action permissions to be fetched
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringStringBooleanDictionaryDictionaryAPIResponse'
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/{objectName}/actionpermissions:
+    get:
+      tags:
+      - User
+      summary: Get action permissions by object name
+      description: Retrieves the details of action permissions on the object name.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name for which action permissions to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringStringBooleanDictionaryDictionaryAPIResponse'
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/{objectName}/field-permissions:
+    get:
+      tags:
+      - User
+      summary: Get field permission details by object name
+      description: Fetches the field permission details based on the object name.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name for which field permissions to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringFieldAccessConfigDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id:
+                    ReadAccess: true
+                    WriteAccess: false
+                  SampleField:
+                    ReadAccess: true
+                    WriteAccess: true
+                  Field1:
+                    ReadAccess: true
+                    WriteAccess: false
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/{objectName}/field-permissions/fields/{fieldName}:
+    get:
+      tags:
+      - User
+      summary: Get field permission details by field name on given object
+      description: Fetches the field permission details based on the field name on given object.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name for which field permissions to be fetched
+        required: true
+        schema:
+          type: string
+      - name: fieldName
+        in: path
+        description: Field name for which field permission to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringFieldAccessConfigDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Id:
+                    ReadAccess: true
+                    WriteAccess: false
+                  SampleField:
+                    ReadAccess: true
+                    WriteAccess: true
+                  Field1:
+                    ReadAccess: true
+                    WriteAccess: false
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/{objectName}/property-permissions/{propertyName}/{actionName}:
+    get:
+      tags:
+      - User
+      summary: Get accessible property values of property object by object name and action type
+      description: Returns a list of property values that the current user can access for the specified property on the given object with the specified action type.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name for which property permissions to be fetched
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        description: Property name for which accessible values to be fetched
+        required: true
+        schema:
+          type: string
+      - name: actionName
+        in: path
+        description: Action type (CREATE, READ, UPDATE, DELETE) to check permissions for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - UserName: SystemAdmin
+                  Id: a1632d38-8394-4128-bb49-48c73ee6f37b
+                  PermissionGroups: GlobalScopePermissionGroup
+                - UserName: GeneralUser
+                  Id: 8370c6ef-ce09-4239-b5a9-4b6049cac0ec
+                  PermissionGroups: ScopePermissionGroup
+                StatusCode: OK
+        '400':
+          description: Bad Request
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/objects/{objectName}/recordtypes:
+    get:
+      tags:
+      - User
+      summary: Get record type permission details by object name
+      description: Fetches the record type permission details based on the object name.
+      parameters:
+      - name: objectName
+        in: path
+        description: Object name for which record type permissions to be fetched
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringBooleanDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  NDA: true
+                  MSA: false
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/timezone:
+    get:
+      tags:
+      - User
+      summary: Get logged-in user's time zone
+      description: Returns time zone information for the current logged-in user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimezoneAPIResponse'
+              example:
+                Success: true
+                Data:
+                  TimezoneName: (GMT) UTC (UTC)
+                  TimezoneId: UTC
+                  TimezoneAlternateId: UTC
+                StatusCode: OK
+        '404':
+          description: Not Found
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/user-management/v1/user/{userId}/ui-settings:
+    patch:
+      tags:
+      - User
+      summary: Update a user's UI settings
+      description: Updates a user's UI settings based on the user ID and the provided settings.
+      parameters:
+      - name: userId
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: UI settings request containing the settings to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUiSettingsRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUiSettingsRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateUiSettingsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/xajs/v1/xAuthor/User/UsersByType:
+    post:
+      tags:
+      - User
+      parameters:
+      - name: userType
+        in: query
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.RequestQueryParam'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.RequestQueryParam'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.RequestQueryParam'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.RequestQueryParam'
+      responses:
+        '200':
+          description: Success
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://xauthor-prod-rls10.congacloud.com
+    - url: https://xauthor-preview-rls09.congacloud.com
+  /api/xauthor/v1/current-user-info:
+    get:
+      tags:
+      - User
+      summary: get logged in user info
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.UserInfo'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.UserInfo'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.UserInfo'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://xauthor-prod-rls10.congacloud.com
+    - url: https://xauthor-preview-rls09.congacloud.com
+components:
+  schemas:
+    Conga.Review.Service.Application.Models.LookUp:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Review.Service.Application.Models.ReviewUser:
+      type: object
+      properties:
+        Users:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.Recipient'
+        Contacts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.Recipient'
+        DirectoryUsers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.Recipient'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.Recipient:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Role:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Models.LookUp'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.ADReviewUsers:
+      type: object
+      properties:
+        DirectoryUsers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.Recipient'
+      additionalProperties: false
+    TimezoneAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/Timezone'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: FirstName of the User
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: LastName of the User
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: UserName of the User
+        Email:
+          type:
+          - string
+          - 'null'
+          description: Email of the User
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: PermissionGroups assigned to the user
+        RolePermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: RolePermissionGroups assigned to the user
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: Timezone of the User
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: Locale of the User
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: Currency of the User
+        CurrencyFormat:
+          type:
+          - string
+          - 'null'
+          description: Currency Format of the User
+        IsDeleted:
+          type: boolean
+          description: Indicates whether the user is Deleted or not
+        IsActive:
+          type: boolean
+          description: Indicates whether the user is Active or not
+        IsSuspended:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is Suspended or not
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: Alias Name of the User
+        Language:
+          type:
+          - string
+          - 'null'
+          description: Language of the User
+        SmallPhotoUrl:
+          type:
+          - string
+          - 'null'
+          description: SmallPhotoUrl of the User
+        LastLoginDate:
+          type:
+          - string
+          - 'null'
+          description: LastLoginDate of the User
+          format: date-time
+        Address:
+          type:
+          - string
+          - 'null'
+          description: Address of the User
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: PhoneNumber of the User
+        IdentityStatus:
+          type:
+          - string
+          - 'null'
+          description: IdentityStatus of the User
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+          description: Unique record identifier from organization external system
+        UserGroupsAssignedTo:
+          type:
+          - string
+          - 'null'
+        Clientid:
+          type:
+          - string
+          - 'null'
+          description: ClientId of associated to the Integration User
+        FederationId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier used to identify user in federated authentication systems
+        IsNextGenUiEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user has access to the NextGen user interface. When true, the NextGen UI is enabled; when false, the Classic UI is used.
+      additionalProperties: {}
+    FieldAccessConfig:
+      type: object
+      properties:
+        ReadAccess:
+          type: boolean
+        WriteAccess:
+          type: boolean
+      additionalProperties: false
+    NumberFormat:
+      type: object
+      properties:
+        DecimalSymbol:
+          type:
+          - string
+          - 'null'
+        DigitGroup:
+          type:
+          - string
+          - 'null'
+        DigitGroupingSymbol:
+          type:
+          - string
+          - 'null'
+        NegativeNumberFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringFieldAccessConfigDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/FieldAccessConfig'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Locale:
+      type: object
+      properties:
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        NumberFormat:
+          $ref: '#/components/schemas/NumberFormat'
+        DateFormat:
+          $ref: '#/components/schemas/DateFormat'
+      additionalProperties: false
+    DateFormat:
+      type: object
+      properties:
+        LongDateFormat:
+          type:
+          - string
+          - 'null'
+        ShortDateFormat:
+          type:
+          - string
+          - 'null'
+        TimeFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringStringBooleanDictionaryDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyFormat:
+      type: object
+      properties:
+        PositiveCurrencyFormat:
+          type:
+          - string
+          - 'null'
+        NegativeCurrencyFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Timezone:
+      type: object
+      properties:
+        TimezoneName:
+          type:
+          - string
+          - 'null'
+        TimezoneId:
+          type:
+          - string
+          - 'null'
+        TimezoneAlternateId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserType:
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+      - Contact
+      type: string
+    LocaleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/Locale'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringBooleanDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CurrencyFormatAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CurrencyFormat'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UpdateUiSettingsRequest:
+      type: object
+      properties:
+        IsNextGenUiEnabled:
+          type: boolean
+          description: 'Gets or sets a value indicating whether the next-generation user interface is enabled.
+
+            Set to `true` to enable the next-generation UI, or `false` to use the current UI.'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    Apttus.XAuthor.Common.Enum.XAAddInLoadType:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.Role:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        isDefault:
+          type: boolean
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.RequestQueryParam:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        key:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.SearchKey'
+        searchVal:
+          type:
+          - string
+          - 'null'
+        documentFormat:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.DocumentFormat'
+        isOwnedByMe:
+          type: boolean
+      additionalProperties: false
+    System.TimeSpan:
+      type: object
+      properties:
+        ticks:
+          type: integer
+          format: int64
+          readOnly: true
+        days:
+          type: integer
+          format: int32
+          readOnly: true
+        hours:
+          type: integer
+          format: int32
+          readOnly: true
+        milliseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        microseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        nanoseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        minutes:
+          type: integer
+          format: int32
+          readOnly: true
+        seconds:
+          type: integer
+          format: int32
+          readOnly: true
+        totalDays:
+          type: number
+          format: double
+          readOnly: true
+        totalHours:
+          type: number
+          format: double
+          readOnly: true
+        totalMilliseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalMicroseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalNanoseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalMinutes:
+          type: number
+          format: double
+          readOnly: true
+        totalSeconds:
+          type: number
+          format: double
+          readOnly: true
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.UserInfo:
+      type: object
+      properties:
+        userId:
+          type:
+          - string
+          - 'null'
+        userFullName:
+          type:
+          - string
+          - 'null'
+        emailAddress:
+          type:
+          - string
+          - 'null'
+        userLocale:
+          type:
+          - string
+          - 'null'
+        accessPermissions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+        roles:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Role'
+        adminSettings:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.AdminSettings'
+        orgLocaleInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+        localeInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+        globalServiceUrl:
+          type:
+          - string
+          - 'null'
+        organizationMultiCurrency:
+          type: boolean
+        currencyLocale:
+          type:
+          - string
+          - 'null'
+        currencyIsoCode:
+          type:
+          - string
+          - 'null'
+        currencySymbol:
+          type:
+          - string
+          - 'null'
+        profileId:
+          type:
+          - string
+          - 'null'
+        organizationId:
+          type:
+          - string
+          - 'null'
+        organizationName:
+          type:
+          - string
+          - 'null'
+        organizationFriendlyId:
+          type:
+          - string
+          - 'null'
+        userName:
+          type:
+          - string
+          - 'null'
+        userTimeZone:
+          type:
+          - string
+          - 'null'
+        userTimeZoneId:
+          type:
+          - string
+          - 'null'
+        userTimeZoneInfo:
+          $ref: '#/components/schemas/System.TimeZoneInfo'
+        orgType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.OrgType'
+        ideAPI:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.IdeAPI'
+        isOlderOCCPackage:
+          type: boolean
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.IdeAPI:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.AdminSettings:
+      type: object
+      properties:
+        isTemplateVersioningEnabled:
+          type: boolean
+        documentVersioningNamingConvention:
+          type:
+          - string
+          - 'null'
+        isDocumentVersioningEnabled:
+          type: boolean
+        isAgreementLocksVersioningEnabled:
+          type: boolean
+        isVisualForcePageNameFieldAvailable:
+          type: boolean
+        autoEnablePrivateIndicator:
+          type: boolean
+        allowPrivateSelectionOverride:
+          type: boolean
+        isPrivateFieldAvailableInMergeEvent:
+          type: boolean
+        isV4FunctionalityEnabled:
+          type: boolean
+        isCloneTemplateFromFieldEnabled:
+          type: boolean
+        isImportOfflineEnabled:
+          type: boolean
+        isMergefields2FieldAvailable:
+          type: boolean
+        autoEnableReconciliation:
+          type: boolean
+        allowReconcileSelectionOverride:
+          type: boolean
+        isPublishAuthorEventsEnabled:
+          type: boolean
+        isReferenceIdEnabledInTemplates:
+          type: boolean
+        autoEnablePDFForFinalDocs:
+          type: boolean
+        allowPDFSelectionOverride:
+          type: boolean
+        autoInsertHeaderFooterData:
+          type: boolean
+        isDynamicSectionEnabled:
+          type: boolean
+        isChatterEnabled:
+          type: boolean
+        isVersionControlEnabled:
+          type: boolean
+        isMyChatterDisabled:
+          type: boolean
+        isSessionTokenStorageEnabled:
+          type: boolean
+        isTermExceptionEnabled:
+          type: boolean
+        isNameSortEnabled:
+          type: boolean
+        isClauseApprovalsEnabled:
+          type: boolean
+        agreementNumberFieldForImportedDocs:
+          type:
+          - string
+          - 'null'
+        footerDatetimeFormatForImportedDocs:
+          type:
+          - string
+          - 'null'
+        translationAppId:
+          type:
+          - string
+          - 'null'
+        documentFurtiveCode:
+          type:
+          - string
+          - 'null'
+        aptS_Password:
+          type:
+          - string
+          - 'null'
+        termExceptionFieldInTemplate:
+          type:
+          - string
+          - 'null'
+        defaultDocumentTags:
+          type:
+          - string
+          - 'null'
+        termExceptionRelationFieldInTemplate:
+          type:
+          - string
+          - 'null'
+        isAgreementVersionAwareFieldAvailable:
+          type: boolean
+        isSFRFunctionalityEnabled:
+          type: boolean
+        isExpressDocumentGenerationEnabled:
+          type: boolean
+        isCheckInTagsEnabled:
+          type: boolean
+        organizationMultiCurrency:
+          type: boolean
+        documentGenerationFileNameFormat:
+          type:
+          - string
+          - 'null'
+        isDocumentSecurityEnabled:
+          type: boolean
+        kiraConfiguration:
+          type:
+          - string
+          - 'null'
+        isCollaborationReviewEnabled:
+          type: boolean
+        autoEnableCheckout:
+          type: boolean
+        mergeServiceURL:
+          type:
+          - string
+          - 'null'
+        emailTemplateFilters:
+          type:
+          - string
+          - 'null'
+        defaultEmailTemplateForCollaborationReview:
+          type:
+          - string
+          - 'null'
+        overridePlaybookFilters:
+          type:
+          - string
+          - 'null'
+        isIDEEnabled:
+          type: boolean
+        agreementClauseVersioningEnable:
+          type: boolean
+        unlockSmartElements:
+          type: boolean
+        userCustomPermission:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+        customPermission:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.CustomPermission'
+        restrictCheckinDocuments:
+          type:
+          - string
+          - 'null'
+        enableFile:
+          type: boolean
+        parallelReview:
+          type: boolean
+        showSendForReviewAndCheckInButton:
+          type: boolean
+        apttusLocaleEnabled:
+          type: boolean
+        packageVersion:
+          type:
+          - string
+          - 'null'
+        shouldRestrictClauseEntries:
+          type: boolean
+        isClauseBehaviorEnabled:
+          type: boolean
+        autoEnableAsynchronousCheckin:
+          type:
+          - boolean
+          - 'null'
+        asynchronousCheckinRecipient:
+          type:
+          - string
+          - 'null'
+        isAdminSettingForCustomPermissionsExists:
+          type: boolean
+        adminCustomPermissions:
+          type:
+          - string
+          - 'null'
+        adminAdvancedSearchFilters:
+          type:
+          - string
+          - 'null'
+        settingForNamingConventionExists:
+          type: boolean
+        enablePDFSecurity:
+          type: boolean
+        orgType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.OrgType'
+        xaAddInLoadType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.XAAddInLoadType'
+        xaAddInLoadPath:
+          type:
+          - string
+          - 'null'
+        isAlternateClauseFeatureEnabled:
+          type: boolean
+        isClauseRichtextRequiredInReconcilation:
+          type: boolean
+        hideContentControlBorder:
+          type: boolean
+        isIDENormalizeValueConfigured:
+          type: boolean
+        isIDEExactTextConfigured:
+          type: boolean
+        allowRegenerate:
+          type: boolean
+        ideAPI:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.IdeAPI'
+        cciTenantName:
+          type:
+          - string
+          - 'null'
+        cciapiEndpoint:
+          type:
+          - string
+          - 'null'
+        cciapiKey:
+          type:
+          - string
+          - 'null'
+        allowHighlightFields:
+          type: boolean
+        pdfSetting:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.PDFSettings'
+        isPlatformReviewEnabled:
+          type: boolean
+        isGdocsSupportAvailable:
+          type: boolean
+        isGdriveDefaultFlagEnabled:
+          type: boolean
+        isAIEnabled:
+          type: boolean
+        isConvertToTemplateEnabled:
+          type: boolean
+        retainFieldPropertyInReadonlyClause:
+          type: boolean
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.OrgType:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.LocaleInfo:
+      type: object
+      properties:
+        lcidString:
+          type:
+          - string
+          - 'null'
+        languageCode:
+          type:
+          - string
+          - 'null'
+        languageName:
+          type:
+          - string
+          - 'null'
+        localeFilePath:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        useSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        defaultLocale:
+          type:
+          - string
+          - 'null'
+        defaultDateFormat:
+          type:
+          - string
+          - 'null'
+        defaultPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        defaultUseSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        currencyIsoCode:
+          type:
+          - string
+          - 'null'
+        currencySymbol:
+          type:
+          - string
+          - 'null'
+        currencyPrecision:
+          type: integer
+          format: int32
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.DocumentFormat:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    System.TimeZoneInfo:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        hasIanaId:
+          type: boolean
+          readOnly: true
+        displayName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        standardName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        daylightName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        baseUtcOffset:
+          $ref: '#/components/schemas/System.TimeSpan'
+        supportsDaylightSavingTime:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.SearchKey:
+      enum:
+      - 0
+      - 1
+      - 3
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Model.CustomPermission:
+      type: object
+      properties:
+        showContractsMenu:
+          type: boolean
+        showTemplatesMenu:
+          type: boolean
+        allowUnlockReadonlyClause:
+          type: boolean
+        allowCheckinAsFinal:
+          type: boolean
+        allowCheckinWithoutRedlines:
+          type: boolean
+        allowCheckinWithRedlines:
+          type: boolean
+        allowUnprotectDocument:
+          type: boolean
+        hideCheckoutMenu:
+          type: boolean
+        disableAutoCheckout:
+          type: boolean
+        disableImportOffline:
+          type: boolean
+        disableCreateOffline:
+          type: boolean
+        displayCheckinCreatePdfA:
+          type: boolean
+        displayCheckInRetainDocumentName:
+          type: boolean
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.PDFSettings:
+      type: object
+      properties:
+        allowPrinting:
+          type: boolean
+        allowCopying:
+          type: boolean
+        allowCommenting:
+          type: boolean
+        allowFormFilling:
+          type: boolean
+        allowAssembling:
+          type: boolean
+        allowChangingContent:
+          type: boolean
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- conga-review.json
+- conga-user-management.json
+- conga-x-author.json

@@ -1,0 +1,243 @@
+openapi: 3.2.0
+info:
+  title: X-Author UFC API
+  version: v1
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: UFC
+paths:
+  /api/xauthor/v1/contracts/{contractId}/ufc/repeat-data:
+    post:
+      tags:
+      - UFC
+      summary: Get repeat and section data
+      description: Gets a table of repeat and section data to display in the UFC screen.
+      parameters:
+      - name: contractId
+        in: path
+        description: Contract's identifier
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: Contract's identifier
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: UFC table request
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCRepeatResponse'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCRepeatResponse'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCRepeatResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/contracts/{contractId}/ufc/update-document:
+    post:
+      tags:
+      - UFC
+      summary: Update repeat and section data
+      description: Update repeat and section data to display in UFC screen.
+      parameters:
+      - name: contractId
+        in: path
+        description: contract's Id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contract's Id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: UFC table request
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCDocumentContentRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Common.Enum.XAAddInLoadType:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Enum.UFCResponseType:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Model.UFCTableData:
+      type: object
+      properties:
+        header:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        row:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCRowData'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.UFCRepeatResponse:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.UFCResponseType'
+        name:
+          type:
+          - string
+          - 'null'
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCFieldData'
+        table:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCTableData'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.UFCRowData:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.UFCResponseStatus'
+        fieldData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.UFCFieldData'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.UFCDocumentContentRequest:
+      type: object
+      properties:
+        documentContent:
+          type:
+          - string
+          - 'null'
+        agreementId:
+          type:
+          - string
+          - 'null'
+        deploymentType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.XAAddInLoadType'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.UFCResponseStatus:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Model.UFCFieldData:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        oldValue:
+          type:
+          - string
+          - 'null'
+        newValue:
+          type:
+          - string
+          - 'null'
+        status:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.UFCResponseStatus'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

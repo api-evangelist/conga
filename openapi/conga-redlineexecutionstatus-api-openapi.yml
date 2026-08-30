@@ -1,0 +1,89 @@
+openapi: 3.2.0
+info:
+  title: X-Author Redline Execution Status API
+  version: v1
+  description: 'Provides API endpoints for polling the status of a redline execution.
+
+    Tracks extraction and redlining progress for rules applied against a contract document.'
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: RedlineExecutionStatus
+  description: 'Provides API endpoints for polling the status of a redline execution.
+
+    Tracks extraction and redlining progress for rules applied against a contract document.'
+paths:
+  /api/xauthor/v1/contracts/{contractId}/redlines/executions/{executionId}/status:
+    get:
+      tags:
+      - RedlineExecutionStatus
+      summary: "s\n            Retrieves the current execution status of a redline operation, including extraction and redlining progress."
+      parameters:
+      - name: executionId
+        in: path
+        description: The unique identifier of the execution.
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier of the execution.
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.Model.AI.Redline.ExecutionStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.Model.AI.Redline.ExecutionStatus'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Common.Model.AI.Redline.ExecutionStatus'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Conga.XAuthor.Common.Model.AI.Redline.ExecutionStatus:
+      type: object
+      properties:
+        status:
+          type:
+          - string
+          - 'null'
+        totalRules:
+          type: integer
+          format: int32
+        rulesExtracted:
+          type: integer
+          format: int32
+        rulesRedlined:
+          type: integer
+          format: int32
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

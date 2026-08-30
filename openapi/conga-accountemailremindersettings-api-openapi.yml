@@ -1,0 +1,251 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Account Email Reminder Settings API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: AccountEmailReminderSettings
+paths:
+  /v1/cs-account/admin/accountSettings/emailReminderSettings:
+    delete:
+      tags:
+      - AccountEmailReminderSettings
+      summary: Deletes any customized Account Email Reminder settings.
+      description: 'Deletes any account email reminder settings that you may have configured and returns them to the default value of 0 (zero).
+
+        When set to 0, no email reminders will be sent.'
+      operationId: AccountEmailReminderSettings_DeleteEmailReminderSettings
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - AccountEmailReminderSettings
+      summary: Retrieves your current Email Reminder settings.
+      description: 'Retrieves your current Email Reminder settings. This includes the amount of time to wait before sending the first email reminder (startInDaysDelay),
+
+        the amount of time to wait before sending any subsequent reminders (intervalInDays), and the total number of reminders to be sent (repetitionsCount).'
+      operationId: AccountEmailReminderSettings_GetEmailReminderSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageReminderSchedule'
+        '400':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - AccountEmailReminderSettings
+      summary: Updates your account email reminder settings.
+      description: 'Updates your email reminder settings. This includes the amount of time to wait before sending the first email reminder(startInDaysDelay),
+
+        the amount of time to wait before sending any subsequent reminders (intervalInDays), and the total number of reminders to be sent(repetitionsCount).'
+      operationId: AccountEmailReminderSettings_UpdateEmailReminderSettings
+      requestBody:
+        x-name: emailReminderSchedule
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageReminderSchedule'
+        required: true
+        x-position: 1
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    PackageReminder:
+      type: object
+      description: Dates of package reminder, including transaction and reminder sent dates.
+      additionalProperties: false
+      properties:
+        date:
+          type:
+          - string
+          - 'null'
+          description: Transaction sent date.
+          format: date-time
+        sentDate:
+          type:
+          - string
+          - 'null'
+          description: Reminder sent date.
+          format: date-time
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    PackageReminderSchedule:
+      type: object
+      description: 'By setting a reminder schedule, a sender can choose when and how often to notify a signer about a pending signature,
+
+        in addition to the initial notification sent the moment the transaction is sent for signing. In other words,
+
+        assuming the transaction is not yet completed, a customizable number of notifications can be sent with a specified
+
+        interval between each to remind your signer that a signature is required.'
+      additionalProperties: false
+      properties:
+        intervalInDays:
+          type: integer
+          description: Reminder interval (in days).
+          format: int32
+        packageId:
+          type: string
+          description: The unique package Id.
+        reminders:
+          type: array
+          description: List of Reminders.
+          items:
+            $ref: '#/components/schemas/PackageReminder'
+        repetitionsCount:
+          type: integer
+          description: Number of repetitive counts.
+          format: int32
+        startInDaysDelay:
+          type: integer
+          description: Reminder delay (in days).
+          format: int32
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

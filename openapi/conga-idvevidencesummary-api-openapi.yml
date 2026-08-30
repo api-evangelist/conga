@@ -1,0 +1,211 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Idv Evidence Summary API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: IdvEvidenceSummary
+paths:
+  /v1/cs-packages/{packageId}/audit/idv:
+    get:
+      tags:
+      - IdvEvidenceSummary
+      summary: Get IDV evidence summary
+      description: Retrieves IDV Evidence Summary in Json format when package id is provided.
+      operationId: IdvEvidenceSummary_GetIdvEvidenceSummary
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package identifier.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/audit/idv/dvrImageUrls:
+    get:
+      tags:
+      - IdvEvidenceSummary
+      summary: Get IDV evidence summary image URLs
+      description: Gets a list of image in Detailed Verification Report when package id is provided.
+      operationId: IdvEvidenceSummary_GetIdvEvidenceSummaryImages
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package identifier.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/audit/idv/dvrSignerImage:
+    get:
+      tags:
+      - IdvEvidenceSummary
+      summary: Get IDV evidence summary signer image
+      description: Downloads selected IDV image in binary format when package id, idv transaction id and image urls are provided.
+      operationId: IdvEvidenceSummary_GetIdvEvidenceSummarySignerImage
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package identifier.
+        schema:
+          type: string
+        x-position: 1
+      - name: idvTransactionId
+        in: query
+        description: The IDV transaction identifier.
+        schema:
+          type: string
+        x-position: 2
+      - name: imageUrl
+        in: query
+        description: The image URL for the signer image.
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

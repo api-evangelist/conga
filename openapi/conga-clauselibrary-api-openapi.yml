@@ -1,0 +1,1628 @@
+openapi: 3.2.0
+info:
+  title: X-Author Clause Library API
+  version: v1
+  description: This class contains API endpoints for clauses.
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: ClauseLibrary
+  description: This class contains API endpoints for clauses.
+paths:
+  /api/xauthor/v1/clauses/advance-query:
+    post:
+      tags:
+      - ClauseLibrary
+      summary: Filter clauses
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The request filter
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.SearchRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.SearchRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.SearchRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.SearchRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/clauses/promote:
+    post:
+      tags:
+      - ClauseLibrary
+      summary: Promote a clause
+      description: This API promotes a marked clause from an agreement to the clause library, entering that clause into the clause library's clause repository. Once the clause is available in the clause library, you can reuse it for the original agreement record even after regenerating the document or you can make the clause available for other agreements and users.
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The request
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateCheckInRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateCheckInRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateCheckInRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateCheckInRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Template'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Template'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Template'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/clauses/query:
+    post:
+      tags:
+      - ClauseLibrary
+      summary: Get clauses
+      description: The clause library contains clauses or clause templates that contain modular blocks of contractual language. These blocks can be reused across agreement templates. Using this API, you can fetch all available clauses in the clause library by passing the required filter criteria in the request body.
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The request filter
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ClausesRequestFilter'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ClausesRequestFilter'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ClausesRequestFilter'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.ClausesRequestFilter'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Clause'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Common.Enum.Operator:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.FormatFrameworkEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.TemplateModeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.Template:
+      type: object
+      properties:
+        referenceId:
+          type:
+          - string
+          - 'null'
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        templateTypeObject:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateType'
+        businessContext:
+          type:
+          - string
+          - 'null'
+        businessObject:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.BusinessObject'
+        guidance:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        revisionDate:
+          type: string
+          format: date-time
+        agreementTypes:
+          type:
+          - string
+          - 'null'
+        category:
+          type:
+          - string
+          - 'null'
+        subcategory:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        localeId:
+          type:
+          - string
+          - 'null'
+        keywords:
+          type:
+          - string
+          - 'null'
+        isActive:
+          type: boolean
+        mergefieldList:
+          type:
+          - string
+          - 'null'
+        contentText:
+          type:
+          - string
+          - 'null'
+        termException:
+          type:
+          - string
+          - 'null'
+        termExceptionName:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        clonedFromId:
+          type:
+          - string
+          - 'null'
+        clonedFromReferenceId:
+          type:
+          - string
+          - 'null'
+        clonedFromTemplateName:
+          type:
+          - string
+          - 'null'
+        needsPublishing:
+          type: boolean
+        vf_PageName:
+          type:
+          - string
+          - 'null'
+        activeVersionId:
+          type:
+          - string
+          - 'null'
+        outputPage:
+          type:
+          - string
+          - 'null'
+        createVisualForcePageEnum:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.CreateVisualForcePageEnum'
+        formatFrameworkEnum:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.FormatFrameworkEnum'
+        lastModifiedBy:
+          type:
+          - string
+          - 'null'
+        lastModified:
+          type:
+          - string
+          - 'null'
+        listAgreementTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.RecordType'
+        checkoutVersionId:
+          type:
+          - string
+          - 'null'
+        checkoutById:
+          type:
+          - string
+          - 'null'
+        checkoutByName:
+          type:
+          - string
+          - 'null'
+        checkoutDate:
+          type:
+          - string
+          - 'null'
+        checkoutVersionName:
+          type:
+          - string
+          - 'null'
+        sendForApprovalVersion:
+          type:
+          - string
+          - 'null'
+        activeVersionName:
+          type:
+          - string
+          - 'null'
+        activeVersionNumber:
+          type:
+          - string
+          - 'null'
+        activeVersionComments:
+          type:
+          - string
+          - 'null'
+        mergeFieldConsolidated:
+          type:
+          - string
+          - 'null'
+        isAlternateClause:
+          type: boolean
+        clauseType:
+          type:
+          - string
+          - 'null'
+        eTag:
+          type:
+          - string
+          - 'null'
+        externalId:
+          type:
+          - string
+          - 'null'
+        enableAgreementClauseTracking:
+          type: boolean
+        customProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        createdBy:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type:
+          - string
+          - 'null'
+        clauseFormat:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseFormat'
+        clauseBehavior:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseBehaviorEnum'
+        source:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.TemplateSource'
+        documentFileType:
+          type:
+          - string
+          - 'null'
+        documentFileSize:
+          type: integer
+          format: int64
+        extendedProperties:
+          type:
+          - string
+          - 'null'
+        stage:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.TemplateStage'
+        extractionReferenceId:
+          type:
+          - string
+          - 'null'
+        isDraft:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.Clause:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        category:
+          type:
+          - string
+          - 'null'
+        subCategory:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        guidance:
+          type:
+          - string
+          - 'null'
+        text:
+          type:
+          - string
+          - 'null'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        configReferenceId:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        keywords:
+          type:
+          - string
+          - 'null'
+        activeVersion:
+          type:
+          - string
+          - 'null'
+        activeVersionId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type: integer
+          format: int32
+        isApprovalRequired:
+          type: boolean
+          readOnly: true
+        approvalId:
+          type:
+          - string
+          - 'null'
+        clauseType:
+          type:
+          - string
+          - 'null'
+        createdBy:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type: string
+          format: date-time
+        modifiedBy:
+          type:
+          - string
+          - 'null'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        recordType:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          deprecated: true
+        contractType:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          readOnly: true
+        clauseFormat:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseFormat'
+        clauseBehavior:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseBehaviorEnum'
+        clauseConfigurations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.ClauseConfiguration'
+        businessObject:
+          type:
+          - string
+          - 'null'
+        agreementType:
+          type:
+          - string
+          - 'null'
+        lockStatus:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Model.LockStatusModel'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.RecordType:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.BusinessObject:
+      type: object
+      properties:
+        active:
+          type: boolean
+        defaultValue:
+          type: boolean
+        label:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ClauseMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum'
+        subType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.ClauseSubTypeEnum'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        baseValue:
+          type:
+          - string
+          - 'null'
+        isSmart:
+          type: boolean
+        isDirty:
+          type: boolean
+        configReferenceId:
+          type:
+          - string
+          - 'null'
+        configName:
+          type:
+          - string
+          - 'null'
+        isMarkedForDeletion:
+          type: boolean
+        markupClauseMetadata:
+          type:
+          - string
+          - 'null'
+        condition:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Condition'
+      additionalProperties: false
+    Conga.XAuthor.Common.Enum.VersionTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.ClausesRequestFilter:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        agreementId:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        category:
+          type:
+          - string
+          - 'null'
+        subCategory:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        businessObject:
+          type:
+          - string
+          - 'null'
+        xAuthorContract:
+          type: boolean
+        templateReferenceId:
+          type:
+          - string
+          - 'null'
+        documentFormat:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.DocumentFormat'
+        contractTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ConditionFilter:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        fieldType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum'
+        dataType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum'
+        fieldApiName:
+          type:
+          - string
+          - 'null'
+        fieldLabel:
+          type:
+          - string
+          - 'null'
+        fieldLocalName:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        referenceTo:
+          type:
+          - string
+          - 'null'
+        referenceFieldPath:
+          type:
+          - string
+          - 'null'
+        operator:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+        expression:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Gdocs.Domain.Metadata.V2.Enum.TemplateTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.TemplateStage:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.FieldMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum'
+        renderAs:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldRenderAsEnum'
+        baseValueLocalized:
+          type:
+          - string
+          - 'null'
+        baseValue:
+          type:
+          - string
+          - 'null'
+        isSmart:
+          type: boolean
+        isReadonly:
+          type:
+          - boolean
+          - 'null'
+        isUpdateable:
+          type:
+          - boolean
+          - 'null'
+        locale:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Locale'
+        defaultLocale:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Locale'
+        sourceInfo:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldSourceMetadata'
+        isMarkedForDeletion:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.DocumentMetadata:
+      type: object
+      properties:
+        schemaVersion:
+          type:
+          - string
+          - 'null'
+        mergeEngine:
+          type:
+          - string
+          - 'null'
+        mergeVersion:
+          type:
+          - string
+          - 'null'
+        templateType:
+          $ref: '#/components/schemas/Conga.XAuthor.Gdocs.Domain.Metadata.V2.Enum.TemplateTypeEnum'
+        templateVersion:
+          type:
+          - string
+          - 'null'
+        templateReferenceId:
+          type:
+          - string
+          - 'null'
+        templateVersionId:
+          type:
+          - string
+          - 'null'
+        businessObject:
+          type:
+          - string
+          - 'null'
+        businessObjectId:
+          type:
+          - string
+          - 'null'
+        parentObjectId:
+          type:
+          - string
+          - 'null'
+        documentId:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        documentMetadataId:
+          type:
+          - string
+          - 'null'
+        documentVersion:
+          type:
+          - string
+          - 'null'
+        hasSmartItem:
+          type: boolean
+        locale:
+          type:
+          - string
+          - 'null'
+        numberPrecision:
+          type: integer
+          format: int32
+        currencyPrecision:
+          type: integer
+          format: int32
+        currencyPrefixType:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.FieldSourceMetadata:
+      type: object
+      properties:
+        fieldType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum'
+        dataType:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum'
+        fieldAPIName:
+          type:
+          - string
+          - 'null'
+        fieldLocalName:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        fieldObjectInstanceId:
+          type:
+          - string
+          - 'null'
+        referenceFieldPath:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.TemplateCheckInRequest:
+      type: object
+      properties:
+        referenceId:
+          type:
+          - string
+          - 'null'
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        templateTypeObject:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.TemplateType'
+        businessContext:
+          type:
+          - string
+          - 'null'
+        businessObject:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.BusinessObject'
+        guidance:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        revisionDate:
+          type: string
+          format: date-time
+        agreementTypes:
+          type:
+          - string
+          - 'null'
+        category:
+          type:
+          - string
+          - 'null'
+        subcategory:
+          type:
+          - string
+          - 'null'
+        language:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        localeId:
+          type:
+          - string
+          - 'null'
+        keywords:
+          type:
+          - string
+          - 'null'
+        isActive:
+          type: boolean
+        mergefieldList:
+          type:
+          - string
+          - 'null'
+        contentText:
+          type:
+          - string
+          - 'null'
+        termException:
+          type:
+          - string
+          - 'null'
+        termExceptionName:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        clonedFromId:
+          type:
+          - string
+          - 'null'
+        clonedFromReferenceId:
+          type:
+          - string
+          - 'null'
+        clonedFromTemplateName:
+          type:
+          - string
+          - 'null'
+        needsPublishing:
+          type: boolean
+        vf_PageName:
+          type:
+          - string
+          - 'null'
+        activeVersionId:
+          type:
+          - string
+          - 'null'
+        outputPage:
+          type:
+          - string
+          - 'null'
+        createVisualForcePageEnum:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.CreateVisualForcePageEnum'
+        formatFrameworkEnum:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.FormatFrameworkEnum'
+        lastModifiedBy:
+          type:
+          - string
+          - 'null'
+        lastModified:
+          type:
+          - string
+          - 'null'
+        listAgreementTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.RecordType'
+        checkoutVersionId:
+          type:
+          - string
+          - 'null'
+        checkoutById:
+          type:
+          - string
+          - 'null'
+        checkoutByName:
+          type:
+          - string
+          - 'null'
+        checkoutDate:
+          type:
+          - string
+          - 'null'
+        checkoutVersionName:
+          type:
+          - string
+          - 'null'
+        sendForApprovalVersion:
+          type:
+          - string
+          - 'null'
+        activeVersionName:
+          type:
+          - string
+          - 'null'
+        activeVersionNumber:
+          type:
+          - string
+          - 'null'
+        activeVersionComments:
+          type:
+          - string
+          - 'null'
+        mergeFieldConsolidated:
+          type:
+          - string
+          - 'null'
+        isAlternateClause:
+          type: boolean
+        clauseType:
+          type:
+          - string
+          - 'null'
+        eTag:
+          type:
+          - string
+          - 'null'
+        externalId:
+          type:
+          - string
+          - 'null'
+        enableAgreementClauseTracking:
+          type: boolean
+        customProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        createdBy:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type:
+          - string
+          - 'null'
+        clauseFormat:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseFormat'
+        clauseBehavior:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.ClauseBehaviorEnum'
+        source:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.TemplateSource'
+        documentFileType:
+          type:
+          - string
+          - 'null'
+        documentFileSize:
+          type: integer
+          format: int64
+        extendedProperties:
+          type:
+          - string
+          - 'null'
+        stage:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.TemplateStage'
+        extractionReferenceId:
+          type:
+          - string
+          - 'null'
+        isDraft:
+          type:
+          - boolean
+          - 'null'
+        documentContent:
+          type:
+          - string
+          - 'null'
+        suggestedFileName:
+          type:
+          - string
+          - 'null'
+        saveOption:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.VersionTypeEnum'
+        isTemplateVersioningEnabled:
+          type: boolean
+        templateModeEnum:
+          $ref: '#/components/schemas/Conga.XAuthor.Common.Enum.TemplateModeEnum'
+        status:
+          type: boolean
+        userRefreshedClause:
+          type: boolean
+        localeEnabled:
+          type: boolean
+        localeInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+        activate:
+          type: boolean
+        updateCurrentVersion:
+          type: boolean
+        aptDocumentProperties:
+          type:
+          - string
+          - 'null'
+        documentContentType:
+          type:
+          - string
+          - 'null'
+        gDocsUrl:
+          type:
+          - string
+          - 'null'
+        metadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.BaseMetadata'
+        checkoutTemplateName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.SortOrder:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Model.ClauseConfiguration:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        referenceId:
+          type:
+          - string
+          - 'null'
+        isDefault:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.ExternalMetadata:
+      type: object
+      properties:
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldExternalMetadata'
+        clauses:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ClauseExternalMetadata'
+      additionalProperties: false
+    Conga.XAuthor.Common.Model.LockStatusModel:
+      type: object
+      properties:
+        checkoutDate:
+          type:
+          - string
+          - 'null'
+        checkoutBy:
+          type:
+          - string
+          - 'null'
+        parentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.Enum.ClauseFormat:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Apttus.XAuthor.Core.Model.TemplateType:
+      type: object
+      properties:
+        active:
+          type: boolean
+        defaultValue:
+          type: boolean
+        label:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.FieldSourceTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.FieldExternalMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.LocaleInfo:
+      type: object
+      properties:
+        lcidString:
+          type:
+          - string
+          - 'null'
+        languageCode:
+          type:
+          - string
+          - 'null'
+        languageName:
+          type:
+          - string
+          - 'null'
+        localeFilePath:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        useSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        defaultLocale:
+          type:
+          - string
+          - 'null'
+        defaultDateFormat:
+          type:
+          - string
+          - 'null'
+        defaultPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        defaultUseSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        currencyIsoCode:
+          type:
+          - string
+          - 'null'
+        currencySymbol:
+          type:
+          - string
+          - 'null'
+        currencyPrecision:
+          type: integer
+          format: int32
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.MetadataTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Enum.DocumentFormat:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.Enum.FieldRenderAsEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.ClauseExternalMetadata:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.ClauseSubTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.ConditionJson:
+      type: object
+      properties:
+        filters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ConditionFilter'
+        filterLogicExpression:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.Filter:
+      type: object
+      properties:
+        field:
+          type:
+          - string
+          - 'null'
+        value: {}
+        operator:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.Operator'
+        connectNextFilterBy:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.LogicalOperator'
+        conditionalExpression:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Enum.FieldDataTypeEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.Locale:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        numberPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        currencyPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        currencyPrefixType:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.Condition:
+      type: object
+      properties:
+        conditionCQLStyle:
+          type:
+          - string
+          - 'null'
+        conditionJson:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ConditionJson'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.LogicalOperator:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.TemplateSource:
+      enum:
+      - 0
+      - 1
+      type: integer
+      format: int32
+    Apttus.XAuthor.Common.Model.Orderby:
+      type: object
+      properties:
+        field:
+          type:
+          - string
+          - 'null'
+        sortOrder:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.SortOrder'
+      additionalProperties: false
+    Conga.XAuthor.Metadata.V2.SchemaMetadata:
+      type: object
+      properties:
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.FieldMetadata'
+        clauses:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ClauseMetadata'
+      additionalProperties: false
+    Conga.XAuthor.Common.Enum.ClauseBehaviorEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Common.Enum.CreateVisualForcePageEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    Conga.XAuthor.Metadata.V2.BaseMetadata:
+      type: object
+      properties:
+        documentMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.DocumentMetadata'
+        schemaMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.SchemaMetadata'
+        externalMetadata:
+          $ref: '#/components/schemas/Conga.XAuthor.Metadata.V2.ExternalMetadata'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.SearchRequest:
+      type: object
+      properties:
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        entity:
+          type:
+          - string
+          - 'null'
+        filters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.Filter'
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+        orderBy:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.Orderby'
+        groupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        documentFormat:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.DocumentFormat'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

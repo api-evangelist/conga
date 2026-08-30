@@ -1,0 +1,231 @@
+openapi: 3.2.0
+info:
+  title: Cart - V1 Business Object API
+  version: v1
+  description: The business object controller
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: BusinessObject
+  description: The business object controller
+paths:
+  /api/cart/v1/business-objects/{businessObjectId}/carts/activate:
+    post:
+      tags:
+      - BusinessObject
+      summary: Launches the cart for a given business object ID and business object type.
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: The business object identifier.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Specify the business object type like Proposal/Collaboration Request.
+        required: true
+        schema:
+          type: string
+      - name: FlowName
+        in: header
+        description: Header param FlowName
+        schema:
+          type: string
+          default: system
+      requestBody:
+        description: The product configuration to be overridden
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ProductConfigurationOverride'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ProductConfigurationOverride'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.Cart.Manager.Model.ProductConfigurationOverride'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/business-objects/{businessObjectId}/carts/active:
+    get:
+      tags:
+      - BusinessObject
+      summary: Returns the readonly cart for the given business object ID and business object type.
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: The business object identifier.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Specify the business object type like Proposal/Collaboration Request.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/business-objects/{businessObjectId}/carts/reactivate:
+    post:
+      tags:
+      - BusinessObject
+      summary: Reactivates the cart syncing the fields from quote to cart.
+      description: 'Syncs fields from quote to cart and re-evaluates config rule, pricing and formula for lineitems.
+
+        Supported OOTB fields to sync data from quote to cart are: Account, BillingPreferenc, BillToAccount, ShipToAccount, ExpectedStartDate, ExpectedEndDate, Location, Owner and PurchaseId
+
+        Only OOTB field - PurchaseId, is supported to sync the data from quote to cart and then to line items.'
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: The business object identifier.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Specify the business object type like Proposal.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '202':
+          description: Accepted
+        '422':
+          description: Unprocessable Content
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+  /api/cart/v1/business-objects/{businessObjectId}/reactivate:
+    post:
+      tags:
+      - BusinessObject
+      summary: Please use the endpoint `POST /api/cart/v1/business-objects/{businessObjectId}/carts/reactivate` instead. This is deprecated.
+      description: 'Syncs fields from quote to cart and re-evaluates config rule, pricing and formula for lineitems.
+
+        Note: No OOTB field is getting updated as of now.'
+      parameters:
+      - name: businessObjectId
+        in: path
+        description: The business object identifier.
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Specify the business object type like Proposal/Collaboration Request.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '202':
+          description: Accepted
+        '422':
+          description: Unprocessable Content
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+        '500':
+          description: Internal Server Error
+      deprecated: true
+components:
+  schemas:
+    Conga.Revenue.Cart.Manager.Model.ProductConfigurationOverride:
+      type: object
+      properties:
+        contractNumbers:
+          type:
+          - string
+          - 'null'
+        skipDealGuidance:
+          type:
+          - boolean
+          - 'null'
+        skipApprovalCheck:
+          type:
+          - boolean
+          - 'null'
+        skipPricingForConfigPending:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

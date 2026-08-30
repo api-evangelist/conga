@@ -1,0 +1,616 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign File Attachment API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: FileAttachment
+paths:
+  /v1/cs-packages/{packageId}/attachment/zip:
+    get:
+      tags:
+      - FileAttachment
+      summary: Download all attachments
+      description: Compresses all attachments into a zip file, which is then downloaded.
+      operationId: FileAttachment_GetZipAttachment
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '406':
+          description: Not Acceptable Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/zip/{roleId}:
+    get:
+      tags:
+      - FileAttachment
+      summary: Download all attachments for a specific role
+      description: Compresses all attachments into a zip file and then downloads it. Only attachments for the specified role are included.
+      operationId: FileAttachment_GetZipAttachmentByRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '406':
+          description: Not Acceptable Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/zip/{roleId}/exists:
+    get:
+      tags:
+      - FileAttachment
+      summary: Check for attachments and uploads by role
+      description: Verifies whether or not there are any attachments for the specified role, and whether or not those attachments contain uploads from a Signer.
+      operationId: FileAttachment_CheckZipAttachmentByRoleExists
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentAvailability'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/{attachmentId}:
+    post:
+      tags:
+      - FileAttachment
+      summary: Add an attachment
+      description: Uploads an attachment to the specified package.
+      operationId: FileAttachment_AddAttachment
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        description: The unique attachment id.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                File:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+                FileName:
+                  type:
+                  - string
+                  - 'null'
+                AttachmentUid:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '406':
+          description: Not Acceptable Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - FileAttachment
+      summary: Download an attachment
+      description: Downloads the specified attachment.
+      operationId: FileAttachment_GetAttachmentById
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        description: The unique attachment id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '406':
+          description: Not Acceptable Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/{attachmentId}/exists:
+    get:
+      tags:
+      - FileAttachment
+      summary: Check for signer uploads
+      description: Verifies whether or not the specified attachment contains any uploads from the Signer.
+      operationId: FileAttachment_CheckAttachmentExists
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        description: The unique attachment id.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentAvailability'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/{attachmentId}/file/{fileId}:
+    delete:
+      tags:
+      - FileAttachment
+      summary: Delete an attachment file
+      description: Deletes specific attachment file.
+      operationId: FileAttachment_DeleteAttachmentFile
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        description: The unique attachment id.
+        schema:
+          type: string
+        x-position: 2
+      - name: fileId
+        in: path
+        required: true
+        description: The unique file id.
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - FileAttachment
+      summary: Download an attachment
+      description: Downloads a specified attachment from a package.
+      operationId: FileAttachment_GetAttachmentFile
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        description: The unique attachment id.
+        schema:
+          type: string
+        x-position: 2
+      - name: fileId
+        in: path
+        required: true
+        description: The unique file id.
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/attachment/{attachmentId}/file/{fileId}/exists:
+    get:
+      tags:
+      - FileAttachment
+      summary: Check for a specific attachment
+      description: Checks whether or not the specified attachment exists in the package.
+      operationId: FileAttachment_CheckAttachmentFileExists
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 2
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentAvailability'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    AttachmentAvailability:
+      type: object
+      additionalProperties: false
+      properties:
+        exists:
+          type: boolean
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

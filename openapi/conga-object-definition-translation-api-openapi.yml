@@ -1,0 +1,393 @@
+openapi: 3.2.0
+info:
+  title: Schema Manager Object Definition Translation API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Object Definition Translation
+paths:
+  /api/schema/v1/objects/{objectName}/translations/{locale}:
+    delete:
+      tags:
+      - Object Definition Translation
+      summary: Delete translation
+      description: Deletes the translation for the given object and locale.
+      parameters:
+      - name: locale
+        in: path
+        description: An identifier for the language and region (for example, en-US) whose translation should be deleted.
+        required: true
+        schema:
+          type: string
+      - name: objectName
+        in: path
+        description: The name of the object for which the translation should be deleted.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Object Definition Translation
+      summary: Get translation
+      description: Retrieves a translation for the given object.
+      parameters:
+      - name: locale
+        in: path
+        description: An identifier for the language and region (for example, en-US) for which you want to retrieve translation.
+        required: true
+        schema:
+          type: string
+      - name: objectName
+        in: path
+        description: Name of the object
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectMetadataTranslationListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Scope: Object
+                  Name: Account_p
+                  DisplayName: chinese
+                  Description: 协议
+                - Scope: Field
+                  Name: AgreementNumber
+                  DisplayName: 协议号
+                  Description: 协议号
+                - Scope: Picklist
+                  Name: Request
+                  DisplayName: 要求
+                  Description: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Object Definition Translation
+      summary: Define the translation
+      description: Defines the translation for the given object and language-region combination.
+      parameters:
+      - name: objectName
+        in: path
+        description: Name of the object for which the translation is being defined.
+        required: true
+        schema:
+          type: string
+      - name: locale
+        in: path
+        description: An identifier for the language and region (for example, en-US).
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Translation details for the object, including field names and their translations.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadataTranslationRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadataTranslationRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ObjectMetadataTranslationRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Object Definition Translation
+      summary: Update translation
+      description: Updates translation for the given object.
+      parameters:
+      - name: locale
+        in: path
+        description: An identifier for the language and region (for example, en-US).
+        required: true
+        schema:
+          type: string
+      - name: objectName
+        in: path
+        description: Name of the object
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Translation details for the object to be updated.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectMetadataTranslation'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectMetadataTranslation'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectMetadataTranslation'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: false
+                StatusCode: OK
+        '400':
+          description: Invalid Locale Name
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ObjectMetadataTranslation:
+      type: object
+      properties:
+        Scope:
+          $ref: '#/components/schemas/TranslationScope'
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the object, field, complex, or picklist as per the translation scope
+        DisplayName:
+          type:
+          - string
+          - 'null'
+          description: Display name for the translated object, field, complex, or picklist
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description for the translated object, field, complex, or picklist
+      additionalProperties: false
+      description: Object Metadata translation
+    ObjectMetadataTranslationListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectMetadataTranslation'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TranslationScope:
+      enum:
+      - Object
+      - Field
+      - Complex
+      - Picklist
+      type: string
+    ObjectMetadataTranslationRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of the object requiring translation
+        MetadataTranslations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectMetadataTranslation'
+          description: Collection of translation metadata for a given object
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1373 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign API
+  version: v1
+  description: 'Operations tagged Sign across 2 of this provider''s published API definitions: conga-contracts.json, conga-esignature.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: Sign
+  description: sign APIs
+paths:
+  /api/clm/v1/sign/esignatures/wetsign/{transactionId}/end:
+    post:
+      tags:
+      - Sign
+      summary: End wet signature flow
+      description: Ends a wet signature flow by its ID and attaches the given signed document with the contract.
+      parameters:
+      - name: transactionId
+        in: path
+        description: The unique ID of the wet signature transaction
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: File binary data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '200':
+          description: OK
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures:
+    post:
+      tags:
+      - Sign
+      summary: Create an envelope
+      description: "Creates an envelope for DocuSign, an agreement for Adobe Sign, or a package for Conga Sign based on the eSignature service provider in the signProviderType parameter. \n            You can use the package ID to get such transaction details as envelope status, signed date, and declined reason. \n            You can use the tag URL to open the document inside the eSignature service provider console, add signature tags and additional fields, and send the document for eSignature."
+      parameters:
+      - name: signProviderType
+        in: query
+        description: Select an eSignature service provider from the list.
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      requestBody:
+        description: Envelope data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignRequest'
+            examples:
+              DocuSign:
+                value:
+                  ObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ObjectType: Agreement
+                  Name: Envelope
+                  Email:
+                    EmailSubject: DocuSign Sample Envelope
+                    EmailContent: Sample Envelope.
+                  Recipients:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: Signer
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: CarbonCopy
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  Cc: null
+                  Bcc: null
+                  DocumentIds:
+                  - 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  AdditionalAttachments: null
+                  IsPasswordProtected: false
+                  DocumentPassword: null
+                  ReciepentIdentityVerification: null
+                  Reminder: null
+                  Expiration: null
+                  ReturnUrl: https://localhost:44373/api/esign/swagger/index.html
+                  UserDefinedProtectionLevels: null
+                  TemplateId: null
+                  Status: null
+                  IsBackgroundMode: false
+                  DocProtectionSettings: null
+                  DeliveryMethod: EMAIL
+                  Language: null
+                  TimeZone: null
+              CongaSign:
+                value:
+                  ObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ObjectType: Agreement
+                  Name: CongaSign
+                  Email:
+                    EmailSubject: Conga Sign Sample Envelope
+                    EmailContent: Sample Envelope.
+                  Recipients:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: Signer
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: VP Legal
+                    RecipientCompany: Conga
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: Signer
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: Director
+                    RecipientCompany: Conga
+                  Cc: null
+                  Bcc: null
+                  DocumentIds:
+                  - 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  AdditionalAttachments: null
+                  IsPasswordProtected: false
+                  DocumentPassword: null
+                  ReciepentIdentityVerification: null
+                  Reminder: null
+                  Expiration: null
+                  ReturnUrl: null
+                  UserDefinedProtectionLevels: null
+                  TemplateId: null
+                  Status: null
+                  IsBackgroundMode: false
+                  DocProtectionSettings: null
+                  DeliveryMethod: EMAIL
+                  Language: null
+                  TimeZone: null
+              AdobeSign:
+                value:
+                  ObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ObjectType: Agreement
+                  Name: AdobeSign
+                  Email:
+                    EmailSubject: Adobe Sign Sample Envelope
+                    EmailContent: Sample Envelope.
+                  Recipients:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: Signer
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: CarbonCopy
+                    RoutingOrder: 1
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  Cc: null
+                  Bcc: null
+                  DocumentIds:
+                  - 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  AdditionalAttachments: null
+                  IsPasswordProtected: false
+                  DocumentPassword: null
+                  ReciepentIdentityVerification: null
+                  Reminder: null
+                  Expiration: null
+                  ReturnUrl: null
+                  UserDefinedProtectionLevels: null
+                  TemplateId: null
+                  Status: null
+                  IsBackgroundMode: false
+                  DocProtectionSettings: null
+                  DeliveryMethod: EMAIL
+                  Language: null
+                  TimeZone: null
+              WetSign:
+                value:
+                  ObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ObjectType: Agreement
+                  Name: WetSign
+                  Email:
+                    EmailSubject: Adobe Sign Sample Envelope
+                    EmailContent: Sample Envelope.
+                  Recipients:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: Xyz
+                    Role: null
+                    RoutingOrder: 0
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  Cc:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: Xyz
+                    Role: null
+                    RoutingOrder: 0
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  Bcc:
+                  - Email: abc@conga.com
+                    FirstName: Abc
+                    LastName: A
+                    Role: null
+                    RoutingOrder: 0
+                    ReciepentIdentityVerification: null
+                    RecipientTitle: null
+                    RecipientCompany: null
+                  DocumentIds:
+                  - 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  AdditionalAttachments: null
+                  IsPasswordProtected: false
+                  DocumentPassword: null
+                  ReciepentIdentityVerification: null
+                  Reminder: null
+                  Expiration: null
+                  ReturnUrl: null
+                  UserDefinedProtectionLevels: null
+                  TemplateId: null
+                  Status: null
+                  IsBackgroundMode: false
+                  DocProtectionSettings: null
+                  DeliveryMethod: EMAIL
+                  Language: null
+                  TimeZone: null
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignResponseAPIResponse'
+              example:
+                Success: true
+                Data:
+                  PackageId: 590a79ce-0fe0-4486-b5d5-3b3af8fff0d2
+                  TagUrl: https://appdemo.docusign.com/auth-from-console?code=361107f5-84a2-42a3-8732-1242947b4158&t=88245e3e-d469-4fba-8418-bd3f042f5bf4&from=https%3A%2F%2Fdemo.docusign.net&r=https%3A%2F%2Flocalhost%3A44373%2Fapi%2Fesign%2Fswagger%2Findex.html&view=true&DocuEnvelope=590a79ce-0fe0-4486-b5d5-3b3af8fff0d2&e=590a79ce-0fe0-4486-b5d5-3b3af8fff0d2&send=1&accountId=30045fe5-642e-40f9-b11a-36484b3dd92a&a=tag
+                  EsignTransactionId: 5b26e628-cdc3-458e-a8c9-88d53fb9e3c5
+                  Status: null
+                  SigningUrl: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/eventlogs:
+    get:
+      tags:
+      - Sign
+      summary: Get all event logs with pagination
+      description: "Retrieves all event logs from the ESignEventLogsFromListener table with pagination support. \n            Use 'from' and 'to' as 1-based record numbers (e.g., from=1, to=25 returns the first 25 records)."
+      parameters:
+      - name: from
+        in: query
+        description: 'Start record number (1-based, default: 1)'
+        schema:
+          type: string
+          default: '1'
+      - name: to
+        in: query
+        description: 'End record number (default: 25)'
+        schema:
+          type: string
+          default: '25'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/eventlogs/{packageId}:
+    get:
+      tags:
+      - Sign
+      summary: Get event logs by package ID
+      description: Retrieves all event logs from the ESignEventLogsFromListener table for the specified package ID.
+      parameters:
+      - name: packageId
+        in: path
+        description: The unique package identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/signertypes:
+    get:
+      tags:
+      - Sign
+      summary: List allowed signer types
+      description: Retrieves the allowed signer types for a given eSignature service provider. When creating the envelope, the signer type is provided in the Role field.
+      parameters:
+      - name: signProviderType
+        in: query
+        description: Select an eSignature service provider from the list.
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - SignerTypes
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/templates:
+    get:
+      tags:
+      - Sign
+      summary: Get sign provider templates
+      description: Retrieves a list of templates from the specified eSignature service provider.
+      parameters:
+      - name: signProviderType
+        in: query
+        description: ''
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/transaction/{objectId}/latestSignTransaction:
+    get:
+      tags:
+      - Sign
+      summary: Get the latest sign provider
+      description: Retrieves the latest eSign transaction sign provider for the specified object ID.
+      parameters:
+      - name: objectId
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignProviderTypeAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/transactionByObjectId/{objectId}:
+    get:
+      tags:
+      - Sign
+      summary: Get transaction details by object ID
+      description: Retrieves transaction details based on the object ID. Use the same object ID used to create the envelope.
+      parameters:
+      - name: objectId
+        in: path
+        description: Provide the unique object ID.
+        required: true
+        schema:
+          type: string
+        example: a65544f2-b4cb-400c-a014-1fd6b04861c9
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Envelope
+                  ExternalESignId: 30f428ae-6f49-423a-a130-2e399ca348dc
+                  ParentObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ParentObjectType: Agreement
+                  ESignProvider: DocuSign
+                  DocumentIds: 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  Id: 3a742f32-c61f-4a1e-9c66-a88bf6a821df
+                  CreatedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  CreatedDate: '2023-01-13T12:50:38'
+                  ModifiedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  ModifiedDate: '2023-01-15T12:50:38'
+                  DateSigned: '2023-01-15T12:50:38'
+                  Status: Signed
+                  RecallReason: null
+                  DateSent: '2023-01-13T12:50:38'
+                  FullySignedDocumentId: fd25d4d9-a597-4b66-aece-bacc637de514
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/usersearch/{searchString}:
+    get:
+      tags:
+      - Sign
+      summary: List users
+      description: Retrieves a list of users based on the given user and contact object search criteria. In the search text, provide the user name or letters from the user name.
+      parameters:
+      - name: searchString
+        in: path
+        description: search text
+        required: true
+        schema:
+          type: string
+        example: John
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientInfoListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Id: 31562d74-2b58-4747-b117-843f0a8d870e
+                  Name: Test User
+                  FirstName: Test
+                  LastName: User
+                  Email: testuser@conga.com
+                  RecipientType: Contact
+                  Title: null
+                  Company: null
+                  Role: null
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/void/{objectId}:
+    post:
+      tags:
+      - Sign
+      parameters:
+      - name: signProviderType
+        in: query
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: voidReason
+        in: query
+        schema:
+          type: string
+      - name: notifyOthers
+        in: query
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/wetsign/{transactionId}/end:
+    post:
+      tags:
+      - Sign
+      summary: End wet-sign flow
+      description: Marks the given transactionId's wet-sign flow as ended and uploads the given document as a signed document.
+      parameters:
+      - name: transactionId
+        in: path
+        description: The unique transaction ID of any wet signature
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/{transactionId}:
+    get:
+      tags:
+      - Sign
+      summary: Get transaction details by transaction
+      description: "Retrieves transaction details based on the transaction ID provided in the parameters. The transaction ID is the package ID obtained during envelope creation.\n            This API returns such transaction details as the envelope status, the dates the envelope was sent and signed, and, if the recipient declined, their reason for declining."
+      parameters:
+      - name: transactionId
+        in: path
+        description: The unique transaction ID.
+        required: true
+        schema:
+          type: string
+        example: d717a075-9cbf-480c-b230-837e0e6dee75
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Name: Envelope
+                  ExternalESignId: 30f428ae-6f49-423a-a130-2e399ca348dc
+                  ParentObjectId: ffd6b894-e2c9-46dc-b59b-266a2f567f4c
+                  ParentObjectType: Agreement
+                  ESignProvider: DocuSign
+                  DocumentIds: 077fc471-ad8c-4c74-b6c2-0094d76e7287
+                  Id: 3a742f32-c61f-4a1e-9c66-a88bf6a821df
+                  CreatedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  CreatedDate: '2023-01-13T12:50:38'
+                  ModifiedBy:
+                    Id: fd25d4d9-5c87-4b66-aece-bacc637de514
+                    Name: Test User
+                  ModifiedDate: '2023-01-15T12:50:38'
+                  DateSigned: '2023-01-15T12:50:38'
+                  Status: Signed
+                  RecallReason: null
+                  DateSent: '2023-01-13T12:50:38'
+                  FullySignedDocumentId: fd25d4d9-a597-4b66-aece-bacc637de514
+                Errors: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+components:
+  schemas:
+    UserDefinedProtectionLevels:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+    Email:
+      type: object
+      properties:
+        EmailSubject:
+          type:
+          - string
+          - 'null'
+        EmailContent:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RecipientInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecipientInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Expiration:
+      type: object
+      properties:
+        ExpireEnabled:
+          type: boolean
+        ExpireAfter:
+          type:
+          - string
+          - 'null'
+        ExpireWarn:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SignProviderType:
+      enum:
+      - AdobeSign
+      - CongaSign
+      - DocuSign
+      - WetSign
+      type: string
+    TemplateListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Template'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserRole:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SignResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/SignResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DocProtectionSettings:
+      type: object
+      properties:
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+    Recipient:
+      required:
+      - Email
+      type: object
+      properties:
+        Email:
+          minLength: 1
+          type: string
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Role:
+          type:
+          - string
+          - 'null'
+        RoutingOrder:
+          type: integer
+          format: int32
+        ReciepentIdentityVerification:
+          type:
+          - string
+          - 'null'
+        RecipientTitle:
+          type:
+          - string
+          - 'null'
+        RecipientCompany:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RecipientInfo:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        RecipientType:
+          $ref: '#/components/schemas/RecipientType'
+        Title:
+          type:
+          - string
+          - 'null'
+        Company:
+          type:
+          - string
+          - 'null'
+        Role:
+          $ref: '#/components/schemas/UserRole'
+      additionalProperties: false
+    EmailAttachment:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        MimeType:
+          type:
+          - string
+          - 'null'
+        FileData:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        FileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SignProviderTypeAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/SignProviderType'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecipientType:
+      enum:
+      - Contact
+      - Email
+      - User
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Reminder:
+      type: object
+      properties:
+        ReminderEnabled:
+          type: boolean
+        ReminderDelay:
+          type:
+          - string
+          - 'null'
+        ReminderFrequency:
+          type:
+          - string
+          - 'null'
+        ReminderCount:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Template:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        TemplateId:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DeliveryMethods:
+      enum:
+      - EMAIL
+      - URL
+      type: string
+    SignResponse:
+      type: object
+      properties:
+        PackageId:
+          type:
+          - string
+          - 'null'
+        TagUrl:
+          type:
+          - string
+          - 'null'
+        EsignTransactionId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - boolean
+          - 'null'
+        SigningUrl:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SignRequest:
+      required:
+      - DocumentIds
+      - Recipients
+      type: object
+      properties:
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          $ref: '#/components/schemas/Email'
+        Recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        Cc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Recipient'
+        Bcc:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Recipient'
+        DocumentIds:
+          type: array
+          items:
+            type: string
+        AdditionalAttachments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailAttachment'
+        IsPasswordProtected:
+          type: boolean
+        DocumentPassword:
+          type:
+          - string
+          - 'null'
+        ReciepentIdentityVerification:
+          type:
+          - string
+          - 'null'
+        Reminder:
+          $ref: '#/components/schemas/Reminder'
+        Expiration:
+          $ref: '#/components/schemas/Expiration'
+        ReturnUrl:
+          type:
+          - string
+          - 'null'
+        UserDefinedProtectionLevels:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserDefinedProtectionLevels'
+          deprecated: true
+        TemplateId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        IsBackgroundMode:
+          type: boolean
+        DocProtectionSettings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocProtectionSettings'
+        DeliveryMethod:
+          $ref: '#/components/schemas/DeliveryMethods'
+        Language:
+          type:
+          - string
+          - 'null'
+        TimeZone:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- conga-contracts.json
+- conga-esignature.json

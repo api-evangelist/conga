@@ -1,0 +1,825 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Session API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: Session
+paths:
+  /v1/cs-session:
+    get:
+      tags:
+      - Session
+      summary: Retrieve session object
+      description: Retrieves the session object.
+      operationId: Session_GetSession
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
+    Translation:
+      type: object
+      description: Field localization.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
+    Quota:
+      type: object
+      additionalProperties: false
+      properties:
+        cycle:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        scope:
+          type: string
+        target:
+          $ref: '#/components/schemas/Target'
+    UserCustomField:
+      type: object
+      description: Object to manage a user custom field
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Value
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    Features:
+      type: object
+      additionalProperties: false
+      properties:
+        attachments:
+          type: boolean
+          description: Attachments
+        authenticatedInbox:
+          type: boolean
+          description: AuthenticatedInbox
+        customFields:
+          type: boolean
+          description: CustomFields
+        encryptDocuments:
+          type: boolean
+          description: EncryptDocuments
+        evidenceSummary:
+          type: boolean
+          description: EvidenceSummary
+        fastTrack:
+          type: boolean
+          description: FastTrack
+        forceLogin:
+          type: boolean
+          description: ForceLogin
+        groups:
+          type: boolean
+          description: Groups
+        inboxFiltering:
+          type: boolean
+          description: InboxFiltering
+        kba:
+          type: boolean
+          description: KBA
+        notarize:
+          type: boolean
+          description: Notarize
+        showDocumentsPreview:
+          type: boolean
+          description: ShowDocumentsPreview
+        tamperSealEvidence:
+          type: boolean
+          description: TamperSealEvidence
+        optionalSignature:
+          type: boolean
+          description: OptionalSignature
+        qrCode:
+          type: boolean
+          description: QR Code
+        geteWitnessRecording:
+          type: boolean
+          description: Get e-WitnessRecording
+        flattenSignerDocuments:
+          type: boolean
+          description: FlattenSignerDocuments
+        delegation:
+          type: boolean
+          description: Delegation
+        documentVisibility:
+          type: boolean
+          description: DocumentVisibility
+        sendToMobile:
+          type: boolean
+          description: SendToMobile
+        certificateSigning:
+          type: boolean
+          description: CertificateSigning
+        equifaxCanada:
+          type: boolean
+          description: EquifaxCanada
+        equifaxUSA:
+          type: boolean
+          description: EquifaxUSA
+        smsAuth:
+          type: boolean
+          description: SmsAuth
+        enforceAuth:
+          type: boolean
+          description: EnforceAuth
+        ofacBlacklist:
+          type: boolean
+          description: OfacBlacklist
+        mobileCapture:
+          type: boolean
+          description: MobileCapture
+        maskResponse:
+          type: boolean
+          description: MaskResponse
+        allowInPersonForAccountSenders:
+          type: boolean
+          description: AllowInPersonForAccountSenders
+        mobileSigningCeremony:
+          type: boolean
+          description: MobileSigningCeremony
+        mobileSigningCeremonyTablet:
+          type: boolean
+          description: MobileSigningCeremonyTablet
+        disableInPersonActivationEmail:
+          type: boolean
+          description: DisableInPersonActivationEmail
+        emailDocumentsAndEvidenceSummary:
+          type: boolean
+          description: EmailDocumentsAndEvidenceSummary
+        bulkSend:
+          type: boolean
+          description: BulkSend
+        disableFooter:
+          type: boolean
+          description: DisableFooter
+        externalSignerVerification:
+          type: boolean
+          description: ExternalSignerVerification
+        personalCertificateClient:
+          type: boolean
+          description: PersonalCertificateClient
+        allowIntegration:
+          type: boolean
+          description: AllowIntegration
+        preventConsentRemoval:
+          type: boolean
+          description: PreventConsentRemoval
+        conditionalFields:
+          type: boolean
+          description: ConditionalFields
+        ssoLogin:
+          type: boolean
+        signerSso:
+          type: boolean
+        allowUiSwitch:
+          type: boolean
+        enableNewUi:
+          type: boolean
+        enableSignerUi:
+          type: boolean
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    TextualSignatureStyle:
+      type: object
+      description: Object to manage a text signature
+      additionalProperties: false
+      properties:
+        color:
+          type: string
+          description: Signature color.
+        font:
+          type: string
+          description: Signature font.
+    License:
+      type: object
+      description: License information.
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          description: License creation date.
+          format: date-time
+        paidUntil:
+          type:
+          - string
+          - 'null'
+          description: Paid license expiration.
+          format: date-time
+        plan:
+          description: License plan.
+          oneOf:
+          - $ref: '#/components/schemas/Plan'
+        status:
+          description: License status.
+          oneOf:
+          - $ref: '#/components/schemas/LicenseStatus'
+        transactions:
+          type: array
+          description: Transactions associated with this license
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
+    External:
+      type: object
+      description: External integration provider settings.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Provider metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: External integration Id.
+        provider:
+          type: string
+          description: Provider method.
+        providerName:
+          type: string
+          description: Provider name.
+    SupportConfiguration:
+      type: object
+      description: Object to manage support configuration
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: Email
+        phone:
+          type: string
+          description: Phone
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    CreditCard:
+      type: object
+      additionalProperties: false
+      properties:
+        cvv:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/CcExpiration'
+        name:
+          type: string
+        number:
+          type: string
+        type:
+          type: string
+    Price:
+      type: object
+      description: Object to manage price
+      additionalProperties: false
+      properties:
+        amount:
+          type: integer
+          description: Amount
+          format: int32
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
+    Account:
+      type: object
+      description: Account information.
+      additionalProperties: false
+      properties:
+        company:
+          description: Company information.
+          oneOf:
+          - $ref: '#/components/schemas/Company'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Account creation date.
+          format: date-time
+        customFields:
+          type: array
+          description: Account custom fields.
+          items:
+            $ref: '#/components/schemas/CustomField'
+        data:
+          type: object
+          description: Account metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Account Id.
+        licenses:
+          type: array
+          description: Account license information.
+          items:
+            $ref: '#/components/schemas/License'
+        logoUrl:
+          type: string
+          description: Account Logo URL.
+        name:
+          type: string
+          description: Account name.
+        owner:
+          type: string
+          description: Unique Owner Id.
+        providers:
+          description: External document sources.
+          oneOf:
+          - $ref: '#/components/schemas/AccountProviders'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Account update date.
+          format: date-time
+    Plan:
+      type: object
+      additionalProperties: false
+      properties:
+        contract:
+          type: string
+        cycle:
+          $ref: '#/components/schemas/Cycle'
+        data:
+          type: object
+          additionalProperties: {}
+        description:
+          type: string
+        features:
+          type: object
+          additionalProperties: {}
+        freeCycles:
+          $ref: '#/components/schemas/CycleCount'
+        group:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        original:
+          type: string
+        price:
+          $ref: '#/components/schemas/Price'
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quota'
+    DelegationUser:
+      type: object
+      description: 'Delegated user.
+
+        Delegates can sign documents on behalf of the delegator, and they can access the delegator''s inbox, drafts, layouts,
+
+        and templates. All transactions performed by the delegate nonetheless continue to be owned by the delegator.'
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: Delegated user email.
+        firstName:
+          type: string
+          description: Delegated user first name.
+        id:
+          type: string
+          description: Unique delegated user Id.
+        lastName:
+          type: string
+          description: Delegated user last name.
+        name:
+          type: string
+          description: Delegated user full name.
+        expiryDate:
+          type:
+          - string
+          - 'null'
+          description: Delegation expiration date.
+          format: date-time
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    ProfessionalIdentityField:
+      type: object
+      description: Object to manage professional identity field
+      additionalProperties: false
+      properties:
+        category:
+          type: string
+          description: Category
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        type:
+          type: string
+          description: Type
+        value:
+          type: string
+          description: Value
+    CycleCount:
+      type: object
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          format: int32
+        cycle:
+          $ref: '#/components/schemas/CycleCount'
+    LicenseStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - ACTIVE
+      - PENDING
+      - GRACE
+      enum:
+      - ACTIVE
+      - PENDING
+      - GRACE
+    User:
+      type: object
+      description: User information.
+      additionalProperties: false
+      properties:
+        address:
+          description: User address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        company:
+          type: string
+          description: User company.
+        created:
+          type:
+          - string
+          - 'null'
+          description: User creation date.
+          format: date-time
+        data:
+          type: object
+          description: User metadata.
+          additionalProperties: {}
+        email:
+          type: string
+          description: User email.
+        external:
+          description: External provider information.
+          oneOf:
+          - $ref: '#/components/schemas/External'
+        firstName:
+          type: string
+          description: User first name.
+        id:
+          type: string
+          description: Unique user Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        lastName:
+          type: string
+          description: User last name.
+        name:
+          type: string
+          description: User name.
+        phone:
+          type: string
+          description: User phone number.
+        professionalIdentityFields:
+          type: array
+          description: ProfessionalIdentityFields
+          items:
+            $ref: '#/components/schemas/ProfessionalIdentityField'
+        signature:
+          description: User signature information.
+          oneOf:
+          - $ref: '#/components/schemas/SignatureStyle'
+        specialTypes:
+          type: array
+          description: Special User Types. Currently only NOTARY is supported.
+          items:
+            type: string
+        title:
+          type: string
+          description: User title.
+        updated:
+          type:
+          - string
+          - 'null'
+          description: User information updated date.
+          format: date-time
+        timezoneId:
+          type: string
+          description: User timezone Id.
+        userCustomFields:
+          type: array
+          description: User custom fields.
+          items:
+            $ref: '#/components/schemas/UserCustomField'
+    SignatureStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        handdrawn:
+          type: string
+          description: Hand drawn signature image (base 64 encoding).
+        textual:
+          description: Textual signature style
+          oneOf:
+          - $ref: '#/components/schemas/TextualSignatureStyle'
+    Session:
+      type: object
+      additionalProperties: false
+      properties:
+        account:
+          description: Account information.
+          oneOf:
+          - $ref: '#/components/schemas/Account'
+        delegationUser:
+          description: Delegated user information.
+          oneOf:
+          - $ref: '#/components/schemas/DelegationUser'
+        features:
+          description: Features in current account. True if enabled, false if disabled.
+          oneOf:
+          - $ref: '#/components/schemas/Features'
+        inPerson:
+          type: boolean
+        packages:
+          type: array
+          items:
+            type: string
+        restricted:
+          type: boolean
+        support:
+          description: Support contact information.
+          oneOf:
+          - $ref: '#/components/schemas/SupportConfiguration'
+        user:
+          description: Account Owner information.
+          oneOf:
+          - $ref: '#/components/schemas/User'
+    Cycle:
+      type: string
+      description: ''
+      x-enumNames:
+      - DAY
+      - MONTH
+      - YEAR
+      enum:
+      - DAY
+      - MONTH
+      - YEAR
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    Provider:
+      type: object
+      description: Object to manage account providers for documents and users
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom meta data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        provides:
+          type: string
+          description: Provides
+    Target:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+      enum:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Currency:
+      type: object
+      description: The currency used for the Price object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

@@ -1,0 +1,635 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Sub Accounts API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: SubAccounts
+paths:
+  /v1/cs-account/accessibleaccounts:
+    get:
+      tags:
+      - SubAccounts
+      summary: List sub-accounts
+      description: "Sub-accounts enable an organization to create child accounts within its\n            master account. For example, an organization might want to create child accounts on the basis of its departments,\n            geographical locations, or lines of business. Accounts can be created on three levels (parent > child > grandchild),\n            enabling an organization to manage many account types under its master account."
+      operationId: SubAccounts_ListAccessibleSubAccounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessibleAccountResponse'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-account/subaccountApiKeys:
+    get:
+      tags:
+      - SubAccounts
+      summary: List API keys for the current sub-account user
+      description: "Retrieves a list of API keys for the current user in the sub-accounts. This current user must have\n            user management, sub-account management and API access permissions in a different sub-account to get an API key."
+      operationId: SubAccounts_ListSubAccountApiKeys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubAccountApiKey'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-account/subaccounts:
+    post:
+      tags:
+      - SubAccounts
+      summary: Create a new sub-account
+      description: "Sub-accounts enable an organization to create child accounts within the organization's master account.\n            For example, an organization might want to create child accounts on the basis of its departments, geographical\n            locations, or lines of business. Accounts can be created on three levels, parent, child, grandchild.\n            This enables an organization to manage many account types under its master account."
+      operationId: SubAccounts_CreateSubAccount
+      requestBody:
+        x-name: subAccount
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubAccount'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - SubAccounts
+      summary: List sub-accounts
+      description: Retrieves a list of accounts that are sub-accounts of the current account.
+      operationId: SubAccounts_ListSubAccounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-account/subaccounts/{accountId}:
+    put:
+      tags:
+      - SubAccounts
+      summary: Update a sub-account
+      description: Updates a sub-account with information specified in the parameters.
+      operationId: SubAccounts_UpdateSubAccount
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: subAccount
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubAccount'
+        required: true
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubAccount'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
+    Translation:
+      type: object
+      description: Field localization.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
+    SubAccount:
+      allOf:
+      - $ref: '#/components/schemas/Account'
+      - type: object
+        description: Object to manage a sub account
+        additionalProperties: false
+        properties:
+          parentAccountId:
+            type: string
+            description: The parent account id
+          language:
+            type: string
+            description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+          timezoneId:
+            type: string
+            description: The timezone of the account
+    Quota:
+      type: object
+      additionalProperties: false
+      properties:
+        cycle:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        scope:
+          type: string
+        target:
+          $ref: '#/components/schemas/Target'
+    AccessibleAccountResponse:
+      type: object
+      description: Sub Account information
+      additionalProperties: false
+      properties:
+        accountUid:
+          type: string
+          description: SubAccount Id
+        accountName:
+          type: string
+          description: SubAccount Name
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    SubAccountApiKey:
+      type: object
+      description: Object to manage a sub account's api key
+      additionalProperties: false
+      properties:
+        accountUid:
+          type: string
+          description: SubAccount Id
+        accountName:
+          type: string
+          description: SubAccount Name
+        apiKey:
+          type: string
+          description: SubAccount API Key
+    License:
+      type: object
+      description: License information.
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          description: License creation date.
+          format: date-time
+        paidUntil:
+          type:
+          - string
+          - 'null'
+          description: Paid license expiration.
+          format: date-time
+        plan:
+          description: License plan.
+          oneOf:
+          - $ref: '#/components/schemas/Plan'
+        status:
+          description: License status.
+          oneOf:
+          - $ref: '#/components/schemas/LicenseStatus'
+        transactions:
+          type: array
+          description: Transactions associated with this license
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    CreditCard:
+      type: object
+      additionalProperties: false
+      properties:
+        cvv:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/CcExpiration'
+        name:
+          type: string
+        number:
+          type: string
+        type:
+          type: string
+    Price:
+      type: object
+      description: Object to manage price
+      additionalProperties: false
+      properties:
+        amount:
+          type: integer
+          description: Amount
+          format: int32
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
+    Account:
+      type: object
+      description: Account information.
+      additionalProperties: false
+      properties:
+        company:
+          description: Company information.
+          oneOf:
+          - $ref: '#/components/schemas/Company'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Account creation date.
+          format: date-time
+        customFields:
+          type: array
+          description: Account custom fields.
+          items:
+            $ref: '#/components/schemas/CustomField'
+        data:
+          type: object
+          description: Account metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Account Id.
+        licenses:
+          type: array
+          description: Account license information.
+          items:
+            $ref: '#/components/schemas/License'
+        logoUrl:
+          type: string
+          description: Account Logo URL.
+        name:
+          type: string
+          description: Account name.
+        owner:
+          type: string
+          description: Unique Owner Id.
+        providers:
+          description: External document sources.
+          oneOf:
+          - $ref: '#/components/schemas/AccountProviders'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Account update date.
+          format: date-time
+    Plan:
+      type: object
+      additionalProperties: false
+      properties:
+        contract:
+          type: string
+        cycle:
+          $ref: '#/components/schemas/Cycle'
+        data:
+          type: object
+          additionalProperties: {}
+        description:
+          type: string
+        features:
+          type: object
+          additionalProperties: {}
+        freeCycles:
+          $ref: '#/components/schemas/CycleCount'
+        group:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        original:
+          type: string
+        price:
+          $ref: '#/components/schemas/Price'
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quota'
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    CycleCount:
+      type: object
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          format: int32
+        cycle:
+          $ref: '#/components/schemas/CycleCount'
+    LicenseStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - ACTIVE
+      - PENDING
+      - GRACE
+      enum:
+      - ACTIVE
+      - PENDING
+      - GRACE
+    Cycle:
+      type: string
+      description: ''
+      x-enumNames:
+      - DAY
+      - MONTH
+      - YEAR
+      enum:
+      - DAY
+      - MONTH
+      - YEAR
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    Provider:
+      type: object
+      description: Object to manage account providers for documents and users
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom meta data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        provides:
+          type: string
+          description: Provides
+    Target:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+      enum:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Currency:
+      type: object
+      description: The currency used for the Price object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

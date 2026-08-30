@@ -1,0 +1,348 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Notification API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: Notification
+paths:
+  /v1/cs-packages/{packageId}/documents/{documentId}/approvals/{approvalId}/mobile_notification:
+    post:
+      tags:
+      - Notification
+      summary: Send mobile notification
+      description: Sends a notification to yourself. Included in the notification is a mobile-device signing link to an approval.
+      operationId: Notification_ResendMobileNotificationsForPackageDocumentApproval
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: documentId
+        in: path
+        required: true
+        description: The unique document id.
+        schema:
+          type: string
+        x-position: 2
+      - name: approvalId
+        in: path
+        required: true
+        description: The unique approval id.
+        schema:
+          type: string
+        x-position: 3
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/notifications:
+    post:
+      tags:
+      - Notification
+      summary: Re-send a notification to a signer
+      description: Resends a notification to a signer.
+      operationId: Notification_ResendNotificationsForPackage
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: notificationRequest
+        description: The journal entry JSON.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+        required: true
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/roles/{roleId}/notifications:
+    post:
+      tags:
+      - Notification
+      summary: Send an SMS notification to signers linked to a role
+      description: Sends an SMS notification to the signers linked to a role.
+      operationId: Notification_ResendNotificationsForPackageAndRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-packages/{packageId}/roles/{roleId}/sms_notification:
+    post:
+      tags:
+      - Notification
+      summary: Send an SMS notification to signers linked to a role
+      description: Sends an SMS notification to the signers linked to a role.
+      operationId: Notification_ResendSMSNotificationsForPackageAndRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      - name: inPerson
+        in: query
+        description: Send SMS for InPerson SMS authentication.
+        schema:
+          type: string
+          default: 'true'
+        x-position: 3
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+  /v1/cs-sms/resend:
+    post:
+      tags:
+      - Notification
+      summary: Re-send a notification to a signer
+      description: Resends a notification to a signer.
+      operationId: Notification_ResendSMSCodeForSigner
+      parameters:
+      - name: loginToken
+        in: query
+        description: loginToken
+        schema:
+          type: string
+          default: ''
+        x-position: 1
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    NotificationRequest:
+      type: object
+      description: Object to manage resending notifications to signers
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: E-Mail Address for Signer receiving re-sent notification.
+        message:
+          type: string
+          description: Notification Message to be sent to Signer.
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

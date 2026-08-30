@@ -1,0 +1,225 @@
+openapi: 3.2.0
+info:
+  title: Conga Sign Account Supported Languages API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/sign
+security:
+- JWT: []
+tags:
+- name: AccountSupportedLanguages
+paths:
+  /v1/cs-account/admin/accountSettings/limitSupportedLanguages:
+    delete:
+      tags:
+      - AccountSupportedLanguages
+      summary: Deletes your personally configured supported signing language settings.
+      description: "Deletes any signing language settings that you may have configured for your account. \nThis includes the list of languages that can be used when signing a transaction, \nand the default language to be used by your signers in any transaction that you send."
+      operationId: AccountSupportedLanguages_DeleteAccountSupportedLanguages
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - AccountSupportedLanguages
+      summary: Retrieves the list of supported languages that you can set for your signers.
+      description: "Retrieves a list of languages that you have defined as being available for use by your signers \nin any transaction that you send. This includes the default signing language set by you."
+      operationId: AccountSupportedLanguages_GetAccountSupportedLanguages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSupportedLanguages'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    patch:
+      tags:
+      - AccountSupportedLanguages
+      summary: Updates your supported signing languages.
+      description: "Defines or updates the default language to be used by your signers, and defines the list of \nsupported signer languages that can be used instead of the default one."
+      operationId: AccountSupportedLanguages_UpdateAccountSupportedLanguages
+      requestBody:
+        x-name: accountSupportedLanguages
+        description: The supported languages settings to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountSupportedLanguages'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+components:
+  schemas:
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    AccountSupportedLanguages:
+      type: object
+      description: 'This class contains properties for Account Supported Languages.
+
+        Controls the languages available for signers during the signing ceremony.'
+      additionalProperties: false
+      properties:
+        defaultSignerLanguage:
+          type:
+          - string
+          - 'null'
+          description: 'Default language code to be used for signers.
+
+            This is the language that will be used by default in signing ceremonies.
+
+            Examples: "en" (English), "fr" (French), "de" (German), "es" (Spanish)'
+        signerLanguages:
+          type:
+          - array
+          - 'null'
+          description: 'List of language codes that are supported and available for signers.
+
+            Each language code represents a language that signers can choose during the signing ceremony.
+
+            Examples: ["en", "fr", "de", "es", "it", "pt", "nl", "zh", "ja"]'
+          items:
+            type: string
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header

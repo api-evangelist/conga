@@ -1,0 +1,265 @@
+openapi: 3.2.0
+info:
+  title: Localization Translation Management Runtime API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Translation Management Runtime
+paths:
+  /api/localization/v1/translations:
+    get:
+      tags:
+      - Translation Management Runtime
+      summary: Get translations for multiple modules (Only supported for String type)
+      description: Returns a dictionary of modules and their translations.
+      parameters:
+      - name: module
+        in: query
+        description: The module names to fetch translations for. Can be specified multiple times.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Dictionary of module translations
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: 'Represents a response containing translation keys for modules.
+
+                  The outer dictionary maps module names to their respective translation key-value pairs.'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+    post:
+      tags:
+      - Translation Management Runtime
+      summary: Get translations for a given keys and modules (Only supported for String type)
+      description: Allows fetching multiple translations in a single request.
+      requestBody:
+        description: List of translation requests. Each request specifies a key, module, and optional parameters for translation.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationRequestItem'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationRequestItem'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TranslationRequestItem'
+      responses:
+        '200':
+          description: Translation response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TranslationResponseItem'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: deutsch - Access denied
+                StatusCode: OK
+components:
+  schemas:
+    TranslationRequestItem:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the unique key identifying the translation item.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation item.
+        Parameters:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of parameters for the translation item.
+      additionalProperties: false
+      description: Represents a single item in a translation request.
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TranslationResponseItem:
+      type: object
+      properties:
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the key identifying the translation item.
+        Module:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the module associated with the translation item.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the translated value.
+      additionalProperties: false
+      description: Represents a single item in a translation response.
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

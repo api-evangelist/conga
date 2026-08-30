@@ -1,0 +1,76 @@
+openapi: 3.2.0
+info:
+  title: Administration Settings API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Settings
+paths:
+  /feature-settings:
+    get:
+      tags:
+      - Settings
+      summary: Retrieve all feature settings.
+      description: ''
+      responses:
+        '200':
+          description: OK
+    patch:
+      tags:
+      - Settings
+      summary: Update the specified FeatureSettings
+      description: 'Updates one or more feature settings with the provided boolean values.
+
+        All feature setting keys must be valid and non-empty.'
+      requestBody:
+        description: A json object containing feature setting names as keys and their corresponding boolean values
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: boolean
+          text/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: boolean
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties:
+                type: boolean
+      responses:
+        '200':
+          description: Returns 200 when feature settings are successfully updated
+        '400':
+          description: Returns error message if featureSettings is null, empty, or contains invalid keys
+        '500':
+          description: Returns error message if an internal server error occurs
+  /feature-settings/{featureSettingName}:
+    get:
+      tags:
+      - Settings
+      summary: Retrieve a single feature setting by name.
+      description: ''
+      parameters:
+      - name: featureSettingName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

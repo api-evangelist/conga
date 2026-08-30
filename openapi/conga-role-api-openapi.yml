@@ -1,0 +1,1973 @@
+openapi: 3.2.0
+info:
+  title: Conga Role API
+  version: '1.0'
+  description: 'Operations tagged Role across 2 of this provider''s published API definitions: conga-conga-sign.json, conga-user-management.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com/api/sign
+- url: https://rls.congacloud.com
+tags:
+- name: Role
+paths:
+  /v1/cs-packages/{packageId}/groups:
+    post:
+      tags:
+      - Role
+      summary: Adds a new ad hoc group to a transaction
+      description: "Adds a new ad hoc group and its members to an existing transaction.\n\nAn ad hoc group allows multiple signers to be grouped together, where only one member \nneeds to sign on behalf of the entire group.\n\nThe request body must be an array of Role objects:\n1. Individual member roles (regular signers) - these become potential group members\n2. The ad hoc group role with a special signer that has:\n   - signerType: \"AD_HOC_GROUP_SIGNER\"\n   - group.members: Array referencing the member role IDs\n\nExample structure:\n[\n  {\n    \"signers\": [{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john@example.com\" }],\n    \"id\": \"member-role-id-1\"\n  },\n  {\n    \"signers\": [{ \"firstName\": \"Jane\", \"lastName\": \"Smith\", \"email\": \"jane@example.com\" }],\n    \"id\": \"member-role-id-2\"\n  },\n  {\n    \"id\": \"ad-hoc-group-role-id\",\n    \"signers\": [{\n      \"firstName\": \"Legal Review Group\",\n      \"signerType\": \"AD_HOC_GROUP_SIGNER\",\n      \"group\": {\n        \"members\": [\n          { \"userId\": \"member-role-id-1\", \"memberType\": \"AD_HOC_GROUP_MEMBER\" },\n          { \"userId\": \"member-role-id-2\", \"memberType\": \"SIGNER\" }\n        ]\n      }\n    }]\n  }\n]"
+      operationId: Role_CreateAdHocGroup
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: roles
+        description: 'Array of Role objects: member roles followed by the ad hoc group role.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Role'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK - Ad hoc group created successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/groups/{roleId}:
+    delete:
+      tags:
+      - Role
+      summary: Deletes a specified ad hoc group
+      description: 'Deletes a specified ad hoc group from a transaction.
+
+
+        This will remove:
+
+        - The ad hoc group role
+
+        - All member roles that were created for this group
+
+
+        Note: If member roles are used elsewhere in the package, they may not be deleted.'
+      operationId: Role_DeleteAdHocGroup
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK - Group deleted successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found - Group does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Role
+      summary: Updates a transaction's existing ad hoc group
+      description: "Updates an existing ad hoc group, for a specified transaction, including any changes \nto the group's members.\n\nThe request body structure is the same as creation:\n- Array of member Role objects (existing or new members)\n- The ad hoc group Role object with updated configuration\n\nYou can:\n- Add new members by including their roles in the array\n- Remove members by excluding them from the group.members array\n- Update the group name via the signer's firstName\n- Modify member types (AD_HOC_GROUP_MEMBER vs SIGNER)\n\nMember types:\n- AD_HOC_GROUP_MEMBER: Must sign if selected\n- SIGNER: Optional member (can be selected to sign)"
+      operationId: Role_UpdateAdHocGroup
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: groupRoles
+        description: Array of Role objects with updated member roles and group configuration.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Role'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK - Ad hoc group updated successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '403':
+          description: Access Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: Not Found - Group does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/roles:
+    post:
+      tags:
+      - Role
+      summary: Add new role
+      description: Adds a new role to an existing package.
+      operationId: Role_CreateRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: role
+        description: The role to add.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Role
+      summary: Retrieve all package roles
+      description: Retrieves all roles for the package.
+      operationId: Role_ListRoles
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfRole'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Role
+      summary: Reorder package roles
+      description: Reorders the roles in a specified package.
+      operationId: Role_ReorderRoles
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: roleReordering
+        description: List of role reordering specifications.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleReordering'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultOfRole'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/roles/{roleId}:
+    delete:
+      tags:
+      - Role
+      summary: Delete a role
+      description: Deletes a specified role.
+      operationId: Role_DeleteRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    get:
+      tags:
+      - Role
+      summary: Retrieve a role
+      description: Retrieves a single role associated with a package.
+      operationId: Role_GetRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    put:
+      tags:
+      - Role
+      summary: Update roles in the package
+      description: Updates a single Role by overriding its existing values with those in the JSON payload.
+      operationId: Role_UpdateRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: role
+        description: The updated role data.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /v1/cs-packages/{packageId}/roles/{roleId}/unlock:
+    post:
+      tags:
+      - Role
+      summary: Unlock a role
+      description: Unlocks a specified role.
+      operationId: Role_UnlockRole
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: The unique package id.
+        schema:
+          type: string
+        x-position: 1
+      - name: roleId
+        in: path
+        required: true
+        description: The unique role id within the package.
+        schema:
+          type: string
+        x-position: 2
+      requestBody:
+        x-name: role
+        description: The role to unlock.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+        required: true
+        x-position: 3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+        '500':
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error2'
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/sign
+  /api/user-management/v1/runtime/roles:
+    get:
+      tags:
+      - Role
+      summary: Get all roles
+      description: Returns all roles that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the roles. **For example**: IsDeleted != ''true''.<p>**Note**: The criteria field (in this case, IsDeleted) should be indexed.</p>'
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: Name.<p>**Note**: The sort field (in this case, Name) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC<p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - Description: GeneralUserRole
+                  Id: a7e0eb7f-8c43-429e-a5a4-6a1a6dd533ac
+                  PermissionGroups: GlobalScopePermissionGroup
+                  Name: GeneralUser
+                - Description: Admin
+                  Id: a058172c-4410-44e4-98ba-2b77fa5e81c3
+                  PermissionGroups: ScopePermissionGroup
+                  Name: Admin
+                StatusCode: OK
+        '400':
+          description: Bad Request
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+components:
+  schemas:
+    Translation:
+      type: object
+      description: Field localization.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
+    AttachmentRequirement:
+      type: object
+      description: Attachment requirements and settings.
+      additionalProperties: false
+      properties:
+        comment:
+          type: string
+          description: Attachment comment.
+        data:
+          type: object
+          description: Attachment metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Attachment description.
+        files:
+          type: array
+          description: Attachment files.
+          items:
+            $ref: '#/components/schemas/AttachmentFile'
+        id:
+          type: string
+          description: The attachment Id.
+        name:
+          type: string
+          description: The attachment name.
+        required:
+          type: boolean
+          description: Is attachment required.
+        status:
+          description: Attachment status.
+          oneOf:
+          - $ref: '#/components/schemas/RequirementStatus'
+    RoleReordering:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Role Id.
+        index:
+          type: integer
+          description: New index of the role.
+          format: int32
+    Quota:
+      type: object
+      additionalProperties: false
+      properties:
+        cycle:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        scope:
+          type: string
+        target:
+          $ref: '#/components/schemas/Target'
+    NotificationMethods:
+      type: object
+      description: Represents the default notification methods for a signer in a transaction.
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+          description: 'The default notification method description.
+
+            If defined in a template, it will be used as part of the pre-populated fields
+
+            when creating a new transaction.'
+        primary:
+          type: array
+          description: 'The default notification methods for the account.
+
+            A phone number is required when including SMS as a notification method.
+
+            Possible values: EMAIL, SMS.'
+          items:
+            $ref: '#/components/schemas/NotificationMethod'
+    AttachmentFile:
+      type: object
+      description: Attachment file information.
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: Attachment file Id.
+          format: int32
+        insertDate:
+          type: integer
+          description: Attachment creation date in epoch format.
+          format: int64
+        name:
+          type: string
+          description: Attachment file name.
+        preview:
+          type: boolean
+          description: Can see attachment previews.
+    UserCustomField:
+      type: object
+      description: Object to manage a user custom field
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Value
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    IdvWorkflow:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: The unique Id of the Id verification workflow configuration.
+        type:
+          type: string
+          description: The Id verification workflow type.
+        tenant:
+          type: string
+          description: The customer alias.
+        desc:
+          type: string
+          description: Id verification workflow description.
+    AuthChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        answer:
+          type: string
+          description: Secret question answer.
+        maskInput:
+          type: boolean
+          description: To hide the user input.
+        question:
+          type: string
+          description: Secret question.
+    SignerInformationForLexisNexis:
+      type: object
+      description: Signer identity details needed for LexisNexis verification.
+      additionalProperties: false
+      properties:
+        firstName:
+          type: string
+          description: First name of the signer. (Required)
+        lastName:
+          type: string
+          description: Last name of the signer. (Required)
+        city:
+          type: string
+          description: City of the signer. (Required)
+        zip:
+          type: string
+          description: ZIP or postal code of the signer. (Required)
+        state:
+          type: string
+          description: State or province of the signer. (Optional)
+        houseName:
+          type: string
+          description: House name of the signer’s residence. (Optional)
+        flatOrApartmentNumber:
+          type: string
+          description: Flat or apartment number. (Optional)
+        houseNumber:
+          type: string
+          description: House number of the signer’s residence. (Optional)
+        socialSecurityNumber:
+          type: string
+          description: Social Security Number of the signer. (Optional)
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth of the signer. (Optional)
+          format: date-time
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    GroupMember:
+      type: object
+      description: Object to manage a group member
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: Email string
+        firstName:
+          type: string
+          description: First name
+        lastName:
+          type: string
+          description: Last name
+        memberType:
+          description: MemberType
+          oneOf:
+          - $ref: '#/components/schemas/MemberType'
+        pending:
+          type:
+          - boolean
+          - 'null'
+          description: Pending
+        userId:
+          type: string
+          description: UserId
+    TextualSignatureStyle:
+      type: object
+      description: Object to manage a text signature
+      additionalProperties: false
+      properties:
+        color:
+          type: string
+          description: Signature color.
+        font:
+          type: string
+          description: Signature font.
+    License:
+      type: object
+      description: License information.
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          description: License creation date.
+          format: date-time
+        paidUntil:
+          type:
+          - string
+          - 'null'
+          description: Paid license expiration.
+          format: date-time
+        plan:
+          description: License plan.
+          oneOf:
+          - $ref: '#/components/schemas/Plan'
+        status:
+          description: License status.
+          oneOf:
+          - $ref: '#/components/schemas/LicenseStatus'
+        transactions:
+          type: array
+          description: Transactions associated with this license
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Auth:
+      type: object
+      description: Signer auth settings.
+      additionalProperties: false
+      properties:
+        challenges:
+          type: array
+          description: List of auth secret question challenges.
+          items:
+            $ref: '#/components/schemas/AuthChallenge'
+        scheme:
+          description: The auth scheme. Can be CHALLENGE, SMS, or NONE
+          oneOf:
+          - $ref: '#/components/schemas/AuthScheme'
+        idvWorkflow:
+          description: The Id verification workflow.
+          oneOf:
+          - $ref: '#/components/schemas/IdvWorkflow'
+        qasms:
+          type: array
+          description: 'For ID verification that requires both a challenge question and an SMS code.
+
+            This collection must contain at least one challenge object (question)
+
+            and at least one SMS object when using both.'
+          items:
+            $ref: '#/components/schemas/AuthWithQaSms'
+    AuthScheme:
+      type: string
+      description: ''
+      x-enumNames:
+      - NONE
+      - PROVIDER
+      - CHALLENGE
+      - SMS
+      - SSO
+      - KBA
+      - SAA
+      enum:
+      - NONE
+      - PROVIDER
+      - CHALLENGE
+      - SMS
+      - SSO
+      - KBA
+      - SAA
+    Transaction:
+      type: object
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
+    External:
+      type: object
+      description: External integration provider settings.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Provider metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: External integration Id.
+        provider:
+          type: string
+          description: Provider method.
+        providerName:
+          type: string
+          description: Provider name.
+    KnowledgeBasedAuthenticationStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - NOT_YET_ATTEMPTED
+      - PASSED
+      - FAILED
+      - INVALID_SIGNER
+      - UPDATED
+      enum:
+      - NOT_YET_ATTEMPTED
+      - PASSED
+      - FAILED
+      - INVALID_SIGNER
+      - UPDATED
+    Signer:
+      type: object
+      description: Object to manage a signer
+      additionalProperties: false
+      properties:
+        address:
+          description: Signer address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        auth:
+          description: Auth settings.
+          oneOf:
+          - $ref: '#/components/schemas/Auth'
+        company:
+          type: string
+          description: Signer's company name.
+        created:
+          type:
+          - string
+          - 'null'
+          description: Signer creation date.
+          format: date-time
+        data:
+          type: object
+          description: Signer metadata.
+          additionalProperties: {}
+        delivery:
+          description: Signer delivery settings.
+          oneOf:
+          - $ref: '#/components/schemas/Delivery'
+        email:
+          type: string
+          description: Signer email.
+        external:
+          description: External provider information.
+          oneOf:
+          - $ref: '#/components/schemas/External'
+        firstName:
+          type: string
+          description: Signer's first name.
+        group:
+          description: Signer's group.
+          oneOf:
+          - $ref: '#/components/schemas/Group'
+        id:
+          type: string
+          description: Signer Id.
+        knowledgeBasedAuthentication:
+          description: Knowledge base authentication through Equifax.
+          oneOf:
+          - $ref: '#/components/schemas/KnowledgeBasedAuthentication'
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        lastName:
+          type: string
+          description: Signer's lastname.
+        name:
+          type: string
+          description: Signer's name.
+        phone:
+          type: string
+          description: Signer's phone.
+        professionalIdentityFields:
+          type: array
+          description: ' '
+          items:
+            $ref: '#/components/schemas/ProfessionalIdentityField'
+        signature:
+          description: Signer's signature style.
+          oneOf:
+          - $ref: '#/components/schemas/SignatureStyle'
+        signerType:
+          description: Type of signer
+          oneOf:
+          - $ref: '#/components/schemas/SignerType'
+        specialTypes:
+          type: array
+          description: Special User Types. Currently only NOTARY is supported.
+          items:
+            type: string
+        title:
+          type: string
+          description: Signer's title.
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Last time signer was updated.
+          format: date-time
+        userCustomFields:
+          type: array
+          description: Signer's custom fields.
+          items:
+            $ref: '#/components/schemas/UserCustomField'
+        digipassAuthentication:
+          type: boolean
+          description: Indicates whether Digipass authentication is enabled for the signer.
+        timezoneId:
+          type: string
+          description: Timezone ID of the signer, e.g., "America/New_York".
+        notificationMethods:
+          description: Default notification methods for the signer.
+          oneOf:
+          - $ref: '#/components/schemas/NotificationMethods'
+    RoleType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      enum:
+      - SIGNER
+      - SENDER
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    CreditCard:
+      type: object
+      additionalProperties: false
+      properties:
+        cvv:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/CcExpiration'
+        name:
+          type: string
+        number:
+          type: string
+        type:
+          type: string
+    Account:
+      type: object
+      description: Account information.
+      additionalProperties: false
+      properties:
+        company:
+          description: Company information.
+          oneOf:
+          - $ref: '#/components/schemas/Company'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Account creation date.
+          format: date-time
+        customFields:
+          type: array
+          description: Account custom fields.
+          items:
+            $ref: '#/components/schemas/CustomField'
+        data:
+          type: object
+          description: Account metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Account Id.
+        licenses:
+          type: array
+          description: Account license information.
+          items:
+            $ref: '#/components/schemas/License'
+        logoUrl:
+          type: string
+          description: Account Logo URL.
+        name:
+          type: string
+          description: Account name.
+        owner:
+          type: string
+          description: Unique Owner Id.
+        providers:
+          description: External document sources.
+          oneOf:
+          - $ref: '#/components/schemas/AccountProviders'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Account update date.
+          format: date-time
+    NotificationMethod:
+      type: string
+      description: Enumerates all available notification methods.
+      x-enumNames:
+      - EMAIL
+      - SMS
+      enum:
+      - EMAIL
+      - SMS
+    KnowledgeBasedAuthentication:
+      type: object
+      description: Object to manage KBA
+      additionalProperties: false
+      properties:
+        knowledgeBasedAuthenticationStatus:
+          description: The status of the KBA
+          oneOf:
+          - $ref: '#/components/schemas/KnowledgeBasedAuthenticationStatus'
+        signerInformationForEquifaxCanada:
+          description: SignerInformationForEquifaxCanada
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForEquifaxCanada'
+        signerInformationForEquifaxUSA:
+          description: SignerInformationForEquifaxUSA
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForEquifaxUSA'
+        equifaxCanada:
+          type: boolean
+          description: Indicates whether Equifax Canada is used for KBA.
+        equifaxUSA:
+          type: boolean
+          description: Indicates whether Equifax USA is used for KBA.
+        signerInformationForLexisNexis:
+          description: Signer information required for LexisNexis identity verification.
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForLexisNexis'
+        lexisNexis:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether LexisNexis is used for KBA.
+    Price:
+      type: object
+      description: Object to manage price
+      additionalProperties: false
+      properties:
+        amount:
+          type: integer
+          description: Amount
+          format: int32
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
+    AuthWithQaSms:
+      type: object
+      description: Represents a question/answer or SMS-based verification challenge.
+      additionalProperties: false
+      properties:
+        question:
+          type: string
+          description: 'The question to be used for verification purposes.
+
+            Required when challengeType is "Challenge".'
+        answer:
+          type: string
+          description: 'The answer that must be entered to confirm verification.
+
+            Optional if using SMS only.'
+        maskInput:
+          type: boolean
+          description: Indicates whether the answer should be masked (true/false).
+        challengeType:
+          type: string
+          description: 'The type of challenge:
+
+            - "Challenge" for a question/answer verification
+
+            - "SMS" for a text-message verification.'
+    SignerType:
+      type: string
+      description: Type of signer in OneSpan Sign
+      x-enumNames:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+      enum:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+    Plan:
+      type: object
+      additionalProperties: false
+      properties:
+        contract:
+          type: string
+        cycle:
+          $ref: '#/components/schemas/Cycle'
+        data:
+          type: object
+          additionalProperties: {}
+        description:
+          type: string
+        features:
+          type: object
+          additionalProperties: {}
+        freeCycles:
+          $ref: '#/components/schemas/CycleCount'
+        group:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        original:
+          type: string
+        price:
+          $ref: '#/components/schemas/Price'
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quota'
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    MemberType:
+      type: string
+      description: Type of member in a group
+      x-enumNames:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
+      enum:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
+    ProfessionalIdentityField:
+      type: object
+      description: Object to manage professional identity field
+      additionalProperties: false
+      properties:
+        category:
+          type: string
+          description: Category
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        type:
+          type: string
+          description: Type
+        value:
+          type: string
+          description: Value
+    CycleCount:
+      type: object
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          format: int32
+        cycle:
+          $ref: '#/components/schemas/CycleCount'
+    LicenseStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - ACTIVE
+      - PENDING
+      - GRACE
+      enum:
+      - ACTIVE
+      - PENDING
+      - GRACE
+    SignerInformationForEquifaxUSA:
+      type: object
+      description: Object to manage Equifax USA information
+      additionalProperties: false
+      properties:
+        city:
+          type: string
+          description: City
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth
+          format: date-time
+        driversLicenseNumber:
+          type: string
+          description: Drivers license number
+        firstName:
+          type: string
+          description: First name
+        homePhoneNumber:
+          type: string
+          description: Home phone number
+        lastName:
+          type: string
+          description: Last name
+        socialSecurityNumber:
+          type: string
+          description: Social security number
+        state:
+          type: string
+          description: State
+        streetAddress:
+          type: string
+          description: Street address
+        timeAtAddress:
+          type:
+          - integer
+          - 'null'
+          description: Time at address
+          format: int32
+        zip:
+          type: string
+          description: Zip code
+    SignatureStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        handdrawn:
+          type: string
+          description: Hand drawn signature image (base 64 encoding).
+        textual:
+          description: Textual signature style
+          oneOf:
+          - $ref: '#/components/schemas/TextualSignatureStyle'
+    Delivery:
+      type: object
+      description: Object to manage delivery of completed documents
+      additionalProperties: false
+      properties:
+        download:
+          type: boolean
+          description: Is download delivery enabled.
+        email:
+          type: boolean
+          description: Is email delivery enabled.
+        provider:
+          type: boolean
+          description: Is external integration delivery enabled.
+    RequirementStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - INCOMPLETE
+      - REJECTED
+      - COMPLETE
+      enum:
+      - INCOMPLETE
+      - REJECTED
+      - COMPLETE
+    Cycle:
+      type: string
+      description: ''
+      x-enumNames:
+      - DAY
+      - MONTH
+      - YEAR
+      enum:
+      - DAY
+      - MONTH
+      - YEAR
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    Provider:
+      type: object
+      description: Object to manage account providers for documents and users
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom meta data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        provides:
+          type: string
+          description: Provides
+    Target:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+      enum:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+    Group:
+      type: object
+      description: Object to manage a group
+      additionalProperties: false
+      properties:
+        account:
+          description: The account the group belongs to
+          oneOf:
+          - $ref: '#/components/schemas/Account'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Created date
+          format: date-time
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        email:
+          type: string
+          description: Email address
+        emailMembers:
+          type: boolean
+          description: EmailMembers
+        id:
+          type: string
+          description: Unique id of the group
+        members:
+          type: array
+          description: List of group members
+          items:
+            $ref: '#/components/schemas/GroupMember'
+        name:
+          type: string
+          description: Name of the group
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Updated date
+          format: date-time
+        reciprocalDelegation:
+          type: boolean
+          description: Reciprocal Delegation
+    BaseMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+          description: Message text content.
+    Role:
+      type: object
+      additionalProperties: false
+      properties:
+        attachmentRequirements:
+          type: array
+          description: Signer attachment requirements.
+          items:
+            $ref: '#/components/schemas/AttachmentRequirement'
+        data:
+          type: object
+          description: Role metadata.
+          additionalProperties: {}
+        emailMessage:
+          description: Role email message.
+          oneOf:
+          - $ref: '#/components/schemas/BaseMessage'
+        id:
+          type: string
+          description: Role Id.
+        index:
+          type: integer
+          description: Role signing order index.
+          format: int32
+        locked:
+          type: boolean
+          description: Is role locked. Role will be locked after failing to sign in multiple times.
+        name:
+          type: string
+          description: Role name.
+        reassign:
+          type: boolean
+          description: Is the role able to reassign.
+        signers:
+          type: array
+          description: Signers associated with the role.
+          items:
+            $ref: '#/components/schemas/Signer'
+        specialTypes:
+          type: array
+          description: Special signer features. Currently only NOTARY is supported.
+          items:
+            type: string
+        type:
+          description: Role type. Currently there are two types, SIGNER and SENDER.
+          oneOf:
+          - $ref: '#/components/schemas/RoleType'
+        downloadEvidenceSummaryBySigner:
+          type: boolean
+          description: Indicates whether the signer assigned to this role can download the evidence summary once signing is complete.
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Currency:
+      type: object
+      description: The currency used for the Price object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+    ResultOfRole:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Role'
+    SignerInformationForEquifaxCanada:
+      type: object
+      description: Object to manage Equifax Canada information
+      additionalProperties: false
+      properties:
+        city:
+          type: string
+          description: City
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth
+          format: date-time
+        driversLicenseNumber:
+          type: string
+          description: Drivers license number
+        firstName:
+          type: string
+          description: First name
+        homePhoneNumber:
+          type: string
+          description: Home phone number
+        lastName:
+          type: string
+          description: Last name
+        socialInsuranceNumber:
+          type: string
+          description: Social insurance number
+        province:
+          type: string
+          description: Province
+        streetAddress:
+          type: string
+          description: Street address
+        timeAtAddress:
+          type:
+          - integer
+          - 'null'
+          description: Time at address
+          format: int32
+        postalCode:
+          type: string
+          description: Postal code
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-conga-sign.json
+- conga-user-management.json

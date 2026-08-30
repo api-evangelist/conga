@@ -1,0 +1,347 @@
+openapi: 3.2.0
+info:
+  title: Approvals Backup Delegates API
+  description: '
+
+    The Approvals API is used to submit, preview, and retrieve approval processes.
+
+    '
+  version: v1
+servers:
+- url: https://rls.congacloud.com/api/approvals
+security: []
+tags:
+- name: BackupDelegates
+paths:
+  /v1/backup-delegates:
+    post:
+      tags:
+      - BackupDelegates
+      summary: Create or update backup or delegate approvers
+      description: Writes (posts) a new backup or delegate approver or updates the information for an existing backup or delegate approver.
+      operationId: BackupDelegates_SaveBackupDelegates
+      requestBody:
+        x-name: backupDelegatePayload
+        description: "The backup/delegate payload. This contains settings for backup or delegate approvers,\n            such as UserInfo, EffectiveDate, ExpirationDate, backupApproverId, currentUserId, transferInflight, and IsDelegate = true if assigning a delegate"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupDelegateDTO'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: Backup or delegate approver information (BackupDelegateDTO).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupDelegateDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - BackupDelegates
+      summary: List backup and delegate approvers
+      description: Returns a list of backup and delegate approvers.
+      operationId: BackupDelegates_Search
+      parameters:
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 2
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 3
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BackupDelegateDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/backup-delegates/stats:
+    get:
+      tags:
+      - BackupDelegates
+      summary: Count backup and delegate approvers
+      description: Returns a count of backup and delegate approvers.
+      operationId: BackupDelegates_GetActiveInactiveCount
+      responses:
+        '200':
+          description: A count of backup or delegate approvers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupDelegateApproverCountPayloadDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/backup-delegates/{id}:
+    delete:
+      tags:
+      - BackupDelegates
+      summary: Delete a backup or delegate approver
+      description: Delete a backup or delegate approver by ID.
+      operationId: BackupDelegates_Delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The backup or delegate's ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: Boolean (`true` if deleted)
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - BackupDelegates
+      summary: Get a backup or delegate approver
+      description: Returns a backup or delegate approver by ID.
+      operationId: BackupDelegates_GetById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupDelegateDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/backup-delegates/{id}/activate:
+    post:
+      tags:
+      - BackupDelegates
+      summary: Activate a backup or delegate
+      description: Activates a backup or delegate by record ID.
+      operationId: BackupDelegates_Activate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The backup or delegate's ID
+        schema:
+          type: string
+        x-position: 1
+      - name: continueOnValidate
+        in: query
+        description: If true, backup or delegate approver will still be activated even if EffectiveDate is in the future
+        schema:
+          type: boolean
+        x-position: 2
+      responses:
+        '200':
+          description: bool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupDelegateDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/backup-delegates/{id}/deactivate:
+    post:
+      tags:
+      - BackupDelegates
+      summary: Deactivate a backup or delegate
+      description: Deactivates a backup or delegate by record ID.
+      operationId: BackupDelegates_DeActivate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The backup or delegate's ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: bool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupDelegateDTO'
+      security:
+      - oauth2: []
+      - Bearer: []
+components:
+  schemas:
+    BackupDelegateDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        BackupUser:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CurrentUser:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        DelegateUserIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        CancellationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EffectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Comment:
+          type: string
+        InEffect:
+          type:
+          - boolean
+          - 'null'
+        IsActive:
+          type:
+          - boolean
+          - 'null'
+        IsDelegate:
+          type:
+          - boolean
+          - 'null'
+        SuppressDelegateNotification:
+          type:
+          - boolean
+          - 'null'
+        TransferInFlight:
+          type:
+          - boolean
+          - 'null'
+        IsOutofOffice:
+          type:
+          - boolean
+          - 'null'
+        continueonvalidate:
+          type: boolean
+        DeactivatedRecord:
+          oneOf:
+          - $ref: '#/components/schemas/BackupDelegateDTO'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    BackupDelegateApproverCountPayloadDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        TotalActiveRecords:
+          type: integer
+          format: int32
+        TotalInActiveRecords:
+          type: integer
+          format: int32
+        TotalInFutureRecords:
+          type: integer
+          format: int32
+        DelegateActiveRecords:
+          type: integer
+          format: int32
+        DelegateInActiveRecords:
+          type: integer
+          format: int32
+        DelegateInFutureRecords:
+          type: integer
+          format: int32
+        BackupActiveRecords:
+          type: integer
+          format: int32
+        BackupInActiveRecords:
+          type: integer
+          format: int32
+        BackupInFutureRecords:
+          type: integer
+          format: int32
+        OutofOfficeActiveRecords:
+          type: integer
+          format: int32
+        OutofOfficeInActiveRecords:
+          type: integer
+          format: int32
+        OutofOfficeInFutureRecords:
+          type: integer
+          format: int32
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: 'Use a JWT Bearer token. (Example: Bearer eyJhbGciO...)'
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

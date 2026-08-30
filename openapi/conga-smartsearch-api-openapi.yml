@@ -1,0 +1,303 @@
+openapi: 3.2.0
+info:
+  title: Catalog Smart Search API
+  version: 1.0.0
+  description: Search APIs to search product details
+servers:
+- url: https://rls.congacloud.com/api/catalog/v1
+security:
+- Bearer: []
+tags:
+- name: SmartSearch
+  description: Search APIs to search product details
+paths:
+  /search:
+    post:
+      tags:
+      - SmartSearch
+      summary: Search products
+      description: "Applies search filters in the catalog to retrieve one or more products that satisfy the search filter criteria provided in the parameters and the request body. To filter out a product you can use the following facets/search criteria. \n <ul><li>Product Type(E.g., Equipment or service)</li><li>Family(E.g., Software or hardware)</li><li>Configuration Type(E.g., Standalone or bundle)</li><li>A custom multi-picklist field called AdminAuto_CustomMultiPicklistField_c(E.g., Bundle1, Bundle 2)</li></ul><p>Please note that the search filter that you are passing must be associated with the category ID on which you are performing the search.</p><p>This API also does multiple search criteria to filter out the product, it considers one or more of the conditions using AND/OR association.For example, to search within the family facet (Software or hardware) the facet value will only take the OR logic.But to search products across the Family facet and Product Type facet, the AND logic will be applicable.This API also sorts records in ascending order and applies pagination on the retrieved result.</p><p>Pass the Pricelist ID and Category ID in the header and select the Search Type in the query parameters to call this API.When you pass a specific Category ID, the search filters will be applied to all products associated with that specific category ID.When you pass Category ID as <b>All</b>, the search filters will be applied to all the products across all the categories. The Pricelist ID and Search Type are mandatory fields.You can also use the Filter and Includes query parameter to deepen your search by passing the categories and pricelist items.When you do not pass the category ID in the header or pass an empty request body, the API returns all the products without any facets/search filter.</p>"
+      parameters:
+      - name: pricelistid
+        in: header
+        description: The identifier of the price list to search on.
+        schema:
+          type: string
+      - name: storeFrontId
+        in: header
+        description: A unique identifier of the storefront.
+        schema:
+          type: string
+      - name: search-type
+        in: query
+        description: Default is `Product`.
+        schema:
+          type: string
+      - name: categoryid
+        in: header
+        description: The identifier of the category to search on.
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Contains conditional filters in standard URI that can be used to narrow down the search result. Only the AND operator is supported to associate multiple filters.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: query
+        in: query
+        description: A keyword to narrow down the search result. The API can match a maximum of 20 characters. If the keyword exceeds 20 characters, the API considers only first 20 characters of the keyword to find match in the record header fields. If the parameter is left blank, all relevant records after the filter is executed are retrieved.
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Related data to include in response.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: The list of fields and sort order. The default sort order is ascending by name of the record.
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number of the resultset to view. Use this parameter with the "limit" parameter to configure pagination.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The number of records to display on each page. A maximum of 500 records are displayed on each page. The current page and range index of the result set can be found in the <i>content-range</i> header field in the response with the total number of results. This helps paginate the result set.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: cartId
+        in: header
+        description: Pass a cart id to filter the data relative to a specific cart.
+        schema:
+          type: string
+          default: ''
+      - name: productSortEmptyFirst
+        in: query
+        description: Set this as 'True' to display empty products first in the search result.
+        schema:
+          type: boolean
+          default: false
+      - name: disableCurrencyConversion
+        in: query
+        description: Set this as 'True' to disable the currency conversion.
+        schema:
+          type: boolean
+          default: false
+      - name: configName
+        in: query
+        description: Config Name that stores the Product search response field list
+        schema:
+          type: string
+          default: ResponseFieldList_Default
+      requestBody:
+        description: ''
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+  /search/typeahead:
+    get:
+      tags:
+      - SmartSearch
+      summary: Search products using typeahead
+      description: 'Searches for products using typeahead search, an autosuggest method that predicts search results and gives users suggestions when they enter one or more letters related to their search.
+
+        <p>This API searches and retrieves products based on the query parameters that you have passed.You must select the Search-Type query parameter as <b>Product</b> to run this API.For example, to search for products that contain the letter �a�, select the Search-Type query parameter to product, and under the Query parameter, enter the letter �a�. Executing this API displays all the products that have the letter �a� in their Product Name, Description, and Product code.If you do not pass any Query parameters, all the products will be retrieved. The PriceList ID in the header is a mandatory field to execute this API.</p>'
+      parameters:
+      - name: pricelistid
+        in: header
+        description: The identifier of the price list to search on.
+        schema:
+          type: string
+      - name: search-type
+        in: query
+        description: ''
+        schema:
+          type: string
+      - name: categoryid
+        in: header
+        description: The identifier of the category to search on.
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: A keyword to narrow down the search result. The API can match a maximum of 20 characters. If the keyword exceeds 20 characters, the API considers only first 20 characters of the keyword to find match in the record header fields. If the parameter is left blank, all relevant records after the filter is executed are retrieved.
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: The list of fields and sort order. The default sort order is ascending by name of the record.
+        schema:
+          type: string
+      - name: storeFrontId
+        in: header
+        description: A unique identifier of the storefront.
+        schema:
+          type: string
+      - name: cartId
+        in: header
+        description: Pass a cart id to filter the data relative to a specific cart.
+        schema:
+          type: string
+          default: ''
+      - name: page
+        in: query
+        description: The page number of the resultset to view. Use this parameter with the "limit" parameter to configure pagination.
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: The number of records to display on each page. A maximum of 500 records are displayed on each page. The current page and range index of the result set can be found in the "content-range" header field in the response with the total number of results. This helps paginate the result set.
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: configName
+        in: query
+        description: configName
+        schema:
+          type: string
+          default: ProductSearchConfig
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+components:
+  schemas:
+    Conga.Revenue.DataAccess.Models.Common.FacetValue:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        count:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        isEnabled:
+          type: boolean
+        isSelected:
+          type: boolean
+      additionalProperties: false
+    Conga.Revenue.DataAccess.Models.Common.Facet:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        facetValues:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.FacetValue'
+      additionalProperties: false
+    Conga.Revenue.DataAccess.Models.Common.SmartSearchRequest:
+      type: object
+      properties:
+        isPointOfSale:
+          type: boolean
+        lineItems:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        facets:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.DataAccess.Models.Common.Facet'
+      additionalProperties: false
+    Microsoft.AspNetCore.Mvc.ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

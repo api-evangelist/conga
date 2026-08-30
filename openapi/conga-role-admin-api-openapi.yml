@@ -1,0 +1,1054 @@
+openapi: 3.2.0
+info:
+  title: User Management Role Admin API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Role Admin
+paths:
+  /api/user-management/v1/roles:
+    get:
+      tags:
+      - Role Admin
+      summary: Get all roles
+      description: Returns all roles that meet the criteria.
+      parameters:
+      - name: criteria
+        in: query
+        description: 'Search criteria for the roles. **For example**: IsDeleted != ''true''.<p>**Note**: The criteria field (in this case, IsDeleted) should be indexed.</p>'
+        schema:
+          type: string
+      - name: sortField
+        in: query
+        description: 'Field name for sorting. **For example**: Name.<p>**Note**: The sort field (in this case, Name) should be indexed or sortable.</p>'
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: 'Sort direction (Ascending or Descending) of the data. For example: ASC or DESC<p>**Note**: The default sort order is **DESC** if the sort field parameter is specified.</p>'
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        description: The number of records to display on each page.
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: The page number of the result set to view.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringObjectDictionaryListAPIResponse'
+              example:
+                Success: true
+                RecordCount: 2
+                Data:
+                - Description: GeneralUserRole
+                  Id: 794dab7c-ffcd-4c21-86db-9141df79f6d3
+                  PermissionGroups: GlobalScopePermissionGroup
+                  Name: GeneralUser
+                - Description: Admin
+                  Id: e9ee1eac-7719-490f-904f-c0a7b734f84b
+                  PermissionGroups: ScopePermissionGroup
+                  Name: Admin
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Role Admin
+      summary: Create a new role
+      description: Creates a new role and returns the role's ID.
+      requestBody:
+        description: Details about a role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RoleCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RoleCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: e237ff8a-07de-4885-90f7-d3a846f0f537
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/bulk:
+    post:
+      tags:
+      - Role Admin
+      summary: Create multiple roles
+      description: Creates multiple roles and returns their IDs.
+      requestBody:
+        description: Details about roles
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleCreateRequest'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleCreateRequest'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - 8c4d0567-e936-4cc9-97e3-018912237605
+                - 428bda2d-24ee-4eed-b44b-6f60130f1942
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/{roleId}:
+    delete:
+      tags:
+      - Role Admin
+      summary: Delete a role
+      description: Deletes the role with the given role ID and returns the status.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: fb888fbc-ef34-4b0b-9a75-93a49a270be6 deleted successfully.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - Role Admin
+      summary: Get role information by ID
+      description: Returns the details of a role based on the role ID.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: GeneralUserRole
+                  PermissionGroups: GlobalScopePermissionGroup
+                  IsDeleted: false
+                  AdminPermissions: null
+                  RoleType: null
+                  Id: 67d73560-a995-432a-9b7b-afc8a38e182b
+                  Name: GeneralUser
+                  CreatedBy:
+                    Id: 93ad0370-7b3e-47df-8ed2-c75eb8583ad7
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.3463312+00:00'
+                  ModifiedBy:
+                    Id: ab50c0fa-b1c4-4867-bc84-f71d514facac
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.3463402+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Role Admin
+      summary: Update a role
+      description: Updates the name and description of the provided role ID.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Details to be updated in the role model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: GeneralUserRole
+                  PermissionGroups: GlobalScopePermissionGroup
+                  IsDeleted: false
+                  AdminPermissions: null
+                  RoleType: null
+                  Id: 761b47c6-9e75-45e9-9d2e-bb84006c3e05
+                  Name: GeneralUser
+                  CreatedBy: null
+                  CreatedDate: '2026-07-27T11:07:35.3385213+00:00'
+                  ModifiedBy: null
+                  ModifiedDate: '2026-07-27T11:07:35.3385239+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/{roleId}/admin-permissions:
+    delete:
+      tags:
+      - Role Admin
+      summary: Delete admin permissions from a role
+      description: Removes the admin permissions from the provided role's current admin permissions and returns the updated role.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'The list of admin permissions to be deleted from a role. *Note*: Use the *Get role information by ID* API to list a role''s available admin permissions.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAdminPermissions'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAdminPermissions'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeleteAdminPermissions'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: CLMRole
+                  PermissionGroups: CLMPermissionGroup
+                  IsDeleted: false
+                  AdminPermissions: Templates
+                  RoleType: null
+                  Id: f3e5cdfa-3a0e-4f6a-af54-b585a5c76049
+                  Name: CLMRole
+                  CreatedBy:
+                    Id: 0ec481c6-1b94-4a5b-8d74-be10fc2cb088
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.3840341+00:00'
+                  ModifiedBy:
+                    Id: 07049875-e702-486f-8a2e-9779cc0dfae3
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.3840431+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Role Admin
+      summary: Assign admin permissions to a role
+      description: Appends the admin permission to the provided role's current admin permissions and returns the updated role.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'The list of admin permissions to be assigned for role. *Note*: Use the *Admin Permissions API* to list admin permissions available in the data storage.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignAdminPermissions'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/AssignAdminPermissions'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/AssignAdminPermissions'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: CLMRole
+                  PermissionGroups: CLMPermissionGroup
+                  IsDeleted: false
+                  AdminPermissions: SchemaManager,Templates
+                  RoleType: null
+                  Id: 27d4a52c-e808-427d-a402-0a6ecdf31e26
+                  Name: CLMRole
+                  CreatedBy:
+                    Id: 1bc0a74f-d0b3-4c32-86ab-2e6035b55d83
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.3764009+00:00'
+                  ModifiedBy:
+                    Id: f1182a94-3721-4332-998e-0bdafe4791f9
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.3764093+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/{roleId}/clone:
+    post:
+      tags:
+      - Role Admin
+      summary: Clone a role
+      description: Clones the role based on the role ID and returns the cloned role's ID.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleCloneRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RoleCloneRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RoleCloneRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: ca7d9160-7ebb-4af2-88b7-98d165bfc334
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/{roleId}/exists:
+    get:
+      tags:
+      - Role Admin
+      summary: Check whether the role exists
+      description: Uses the role ID as an input to check whether the role exists.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/roles/{roleId}/permissiongroups:
+    delete:
+      tags:
+      - Role Admin
+      summary: Delete permission groups from a role
+      description: Removes the permission group names from the provided role's current permission groups and returns the updated role along with error messages for invalid records.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of permission groups to be deleted from a role.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeletePermissionGroups'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Role Admin
+      summary: Assign permission groups to a role
+      description: Appends the permission group names to the provided role's current permission groups and returns the updated role.
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The list of permission groups to be assigned for the role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/AssignPermissionGroups'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Description: GeneralUserRole
+                  PermissionGroups: GlobalScopePermissionGroup
+                  IsDeleted: false
+                  AdminPermissions: null
+                  RoleType: null
+                  Id: 56f1bcdb-a0c9-4dbe-8884-b627b05dfd55
+                  Name: GeneralUser
+                  CreatedBy:
+                    Id: 25d4e670-7c6a-4197-964b-f401ee209de1
+                    Name: System Admin
+                  CreatedDate: '2026-07-27T11:07:35.3549028+00:00'
+                  ModifiedBy:
+                    Id: f60dde23-aca0-4669-b1b6-816328154ffa
+                    Name: System Admin
+                  ModifiedDate: '2026-07-27T11:07:35.3549121+00:00'
+                  ExternalId: null
+                  ETag: null
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    RoleUpdateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The role's description
+      additionalProperties: false
+    DeleteAdminPermissions:
+      type: object
+      properties:
+        AdminPermissionNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    RoleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/Role'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    AssignAdminPermissions:
+      type: object
+      properties:
+        AdminPermissionNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of admin permission names to be assigned for the role.
+      additionalProperties: false
+    RoleCloneRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        CopyPermissionGroups:
+          type: boolean
+          description: Indicates whether to clone permission groups from the role.
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
+      additionalProperties: false
+    Role:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+        IsDeleted:
+          type: boolean
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
+      additionalProperties: {}
+    RoleType:
+      enum:
+      - Internal
+      - External
+      type: string
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RoleCreateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The role's ID
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The role's description
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: Permission groups to assign for the role
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
+      additionalProperties: false
+    DeletePermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Collection of the PermissionGroupNames to be Deleted
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    AssignPermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of permission group names to be assigned for the role.
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

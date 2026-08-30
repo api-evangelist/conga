@@ -1,0 +1,408 @@
+openapi: 3.2.0
+info:
+  title: Administration Price Matrices API
+  version: 1.0.0
+servers:
+- url: https://rls.congacloud.com/api/revenue-admin/v1
+security:
+- Bearer: []
+tags:
+- name: Price Matrices
+paths:
+  /matrices:
+    delete:
+      tags:
+      - Price Matrices
+      summary: Delete price matrices
+      description: 'Deletes one or more price matrices. It can delete a maximum of 100 price matrices.
+
+
+
+        When executed, this API returns one or more records with the delete status of each associated record ID.'
+      requestBody:
+        description: The list of price matrices to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+            example:
+            - Id: Id of the record to delete
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Matrices
+      summary: Retrieve price matrices
+      description: 'Retrieves all price matrices, with their details. Use query parameters to further narrow the results.
+
+
+
+        When executed, this API returns all price matrices.'
+      parameters:
+      - name: filter
+        in: query
+        description: Optional filter parameters
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: Optional sort parameter
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: limit
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      - name: field
+        in: query
+        description: Pass Comma separated mulitple fields
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filterExpression
+        in: query
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Matrices
+      summary: Update price matrices
+      description: 'Updates specific fields on one or more price matrices. It can update any field except price matrix ID.
+
+
+
+        When executed, this API returns the updated price matrix or price matrices.'
+      requestBody:
+        description: The list of price matrices with updated data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+            example:
+            - Name: PriceMatrixName
+              IsActive: true
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+              EnableDateRange: true
+              EnableUsageIndexing: true
+              InitialRows: 1
+              Description: Description
+              PriceListItem:
+                Id: PriceListItem-Id
+                Name: PriceListItem-Name
+              Sequence: 1
+              Id: Id of the record
+          text/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+      - Price Matrices
+      summary: Create price matrices
+      description: 'Creates one or more price matrices for the same or different price list items. It can create a maximum of 1000 price matrices. To create multiple price matrices, pass one array for each price matrix record in the API request.
+
+
+
+        When executed, this API returns a unique price matrix ID (string) that CPQ automatically generates.'
+      requestBody:
+        description: The list of price matrices to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceMatrix'
+      responses:
+        '200':
+          description: OK
+  /matrices/{Id}:
+    delete:
+      tags:
+      - Price Matrices
+      summary: Delete a price matrix
+      description: Deletes a matrix based on the ID provided.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price matrix to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+      - Price Matrices
+      summary: Retrieve a price matrix
+      description: Retrieves details of a matrix associated with the provided matrix ID.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price matrix
+        required: true
+        schema:
+          type: string
+      - name: includes
+        in: query
+        description: Optional related entities to include
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PriceMatrix'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceMatrix'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PriceMatrix'
+        '204':
+          description: No Content
+    patch:
+      tags:
+      - Price Matrices
+      summary: Update a price matrix
+      description: Updates a matrix based on the details provided in the request body for a specified matrix.
+      parameters:
+      - name: Id
+        in: path
+        description: The identifier of the price matrix to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated data of the price matrix
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            example:
+              Name: PriceMatrixName
+              IsActive: true
+              Dimension1:
+                Id: Dimension1-Id
+                Name: Dimension1-Name
+              EnableDateRange: true
+              EnableUsageIndexing: true
+              InitialRows: 1
+              Description: Description
+              PriceListItem:
+                Id: PriceListItem-Id
+                Name: PriceListItem-Name
+              Sequence: 1
+          text/json:
+            schema:
+              type: object
+              additionalProperties: {}
+          application/*+json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    PriceMatrix:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Dimension1:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension1ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension2:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension2ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension3:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension3ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension4:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension4ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension5:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension5ValueType:
+          type:
+          - string
+          - 'null'
+        Dimension6:
+          $ref: '#/components/schemas/LookupObject'
+        Dimension6ValueType:
+          type:
+          - string
+          - 'null'
+        EnableDateRange:
+          type:
+          - boolean
+          - 'null'
+        EnableUsageIndexing:
+          type:
+          - boolean
+          - 'null'
+        InitialRows:
+          type:
+          - number
+          - 'null'
+          format: double
+        MatrixType:
+          type:
+          - string
+          - 'null'
+        PriceListItem:
+          $ref: '#/components/schemas/LookupObject'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        StopProcessing:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: {}
+      example:
+        Name: PriceMatrixName
+        IsActive: true
+        Dimension1:
+          Id: Dimension1-Id
+          Name: Dimension1-Name
+        EnableDateRange: true
+        EnableUsageIndexing: true
+        InitialRows: 1
+        Description: Description
+        PriceListItem:
+          Id: PriceListItem-Id
+          Name: PriceListItem-Name
+        Sequence: 1
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

@@ -1,0 +1,138 @@
+openapi: 3.2.0
+info:
+  title: X-Author Template Migrate API
+  version: v1
+  description: This class contains API endpoints for template migration.
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: TemplateMigrate
+  description: This class contains API endpoints for template migration.
+paths:
+  /api/xauthor/v1/templates/export:
+    post:
+      tags:
+      - TemplateMigrate
+      summary: Export a template
+      description: Exports the selected template into a .zip file containing metadata and related clauses.
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: Export template request containing fields like filter criteria
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.TemplateMigration.Export.ExportTemplateRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.TemplateMigration.Export.ExportTemplateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.TemplateMigration.Export.ExportTemplateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.TemplateMigration.Export.ExportTemplateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+            text/json:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/templates/import:
+    post:
+      tags:
+      - TemplateMigrate
+      summary: Import a template
+      description: Imports the selected template using the .zip file created during the export process.
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                ImportTemplateFile:
+                  type:
+                  - string
+                  - 'null'
+                  format: binary
+            encoding:
+              ImportTemplateFile:
+                style: form
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+            text/json:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Conga.XAuthor.Core.Model.TemplateMigration.Export.ExportTemplateRequest:
+      type: object
+      properties:
+        templateCriteria:
+          type:
+          - string
+          - 'null'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1173 @@
+openapi: 3.2.0
+info:
+  title: Conga Configuration API
+  version: '1.0'
+  description: 'Operations tagged Configuration across 3 of this provider''s published API definitions: conga-configuration-management.json, conga-esignature.json, conga-ingress.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://rls.congacloud.com
+- url: https://preview-rls09.congacloud.com
+- url: https://rls.congacloud.com/api/ingress
+tags:
+- name: Configuration
+paths:
+  /api/config-management/v1/configurations:
+    post:
+      tags:
+      - Configuration
+      summary: Add a configuration
+      description: Creates a new configuration and returns the request status.
+      requestBody:
+        description: Configuration data to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    put:
+      tags:
+      - Configuration
+      summary: Update a configuration
+      description: Updates a configuration and returns the request status.
+      requestBody:
+        description: Configuration data to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Configuration'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/config-management/v1/configurations/categories:
+    get:
+      tags:
+      - Configuration
+      summary: Get configuration categories
+      description: Fetches all configuration categories.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListAPIResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/config-management/v1/configurations/export:
+    post:
+      tags:
+      - Configuration
+      summary: Export custom configuration
+      description: For the configuration categories passed in the request body, exports the custom configuration (zipped, with a JSON file for each configuration category).
+      requestBody:
+        description: 'List of category names to categorize multiple configurations. **For example**: CLM, eSign, etc.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/config-management/v1/configurations/import:
+    post:
+      tags:
+      - Configuration
+      summary: Import custom configuration
+      description: 'Imports custom configuration. For duplicate configuration, the API throws an error. <p>**Note**: Upload a Zip file containg list of configurations.</p>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                style: form
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/config-management/v1/configurations/{category}:
+    get:
+      tags:
+      - Configuration
+      summary: Get configurations by category
+      description: Fetches all configurations that are part of the input category.
+      parameters:
+      - name: category
+        in: path
+        description: 'Configuration category **For example**: CLM, eSign, etc.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationListAPIResponse'
+              example:
+                Success: true
+                Data:
+                - Category: examplecategory
+                  Name: example1
+                  Value: examplevalue1
+                - Category: examplecategory
+                  Name: example2
+                  Value: examplevalue2
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Configuration
+      summary: Get multiple configurations
+      description: When you pass a category and list of configuration names to this endpoint, it returns configuration details.
+      parameters:
+      - name: category
+        in: path
+        description: 'A category name to categorize multiple configurations. **For example**: CLM, eSign, etc.'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of configuration names.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+          text/json:
+            schema:
+              type: array
+              items:
+                type: string
+          application/*+json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationListAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Category: examplecategory
+                  Name: example1
+                  Value: examplevalue1
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/config-management/v1/configurations/{category}/{name}:
+    delete:
+      tags:
+      - Configuration
+      summary: Delete a configuration
+      description: Deletes a configuration and returns the status of request.
+      parameters:
+      - name: category
+        in: path
+        description: 'Configuration category **For example**: CLM, eSign, etc.'
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        description: 'Configuration name. **For example**: config'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanNullableAPIResponse'
+              example:
+                Success: true
+                Data: true
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    get:
+      tags:
+      - Configuration
+      summary: Get a configuration
+      description: When you pass a valid name and category to this endpoint, it returns configuration details.
+      parameters:
+      - name: category
+        in: path
+        description: 'Configuration category **For example**: CLM, eSign, etc.'
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        description: 'Configuration name. **For example**: config'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationAPIResponse'
+              example:
+                Success: true
+                Data:
+                  Category: examplecategory
+                  Name: example1
+                  Value: examplevalue1
+                StatusCode: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: OrganizationFriendlyId is not defined.
+                StatusCode: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: false
+                Errors:
+                - Message: Internal server error occurred. Please contact admin.
+                StatusCode: OK
+      security:
+      - Bearer: []
+    servers:
+    - url: https://rls.congacloud.com
+  /api/esign/v1/esignatures/configuration:
+    get:
+      tags:
+      - Configuration
+      summary: Get sign configuration
+      description: Retrieves the sign configuration for the specified provider type.
+      parameters:
+      - name: signProviderType
+        in: query
+        description: The type of the sign provider (optional).
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SignProviderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Configuration
+      summary: Update the sign configuration
+      description: Saves or updates the sign configuration and returns either consentUrl (for Docusign and AdobeSign) or a success message (for Conga Sign).
+      parameters:
+      - name: signProviderType
+        in: query
+        description: Select an eSignature service provider from the list.
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignConfig'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/configuration/activate:
+    post:
+      tags:
+      - Configuration
+      summary: Activate a sign provider
+      description: Activates the specified sign provider type, allowing it to be used for eSignature operations.
+      parameters:
+      - name: signProviderType
+        in: query
+        description: The type of the sign provider to activate.
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /api/esign/v1/esignatures/configuration/default:
+    post:
+      tags:
+      - Configuration
+      summary: Set the default sign provider
+      description: Sets the specified sign provider as the default for all new eSignature transactions.
+      parameters:
+      - name: signProviderType
+        in: query
+        description: The type of sign provider to set as the default.
+        schema:
+          $ref: '#/components/schemas/SignProviderType'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Please provide valid value.
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseError'
+              example:
+                Success: false
+                Data: null
+                Errors:
+                - Id: null
+                  Message: Internal server error occurred. Please contact admin.
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://rls.congacloud.com
+    - url: https://preview-rls09.congacloud.com
+  /v1/Configuration/environment-info:
+    get:
+      tags:
+      - Configuration
+      summary: Retrieves environment and region details from configuration.
+      operationId: Configuration_GetEnvironmentAndRegionInfo
+      responses:
+        '200':
+          description: Environment info as JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentInfoResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: ''
+      security:
+      - JWT: []
+    servers:
+    - url: https://rls.congacloud.com/api/ingress
+components:
+  schemas:
+    ConfigurationAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/Configuration'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ConfigurationListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Configuration'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Configuration:
+      type: object
+      properties:
+        Category:
+          type:
+          - string
+          - 'null'
+          description: 'A category name to categorize multiple configurations. **For example**: CLM, eSign etc.'
+        Name:
+          type:
+          - string
+          - 'null'
+          description: 'Configuration name. **For example**: config'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Configuration value.
+      additionalProperties: false
+      description: Configuration data to be added.
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail_2'
+      additionalProperties: false
+    Configuration_2:
+      type: object
+      properties:
+        Category:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SignConfig:
+      type: object
+      properties:
+        Configuration:
+          $ref: '#/components/schemas/Configuration_2'
+        State:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+      additionalProperties: false
+    ErrorDetail_2:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SignProviderType:
+      enum:
+      - AdobeSign
+      - CongaSign
+      - DocuSign
+      - WetSign
+      type: string
+    SignProviderResponse:
+      type: object
+      properties:
+        SignProvider:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+        Default:
+          type: boolean
+        Active:
+          type: boolean
+        LastUpdated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Sequence:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    EnvironmentInfoResponse:
+      type: object
+      description: Represents the environment and region information.
+      additionalProperties: false
+      properties:
+        environment:
+          type: string
+          description: Environment name
+        region:
+          type: string
+          description: Environment region
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    JWT:
+      type: apiKey
+      description: Provide oauth authentication
+      name: Authorization
+      in: header
+x-refined-from:
+- conga-configuration-management.json
+- conga-esignature.json
+- conga-ingress.json

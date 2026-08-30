@@ -1,0 +1,615 @@
+openapi: 3.2.0
+info:
+  title: User Management Contact Users API
+  version: v1
+servers:
+- url: https://rls.congacloud.com
+security:
+- Bearer: []
+tags:
+- name: Contact Users
+paths:
+  /api/user-management/v1/contact-users:
+    post:
+      tags:
+      - Contact Users
+      summary: Creates a contact user and creates a mapping between the user and the contact object.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactUserCreateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContactUserCreateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ContactUserCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data:
+                  UserId: 478f03ef-7f8c-4f27-9a88-ba2e9190b1e5
+                  UserContactMappingId: 00656b6d-f8f3-49a3-baf3-c2c1a288112c
+                StatusCode: Created
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/contact-users/{userId}:
+    delete:
+      tags:
+      - Contact Users
+      summary: Deactivate a contact user.
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User InActivate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Contact Users
+      summary: Update a contact user.
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactUserBaseRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContactUserBaseRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ContactUserBaseRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAPIResponse'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/user-management/v1/contact-users/{userId}/restore:
+    put:
+      tags:
+      - Contact Users
+      summary: Reactivate a previously deactivated contact user.
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringAPIResponse'
+              example:
+                Success: true
+                Data: User Activate request has been processed. Kindly review identity status of user.
+                StatusCode: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    UserType:
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+      - Contact
+      type: string
+    UserAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/User'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    User:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        UserName:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+        RolePermissionGroups:
+          type:
+          - string
+          - 'null'
+        Timezone:
+          type:
+          - string
+          - 'null'
+        Locale:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        CurrencyFormat:
+          type:
+          - string
+          - 'null'
+        IsDeleted:
+          type: boolean
+        IsActive:
+          type: boolean
+        IsSuspended:
+          type:
+          - boolean
+          - 'null'
+        Alias:
+          type:
+          - string
+          - 'null'
+        Language:
+          type:
+          - string
+          - 'null'
+        SmallPhotoUrl:
+          type:
+          - string
+          - 'null'
+        LastLoginDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        Address:
+          type:
+          - string
+          - 'null'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+        IdentityStatus:
+          type:
+          - string
+          - 'null'
+        UserType:
+          $ref: '#/components/schemas/UserType'
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        OrganizationExternalId:
+          type:
+          - string
+          - 'null'
+        UserGroupsAssignedTo:
+          type:
+          - string
+          - 'null'
+        ClientId:
+          type:
+          - string
+          - 'null'
+        FederationId:
+          type:
+          - string
+          - 'null'
+        IsNextGenUiEnabled:
+          type:
+          - boolean
+          - 'null'
+      additionalProperties: {}
+    ContactUserCreateRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name.
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name.
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address.
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: The user's time zone ID.
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: The user's locale name.
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: The user's currency.
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name.
+        Language:
+          type:
+          - string
+          - 'null'
+          description: The user's language.
+        Address:
+          type:
+          - string
+          - 'null'
+          description: The user's address.
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number.
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of permission groups to assign to the user.
+        UserName:
+          type:
+          - string
+          - 'null'
+          description: The user's unique username (used with OTP for sign-in).
+        ContactObjectName:
+          type:
+          - string
+          - 'null'
+          description: The object name of the contact.
+        ContactObjectId:
+          type:
+          - string
+          - 'null'
+          description: The id of the contact record.
+        PrimaryObjectName:
+          type:
+          - string
+          - 'null'
+          description: The object name of the primary object.
+        PrimaryObjectId:
+          type:
+          - string
+          - 'null'
+          description: The id of the primary object record.
+      additionalProperties: false
+      description: Request payload to create a contact user (username + OTP sign-in).
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    ContactUserBaseRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name.
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name.
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address.
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: The user's time zone ID.
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: The user's locale name.
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: The user's currency.
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name.
+        Language:
+          type:
+          - string
+          - 'null'
+          description: The user's language.
+        Address:
+          type:
+          - string
+          - 'null'
+          description: The user's address.
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number.
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of permission groups to assign to the user.
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      description: Please insert JWT with Bearer into field
+      name: Authorization
+      in: header

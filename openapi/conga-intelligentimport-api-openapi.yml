@@ -1,0 +1,936 @@
+openapi: 3.2.0
+info:
+  title: X-Author Intelligent Import API
+  version: v1
+servers:
+- url: https://xauthor-prod-rls10.congacloud.com
+- url: https://xauthor-preview-rls09.congacloud.com
+security:
+- bearerAuth: []
+tags:
+- name: IntelligentImport
+paths:
+  /api/xauthor/v1/intelligent-imports/documents:
+    post:
+      tags:
+      - IntelligentImport
+      summary: Extract a document
+      description: Submits a document for extraction process through CLM API.
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The document request
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/intelligent-imports/documents/mark-clauses-and-fields:
+    post:
+      tags:
+      - IntelligentImport
+      summary: Extract and mark the clauses and fields in the request document
+      parameters:
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: The request object that consists of information about content, agreementId, etc
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEExtractedEntityRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEExtractedEntityRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEExtractedEntityRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEExtractedEntityRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedDocumentResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedDocumentResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedDocumentResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/intelligent-imports/documents/retrieve-properties/{contractId}:
+    post:
+      tags:
+      - IntelligentImport
+      summary: Get the doc fields and clauses properties
+      parameters:
+      - name: contractId
+        in: path
+        description: The id of the contract
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: The id of the contract
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      requestBody:
+        description: It consists of the all the doc fields and clauses
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/intelligent-imports/documents/status/{contractId}/{attachmentId}:
+    get:
+      tags:
+      - IntelligentImport
+      summary: Get document extraction status
+      description: Gets the status for requested document. Returns `true` if the document is already sent for extraction, else `false`.
+      parameters:
+      - name: contractId
+        in: path
+        description: contractId
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contractId
+      - name: attachmentId
+        in: path
+        description: AttachmentId Id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: AttachmentId Id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: boolean
+            application/json:
+              schema:
+                type: boolean
+            text/json:
+              schema:
+                type: boolean
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+  /api/xauthor/v1/intelligent-imports/jobs/status/{contractId}/{attachmentId}:
+    get:
+      tags:
+      - IntelligentImport
+      summary: Get IDE job status
+      description: "- Null if IDE import request is not made\n- Complete or Job type is In-Review and status Pending\n- If job status is complete then we will retrive field and clause in next request and mean while we will display message to customer that we are processing document\n  Else we will display other message to customer"
+      parameters:
+      - name: contractId
+        in: path
+        description: contractId
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: contractId
+      - name: attachmentId
+        in: path
+        description: AttachmentId Id
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+          description: AttachmentId Id
+      - name: OrgType
+        in: header
+        required: true
+        schema:
+          type: string
+          default: RLP
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentStatusResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentStatusResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Apttus.XAuthor.Common.Model.IDEDocumentStatusResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Server Error
+components:
+  schemas:
+    Apttus.XAuthor.Core.Model.IDEMissingProvisions:
+      type: object
+      properties:
+        clause:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CCI.CCIMappedClause'
+        field:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.CCI.CCIMappedField'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.IDEDocumentRequest:
+      type: object
+      properties:
+        agreementId:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        attachmentName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.IDEExtractedEntityRequest:
+      type: object
+      properties:
+        agreementId:
+          type:
+          - string
+          - 'null'
+        attachmentId:
+          type:
+          - string
+          - 'null'
+        ideJobId:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        bodyContent:
+          type:
+          - string
+          - 'null'
+        documentContent:
+          type:
+          - string
+          - 'null'
+        docProtectionMode:
+          type:
+          - string
+          - 'null'
+        cciDocumentId:
+          type:
+          - string
+          - 'null'
+        xaAddInLoadType:
+          $ref: '#/components/schemas/Apttus.XAuthor.Common.Enum.XAAddInLoadType'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.CCI.CCIMappedField:
+      type: object
+      properties:
+        objectName:
+          type:
+          - string
+          - 'null'
+        objectFieldLabel:
+          type:
+          - string
+          - 'null'
+        congaField:
+          type:
+          - string
+          - 'null'
+        objectFieldType:
+          type:
+          - string
+          - 'null'
+        localName:
+          type:
+          - string
+          - 'null'
+        referenceFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Field'
+        referenceTo:
+          type:
+          - string
+          - 'null'
+        ideEntityId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.CCI.CCIMappedClause:
+      type: object
+      properties:
+        clauseLabel:
+          type:
+          - string
+          - 'null'
+        clauseId:
+          type:
+          - string
+          - 'null'
+        wordWildCard:
+          type:
+          - string
+          - 'null'
+        patternSimilarity:
+          type:
+          - string
+          - 'null'
+        clauseType:
+          type:
+          - string
+          - 'null'
+        clauseReferenceId:
+          type:
+          - string
+          - 'null'
+        standardClause:
+          type:
+          - string
+          - 'null'
+        standardClauseUpper:
+          type:
+          - string
+          - 'null'
+        clauseCategory:
+          type:
+          - string
+          - 'null'
+        clauseSubCategory:
+          type:
+          - string
+          - 'null'
+        clauseExtractionId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.IDEExtractedClause:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        extractedValue:
+          type:
+          - string
+          - 'null'
+        standardValue:
+          type:
+          - string
+          - 'null'
+        wordWildCardValue:
+          type:
+          - string
+          - 'null'
+        patternSimilarity:
+          type:
+          - string
+          - 'null'
+        refinedValue:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        patternMatchResult:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.IDEPatternMatchContext'
+        exactText:
+          type:
+          - string
+          - 'null'
+        recordId:
+          type:
+          - string
+          - 'null'
+        isClause:
+          type: boolean
+        isField:
+          type: boolean
+        clauseId:
+          type:
+          - string
+          - 'null'
+        clauseHeader:
+          type:
+          - string
+          - 'null'
+        clauseReferenceId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.IDEPatternMatchContext:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        pattern:
+          type:
+          - string
+          - 'null'
+        refinedResult:
+          type:
+          - string
+          - 'null'
+        wordWildCardString:
+          type:
+          - string
+          - 'null'
+        patternSimilarity:
+          type: number
+          format: double
+        textSimilarity:
+          type: number
+          format: double
+        deltaInPatternAndResult:
+          type: integer
+          format: int32
+      additionalProperties: false
+    Apttus.XAuthor.Common.Enum.XAAddInLoadType:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      format: int32
+    Conga.XAuthor.Core.Model.IDEExtractedClauseData:
+      type: object
+      properties:
+        clauseProperties:
+          type:
+          - string
+          - 'null'
+        contentControlId:
+          type:
+          - string
+          - 'null'
+        opcXml:
+          type:
+          - string
+          - 'null'
+        ideExtractedClause:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.IDEExtractedClause'
+        clauseText:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.IDEExtractedField:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        extractedValue:
+          type:
+          - string
+          - 'null'
+        standardValue:
+          type:
+          - string
+          - 'null'
+        wordWildCardValue:
+          type:
+          - string
+          - 'null'
+        patternSimilarity:
+          type:
+          - string
+          - 'null'
+        refinedValue:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        patternMatchResult:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.IDEPatternMatchContext'
+        exactText:
+          type:
+          - string
+          - 'null'
+        recordId:
+          type:
+          - string
+          - 'null'
+        isClause:
+          type: boolean
+        isField:
+          type: boolean
+        metaDataField:
+          type:
+          - string
+          - 'null'
+        objectType:
+          type:
+          - string
+          - 'null'
+        fieldInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Field'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.Field:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        parentType:
+          type:
+          - string
+          - 'null'
+        pickList:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.PickListItem'
+        length:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        localName:
+          type:
+          - string
+          - 'null'
+        mergeFieldName:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        scale:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        tag:
+          type:
+          - string
+          - 'null'
+        isUpdateable:
+          type:
+          - boolean
+          - 'null'
+        readOnly:
+          type:
+          - boolean
+          - 'null'
+        isRichtextField:
+          type:
+          - boolean
+          - 'null'
+        relationshipMetadata:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.RelationshipMetadata'
+        referenceTo:
+          type:
+          - string
+          - 'null'
+        referenceObject:
+          type:
+          - string
+          - 'null'
+        isDBReferenceField:
+          type: boolean
+        referenceFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.Field'
+        localizationEnabled:
+          type: boolean
+        fieldLocalInfo:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.LocaleInfo'
+        picklistName:
+          type:
+          - string
+          - 'null'
+        defaultValue: {}
+        dependentPicklistName:
+          type:
+          - string
+          - 'null'
+        dependentPicklist:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.DependentPicklistItem'
+        isSortable:
+          type:
+          - boolean
+          - 'null'
+        isNameField:
+          type:
+          - boolean
+          - 'null'
+        isFilterable:
+          type: boolean
+      additionalProperties: false
+    Conga.XAuthor.Core.Model.IDEDocFieldsAndClauses:
+      type: object
+      properties:
+        ideExtractedFieldData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedFieldData'
+        ideExtractedClauseData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedClauseData'
+        content:
+          type:
+          - string
+          - 'null'
+        detectedDateValues:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.LocaleInfo:
+      type: object
+      properties:
+        lcidString:
+          type:
+          - string
+          - 'null'
+        languageCode:
+          type:
+          - string
+          - 'null'
+        languageName:
+          type:
+          - string
+          - 'null'
+        localeFilePath:
+          type:
+          - string
+          - 'null'
+        locale:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        useSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        defaultLocale:
+          type:
+          - string
+          - 'null'
+        defaultDateFormat:
+          type:
+          - string
+          - 'null'
+        defaultPrecision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        defaultUseSymbolForFormatting:
+          type:
+          - string
+          - 'null'
+        currencyIsoCode:
+          type:
+          - string
+          - 'null'
+        currencySymbol:
+          type:
+          - string
+          - 'null'
+        currencyPrecision:
+          type: integer
+          format: int32
+      additionalProperties: false
+    Conga.XAuthor.Core.Model.IDEExtractedDocumentResponse:
+      type: object
+      properties:
+        ideExtractedFieldData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedFieldData'
+        ideExtractedClauseData:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Core.Model.IDEExtractedClauseData'
+        ideExtractedMissingProvisions:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.IDEMissingProvisions'
+        content:
+          type:
+          - string
+          - 'null'
+        detectedDateValues:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    Conga.XAuthor.Core.Model.IDEExtractedFieldData:
+      type: object
+      properties:
+        fieldProperties:
+          type:
+          - string
+          - 'null'
+        contentControlId:
+          type:
+          - string
+          - 'null'
+        opcXml:
+          type:
+          - string
+          - 'null'
+        ideExtractedField:
+          $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.IDEExtractedField'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.PickListItem:
+      type: object
+      properties:
+        active:
+          type: boolean
+        defaultValue:
+          type: boolean
+        label:
+          type:
+          - string
+          - 'null'
+        value:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.RelationshipMetadata:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        referenceType:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        fieldName:
+          type:
+          - string
+          - 'null'
+        targetObjectName:
+          type:
+          - string
+          - 'null'
+        targetFieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Apttus.XAuthor.Core.Model.DependentPicklistItem:
+      type: object
+      properties:
+        controllingPicklistValue:
+          type:
+          - string
+          - 'null'
+        picklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Apttus.XAuthor.Core.Model.PickListItem'
+      additionalProperties: false
+    Apttus.XAuthor.Common.Model.IDEDocumentStatusResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        jobType:
+          type:
+          - string
+          - 'null'
+        jobStatus:
+          type:
+          - string
+          - 'null'
+        jobErrorMessage:
+          type:
+          - string
+          - 'null'
+        cciDocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
