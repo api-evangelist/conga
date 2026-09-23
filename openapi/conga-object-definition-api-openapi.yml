@@ -92,6 +92,8 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: getApiSchemaV1Objects
+      x-operation-id-source: derived
     post:
       tags:
       - Object Definition
@@ -233,12 +235,20 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1Objects
+      x-operation-id-source: derived
   /api/schema/v1/objects/customschema/import:
     post:
       tags:
       - Object Definition
       summary: Import custom schema
-      description: "Imports schema for custom fields and custom objects. \n            <ul><li><b>For standard object</b>: Creates missing custom fields from the corresponding JSON file (part of the ZIP file).</li><li><b>For custom object</b>: If a custom object is not available, it is created with all the fields; otherwise, it creates missing custom fields from the corresponding JSON file (part of the ZIP file).</li></ul>"
+      description: 'Imports schema for custom fields and custom objects.
+
+
+        For standard object: Creates missing custom fields from the corresponding JSON file (part of the ZIP file).
+
+
+        For custom object: If a custom object is not available, it is created with all the fields; otherwise, it creates missing custom fields from the corresponding JSON file (part of the ZIP file).'
       requestBody:
         content:
           multipart/form-data:
@@ -262,6 +272,8 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsCustomschemaImport
+      x-operation-id-source: derived
   /api/schema/v1/objects/{lookupObjectName}/lookup-criteria/validate:
     post:
       tags:
@@ -298,6 +310,8 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByLookupObjectNameLookupCriteriaValidate
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}:
     get:
       tags:
@@ -442,6 +456,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSchemaV1ObjectsByObjectName
+      x-operation-id-source: derived
     put:
       tags:
       - Object Definition
@@ -592,6 +608,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectName
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/deprecate:
     patch:
       tags:
@@ -612,6 +630,8 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: patchApiSchemaV1ObjectsByObjectNameDeprecate
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/shared/{isShared}:
     put:
       tags:
@@ -638,72 +658,10 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectNameSharedByIsShared
+      x-operation-id-source: derived
 components:
   schemas:
-    Attributes:
-      type: object
-      properties:
-        PublishDataChangeEvents:
-          type: boolean
-        TrackAuditHistory:
-          type: boolean
-        IsInternalObject:
-          type: boolean
-      additionalProperties: false
-    ControllingDependentPicklistEntryCreateRequest:
-      type: object
-      properties:
-        ControllingPicklistEntry:
-          type:
-          - string
-          - 'null'
-          description: Controlling picklist entry of the picklist
-        DependentPicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntryCreateRequest'
-          description: Collection of the dependent picklist values
-      additionalProperties: false
-      description: Controlling dependent picklist entry
-    AttributesCreateRequest:
-      type: object
-      properties:
-        PublishDataChangeEvents:
-          type: boolean
-        TrackAuditHistory:
-          type: boolean
-      additionalProperties: false
-    DataType:
-      enum:
-      - String
-      - Int
-      - Double
-      - Currency
-      - Boolean
-      - DateTime
-      - AutoNumber
-      - Lookup
-      - Picklist
-      - MultiPicklist
-      - Identifier
-      - LongString
-      - Complex
-      - ComplexArray
-      - Reference
-      - Rollup
-      - Decimal
-      - Image
-      - Alias
-      - Date
-      - Owner
-      type: string
-    IdentifierType:
-      enum:
-      - UUIDv4
-      - UID18
-      type: string
     ObjectInfo:
       type: object
       properties:
@@ -729,6 +687,170 @@ components:
           type: boolean
         ObjectType:
           $ref: '#/components/schemas/ObjectType'
+      additionalProperties: false
+    Attributes:
+      type: object
+      properties:
+        PublishDataChangeEvents:
+          type: boolean
+        TrackAuditHistory:
+          type: boolean
+        IsInternalObject:
+          type: boolean
+      additionalProperties: false
+    StringStringDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PicklistEntryCreateRequest:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of the picklist entry
+        DisplayText:
+          type:
+          - string
+          - 'null'
+          description: Display text of the picklist entry
+        Sequence:
+          type: integer
+          description: Sequence of the picklist entry
+          format: int32
+      additionalProperties: false
+    DependentPicklistMetadataRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the dependent picklist
+        DependentFieldName:
+          type:
+          - string
+          - 'null'
+          description: Dependent field name of the picklist
+        ControllingFieldName:
+          type:
+          - string
+          - 'null'
+          description: Controlling field name of the picklist
+        ControllingAndDependentPicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ControllingDependentPicklistEntryCreateRequest'
+          description: Collection of the controlling and dependent picklist
+      additionalProperties: false
+    ObjectMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ObjectMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AliasFieldMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        AliasFieldDefinitionDetail:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AliasFieldDefinitionDetail'
       additionalProperties: false
     FieldMetadataCreateRequest:
       type: object
@@ -864,139 +986,6 @@ components:
           - 'null'
           description: Definition of the alias field
       additionalProperties: false
-    PicklistMetadata:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-        PicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntry'
-        IsDeprecated:
-          type: boolean
-      additionalProperties: false
-    AliasFieldMetadata:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        AliasFieldDefinitionDetail:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AliasFieldDefinitionDetail'
-      additionalProperties: false
-    PicklistMetadataCreateRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the picklist
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-          description: Indicates whether values other than those defined in the picklist are allowed.
-        PicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntryCreateRequest'
-          description: Colletion of the picklist entries
-      additionalProperties: false
-    StringStringDictionaryAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ComplexFieldMetadataCreateRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the complex field metadata
-        Fields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
-          description: Collection of complex fields
-      additionalProperties: false
-    ComplexFieldMetadata:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        Fields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FieldMetadata'
-      additionalProperties: false
-    ObjectTypeFilter:
-      enum:
-      - Default
-      - Property
-      - All
-      type: string
     DependentPicklistMetadata:
       type: object
       properties:
@@ -1082,6 +1071,120 @@ components:
           $ref: '#/components/schemas/AttributesCreateRequest'
       additionalProperties: false
       description: Object's metadata create request
+    IndexMetadataDetail:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ObjectInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ControllingDependentPicklistEntryCreateRequest:
+      type: object
+      properties:
+        ControllingPicklistEntry:
+          type:
+          - string
+          - 'null'
+          description: Controlling picklist entry of the picklist
+        DependentPicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntryCreateRequest'
+          description: Collection of the dependent picklist values
+      additionalProperties: false
+      description: Controlling dependent picklist entry
+    AliasFieldDefinitionDetail:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ComplexFieldMetadataCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the complex field metadata
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
+          description: Collection of complex fields
+      additionalProperties: false
     ComplexFieldMetadataEntryCreateModel:
       type: object
       properties:
@@ -1120,19 +1223,22 @@ components:
           description: Length of the complex field when the data type is String or LongString.
           format: int32
       additionalProperties: false
-    IndexMetadata:
+    PicklistEntry:
       type: object
       properties:
-        Name:
+        Value:
           type:
           - string
           - 'null'
-        IndexMetadataDetail:
+        DisplayText:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/IndexMetadataDetail'
+        Sequence:
+          type: integer
+          format: int32
+        IsDeprecated:
+          type: boolean
       additionalProperties: false
     TtlFieldMetadata:
       type: object
@@ -1148,87 +1254,6 @@ components:
           description: Gets or sets the service quota key that specifies the retention period, in days, for data storage.
       additionalProperties: false
       description: TTL (Time To Live) field metadata class that defines the properties related to the TTL field used for data expiration in the data store.
-    PicklistEntryCreateRequest:
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value of the picklist entry
-        DisplayText:
-          type:
-          - string
-          - 'null'
-          description: Display text of the picklist entry
-        Sequence:
-          type: integer
-          description: Sequence of the picklist entry
-          format: int32
-      additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ObjectMetadataUpdateRequest:
-      type: object
-      properties:
-        DisplayName:
-          type:
-          - string
-          - 'null'
-          description: DisplayName of the Object
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description of the Object
-        IsDataCacheEnabled:
-          type: boolean
-          description: Indicates if DataCache is enabled for this object
-        IsTrackingEnabled:
-          type: boolean
-          description: Indicates if the Object is TrackingEnabled
-        IsAllowOwnerScope:
-          type: boolean
-          description: Indicates if allow Owner Scope
-        IsRecycleBinEnabled:
-          type: boolean
-          description: Enable Recycle Bin for the object
-        Category:
-          type:
-          - string
-          - 'null'
-          description: Category of the Object
-      additionalProperties: false
-    ObjectType:
-      enum:
-      - Default
-      - Property
-      type: string
-    ControllingAndDependentPicklistEntry:
-      type: object
-      properties:
-        ControllingPicklistEntry:
-          type:
-          - string
-          - 'null'
-        DependentPicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntry'
-      additionalProperties: false
     ObjectMetadata:
       type: object
       properties:
@@ -1339,6 +1364,141 @@ components:
           $ref: '#/components/schemas/Attributes'
       additionalProperties: false
       description: Object's metadata
+    ObjectTypeFilter:
+      enum:
+      - Default
+      - Property
+      - All
+      type: string
+    ObjectType:
+      enum:
+      - Default
+      - Property
+      type: string
+    DataType:
+      enum:
+      - String
+      - Int
+      - Double
+      - Currency
+      - Boolean
+      - DateTime
+      - AutoNumber
+      - Lookup
+      - Picklist
+      - MultiPicklist
+      - Identifier
+      - LongString
+      - Complex
+      - ComplexArray
+      - Reference
+      - Rollup
+      - Decimal
+      - Image
+      - Alias
+      - Date
+      - Owner
+      type: string
+    IndexMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        IndexMetadataDetail:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/IndexMetadataDetail'
+      additionalProperties: false
+    ObjectMetadataUpdateRequest:
+      type: object
+      properties:
+        DisplayName:
+          type:
+          - string
+          - 'null'
+          description: DisplayName of the Object
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the Object
+        IsDataCacheEnabled:
+          type: boolean
+          description: Indicates if DataCache is enabled for this object
+        IsTrackingEnabled:
+          type: boolean
+          description: Indicates if the Object is TrackingEnabled
+        IsAllowOwnerScope:
+          type: boolean
+          description: Indicates if allow Owner Scope
+        IsRecycleBinEnabled:
+          type: boolean
+          description: Enable Recycle Bin for the object
+        Category:
+          type:
+          - string
+          - 'null'
+          description: Category of the Object
+      additionalProperties: false
+    PicklistMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    PicklistMetadataCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the picklist
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+          description: Indicates whether values other than those defined in the picklist are allowed.
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntryCreateRequest'
+          description: Colletion of the picklist entries
+      additionalProperties: false
+    IdentifierType:
+      enum:
+      - UUIDv4
+      - UID18
+      type: string
+    AttributesCreateRequest:
+      type: object
+      properties:
+        PublishDataChangeEvents:
+          type: boolean
+        TrackAuditHistory:
+          type: boolean
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     FieldMetadata:
       type: object
       properties:
@@ -1481,171 +1641,19 @@ components:
         IdentifierType:
           $ref: '#/components/schemas/IdentifierType'
       additionalProperties: false
-    AliasFieldDefinitionDetail:
+    ControllingAndDependentPicklistEntry:
       type: object
       properties:
-        FieldName:
+        ControllingPicklistEntry:
           type:
           - string
           - 'null'
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        Sequence:
-          type: integer
-          format: int32
-      additionalProperties: false
-    IndexMetadataDetail:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ObjectMetadataAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/ObjectMetadata'
-        Errors:
+        DependentPicklistEntries:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PicklistEntry:
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-        DisplayText:
-          type:
-          - string
-          - 'null'
-        Sequence:
-          type: integer
-          format: int32
-        IsDeprecated:
-          type: boolean
-      additionalProperties: false
-    ObjectInfoListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ObjectInfo'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    DependentPicklistMetadataRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the dependent picklist
-        DependentFieldName:
-          type:
-          - string
-          - 'null'
-          description: Dependent field name of the picklist
-        ControllingFieldName:
-          type:
-          - string
-          - 'null'
-          description: Controlling field name of the picklist
-        ControllingAndDependentPicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ControllingDependentPicklistEntryCreateRequest'
-          description: Collection of the controlling and dependent picklist
+            $ref: '#/components/schemas/PicklistEntry'
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -1711,6 +1719,20 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    ComplexFieldMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldMetadata'
+      additionalProperties: false
   securitySchemes:
     bearerAuth:
       type: http

@@ -45,6 +45,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1FieldPermissions
+      x-operation-id-source: derived
     get:
       tags:
       - Field Permission
@@ -98,6 +100,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1FieldPermissions
+      x-operation-id-source: derived
     post:
       tags:
       - Field Permission
@@ -134,6 +138,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1FieldPermissions
+      x-operation-id-source: derived
     put:
       tags:
       - Field Permission
@@ -185,6 +191,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1FieldPermissions
+      x-operation-id-source: derived
   /api/user-management/v1/field-permissions/bulk:
     post:
       tags:
@@ -230,6 +238,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1FieldPermissionsBulk
+      x-operation-id-source: derived
   /api/user-management/v1/field-permissions/{fieldPermissionId}:
     delete:
       tags:
@@ -262,6 +272,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1FieldPermissionsByFieldPermissionId
+      x-operation-id-source: derived
     get:
       tags:
       - Field Permission
@@ -308,6 +320,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1FieldPermissionsByFieldPermissionId
+      x-operation-id-source: derived
     put:
       tags:
       - Field Permission
@@ -366,28 +380,63 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1FieldPermissionsByFieldPermissionId
+      x-operation-id-source: derived
 components:
   schemas:
-    FieldPermissionCreateRequest:
+    LookupObject:
       type: object
       properties:
-        ObjectName:
+        Id:
           type:
           - string
           - 'null'
-          description: Object for which field permission is to be created.
-        PermissionGroupName:
+        Name:
           type:
           - string
           - 'null'
-          description: Permission group name for which field permission is to be created.
-        FieldLevelAccess:
+      additionalProperties: false
+    FieldPermissionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FieldPermission'
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/FieldAccessConfigRequest'
-          description: Collection of field access
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     StringObjectDictionaryAPIResponse:
       type: object
@@ -434,72 +483,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    FieldPermissionAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/FieldPermission'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    FieldPermissionUpdateByIdRequest:
-      type: object
-      properties:
-        FieldLevelAccess:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FieldAccessConfigRequest'
-          description: Collection of field level access
-      additionalProperties: false
-    FieldAccessConfigRequest:
-      type: object
-      properties:
-        Field:
-          type:
-          - string
-          - 'null'
-          description: Name of the field
-        Read:
-          type: boolean
-        Write:
-          type: boolean
-      additionalProperties: false
     FieldPermission:
       type: object
       properties:
@@ -539,39 +522,70 @@ components:
           - 'null'
         FieldLevelAccess: {}
       additionalProperties: {}
-    FieldPermissionUpdateRequest:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object for which field permission is to be updated.
-        PermissionGroupName:
-          type:
-          - string
-          - 'null'
-          description: Permission group name for which field permission is to be updated.
-        FieldLevelAccess:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FieldAccessConfigRequest'
-          description: Collection of field access
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
     ErrorDetail:
       type: object
       properties:
@@ -579,6 +593,17 @@ components:
           type:
           - string
           - 'null'
+      additionalProperties: false
+    FieldPermissionUpdateByIdRequest:
+      type: object
+      properties:
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field level access
       additionalProperties: false
     StringListAPIResponse:
       type: object
@@ -670,70 +695,61 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
+    FieldPermissionUpdateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object for which field permission is to be updated.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which field permission is to be updated.
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field access
+      additionalProperties: false
+    FieldAccessConfigRequest:
+      type: object
+      properties:
+        Field:
+          type:
+          - string
+          - 'null'
+          description: Name of the field
+        Read:
+          type: boolean
+        Write:
+          type: boolean
+      additionalProperties: false
+    FieldPermissionCreateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object for which field permission is to be created.
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which field permission is to be created.
+        FieldLevelAccess:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FieldAccessConfigRequest'
+          description: Collection of field access
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

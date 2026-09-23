@@ -1,11 +1,7 @@
 openapi: 3.2.0
 info:
   title: Approvals Adhoc Process API
-  description: '
-
-    The Approvals API is used to submit, preview, and retrieve approval processes.
-
-    '
+  description: The Approvals API is used to submit, preview, and retrieve approval processes.
   version: v1
 servers:
 - url: https://rls.congacloud.com/api/approvals
@@ -201,6 +197,124 @@ paths:
       - Bearer: []
 components:
   schemas:
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    AdhocApprovalGroup:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocApprovalProcessInfoId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          GroupName:
+            type:
+            - string
+            - 'null'
+          GroupSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ApproverList:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AdhocApprover'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Sequence:
+            type: integer
+            format: int32
+    AdhocApprover:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AdhocGroupId:
+            oneOf:
+            - $ref: '#/components/schemas/AdhocApprovalGroup'
+          ApproverSequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          DependsOn:
+            type:
+            - string
+            - 'null'
+          AutoReapprovalEnabled:
+            type:
+            - boolean
+            - 'null'
+          IsReviewer:
+            type:
+            - boolean
+            - 'null'
+          SendEmail:
+            type:
+            - boolean
+            - 'null'
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeMailId:
+            type:
+            - string
+            - 'null'
+          AssigneeName:
+            type:
+            - string
+            - 'null'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+          Sequence:
+            type: integer
+            format: int32
     AdhocProcessDefnPayloadDTO:
       type: object
       description: AdhocProcessDefinition Payload DTO encapsulates the information for the generated approval requests, analogous to ad hoc process payloads.
@@ -273,6 +387,88 @@ components:
           description: Date the submission occurred
           format: date-time
           example: '2023-04-10T22:08:42.756215Z'
+    GroupPayloadDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RequestId:
+            type:
+            - string
+            - 'null'
+          Status:
+            type:
+            - string
+            - 'null'
+    AdhocApprovalProcessInfoDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
+      - type: object
+        description: AdhocApprovalProcessInfoDTO for response payload
+        additionalProperties: {}
+        properties:
+          DisplayFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayFieldsInfo have more information about each field in DisplayFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          DisplayHeaderFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessId
+          ApprovalProcessName:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessName
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
     AdhocApprovalProcessInfo:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -313,137 +509,6 @@ components:
             type: boolean
           Delete:
             type: boolean
-    AdhocApprovalProcessInfoDTO:
-      allOf:
-      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
-      - type: object
-        description: AdhocApprovalProcessInfoDTO for response payload
-        additionalProperties: {}
-        properties:
-          DisplayFieldsInfo:
-            type:
-            - array
-            - 'null'
-            description: DisplayFieldsInfo have more information about each field in DisplayFields
-            items:
-              $ref: '#/components/schemas/FieldDTO'
-          DisplayHeaderFieldsInfo:
-            type:
-            - array
-            - 'null'
-            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
-            items:
-              $ref: '#/components/schemas/FieldDTO'
-          ApprovalProcessId:
-            type:
-            - string
-            - 'null'
-            description: ApprovalProcessId
-          ApprovalProcessName:
-            type:
-            - string
-            - 'null'
-            description: ApprovalProcessName
-    GroupPayloadDTO:
-      allOf:
-      - $ref: '#/components/schemas/AdhocApprovalGroup'
-      - type: object
-        additionalProperties: {}
-        properties:
-          RequestId:
-            type:
-            - string
-            - 'null'
-          Status:
-            type:
-            - string
-            - 'null'
-    BaseObject:
-      type: object
-      additionalProperties: {}
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        CustomProperties:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-    AdhocApprovalGroup:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          AdhocApprovalProcessInfoId:
-            oneOf:
-            - $ref: '#/components/schemas/LookupObject'
-          GroupName:
-            type:
-            - string
-            - 'null'
-          GroupSequence:
-            type:
-            - integer
-            - 'null'
-            format: int32
-          DependsOn:
-            type:
-            - string
-            - 'null'
-          BusinessObjectId:
-            type:
-            - string
-            - 'null'
-          BusinessObjectType:
-            type:
-            - string
-            - 'null'
-          ApproverList:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/AdhocApprover'
-          Persist:
-            type: boolean
-          Delete:
-            type: boolean
-          ModifiedPropertyNames:
-            type:
-            - array
-            - 'null'
-            items:
-              type: string
-          Sequence:
-            type: integer
-            format: int32
     AdhocSubmitApprovalRequest:
       type: object
       description: SubmitApprovalRequest
@@ -474,75 +539,6 @@ components:
           - 'null'
           description: A list of attachments separated by a comma
           example: attachmentId1,attachmentId2
-    LookupObject:
-      type: object
-      additionalProperties: false
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-    AdhocApprover:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          AdhocGroupId:
-            oneOf:
-            - $ref: '#/components/schemas/AdhocApprovalGroup'
-          ApproverSequence:
-            type:
-            - integer
-            - 'null'
-            format: int32
-          DependsOn:
-            type:
-            - string
-            - 'null'
-          AutoReapprovalEnabled:
-            type:
-            - boolean
-            - 'null'
-          IsReviewer:
-            type:
-            - boolean
-            - 'null'
-          SendEmail:
-            type:
-            - boolean
-            - 'null'
-          SendChat:
-            type:
-            - boolean
-            - 'null'
-          AssigneeId:
-            type:
-            - string
-            - 'null'
-          AssigneeType:
-            type:
-            - string
-            - 'null'
-          AssigneeMailId:
-            type:
-            - string
-            - 'null'
-          AssigneeName:
-            type:
-            - string
-            - 'null'
-          Persist:
-            type: boolean
-          Delete:
-            type: boolean
-          Sequence:
-            type: integer
-            format: int32
     FieldDTO:
       type: object
       description: FieldDTO encapsulates the field level information like label, value, datatype

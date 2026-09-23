@@ -106,6 +106,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: deleteCustomPlans
+      x-operation-id-source: derived
   /custom-plans/search:
     post:
       tags:
@@ -162,6 +164,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postCustomPlansSearch
+      x-operation-id-source: derived
   /custom-plans/{customPlanId}:
     get:
       tags:
@@ -207,31 +211,33 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getCustomPlansByCustomPlanId
+      x-operation-id-source: derived
 components:
   schemas:
-    ErrorApiResponse:
+    ResponseWrapper:
       type: object
       properties:
-        Errors:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Created/Updated record Id on processed in a transaction
       additionalProperties: false
-    ApiError:
+    LookupObject:
       type: object
       properties:
-        Source:
+        Id:
           type:
           - string
           - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
+        Name:
           type:
           - string
           - 'null'
@@ -257,87 +263,39 @@ components:
           - 'null'
           readOnly: true
       additionalProperties: false
-    PlanLineItem:
+    CustomPlanAndLineItemRequest:
       type: object
       properties:
         Id:
           type:
           - string
           - 'null'
-        Name:
+          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Id
+        NameContaining:
           type:
           - string
           - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
+          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Name
+        OrderId:
           type:
           - string
           - 'null'
-        ETag:
+          description: Retrieving Custom Plan and Plan Line Item having given Order Id
+        OrderLineItemId:
           type:
           - string
           - 'null'
-        CustomPlan:
-          $ref: '#/components/schemas/LookupObject'
-        PeriodStartDate:
+          description: Retrieving Custom Plan and Plan Line Item having given Order Line Item Ids
+        ProposalId:
           type:
           - string
           - 'null'
-          format: date-time
-        PeriodEndDate:
+          description: Retrieving Custom Plan and Plan Line Item having given Proposal Id
+        LineItemId:
           type:
           - string
           - 'null'
-          format: date-time
-        ReadyForInvoiceDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        Percent:
-          type: number
-          format: double
-        PaymentTerm:
-          $ref: '#/components/schemas/LookupObject'
-        MilestoneExpectedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        Comments:
-          type:
-          - string
-          - 'null'
-        Currency:
-          type:
-          - string
-          - 'null'
-        Amount:
-          $ref: '#/components/schemas/CurrencyField'
-      additionalProperties: {}
-    ResponseWrapper:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Created/Updated record Id on processed in a transaction
+          description: Retrieving Custom Plan and Plan Line Item having given Line Item Ids
       additionalProperties: false
     CustomPlan:
       type: object
@@ -425,7 +383,34 @@ components:
             $ref: '#/components/schemas/PlanLineItem'
           description: Child collection of PlanLineItem (included when 'Items' is requested via the includes parameter).
       additionalProperties: {}
-    LookupObject:
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    PlanLineItem:
       type: object
       properties:
         Id:
@@ -436,41 +421,62 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    CustomPlanAndLineItemRequest:
-      type: object
-      properties:
-        Id:
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Id
-        NameContaining:
+        ETag:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item based on Custom Plan Name
-        OrderId:
+        CustomPlan:
+          $ref: '#/components/schemas/LookupObject'
+        PeriodStartDate:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item having given Order Id
-        OrderLineItemId:
+          format: date-time
+        PeriodEndDate:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item having given Order Line Item Ids
-        ProposalId:
+          format: date-time
+        ReadyForInvoiceDate:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item having given Proposal Id
-        LineItemId:
+          format: date-time
+        Percent:
+          type: number
+          format: double
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        MilestoneExpectedDate:
           type:
           - string
           - 'null'
-          description: Retrieving Custom Plan and Plan Line Item having given Line Item Ids
-      additionalProperties: false
+          format: date-time
+        Comments:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        Amount:
+          $ref: '#/components/schemas/CurrencyField'
+      additionalProperties: {}
   securitySchemes:
     Bearer:
       type: apiKey

@@ -49,6 +49,8 @@ paths:
                   af72e569-9e65-4f97-a7c9-26466c02be51: Fail
                 Warnings: null
                 Errors: null
+      operationId: deleteApiClmV1ContractsByContractIdByObjectName
+      x-operation-id-source: derived
     post:
       tags:
       - Contract Related List
@@ -119,6 +121,8 @@ paths:
                   Currency: USD
                 Warnings: null
                 Errors: null
+      operationId: postApiClmV1ContractsByContractIdByObjectName
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Related List
@@ -189,6 +193,8 @@ paths:
                   Currency: USD
                 Warnings: null
                 Errors: null
+      operationId: putApiClmV1ContractsByContractIdByObjectName
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/{objectName}/query:
     post:
       tags:
@@ -277,6 +283,8 @@ paths:
                   StatusCode: OK
                 Warnings: null
                 Errors: null
+      operationId: postApiClmV1ContractsByContractIdByObjectNameQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/{objectName}/{objectId}:
     delete:
       tags:
@@ -314,6 +322,8 @@ paths:
                 Data: true
                 Warnings: null
                 Errors: null
+      operationId: deleteApiClmV1ContractsByContractIdByObjectNameByObjectId
+      x-operation-id-source: derived
     get:
       tags:
       - Contract Related List
@@ -359,6 +369,8 @@ paths:
                     OwnerType: User
                 Warnings: null
                 Errors: null
+      operationId: getApiClmV1ContractsByContractIdByObjectNameByObjectId
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Related List
@@ -417,18 +429,16 @@ paths:
                     OwnerType: User
                 Warnings: null
                 Errors: null
+      operationId: putApiClmV1ContractsByContractIdByObjectNameByObjectId
+      x-operation-id-source: derived
 components:
   schemas:
-    StringObjectDictionaryQueryResponse:
+    StringObjectDictionaryListAPIResponse:
       type: object
       properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
+        Success:
+          type: boolean
+          description: The state of the API response
         Data:
           type:
           - array
@@ -436,15 +446,28 @@ components:
           items:
             type: object
             additionalProperties: {}
-        HasMoreRecords:
+          description: Generic data to return
+        Warnings:
           type:
-          - boolean
+          - array
           - 'null'
-        NextCursor:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     StringObjectDictionaryAPIResponse:
       type: object
       properties:
@@ -498,143 +521,21 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    StringObjectDictionaryListAPIResponse:
+    ContractRelatedListDeleteRequest:
       type: object
       properties:
-        Success:
+        DeleteAll:
           type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    CustomQuery:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
-          type:
-          - string
-          - 'null'
-          description: Criteria Expression to filter the records
-        Distinct:
-          type: boolean
-          description: Whether to fetch only distinct records
-        Fields:
+          description: Flag to determine if all records under the provided Contract Id to be deleted
+        ObjectIds:
           type:
           - array
           - 'null'
           items:
             type: string
-          description: The list of fields to be fetched
-        GroupBy:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Group Field name if the result to be grouped
-        IncludeTotalCount:
-          type: boolean
-          description: Whether to include total count in the query response. Defaults to true.
+          description: List of ObjectIds to be deleted
       additionalProperties: false
-      description: Custom Query
-    StringResultStatusDictionaryAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
+      description: ''
     StringObjectDictionaryQueryResponseAPIResponse:
       type: object
       properties:
@@ -659,21 +560,32 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    ContractRelatedListDeleteRequest:
+    StringObjectDictionaryQueryResponse:
       type: object
       properties:
-        DeleteAll:
-          type: boolean
-          description: Flag to determine if all records under the provided Contract Id to be deleted
-        ObjectIds:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
           type:
           - array
           - 'null'
           items:
-            type: string
-          description: List of ObjectIds to be deleted
+            type: object
+            additionalProperties: {}
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
-      description: ''
     SortInfo:
       type: object
       properties:
@@ -750,6 +662,108 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    StringResultStatusDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
   securitySchemes:
     bearerAuth:
       type: http

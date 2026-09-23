@@ -15,7 +15,25 @@ paths:
       tags:
       - Contract Obligations Fulfillment
       summary: Get all active obligation fulfillments for the Manage Fulfillment listing
-      description: "Fetches all active obligation fulfillment records excluding Canceled and Superseded status records at database level.\n\nFor Recurring Obligations (Monthly, Quarterly, Custom):\n- Excludes terminal statuses: FulfilledOnTime, FulfilledLate, Waived\n- If there are overdue pending fulfillments (DueDate Less Than Today with PendingFulfillment or PendingReview status):\n  Shows all overdue pending fulfillments PLUS the next upcoming fulfillment (earliest future DueDate)\n- If all pending fulfillments are future (DueDate Greater Than Or Equal Today):\n  Shows only the next upcoming (earliest) pending fulfillment\n- Prevents showing all future fulfillments - only the immediate next one\n\nResults are sorted by due date and include contract and obligation details for each fulfillment."
+      description: 'Fetches all active obligation fulfillment records excluding Canceled and Superseded status records at database level.
+
+
+        For Recurring Obligations (Monthly, Quarterly, Custom):
+
+        - Excludes terminal statuses: FulfilledOnTime, FulfilledLate, Waived
+
+        - If there are overdue pending fulfillments (DueDate Less Than Today with PendingFulfillment or PendingReview status):
+
+        Shows all overdue pending fulfillments PLUS the next upcoming fulfillment (earliest future DueDate)
+
+        - If all pending fulfillments are future (DueDate Greater Than Or Equal Today):
+
+        Shows only the next upcoming (earliest) pending fulfillment
+
+        - Prevents showing all future fulfillments - only the immediate next one
+
+
+        Results are sorted by due date and include contract and obligation details for each fulfillment.'
       requestBody:
         description: Query parameters for filtering, sorting, and pagination
         content:
@@ -140,6 +158,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsObligationsFulfillmentsQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/activityhistory/query:
     post:
       tags:
@@ -284,6 +304,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdObligationsByObligationIdActivityhistoryQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/fulfillments/query:
     post:
       tags:
@@ -426,6 +448,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdObligationsByObligationIdFulfillmentsQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/fulfillments/{fulfillmentId}:
     get:
       tags:
@@ -486,6 +510,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1ContractsByContractIdObligationsByObligationIdFulfillmentsByFulfillmentId
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Obligations Fulfillment
@@ -641,6 +667,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: putApiClmV1ContractsByContractIdObligationsByObligationIdFulfillmentsByFulfillmentId
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/fulfillments/{fulfillmentId}/history/query:
     post:
       tags:
@@ -789,6 +817,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdObligationsByObligationIdFulfillmentsByFulfillmentIdHistoryQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/obligations/{obligationId}/fulfillments/{fulfillmentId}/{fulfillmentAction}:
     post:
       tags:
@@ -892,9 +922,151 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdObligationsByObligationIdFulfillmentsByFulfillmentIdByFulfillmentAction
+      x-operation-id-source: derived
 components:
   schemas:
-    ContractObligationFulfillment:
+    ManageFulfillmentResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        FulfillmentNumber:
+          type:
+          - string
+          - 'null'
+          description: 'FulfillmentNumber - Fulfillment Number from AgreementObligationFulfillment
+
+            Hyperlink to Obligation Fulfillment Details page'
+        ObligationName:
+          type:
+          - string
+          - 'null'
+          description: ObligationName - The name of the associated obligation from AgreementObligation schema
+        ObligationNumber:
+          type:
+          - string
+          - 'null'
+          description: ObligationNumber - Obligation Number from AgreementObligation schema
+        Frequency:
+          type:
+          - string
+          - 'null'
+          description: Frequency - Obligation recurrence frequency from AgreementObligation schema
+        AgreementObligation:
+          type:
+          - string
+          - 'null'
+          description: AgreementObligation - AGREEMENT_OBLIGATION ID to link back to the obligation details page
+        Agreement:
+          type:
+          - string
+          - 'null'
+          description: Agreement
+        ContractName:
+          type:
+          - string
+          - 'null'
+          description: Contract Name
+        ObligationType:
+          type:
+          - string
+          - 'null'
+          description: ObligationType - Type of obligation from AgreementObligation schema
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status - Fulfillment Status from AgreementObligationFulfillment schema
+        Assignee:
+          $ref: '#/components/schemas/LookupObject'
+        Reviewer:
+          $ref: '#/components/schemas/LookupObject'
+        DueDate:
+          type:
+          - string
+          - 'null'
+          description: DueDate - Due date when the obligation has to be fulfilled from AgreementObligationFulfillment schema
+          format: date-time
+        FulfillmentDate:
+          type:
+          - string
+          - 'null'
+          description: FulfillmentDate - Actual date when the obligation was fulfilled from AgreementObligationFulfillment schema
+          format: date-time
+        Priority:
+          type:
+          - string
+          - 'null'
+          description: Priority - Priority level from AgreementObligation schema
+        ReviewerContact:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeContact:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeSupplierContact:
+          $ref: '#/components/schemas/LookupObject'
+        ReviewerUserGroup:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeUserGroup:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeType:
+          type:
+          - string
+          - 'null'
+          description: Assignee Type - User , UserGroup
+        ReviewerType:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Type - User , UserGroup
+      additionalProperties: false
+      description: 'Model for Manage Fulfillment Listing Response
+
+        BaseObject maps to: AgreementObligationFulfillment (primary object)
+
+        Additional fields mapped from: AgreementObligation (fetched via AGREEMENT_OBLIGATION ID)'
+    ContractObligationFulfillmentResponse:
+      type: object
+      properties:
+        ContractObligation:
+          $ref: '#/components/schemas/ContractObligation'
+        ContractObligationFulfillment:
+          $ref: '#/components/schemas/ContractObligationFulfillment'
+        Documents:
+          $ref: '#/components/schemas/DocumentSearchResponse'
+      additionalProperties: false
+      description: Model for Contract Obligation Fulfillment Response
+    ContractObligationFulfillmentAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractObligationFulfillment'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentMetadata:
       type: object
       properties:
         Id:
@@ -923,70 +1095,83 @@ components:
           type:
           - string
           - 'null'
-        FulfillmentNumber:
+        Description:
           type:
           - string
           - 'null'
-          description: Fulfillment Number
-        AgreementObligation:
+        Extension:
           type:
           - string
           - 'null'
-          description: Reference to Agreement Obligation table
-        FulfillmentNumberAuto:
+        Tags:
           type:
           - string
           - 'null'
-          description: Auto-generated fulfillment number (raw sequence from DB)
-        DueDate:
+        ObjectType:
           type:
           - string
           - 'null'
-          description: 'Due Date
-
-            Serialized Format: yyyy-MM-dd (e.g., "2027-03-01")
-
-            The DateTime value is converted to a date-only string without time component.
-
-            Accepts both yyyy-MM-dd format and ISO-8601 datetime on deserialization.'
+        ObjectId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        DocumentVersion:
+          type: integer
+          format: int32
+        IsDeleted:
+          type: boolean
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+        CheckoutDate:
+          type: string
           format: date-time
-        FulfillmentDate:
+        FileSize:
+          type: integer
+          format: int64
+        FileType:
           type:
           - string
           - 'null'
-          description: FulfillmentDate
-          format: date-time
-        Status:
+        IsLatest:
+          type: boolean
+        IsSearchable:
           type:
-          - string
+          - boolean
           - 'null'
-          description: Fulfillment Status
-        Assignee:
-          $ref: '#/components/schemas/LookupObject'
-        Reviewer:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeContact:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeSupplierContact:
-          $ref: '#/components/schemas/LookupObject'
-        ReviewerContact:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeType:
-          type:
-          - string
-          - 'null'
-          description: Assignee Type
-        ReviewerType:
-          type:
-          - string
-          - 'null'
-          description: Reviewer Type
-        AssigneeUserGroup:
-          $ref: '#/components/schemas/LookupObject'
-        ReviewerUserGroup:
-          $ref: '#/components/schemas/LookupObject'
       additionalProperties: {}
-      description: Model for Agreement Obligation Fulfillment
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
     ManageFulfillmentResponseQueryResponseAPIResponse:
       type: object
       properties:
@@ -1011,15 +1196,48 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    FulfillmentAction:
-      enum:
-      - Submit
-      - Accept
-      - Reject
-      - RequestInformation
-      - Waive
-      type: string
-      description: Defines possible actions that can be performed on a contract obligation fulfillment
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     ContractObligation:
       type: object
       properties:
@@ -1142,30 +1360,6 @@ components:
           description: Obligation Number
       additionalProperties: {}
       description: Model for Contract Obligation
-    ContractObligationFulfillmentAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/ContractObligationFulfillment'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
     StringObjectDictionaryQueryResponse:
       type: object
       properties:
@@ -1192,173 +1386,6 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    APIResponseError:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Error Class
-    ManageFulfillmentResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        FulfillmentNumber:
-          type:
-          - string
-          - 'null'
-          description: 'FulfillmentNumber - Fulfillment Number from AgreementObligationFulfillment
-
-            Hyperlink to Obligation Fulfillment Details page'
-        ObligationName:
-          type:
-          - string
-          - 'null'
-          description: ObligationName - The name of the associated obligation from AgreementObligation schema
-        ObligationNumber:
-          type:
-          - string
-          - 'null'
-          description: ObligationNumber - Obligation Number from AgreementObligation schema
-        Frequency:
-          type:
-          - string
-          - 'null'
-          description: Frequency - Obligation recurrence frequency from AgreementObligation schema
-        AgreementObligation:
-          type:
-          - string
-          - 'null'
-          description: AgreementObligation - AGREEMENT_OBLIGATION ID to link back to the obligation details page
-        Agreement:
-          type:
-          - string
-          - 'null'
-          description: Agreement
-        ContractName:
-          type:
-          - string
-          - 'null'
-          description: Contract Name
-        ObligationType:
-          type:
-          - string
-          - 'null'
-          description: ObligationType - Type of obligation from AgreementObligation schema
-        Status:
-          type:
-          - string
-          - 'null'
-          description: Status - Fulfillment Status from AgreementObligationFulfillment schema
-        Assignee:
-          $ref: '#/components/schemas/LookupObject'
-        Reviewer:
-          $ref: '#/components/schemas/LookupObject'
-        DueDate:
-          type:
-          - string
-          - 'null'
-          description: DueDate - Due date when the obligation has to be fulfilled from AgreementObligationFulfillment schema
-          format: date-time
-        FulfillmentDate:
-          type:
-          - string
-          - 'null'
-          description: FulfillmentDate - Actual date when the obligation was fulfilled from AgreementObligationFulfillment schema
-          format: date-time
-        Priority:
-          type:
-          - string
-          - 'null'
-          description: Priority - Priority level from AgreementObligation schema
-        ReviewerContact:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeContact:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeSupplierContact:
-          $ref: '#/components/schemas/LookupObject'
-        ReviewerUserGroup:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeUserGroup:
-          $ref: '#/components/schemas/LookupObject'
-        AssigneeType:
-          type:
-          - string
-          - 'null'
-          description: Assignee Type - User , UserGroup
-        ReviewerType:
-          type:
-          - string
-          - 'null'
-          description: Reviewer Type - User , UserGroup
-      additionalProperties: false
-      description: 'Model for Manage Fulfillment Listing Response
-
-        BaseObject maps to: AgreementObligationFulfillment (primary object)
-
-        Additional fields mapped from: AgreementObligation (fetched via AGREEMENT_OBLIGATION ID)'
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
     SortInfo:
       type: object
       properties:
@@ -1371,140 +1398,7 @@ components:
           $ref: '#/components/schemas/SortDirection'
       additionalProperties: false
       description: Sorting Information for Fields
-    ManageFulfillmentResponseQueryResponse:
-      type: object
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ManageFulfillmentResponse'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ContractObligationFulfillmentResponse:
-      type: object
-      properties:
-        ContractObligation:
-          $ref: '#/components/schemas/ContractObligation'
-        ContractObligationFulfillment:
-          $ref: '#/components/schemas/ContractObligationFulfillment'
-        Documents:
-          $ref: '#/components/schemas/DocumentSearchResponse'
-      additionalProperties: false
-      description: Model for Contract Obligation Fulfillment Response
-    CustomQuery:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
-          type:
-          - string
-          - 'null'
-          description: Criteria Expression to filter the records
-        Distinct:
-          type: boolean
-          description: Whether to fetch only distinct records
-        Fields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The list of fields to be fetched
-        GroupBy:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Group Field name if the result to be grouped
-        IncludeTotalCount:
-          type: boolean
-          description: Whether to include total count in the query response. Defaults to true.
-      additionalProperties: false
-      description: Custom Query
-    ContractObligationFulfillmentResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/ContractObligationFulfillmentResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    DocumentSearchResponse:
-      type: object
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DocumentMetadata'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-      additionalProperties: false
-    DocumentMetadata:
+    ContractObligationFulfillment:
       type: object
       properties:
         Id:
@@ -1533,56 +1427,70 @@ components:
           type:
           - string
           - 'null'
-        Description:
+        FulfillmentNumber:
           type:
           - string
           - 'null'
-        Extension:
+          description: Fulfillment Number
+        AgreementObligation:
           type:
           - string
           - 'null'
-        Tags:
+          description: Reference to Agreement Obligation table
+        FulfillmentNumberAuto:
           type:
           - string
           - 'null'
-        ObjectType:
+          description: Auto-generated fulfillment number (raw sequence from DB)
+        DueDate:
           type:
           - string
           - 'null'
-        ObjectId:
-          type:
-          - string
-          - 'null'
-        DocumentId:
-          type:
-          - string
-          - 'null'
-        DocumentVersion:
-          type: integer
-          format: int32
-        IsDeleted:
-          type: boolean
-        CheckoutBy:
-          type:
-          - string
-          - 'null'
-        CheckoutDate:
-          type: string
+          description: 'Due Date
+
+            Serialized Format: yyyy-MM-dd (e.g., "2027-03-01")
+
+            The DateTime value is converted to a date-only string without time component.
+
+            Accepts both yyyy-MM-dd format and ISO-8601 datetime on deserialization.'
           format: date-time
-        FileSize:
-          type: integer
-          format: int64
-        FileType:
+        FulfillmentDate:
           type:
           - string
           - 'null'
-        IsLatest:
-          type: boolean
-        IsSearchable:
+          description: FulfillmentDate
+          format: date-time
+        Status:
           type:
-          - boolean
+          - string
           - 'null'
+          description: Fulfillment Status
+        Assignee:
+          $ref: '#/components/schemas/LookupObject'
+        Reviewer:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeContact:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeSupplierContact:
+          $ref: '#/components/schemas/LookupObject'
+        ReviewerContact:
+          $ref: '#/components/schemas/LookupObject'
+        AssigneeType:
+          type:
+          - string
+          - 'null'
+          description: Assignee Type
+        ReviewerType:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Type
+        AssigneeUserGroup:
+          $ref: '#/components/schemas/LookupObject'
+        ReviewerUserGroup:
+          $ref: '#/components/schemas/LookupObject'
       additionalProperties: {}
+      description: Model for Agreement Obligation Fulfillment
     StringObjectDictionaryQueryResponseAPIResponse:
       type: object
       properties:
@@ -1607,6 +1515,52 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
+    ContractObligationFulfillmentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractObligationFulfillmentResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentSearchResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     HttpStatusCode:
       enum:
       - Continue
@@ -1671,6 +1625,84 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    FulfillmentAction:
+      enum:
+      - Submit
+      - Accept
+      - Reject
+      - RequestInformation
+      - Waive
+      type: string
+      description: Defines possible actions that can be performed on a contract obligation fulfillment
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    ManageFulfillmentResponseQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ManageFulfillmentResponse'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
   securitySchemes:
     bearerAuth:
       type: http

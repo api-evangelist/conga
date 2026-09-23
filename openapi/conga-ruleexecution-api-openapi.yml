@@ -20,7 +20,7 @@ paths:
     get:
       tags:
       - RuleExecution
-      summary: Retrieves the clause rule execution result for a specific execution.
+      summary: Retrieves the clause rule execution result for a specific execution
       parameters:
       - name: executionId
         in: path
@@ -68,11 +68,13 @@ paths:
           description: Not Found
         '500':
           description: Server Error
+      operationId: getApiXauthorV1ContractsByContractIdPlaybooksByPlaybookIdRulesClauseRuleByExecutionIdResults
+      x-operation-id-source: derived
   /api/xauthor/v1/contracts/{contractId}/playbooks/{playbookId}/rules/document-rule/{executionId}/results:
     get:
       tags:
       - RuleExecution
-      summary: Retrieves the document rule execution result for a specific execution.
+      summary: Retrieves the document rule execution result for a specific execution
       parameters:
       - name: executionId
         in: path
@@ -120,11 +122,13 @@ paths:
           description: Not Found
         '500':
           description: Server Error
+      operationId: getApiXauthorV1ContractsByContractIdPlaybooksByPlaybookIdRulesDocumentRuleByExecutionIdResults
+      x-operation-id-source: derived
   /api/xauthor/v1/contracts/{contractId}/playbooks/{playbookId}/rules/{ruleId}/content/run:
     post:
       tags:
       - RuleExecution
-      summary: Executes a rule against a contract document using the document content.
+      summary: Executes a rule against a contract document using the document content
       parameters:
       - name: playbookId
         in: path
@@ -191,11 +195,13 @@ paths:
           description: Not Found
         '500':
           description: Server Error
+      operationId: postApiXauthorV1ContractsByContractIdPlaybooksByPlaybookIdRulesByRuleIdContentRun
+      x-operation-id-source: derived
   /api/xauthor/v1/contracts/{contractId}/playbooks/{playbookId}/rules/{ruleId}/run:
     post:
       tags:
       - RuleExecution
-      summary: Executes a rule against a contract document using pre-extracted rule text.
+      summary: Executes a rule against a contract document using pre-extracted rule text
       parameters:
       - name: playbookId
         in: path
@@ -262,51 +268,31 @@ paths:
           description: Not Found
         '500':
           description: Server Error
+      operationId: postApiXauthorV1ContractsByContractIdPlaybooksByPlaybookIdRulesByRuleIdRun
+      x-operation-id-source: derived
 components:
   schemas:
-    Conga.XAuthor.Common.Model.AI.Redline.DocumentRuleResult:
+    Conga.XAuthor.Common.Model.AI.Redline.ExecuteRuleRequest:
       type: object
       properties:
-        id:
+        executionDocumentId:
           type:
           - string
           - 'null'
-        name:
+        parentExecutionId:
           type:
           - string
           - 'null'
-        aiSuggestion:
+        ruleText:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    Conga.XAuthor.Common.Model.AI.Redline.ClauseSmartFieldRecommendation:
-      type: object
-      properties:
-        fieldId:
+        smartFields:
           type:
-          - string
+          - array
           - 'null'
-        fieldName:
-          type:
-          - string
-          - 'null'
-        dataType:
-          type:
-          - string
-          - 'null'
-        extractedValue:
-          type:
-          - string
-          - 'null'
-        recommendedValue:
-          type:
-          - string
-          - 'null'
-        status:
-          type:
-          - string
-          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.XAuthor.Common.Model.AI.Redline.ClauseSmartField'
       additionalProperties: false
     Conga.XAuthor.Common.Model.AI.Redline.ClauseSmartField:
       type: object
@@ -324,6 +310,54 @@ components:
           - string
           - 'null'
         dataType:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.Model.AI.Redline.DocumentRuleResult:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        aiSuggestion:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.Model.AI.Redline.ExecutionDetails:
+      type: object
+      properties:
+        executionId:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        executionDocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.XAuthor.Common.Model.AI.Redline.ExecuteRuleOnContentRequest:
+      type: object
+      properties:
+        documentContent:
+          type:
+          - string
+          - 'null'
+        fileName:
+          type:
+          - string
+          - 'null'
+        parentExecutionId:
           type:
           - string
           - 'null'
@@ -385,44 +419,6 @@ components:
         suggestionFound:
           type: boolean
       additionalProperties: false
-    Conga.XAuthor.Common.Model.AI.Redline.ExecuteRuleRequest:
-      type: object
-      properties:
-        executionDocumentId:
-          type:
-          - string
-          - 'null'
-        parentExecutionId:
-          type:
-          - string
-          - 'null'
-        ruleText:
-          type:
-          - string
-          - 'null'
-        smartFields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.XAuthor.Common.Model.AI.Redline.ClauseSmartField'
-      additionalProperties: false
-    Conga.XAuthor.Common.Model.AI.Redline.ExecutionDetails:
-      type: object
-      properties:
-        executionId:
-          type:
-          - string
-          - 'null'
-        status:
-          type:
-          - string
-          - 'null'
-        executionDocumentId:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     Conga.XAuthor.Common.Model.AI.Redline.ClauseRuleSimilarity:
       type: object
       properties:
@@ -435,18 +431,30 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    Conga.XAuthor.Common.Model.AI.Redline.ExecuteRuleOnContentRequest:
+    Conga.XAuthor.Common.Model.AI.Redline.ClauseSmartFieldRecommendation:
       type: object
       properties:
-        documentContent:
+        fieldId:
           type:
           - string
           - 'null'
-        fileName:
+        fieldName:
           type:
           - string
           - 'null'
-        parentExecutionId:
+        dataType:
+          type:
+          - string
+          - 'null'
+        extractedValue:
+          type:
+          - string
+          - 'null'
+        recommendedValue:
+          type:
+          - string
+          - 'null'
+        status:
           type:
           - string
           - 'null'

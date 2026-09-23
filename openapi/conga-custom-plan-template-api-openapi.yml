@@ -2,14 +2,14 @@ openapi: 3.2.0
 info:
   title: Billing Management Custom Plan Template API
   version: 1.0.0
-  description: The  CustomPlanTemplate (also called BillingPlanTemplate) Controller
+  description: The CustomPlanTemplate (also called BillingPlanTemplate) Controller
 servers:
 - url: https://rls.congacloud.com/api/billing/v1
 security:
 - Bearer: []
 tags:
 - name: Custom Plan Template
-  description: The  CustomPlanTemplate (also called BillingPlanTemplate) Controller
+  description: The CustomPlanTemplate (also called BillingPlanTemplate) Controller
 paths:
   /custom-plan-templates:
     patch:
@@ -87,11 +87,17 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: patchCustomPlanTemplates
+      x-operation-id-source: derived
     post:
       tags:
       - Custom Plan Template
-      summary: Create a custom plan template with  line items
-      description: "This API allows you to create one or multiple custom billing plan templates in a single request. Each template can include \nits own set of line items (installments or milestones), and the API validates all input before committing any records. \nThis endpoint is bulkified, so you can efficiently create several templates at once, and it provides detailed feedback for each record in the batch."
+      summary: Create a custom plan template with line items
+      description: 'This API allows you to create one or multiple custom billing plan templates in a single request. Each template can include
+
+        its own set of line items (installments or milestones), and the API validates all input before committing any records.
+
+        This endpoint is bulkified, so you can efficiently create several templates at once, and it provides detailed feedback for each record in the batch.'
       requestBody:
         description: The list of plan template and plan template line item records to create
         content:
@@ -162,12 +168,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postCustomPlanTemplates
+      x-operation-id-source: derived
   /custom-plan-templates/activate:
     patch:
       tags:
       - Custom Plan Template
       summary: Activate or deactivate a list of custom plan templates
-      description: "This API is used to activate or deactivate one or more custom Plan Templates in bulk. \nYou provide a list of template IDs along with the desired active status (true for activate, false for deactivate). The API processes each request individually, \nvalidates prerequisites (such as template existence and readiness), and returns a batch response indicating the success or failure for each template."
+      description: 'This API is used to activate or deactivate one or more custom Plan Templates in bulk.
+
+        You provide a list of template IDs along with the desired active status (true for activate, false for deactivate). The API processes each request individually,
+
+        validates prerequisites (such as template existence and readiness), and returns a batch response indicating the success or failure for each template.'
       requestBody:
         description: Contains the list of custom plan template id and true/false to activate or deactivate the custom plan template.
         content:
@@ -223,6 +235,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/BaseResponseBatchResponse'
+      operationId: patchCustomPlanTemplatesActivate
+      x-operation-id-source: derived
   /custom-plan-templates/{planTemplateId}:
     get:
       tags:
@@ -268,12 +282,18 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getCustomPlanTemplatesByPlanTemplateId
+      x-operation-id-source: derived
   /custom-plan-templates/{planTemplateId}/activate:
     patch:
       tags:
       - Custom Plan Template
       summary: Activate or deactivate a custom plan template
-      description: "This API allows you to activate or deactivate a specific custom plan template by passing its unique identifier (planTemplateId) \nin the route and the desired status (active=true or active=false) as a query parameter. The API processes the request and updates the \ntemplate’s active status accordingly."
+      description: 'This API allows you to activate or deactivate a specific custom plan template by passing its unique identifier (planTemplateId)
+
+        in the route and the desired status (active=true or active=false) as a query parameter. The API processes the request and updates the
+
+        template’s active status accordingly.'
       parameters:
       - name: planTemplateId
         in: path
@@ -312,18 +332,84 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/BaseResponseBatchResponse'
+      operationId: patchCustomPlanTemplatesByPlanTemplateIdActivate
+      x-operation-id-source: derived
 components:
   schemas:
-    ErrorApiResponse:
+    LookupObject:
       type: object
       properties:
-        Errors:
+        Id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
+    PlanTemplate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        PlanType:
+          type:
+          - string
+          - 'null'
+        PeriodsNeeded:
+          type: boolean
+        NumberOfInstallments:
+          type: integer
+          format: int32
+        BasedOn:
+          type:
+          - string
+          - 'null'
+        ComputationMethod:
+          type:
+          - string
+          - 'null'
+        StartDateBasedOn:
+          type:
+          - string
+          - 'null'
+        Active:
+          type: boolean
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanTemplateLineItem'
+          description: Child collection of PlanTemplateLineItem (included when 'Items' is requested via the includes parameter).
+      additionalProperties: {}
     ApiError:
       type: object
       properties:
@@ -340,30 +426,6 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    BaseResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-          deprecated: true
       additionalProperties: false
     CustomPlanTemplateRequest:
       type: object
@@ -435,94 +497,6 @@ components:
           description: Created/Updated record Id on processed in a transaction
       additionalProperties: false
       description: CustomPlanToggleActiveRequest
-    PlanTemplate:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Description:
-          type:
-          - string
-          - 'null'
-        PlanType:
-          type:
-          - string
-          - 'null'
-        PeriodsNeeded:
-          type: boolean
-        NumberOfInstallments:
-          type: integer
-          format: int32
-        BasedOn:
-          type:
-          - string
-          - 'null'
-        ComputationMethod:
-          type:
-          - string
-          - 'null'
-        StartDateBasedOn:
-          type:
-          - string
-          - 'null'
-        Active:
-          type: boolean
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlanTemplateLineItem'
-          description: Child collection of PlanTemplateLineItem (included when 'Items' is requested via the includes parameter).
-      additionalProperties: {}
-    BaseResponseBatchResponse:
-      type: object
-      properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BaseResponse'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     CustomPlanTemplateLineItemRequest:
       type: object
       properties:
@@ -609,6 +583,54 @@ components:
           - string
           - 'null'
       additionalProperties: {}
+    BaseResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+    BaseResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BaseResponse'
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

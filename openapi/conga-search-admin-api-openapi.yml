@@ -26,6 +26,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1Datasyncstatus
+      x-operation-id-source: derived
   /api/search/v1/datasyncstatus/{trackingId}:
     get:
       tags:
@@ -49,6 +51,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1DatasyncstatusByTrackingId
+      x-operation-id-source: derived
   /api/search/v1/document/index:
     post:
       tags:
@@ -78,11 +82,13 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1DocumentIndex
+      x-operation-id-source: derived
   /api/search/v1/global-search-data-types:
     get:
       tags:
       - Search Admin
-      summary: Get field data types supported in global search configuration.
+      summary: Get field data types supported in global search configuration
       description: Returns field data types supported in global search configuration.
       responses:
         '200':
@@ -93,6 +99,8 @@ paths:
                 $ref: '#/components/schemas/StringListAPIResponse'
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1GlobalSearchDataTypes
+      x-operation-id-source: derived
   /api/search/v1/rbac-migrate:
     post:
       tags:
@@ -116,12 +124,16 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1RbacMigrate
+      x-operation-id-source: derived
   /api/search/v1/resyncdata:
     post:
       tags:
       - Search Admin
       summary: Resync data for objects except Document
-      description: "Resync data of objects which have mismatch (Elasticsearch and database) count and their data sync will be initialized.\n            Document object will not be processed here. to sync data of Documents, trigger manually using `api/search/v1/{objectName}/resyncdata`"
+      description: 'Resync data of objects which have mismatch (Elasticsearch and database) count and their data sync will be initialized.
+
+        Document object will not be processed here. to sync data of Documents, trigger manually using `api/search/v1/{objectName}/resyncdata`'
       responses:
         '200':
           description: Success
@@ -133,6 +145,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1Resyncdata
+      x-operation-id-source: derived
   /api/search/v1/setting:
     get:
       tags:
@@ -178,6 +192,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1Setting
+      x-operation-id-source: derived
     post:
       tags:
       - Search Admin
@@ -234,6 +250,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1Setting
+      x-operation-id-source: derived
   /api/search/v1/setting/{objectName}:
     delete:
       tags:
@@ -262,6 +280,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiSearchV1SettingByObjectName
+      x-operation-id-source: derived
     put:
       tags:
       - Search Admin
@@ -307,6 +327,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSearchV1SettingByObjectName
+      x-operation-id-source: derived
   /api/search/v1/{objectName}/datasyncstatus:
     get:
       tags:
@@ -331,6 +353,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1ByObjectNameDatasyncstatus
+      x-operation-id-source: derived
   /api/search/v1/{objectName}/resyncdata:
     post:
       tags:
@@ -359,9 +383,82 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1ByObjectNameResyncdata
+      x-operation-id-source: derived
 components:
   schemas:
-    DataSyncStatusResponseAPIResponse:
+    SearchRbacMigrationResponse:
+      type: object
+      properties:
+        TrackingId:
+          type:
+          - string
+          - 'null'
+          description: Tracking ID for the migration
+        UpdateSearchSetting:
+          type: boolean
+          description: Update search setting flag
+        SearchSettingChanges:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/SearchRbacMigrationDetail'
+          description: Search setting changes
+      additionalProperties: false
+      description: Search Rbac Migration response
+    PriorityField:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        Priority:
+          type: integer
+          format: int32
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SearchObjectDataSyncStatus:
+      type: object
+      properties:
+        Status:
+          type:
+          - string
+          - 'null'
+        Error:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TableField:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    SearchRbacMigrationResponseAPIResponse:
       type: object
       properties:
         Success:
@@ -372,7 +469,7 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/DataSyncStatusResponse'
+          $ref: '#/components/schemas/SearchRbacMigrationResponse'
         Errors:
           type:
           - array
@@ -403,7 +500,27 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    DataSyncStatusResponseListAPIResponse:
+    GlobalSearchField:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the name of the field.
+      additionalProperties: false
+      description: Contains the definition of a global search field.
+    SearchField:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        Source:
+          $ref: '#/components/schemas/FieldSource'
+      additionalProperties: false
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -415,10 +532,8 @@ components:
           format: int64
         Data:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/DataSyncStatusResponse'
         Errors:
           type:
           - array
@@ -491,56 +606,66 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    TableField:
+    SearchObjectSyncStatus:
       type: object
       properties:
-        FieldName:
+        ObjectName:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    PriorityField:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-        Priority:
+        TotalCount:
           type: integer
           format: int32
+        SuccessCount:
+          type: integer
+          format: int32
+        FailedCount:
+          type: integer
+          format: int32
+        ObjectDataSyncStatus:
+          $ref: '#/components/schemas/SearchObjectDataSyncStatus'
       additionalProperties: false
-    SearchRbacMigrationResponse:
+    SearchSettingAPIResponse:
       type: object
       properties:
-        TrackingId:
-          type:
-          - string
-          - 'null'
-          description: Tracking ID for the migration
-        UpdateSearchSetting:
+        Success:
           type: boolean
-          description: Update search setting flag
-        SearchSettingChanges:
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/SearchSetting'
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/SearchRbacMigrationDetail'
-          description: Search setting changes
-      additionalProperties: false
-      description: Search Rbac Migration response
-    SearchObjectDataSyncStatus:
-      type: object
-      properties:
-        Status:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-        Error:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     SearchDataSyncStatusResponse:
       type: object
@@ -559,6 +684,210 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/SearchObjectSyncStatus'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SearchRbacMigrationDetail:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        SearchFieldsAdded:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    DataSyncStatus:
+      enum:
+      - Error
+      - InProgress
+      - Completed
+      - NotStarted
+      type: string
+    FieldSource:
+      enum:
+      - None
+      - SeedSchema
+      - User
+      - RBACWorker
+      type: string
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    DataSyncStatusResponse:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        ElasticSearchCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        DatabaseCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        DataSyncStatus:
+          $ref: '#/components/schemas/DataSyncStatus'
+      additionalProperties: false
+    DataSyncStatusResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DataSyncStatusResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     SearchSetting:
       type: object
@@ -645,26 +974,7 @@ components:
           description: Based on Priority fields - result should be sort.
       additionalProperties: {}
       description: Search Setting - Define search configuration for Object.
-    SearchObjectSyncStatus:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        TotalCount:
-          type: integer
-          format: int32
-        SuccessCount:
-          type: integer
-          format: int32
-        FailedCount:
-          type: integer
-          format: int32
-        ObjectDataSyncStatus:
-          $ref: '#/components/schemas/SearchObjectDataSyncStatus'
-      additionalProperties: false
-    SearchRbacMigrationResponseAPIResponse:
+    DataSyncStatusResponseAPIResponse:
       type: object
       properties:
         Success:
@@ -675,7 +985,7 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/SearchRbacMigrationResponse'
+          $ref: '#/components/schemas/DataSyncStatusResponse'
         Errors:
           type:
           - array
@@ -705,49 +1015,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    SearchDocumentIndexRequest:
-      type: object
-      properties:
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: ID of the document that refers to document store.
-        Version:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-      description: Search Document Index Request
-    DataSyncStatus:
-      enum:
-      - Error
-      - InProgress
-      - Completed
-      - NotStarted
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SearchRbacMigrationDetail:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        SearchFieldsAdded:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
       additionalProperties: false
     SearchSettingRequest:
       type: object
@@ -803,261 +1070,20 @@ components:
             $ref: '#/components/schemas/PriorityField'
           description: Based on Priority fields - result should be sort.
       additionalProperties: false
-    StringAPIResponse:
+    SearchDocumentIndexRequest:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
+        DocumentId:
           type:
           - string
           - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    SearchField:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-        Source:
-          $ref: '#/components/schemas/FieldSource'
-      additionalProperties: false
-    SearchSettingAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/SearchSetting'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    DataSyncStatusResponse:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        ElasticSearchCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        DatabaseCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        DataSyncStatus:
-          $ref: '#/components/schemas/DataSyncStatus'
-      additionalProperties: false
-    GlobalSearchField:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Gets or sets the name of the field.
-      additionalProperties: false
-      description: Contains the definition of a global search field.
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
+          description: ID of the document that refers to document store.
+        Version:
           type:
           - string
           - 'null'
       additionalProperties: false
-    StringListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    FieldSource:
-      enum:
-      - None
-      - SeedSchema
-      - User
-      - RBACWorker
-      type: string
+      description: Search Document Index Request
   securitySchemes:
     Bearer:
       type: apiKey

@@ -28,32 +28,29 @@ paths:
       - JWT: []
 components:
   schemas:
-    BaseResponse:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-    ComponentHealthCheckSummary:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        status:
-          type:
-          - string
-          - 'null'
-        error:
-          type:
-          - string
-          - 'null'
-        duration:
-          type: number
-          format: double
+    HealthCheckSummary:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            type:
+            - string
+            - 'null'
+          serviceVersion:
+            type:
+            - string
+            - 'null'
+          componentHealthSummary:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ComponentHealthCheckSummary'
+          duration:
+            type: number
+            format: double
     HttpStatusCode:
       type: integer
       description: ''
@@ -193,29 +190,32 @@ components:
       - 508
       - 510
       - 511
-    HealthCheckSummary:
-      allOf:
-      - $ref: '#/components/schemas/BaseResponse'
-      - type: object
-        additionalProperties: false
-        properties:
-          status:
-            type:
-            - string
-            - 'null'
-          serviceVersion:
-            type:
-            - string
-            - 'null'
-          componentHealthSummary:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/ComponentHealthCheckSummary'
-          duration:
-            type: number
-            format: double
+    BaseResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        statusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+    ComponentHealthCheckSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        error:
+          type:
+          - string
+          - 'null'
+        duration:
+          type: number
+          format: double
   securitySchemes:
     JWT:
       type: apiKey

@@ -94,6 +94,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postForecast
+      x-operation-id-source: derived
   /forecast/regenerate-forecast-summary:
     post:
       tags:
@@ -179,6 +181,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postForecastRegenerateForecastSummary
+      x-operation-id-source: derived
   /forecast/{businessObjectType}/{businessObjectId}:
     get:
       tags:
@@ -235,23 +239,11 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getForecastByBusinessObjectTypeByBusinessObjectId
+      x-operation-id-source: derived
 components:
   schemas:
-    ForecastBillingSummaryRequest:
-      type: object
-      properties:
-        BusinessObjectId:
-          type:
-          - string
-          - 'null'
-          description: Business Object Id for which we need to generate schedules.
-        BusinessObjectType:
-          type:
-          - string
-          - 'null'
-          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
-      additionalProperties: false
-    ForecastScheduleResponse:
+    ForecastResponse:
       type: object
       properties:
         IsSuccess:
@@ -260,20 +252,48 @@ components:
           type:
           - string
           - 'null'
-        ForecastBillingScheduleRecords:
+        BusinessObjectType:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ForecastBillingScheduleRecord'
-          description: Forecast Billing Schedule Records
-        ForecastBillingSummaries:
+          description: Business Object Type schedule belongs to (LineItem, OrderLineItem, ProductConfiguration, Order)
+        BusinessObjectId:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ForecastBillingSummary'
-          description: Forecast Billing Summaries
+          description: Business Object Id for which we need to generate schedules.
+      additionalProperties: false
+    ForecastSummaryResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
+        BusinessObjectId:
+          type:
+          - string
+          - 'null'
+          description: Business Object Id for which we need to generate schedules.
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     CurrencyField:
       type: object
@@ -296,67 +316,76 @@ components:
           - 'null'
           readOnly: true
       additionalProperties: false
-    ForecastRequest:
+    ForecastBillingSummaryRequest:
       type: object
       properties:
-        TransactionSource:
-          type:
-          - string
-          - 'null'
-          description: Transaction source(Conga, External)
-        ForecastBillingRequests:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ForecastBillingRequest'
-          description: Forecast Requests
-        SummaryCriterion:
-          type:
-          - string
-          - 'null'
-          description: Criteria for forecast summary
-      additionalProperties: false
-    ForecastSummaryRequest:
-      type: object
-      properties:
-        SummaryCriterion:
-          type:
-          - string
-          - 'null'
-          description: Criteria for forecast summary
-        ForecastBillingSummaryRequests:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ForecastBillingSummaryRequest'
-          description: Forecast billing summary requests
-      additionalProperties: false
-    ForecastBillingRequest:
-      type: object
-      properties:
-        BusinessObjectType:
-          type:
-          - string
-          - 'null'
-          description: Business Object Type schedule belongs to (LineItem, OrderLineItem, ProductConfiguration, Order)
         BusinessObjectId:
           type:
           - string
           - 'null'
           description: Business Object Id for which we need to generate schedules.
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
       additionalProperties: false
-    ErrorApiResponse:
+    ForecastBillingSummary:
       type: object
       properties:
-        Errors:
+        Id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        TotalForecastFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalOneTimeFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalRecurringFee:
+          $ref: '#/components/schemas/CurrencyField'
+        CriterionName:
+          type:
+          - string
+          - 'null'
+        CriterionValue:
+          type:
+          - string
+          - 'null'
+        ProductConfiguration:
+          $ref: '#/components/schemas/LookupObject'
+        Order:
+          $ref: '#/components/schemas/LookupObject'
+        FBSMNumber:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
     ApiError:
       type: object
       properties:
@@ -373,6 +402,22 @@ components:
           type:
           - string
           - 'null'
+      additionalProperties: false
+    ForecastSummaryRequest:
+      type: object
+      properties:
+        SummaryCriterion:
+          type:
+          - string
+          - 'null'
+          description: Criteria for forecast summary
+        ForecastBillingSummaryRequests:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ForecastBillingSummaryRequest'
+          description: Forecast billing summary requests
       additionalProperties: false
     ForecastBillingScheduleRecord:
       type: object
@@ -463,103 +508,30 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    ForecastSummaryResponse:
+    ForecastRequest:
       type: object
       properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
+        TransactionSource:
           type:
           - string
           - 'null'
-        BusinessObjectType:
+          description: Transaction source(Conga, External)
+        ForecastBillingRequests:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ForecastBillingRequest'
+          description: Forecast Requests
+        SummaryCriterion:
           type:
           - string
           - 'null'
-          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
-        BusinessObjectId:
-          type:
-          - string
-          - 'null'
-          description: Business Object Id for which we need to generate schedules.
+          description: Criteria for forecast summary
       additionalProperties: false
-    LookupObject:
+    ForecastBillingRequest:
       type: object
       properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ForecastBillingSummary:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Currency:
-          type:
-          - string
-          - 'null'
-        TotalForecastFee:
-          $ref: '#/components/schemas/CurrencyField'
-        TotalOneTimeFee:
-          $ref: '#/components/schemas/CurrencyField'
-        TotalRecurringFee:
-          $ref: '#/components/schemas/CurrencyField'
-        CriterionName:
-          type:
-          - string
-          - 'null'
-        CriterionValue:
-          type:
-          - string
-          - 'null'
-        ProductConfiguration:
-          $ref: '#/components/schemas/LookupObject'
-        Order:
-          $ref: '#/components/schemas/LookupObject'
-        FBSMNumber:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    ForecastResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
         BusinessObjectType:
           type:
           - string
@@ -570,6 +542,40 @@ components:
           - string
           - 'null'
           description: Business Object Id for which we need to generate schedules.
+      additionalProperties: false
+    ForecastScheduleResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        ForecastBillingScheduleRecords:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ForecastBillingScheduleRecord'
+          description: Forecast Billing Schedule Records
+        ForecastBillingSummaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ForecastBillingSummary'
+          description: Forecast Billing Summaries
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
       additionalProperties: false
   securitySchemes:
     Bearer:

@@ -63,6 +63,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: InternalServerError
+      operationId: getApiEmailV1EmailsJobsByJobId
+      x-operation-id-source: derived
   /api/email/v1/emails/status/batch:
     post:
       tags:
@@ -128,103 +130,15 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: InternalServerError
+      operationId: postApiEmailV1EmailsStatusBatch
+      x-operation-id-source: derived
 components:
   schemas:
-    EmailStatusBatchResponse:
-      type: object
-      properties:
-        EmailSendId:
-          type:
-          - string
-          - 'null'
-        Jobs:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailStatusResponse'
-      additionalProperties: false
     ProviderStatus:
       enum:
       - Delivered
       - NotDelivered
       type: string
-    EmailJobStatusResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/EmailJobStatusResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Event:
-      enum:
-      - Processed
-      - Delivered
-      - Deferred
-      - Drop
-      - Bounce
-      - Blocked
-      - Failed
-      - Open
-      - Click
-      type: string
-    EmailJobStatusResponse:
-      type: object
-      properties:
-        JobId:
-          type:
-          - string
-          - 'null'
-        State:
-          type:
-          - string
-          - 'null'
-        Recipient:
-          type:
-          - string
-          - 'null'
-        Reason:
-          type:
-          - string
-          - 'null'
-        EmailStatusDetails:
-          $ref: '#/components/schemas/EmailStatusDetails'
-      additionalProperties: false
     EmailStatusResponse:
       type: object
       properties:
@@ -242,28 +156,6 @@ components:
           - 'null'
         EmailStatusDetails:
           $ref: '#/components/schemas/EmailStatusDetails'
-      additionalProperties: false
-    EmailDeliveryStatusBatchRequest:
-      type: object
-      properties:
-        EmailSendId:
-          type:
-          - string
-          - 'null'
-        Recipients:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
       additionalProperties: false
     EmailStatusBatchResponseAPIResponse:
       type: object
@@ -307,61 +199,27 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    EmailStatusDetails:
+    EmailJobStatusResponse:
       type: object
       properties:
-        Status:
-          $ref: '#/components/schemas/ProviderStatus'
-        Events:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailStatusEvent'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
+        JobId:
           type:
           - string
           - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        State:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
+        Recipient:
           type:
           - string
           - 'null'
-        Warnings:
+        Reason:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+        EmailStatusDetails:
+          $ref: '#/components/schemas/EmailStatusDetails'
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -427,6 +285,110 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Event:
+      enum:
+      - Processed
+      - Delivered
+      - Deferred
+      - Drop
+      - Bounce
+      - Blocked
+      - Failed
+      - Open
+      - Click
+      type: string
+    EmailStatusBatchResponse:
+      type: object
+      properties:
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+        Jobs:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusResponse'
+      additionalProperties: false
+    EmailDeliveryStatusBatchRequest:
+      type: object
+      properties:
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+        Recipients:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    EmailStatusDetails:
+      type: object
+      properties:
+        Status:
+          $ref: '#/components/schemas/ProviderStatus'
+        Events:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusEvent'
+      additionalProperties: false
     EmailStatusEvent:
       type: object
       properties:
@@ -439,6 +401,48 @@ components:
         Timestamp:
           type: string
           format: date-time
+      additionalProperties: false
+    EmailJobStatusResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/EmailJobStatusResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
   securitySchemes:
     Bearer:

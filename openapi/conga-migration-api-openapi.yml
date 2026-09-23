@@ -13,9 +13,7 @@ paths:
     post:
       tags:
       - Migration
-      summary: 'Runs the ComposerSolution status migration job.
-
-        Finalized records using status "Draft" will be updated to "Complete".'
+      summary: Runs the ComposerSolution status migration job.
       operationId: Migration_RunMigration
       responses:
         '200':
@@ -30,26 +28,39 @@ paths:
       - JWT: []
 components:
   schemas:
-    ComposerResponse:
+    Errors:
       type: object
-      description: Represents a result of some operation, with status information and possibly an error.
+      description: Error response
       additionalProperties: false
       properties:
-        errors:
-          type: array
-          description: List of errors
-          items:
-            $ref: '#/components/schemas/Errors'
-        debugInfo:
-          description: Stack trace
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
           oneOf:
-          - $ref: '#/components/schemas/DebugInfo'
-        isSuccess:
-          type: boolean
-          description: Gets a value indicating whether the result is a success result.
-        isFailure:
-          type: boolean
-          description: Gets a value indicating whether the result is a failure result.
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
     ResponseStatusCode:
       type: string
       description: Application-specific error code identified by Composer UI\
@@ -133,39 +144,26 @@ components:
       - FILE_NOT_FOUND
       - UNSUPPORTED_CUSTOMBRANDINGID
       - INVALID_CUSTOMBRANDINGID
-    Errors:
+    ComposerResponse:
       type: object
-      description: Error response
+      description: Represents a result of some operation, with status information and possibly an error.
       additionalProperties: false
       properties:
-        id:
-          type: string
-          description: Unique ID
-          format: guid
-        title:
-          type: string
-          description: Error title
-        details:
-          type: string
-          description: Error description
-        status:
-          description: Status code
-          oneOf:
-          - $ref: '#/components/schemas/HttpStatusCode'
-        code:
-          description: Unique Response code. This enum is foreseeably used by UI
-          oneOf:
-          - $ref: '#/components/schemas/ResponseStatusCode'
-    DebugInfo:
-      type: object
-      description: Model to capture stack trace information
-      additionalProperties: false
-      properties:
-        stackTrace:
+        errors:
           type: array
-          description: Stack trace of code flow
+          description: List of errors
           items:
-            type: string
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
     HttpStatusCode:
       type: string
       description: ''

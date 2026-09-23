@@ -87,6 +87,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: deleteUsageInputs
+      x-operation-id-source: derived
     get:
       tags:
       - Consumption Billing
@@ -171,6 +173,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getUsageInputs
+      x-operation-id-source: derived
     patch:
       tags:
       - Consumption Billing
@@ -246,6 +250,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: patchUsageInputs
+      x-operation-id-source: derived
     post:
       tags:
       - Consumption Billing
@@ -321,12 +327,42 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postUsageInputs
+      x-operation-id-source: derived
   /usage-inputs/estimate:
     post:
       tags:
       - Consumption Billing
-      summary: Estimates draft ratings for the specified usage input records without updating their final status.
-      description: "The usage inputs can be processed in two modes: \n\nAsynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all loaded usage input records will be estimated asynchronously. \n\nThe response will include a `JobId` to track the background operation. \n\nSynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be estimated synchronously. \n\nThe response will include the batch results for the specified records. \n\n\nAutomatic async fallback: If `UsageInputRatingRequest.ProcessAllUsageInputs` is `false` but the number of values in \n`UsageInputRatingRequest.UsageInputIds` exceeds the configured threshold, the request will be processed \nasynchronously regardless of mode selection, and the response will include a `JobId`. \n\n\nThis design allows the client to control:\n\n- Whether the operation applies to all records or only a specific subset.\n\n- Whether the operation is performed synchronously or asynchronously, subject to system thresholds."
+      summary: Estimates draft ratings for the specified usage input records without updating…
+      description: 'The usage inputs can be processed in two modes:
+
+
+        Asynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all loaded usage input records will be estimated asynchronously.
+
+
+        The response will include a `JobId` to track the background operation.
+
+
+        Synchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be estimated synchronously.
+
+
+        The response will include the batch results for the specified records.
+
+
+        Automatic async fallback: If `UsageInputRatingRequest.ProcessAllUsageInputs` is `false` but the number of values in
+
+        `UsageInputRatingRequest.UsageInputIds` exceeds the configured threshold, the request will be processed
+
+        asynchronously regardless of mode selection, and the response will include a `JobId`.
+
+
+        This design allows the client to control:
+
+
+        - Whether the operation applies to all records or only a specific subset.
+
+
+        - Whether the operation is performed synchronously or asynchronously, subject to system thresholds.'
       requestBody:
         description: The request specifying which usage input records to estimate and how to process them.
         content:
@@ -388,12 +424,35 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postUsageInputsEstimate
+      x-operation-id-source: derived
   /usage-inputs/rate:
     post:
       tags:
       - Consumption Billing
-      summary: Rates the specified usage input records.
-      description: "The usage inputs can be processed in two modes: \n\nAsynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all usage input records with status as Loaded will be rated asynchronously. \n\nThe response will include a `JobId` to track the background operation. \n\nSynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be rated synchronously. \n\nThe response will include the batch results for the specified records. \n\n\nThis design allows the client to control:\n\n- Whether the operation applies to all records or only a specific subset.\n\n- Whether the operation is performed synchronously or asynchronously."
+      summary: Rates the specified usage input records
+      description: 'The usage inputs can be processed in two modes:
+
+
+        Asynchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `true`, all usage input records with status as Loaded will be rated asynchronously.
+
+
+        The response will include a `JobId` to track the background operation.
+
+
+        Synchronous mode: If UsageInputRatingRequest.ProcessAllUsageInputs is `false`, only the records with IDs provided in UsageInputRatingRequest.UsageInputIds will be rated synchronously.
+
+
+        The response will include the batch results for the specified records.
+
+
+        This design allows the client to control:
+
+
+        - Whether the operation applies to all records or only a specific subset.
+
+
+        - Whether the operation is performed synchronously or asynchronously.'
       requestBody:
         description: The request specifying which usage input records to rate and how to process them.
         content:
@@ -455,15 +514,14 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postUsageInputsRate
+      x-operation-id-source: derived
   /usage-inputs/unrate:
     post:
       tags:
       - Consumption Billing
-      summary: Reverses ratings for the specified usage input records.
-      description: 'Reverses ratings for the specified usage input records.
-
-
-        '
+      summary: Reverses ratings for the specified usage input records
+      description: Reverses ratings for the specified usage input records.
       requestBody:
         description: The request specifying which usage input records should be unrated.
         content:
@@ -525,6 +583,8 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postUsageInputsUnrate
+      x-operation-id-source: derived
   /usage-inputs/{usageInputId}:
     get:
       tags:
@@ -570,8 +630,22 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getUsageInputsByUsageInputId
+      x-operation-id-source: derived
 components:
   schemas:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     CurrencyField:
       type: object
       properties:
@@ -592,6 +666,58 @@ components:
           - string
           - 'null'
           readOnly: true
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UsageInputRatingRequest:
+      type: object
+      properties:
+        UsageInputIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the identifiers of usage input records to process.
+        ProcessAllUsageInputs:
+          type: boolean
+          description: Gets or sets a value indicating whether all usage input records should be processed.
+      additionalProperties: false
+      description: Represents a request to rate, unrate, or estimate usage input records.
+    BatchOperationResponse:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        BatchResults:
+          $ref: '#/components/schemas/BaseResponseBatchResponse'
+        IsSuccess:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
       additionalProperties: false
     UsageInputsRequest:
       type: object
@@ -663,7 +789,7 @@ components:
           description: Indicates the status of the rating process.
       additionalProperties: false
       description: Represents a request to create or update usage input records
-    UsageInputRatingRequest:
+    UsageInputBaseRequest:
       type: object
       properties:
         UsageInputIds:
@@ -673,38 +799,8 @@ components:
           items:
             type: string
           description: Gets or sets the identifiers of usage input records to process.
-        ProcessAllUsageInputs:
-          type: boolean
-          description: Gets or sets a value indicating whether all usage input records should be processed.
       additionalProperties: false
       description: Represents a request to rate, unrate, or estimate usage input records.
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    ApiError:
-      type: object
-      properties:
-        Source:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     BaseResponse:
       type: object
       properties:
@@ -729,25 +825,19 @@ components:
           - 'null'
           deprecated: true
       additionalProperties: false
-    BatchOperationResponse:
+    BaseResponseBatchResponse:
       type: object
       properties:
-        JobId:
+        Summary:
           type:
           - string
           - 'null'
-        BatchResults:
-          $ref: '#/components/schemas/BaseResponseBatchResponse'
-        IsSuccess:
-          type:
-          - boolean
-          - 'null'
-        Errors:
+        Results:
           type:
           - array
           - 'null'
           items:
-            type: string
+            $ref: '#/components/schemas/BaseResponse'
       additionalProperties: false
     UsageInputs:
       type: object
@@ -852,44 +942,16 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    BaseResponseBatchResponse:
+    ErrorApiResponse:
       type: object
       properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/BaseResponse'
+            $ref: '#/components/schemas/ApiError'
       additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    UsageInputBaseRequest:
-      type: object
-      properties:
-        UsageInputIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Gets or sets the identifiers of usage input records to process.
-      additionalProperties: false
-      description: Represents a request to rate, unrate, or estimate usage input records.
   securitySchemes:
     Bearer:
       type: apiKey

@@ -14,7 +14,72 @@ paths:
       tags:
       - Role
       summary: Adds a new ad hoc group to a transaction
-      description: "Adds a new ad hoc group and its members to an existing transaction.\n\nAn ad hoc group allows multiple signers to be grouped together, where only one member \nneeds to sign on behalf of the entire group.\n\nThe request body must be an array of Role objects:\n1. Individual member roles (regular signers) - these become potential group members\n2. The ad hoc group role with a special signer that has:\n   - signerType: \"AD_HOC_GROUP_SIGNER\"\n   - group.members: Array referencing the member role IDs\n\nExample structure:\n[\n  {\n    \"signers\": [{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john@example.com\" }],\n    \"id\": \"member-role-id-1\"\n  },\n  {\n    \"signers\": [{ \"firstName\": \"Jane\", \"lastName\": \"Smith\", \"email\": \"jane@example.com\" }],\n    \"id\": \"member-role-id-2\"\n  },\n  {\n    \"id\": \"ad-hoc-group-role-id\",\n    \"signers\": [{\n      \"firstName\": \"Legal Review Group\",\n      \"signerType\": \"AD_HOC_GROUP_SIGNER\",\n      \"group\": {\n        \"members\": [\n          { \"userId\": \"member-role-id-1\", \"memberType\": \"AD_HOC_GROUP_MEMBER\" },\n          { \"userId\": \"member-role-id-2\", \"memberType\": \"SIGNER\" }\n        ]\n      }\n    }]\n  }\n]"
+      description: 'Adds a new ad hoc group and its members to an existing transaction.
+
+
+        An ad hoc group allows multiple signers to be grouped together, where only one member
+
+        needs to sign on behalf of the entire group.
+
+
+        The request body must be an array of Role objects:
+
+        1. Individual member roles (regular signers) - these become potential group members
+
+        2. The ad hoc group role with a special signer that has:
+
+        - signerType: "AD_HOC_GROUP_SIGNER"
+
+        - group.members: Array referencing the member role IDs
+
+
+        Example structure:
+
+        [
+
+        {
+
+        "signers": [{ "firstName": "John", "lastName": "Doe", "email": "john@example.com" }],
+
+        "id": "member-role-id-1"
+
+        },
+
+        {
+
+        "signers": [{ "firstName": "Jane", "lastName": "Smith", "email": "jane@example.com" }],
+
+        "id": "member-role-id-2"
+
+        },
+
+        {
+
+        "id": "ad-hoc-group-role-id",
+
+        "signers": [{
+
+        "firstName": "Legal Review Group",
+
+        "signerType": "AD_HOC_GROUP_SIGNER",
+
+        "group": {
+
+        "members": [
+
+        { "userId": "member-role-id-1", "memberType": "AD_HOC_GROUP_MEMBER" },
+
+        { "userId": "member-role-id-2", "memberType": "SIGNER" }
+
+        ]
+
+        }
+
+        }]
+
+        }
+
+        ]'
       operationId: Role_CreateAdHocGroup
       parameters:
       - name: packageId
@@ -143,7 +208,34 @@ paths:
       tags:
       - Role
       summary: Updates a transaction's existing ad hoc group
-      description: "Updates an existing ad hoc group, for a specified transaction, including any changes \nto the group's members.\n\nThe request body structure is the same as creation:\n- Array of member Role objects (existing or new members)\n- The ad hoc group Role object with updated configuration\n\nYou can:\n- Add new members by including their roles in the array\n- Remove members by excluding them from the group.members array\n- Update the group name via the signer's firstName\n- Modify member types (AD_HOC_GROUP_MEMBER vs SIGNER)\n\nMember types:\n- AD_HOC_GROUP_MEMBER: Must sign if selected\n- SIGNER: Optional member (can be selected to sign)"
+      description: 'Updates an existing ad hoc group, for a specified transaction, including any changes
+
+        to the group''s members.
+
+
+        The request body structure is the same as creation:
+
+        - Array of member Role objects (existing or new members)
+
+        - The ad hoc group Role object with updated configuration
+
+
+        You can:
+
+        - Add new members by including their roles in the array
+
+        - Remove members by excluding them from the group.members array
+
+        - Update the group name via the signer''s firstName
+
+        - Modify member types (AD_HOC_GROUP_MEMBER vs SIGNER)
+
+
+        Member types:
+
+        - AD_HOC_GROUP_MEMBER: Must sign if selected
+
+        - SIGNER: Optional member (can be selected to sign)'
       operationId: Role_UpdateAdHocGroup
       parameters:
       - name: packageId
@@ -666,223 +758,116 @@ paths:
           description: Bad Request
       security:
       - Bearer: []
+      operationId: getApiUserManagementV1RuntimeRoles
+      x-operation-id-source: derived
     servers:
     - url: https://rls.congacloud.com
 components:
   schemas:
-    Translation:
+    Error2:
       type: object
-      description: Field localization.
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    SignerType:
+      type: string
+      description: Type of signer in OneSpan Sign
+      x-enumNames:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+      enum:
+      - ACCOUNT_SENDER
+      - EXTERNAL_SENDER
+      - EXTERNAL_SIGNER
+      - GROUP_SIGNER
+      - AD_HOC_GROUP_SIGNER
+    External:
+      type: object
+      description: External integration provider settings.
       additionalProperties: false
       properties:
         data:
           type: object
-          description: Localization metadata.
+          description: Provider metadata.
           additionalProperties: {}
-        description:
-          type: string
-          description: Optionally provide a description of the selected language.
         id:
           type: string
-          description: Localization Id.
-        language:
+          description: External integration Id.
+        provider:
           type: string
-          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
-        name:
+          description: Provider method.
+        providerName:
           type: string
-          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
-
-            as your users see it in their account profiles and on transactions in which they participate.'
-    Address:
+          description: Provider name.
+    SignerInformationForEquifaxUSA:
       type: object
+      description: Object to manage Equifax USA information
       additionalProperties: false
       properties:
-        address1:
-          type: string
-          description: Address1
-        address2:
-          type: string
-          description: Address2
         city:
           type: string
           description: City
-        country:
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth
+          format: date-time
+        driversLicenseNumber:
           type: string
-          description: Country
+          description: Drivers license number
+        firstName:
+          type: string
+          description: First name
+        homePhoneNumber:
+          type: string
+          description: Home phone number
+        lastName:
+          type: string
+          description: Last name
+        socialSecurityNumber:
+          type: string
+          description: Social security number
         state:
           type: string
           description: State
-        zipcode:
+        streetAddress:
           type: string
-          description: Zipcode
-    AttachmentRequirement:
-      type: object
-      description: Attachment requirements and settings.
-      additionalProperties: false
-      properties:
-        comment:
-          type: string
-          description: Attachment comment.
-        data:
-          type: object
-          description: Attachment metadata.
-          additionalProperties: {}
-        description:
-          type: string
-          description: Attachment description.
-        files:
-          type: array
-          description: Attachment files.
-          items:
-            $ref: '#/components/schemas/AttachmentFile'
-        id:
-          type: string
-          description: The attachment Id.
-        name:
-          type: string
-          description: The attachment name.
-        required:
-          type: boolean
-          description: Is attachment required.
-        status:
-          description: Attachment status.
-          oneOf:
-          - $ref: '#/components/schemas/RequirementStatus'
-    RoleReordering:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Role Id.
-        index:
-          type: integer
-          description: New index of the role.
+          description: Street address
+        timeAtAddress:
+          type:
+          - integer
+          - 'null'
+          description: Time at address
           format: int32
-    Quota:
-      type: object
-      additionalProperties: false
-      properties:
-        cycle:
+        zip:
           type: string
-        limit:
-          type: integer
-          format: int32
-        scope:
-          type: string
-        target:
-          $ref: '#/components/schemas/Target'
-    NotificationMethods:
-      type: object
-      description: Represents the default notification methods for a signer in a transaction.
-      additionalProperties: false
-      properties:
-        description:
-          type: string
-          description: 'The default notification method description.
-
-            If defined in a template, it will be used as part of the pre-populated fields
-
-            when creating a new transaction.'
-        primary:
-          type: array
-          description: 'The default notification methods for the account.
-
-            A phone number is required when including SMS as a notification method.
-
-            Possible values: EMAIL, SMS.'
-          items:
-            $ref: '#/components/schemas/NotificationMethod'
-    AttachmentFile:
-      type: object
-      description: Attachment file information.
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-          description: Attachment file Id.
-          format: int32
-        insertDate:
-          type: integer
-          description: Attachment creation date in epoch format.
-          format: int64
-        name:
-          type: string
-          description: Attachment file name.
-        preview:
-          type: boolean
-          description: Can see attachment previews.
-    UserCustomField:
-      type: object
-      description: Object to manage a user custom field
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-        translations:
-          type: array
-          description: List of translations
-          items:
-            $ref: '#/components/schemas/Translation'
-        value:
-          type: string
-          description: Value
-    Company:
-      type: object
-      description: Company information.
-      additionalProperties: false
-      properties:
-        address:
-          description: Company address.
-          oneOf:
-          - $ref: '#/components/schemas/Address'
-        data:
-          type: object
-          description: Company metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique company Id.
-        name:
-          type: string
-          description: Company name.
-    IdvWorkflow:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: The unique Id of the Id verification workflow configuration.
-        type:
-          type: string
-          description: The Id verification workflow type.
-        tenant:
-          type: string
-          description: The customer alias.
-        desc:
-          type: string
-          description: Id verification workflow description.
-    AuthChallenge:
-      type: object
-      additionalProperties: false
-      properties:
-        answer:
-          type: string
-          description: Secret question answer.
-        maskInput:
-          type: boolean
-          description: To hide the user input.
-        question:
-          type: string
-          description: Secret question.
+          description: Zip code
     SignerInformationForLexisNexis:
       type: object
       description: Signer identity details needed for LexisNexis verification.
@@ -921,70 +906,380 @@ components:
           - 'null'
           description: Date of birth of the signer. (Optional)
           format: date-time
-    Error2:
+    Quota:
       type: object
-      description: Object representing an error condition
       additionalProperties: false
       properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
+        cycle:
+          type: string
+        limit:
+          type: integer
           format: int32
-        entity:
-          description: The Microsoft Dynamics entity
-          oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
+        scope:
           type: string
-          description: The error message
-        messageKey:
-          type: string
-          description: The error message key
-        name:
-          type: string
-          description: The error name
-        technical:
-          type: string
-          description: Technical information about the error
-    GroupMember:
+        target:
+          $ref: '#/components/schemas/Target'
+    RequirementStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - INCOMPLETE
+      - REJECTED
+      - COMPLETE
+      enum:
+      - INCOMPLETE
+      - REJECTED
+      - COMPLETE
+    RoleReordering:
       type: object
-      description: Object to manage a group member
       additionalProperties: false
       properties:
-        email:
+        id:
           type: string
-          description: Email string
+          description: Role Id.
+        index:
+          type: integer
+          description: New index of the role.
+          format: int32
+    Transaction:
+      type: object
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
+    SignerInformationForEquifaxCanada:
+      type: object
+      description: Object to manage Equifax Canada information
+      additionalProperties: false
+      properties:
+        city:
+          type: string
+          description: City
+        dateOfBirth:
+          type:
+          - string
+          - 'null'
+          description: Date of birth
+          format: date-time
+        driversLicenseNumber:
+          type: string
+          description: Drivers license number
         firstName:
           type: string
           description: First name
+        homePhoneNumber:
+          type: string
+          description: Home phone number
         lastName:
           type: string
           description: Last name
-        memberType:
-          description: MemberType
+        socialInsuranceNumber:
+          type: string
+          description: Social insurance number
+        province:
+          type: string
+          description: Province
+        streetAddress:
+          type: string
+          description: Street address
+        timeAtAddress:
+          type:
+          - integer
+          - 'null'
+          description: Time at address
+          format: int32
+        postalCode:
+          type: string
+          description: Postal code
+    UserCustomField:
+      type: object
+      description: Object to manage a user custom field
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Value
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
+    KnowledgeBasedAuthentication:
+      type: object
+      description: Object to manage KBA
+      additionalProperties: false
+      properties:
+        knowledgeBasedAuthenticationStatus:
+          description: The status of the KBA
           oneOf:
-          - $ref: '#/components/schemas/MemberType'
-        pending:
+          - $ref: '#/components/schemas/KnowledgeBasedAuthenticationStatus'
+        signerInformationForEquifaxCanada:
+          description: SignerInformationForEquifaxCanada
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForEquifaxCanada'
+        signerInformationForEquifaxUSA:
+          description: SignerInformationForEquifaxUSA
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForEquifaxUSA'
+        equifaxCanada:
+          type: boolean
+          description: Indicates whether Equifax Canada is used for KBA.
+        equifaxUSA:
+          type: boolean
+          description: Indicates whether Equifax USA is used for KBA.
+        signerInformationForLexisNexis:
+          description: Signer information required for LexisNexis identity verification.
+          oneOf:
+          - $ref: '#/components/schemas/SignerInformationForLexisNexis'
+        lexisNexis:
           type:
           - boolean
           - 'null'
-          description: Pending
-        userId:
-          type: string
-          description: UserId
-    TextualSignatureStyle:
+          description: Indicates whether LexisNexis is used for KBA.
+    NotificationMethod:
+      type: string
+      description: Enumerates all available notification methods.
+      x-enumNames:
+      - EMAIL
+      - SMS
+      enum:
+      - EMAIL
+      - SMS
+    AttachmentRequirement:
       type: object
-      description: Object to manage a text signature
+      description: Attachment requirements and settings.
       additionalProperties: false
       properties:
-        color:
+        comment:
           type: string
-          description: Signature color.
-        font:
+          description: Attachment comment.
+        data:
+          type: object
+          description: Attachment metadata.
+          additionalProperties: {}
+        description:
           type: string
-          description: Signature font.
+          description: Attachment description.
+        files:
+          type: array
+          description: Attachment files.
+          items:
+            $ref: '#/components/schemas/AttachmentFile'
+        id:
+          type: string
+          description: The attachment Id.
+        name:
+          type: string
+          description: The attachment name.
+        required:
+          type: boolean
+          description: Is attachment required.
+        status:
+          description: Attachment status.
+          oneOf:
+          - $ref: '#/components/schemas/RequirementStatus'
+    ResultOfRole:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Role'
+    AttachmentFile:
+      type: object
+      description: Attachment file information.
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: Attachment file Id.
+          format: int32
+        insertDate:
+          type: integer
+          description: Attachment creation date in epoch format.
+          format: int64
+        name:
+          type: string
+          description: Attachment file name.
+        preview:
+          type: boolean
+          description: Can see attachment previews.
+    Plan:
+      type: object
+      additionalProperties: false
+      properties:
+        contract:
+          type: string
+        cycle:
+          $ref: '#/components/schemas/Cycle'
+        data:
+          type: object
+          additionalProperties: {}
+        description:
+          type: string
+        features:
+          type: object
+          additionalProperties: {}
+        freeCycles:
+          $ref: '#/components/schemas/CycleCount'
+        group:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        original:
+          type: string
+        price:
+          $ref: '#/components/schemas/Price'
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quota'
+    Group:
+      type: object
+      description: Object to manage a group
+      additionalProperties: false
+      properties:
+        account:
+          description: The account the group belongs to
+          oneOf:
+          - $ref: '#/components/schemas/Account'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Created date
+          format: date-time
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        email:
+          type: string
+          description: Email address
+        emailMembers:
+          type: boolean
+          description: EmailMembers
+        id:
+          type: string
+          description: Unique id of the group
+        members:
+          type: array
+          description: List of group members
+          items:
+            $ref: '#/components/schemas/GroupMember'
+        name:
+          type: string
+          description: Name of the group
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Updated date
+          format: date-time
+        reciprocalDelegation:
+          type: boolean
+          description: Reciprocal Delegation
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    CycleCount:
+      type: object
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          format: int32
+        cycle:
+          $ref: '#/components/schemas/CycleCount'
     License:
       type: object
       description: License information.
@@ -1015,6 +1310,262 @@ components:
           description: Transactions associated with this license
           items:
             $ref: '#/components/schemas/Transaction'
+    Delivery:
+      type: object
+      description: Object to manage delivery of completed documents
+      additionalProperties: false
+      properties:
+        download:
+          type: boolean
+          description: Is download delivery enabled.
+        email:
+          type: boolean
+          description: Is email delivery enabled.
+        provider:
+          type: boolean
+          description: Is external integration delivery enabled.
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    Currency:
+      type: object
+      description: The currency used for the Price object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+    IdvWorkflow:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: The unique Id of the Id verification workflow configuration.
+        type:
+          type: string
+          description: The Id verification workflow type.
+        tenant:
+          type: string
+          description: The customer alias.
+        desc:
+          type: string
+          description: Id verification workflow description.
+    Price:
+      type: object
+      description: Object to manage price
+      additionalProperties: false
+      properties:
+        amount:
+          type: integer
+          description: Amount
+          format: int32
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
+    SignatureStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        handdrawn:
+          type: string
+          description: Hand drawn signature image (base 64 encoding).
+        textual:
+          description: Textual signature style
+          oneOf:
+          - $ref: '#/components/schemas/TextualSignatureStyle'
+    Provider:
+      type: object
+      description: Object to manage account providers for documents and users
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom meta data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        provides:
+          type: string
+          description: Provides
+    AuthChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        answer:
+          type: string
+          description: Secret question answer.
+        maskInput:
+          type: boolean
+          description: To hide the user input.
+        question:
+          type: string
+          description: Secret question.
+    Target:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+      enum:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Account:
+      type: object
+      description: Account information.
+      additionalProperties: false
+      properties:
+        company:
+          description: Company information.
+          oneOf:
+          - $ref: '#/components/schemas/Company'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Account creation date.
+          format: date-time
+        customFields:
+          type: array
+          description: Account custom fields.
+          items:
+            $ref: '#/components/schemas/CustomField'
+        data:
+          type: object
+          description: Account metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Account Id.
+        licenses:
+          type: array
+          description: Account license information.
+          items:
+            $ref: '#/components/schemas/License'
+        logoUrl:
+          type: string
+          description: Account Logo URL.
+        name:
+          type: string
+          description: Account name.
+        owner:
+          type: string
+          description: Unique Owner Id.
+        providers:
+          description: External document sources.
+          oneOf:
+          - $ref: '#/components/schemas/AccountProviders'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Account update date.
+          format: date-time
+    Role:
+      type: object
+      additionalProperties: false
+      properties:
+        attachmentRequirements:
+          type: array
+          description: Signer attachment requirements.
+          items:
+            $ref: '#/components/schemas/AttachmentRequirement'
+        data:
+          type: object
+          description: Role metadata.
+          additionalProperties: {}
+        emailMessage:
+          description: Role email message.
+          oneOf:
+          - $ref: '#/components/schemas/BaseMessage'
+        id:
+          type: string
+          description: Role Id.
+        index:
+          type: integer
+          description: Role signing order index.
+          format: int32
+        locked:
+          type: boolean
+          description: Is role locked. Role will be locked after failing to sign in multiple times.
+        name:
+          type: string
+          description: Role name.
+        reassign:
+          type: boolean
+          description: Is the role able to reassign.
+        signers:
+          type: array
+          description: Signers associated with the role.
+          items:
+            $ref: '#/components/schemas/Signer'
+        specialTypes:
+          type: array
+          description: Special signer features. Currently only NOTARY is supported.
+          items:
+            type: string
+        type:
+          description: Role type. Currently there are two types, SIGNER and SENDER.
+          oneOf:
+          - $ref: '#/components/schemas/RoleType'
+        downloadEvidenceSummaryBySigner:
+          type: boolean
+          description: Indicates whether the signer assigned to this role can download the evidence summary once signing is complete.
     Auth:
       type: object
       description: Signer auth settings.
@@ -1042,6 +1593,122 @@ components:
             and at least one SMS object when using both.'
           items:
             $ref: '#/components/schemas/AuthWithQaSms'
+    BaseMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+          description: Message text content.
+    NotificationMethods:
+      type: object
+      description: Represents the default notification methods for a signer in a transaction.
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+          description: 'The default notification method description.
+
+            If defined in a template, it will be used as part of the pre-populated fields
+
+            when creating a new transaction.'
+        primary:
+          type: array
+          description: 'The default notification methods for the account.
+
+            A phone number is required when including SMS as a notification method.
+
+            Possible values: EMAIL, SMS.'
+          items:
+            $ref: '#/components/schemas/NotificationMethod'
+    TextualSignatureStyle:
+      type: object
+      description: Object to manage a text signature
+      additionalProperties: false
+      properties:
+        color:
+          type: string
+          description: Signature color.
+        font:
+          type: string
+          description: Signature font.
+    Cycle:
+      type: string
+      description: ''
+      x-enumNames:
+      - DAY
+      - MONTH
+      - YEAR
+      enum:
+      - DAY
+      - MONTH
+      - YEAR
+    ProfessionalIdentityField:
+      type: object
+      description: Object to manage professional identity field
+      additionalProperties: false
+      properties:
+        category:
+          type: string
+          description: Category
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        type:
+          type: string
+          description: Type
+        value:
+          type: string
+          description: Value
+    LicenseStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - ACTIVE
+      - PENDING
+      - GRACE
+      enum:
+      - ACTIVE
+      - PENDING
+      - GRACE
+    GroupMember:
+      type: object
+      description: Object to manage a group member
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: Email string
+        firstName:
+          type: string
+          description: First name
+        lastName:
+          type: string
+          description: Last name
+        memberType:
+          description: MemberType
+          oneOf:
+          - $ref: '#/components/schemas/MemberType'
+        pending:
+          type:
+          - boolean
+          - 'null'
+          description: Pending
+        userId:
+          type: string
+          description: UserId
     AuthScheme:
       type: string
       description: ''
@@ -1061,37 +1728,15 @@ components:
       - SSO
       - KBA
       - SAA
-    Transaction:
-      type: object
-      additionalProperties: false
-      properties:
-        created:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        creditCard:
-          $ref: '#/components/schemas/CreditCard'
-        price:
-          $ref: '#/components/schemas/Price'
-    External:
-      type: object
-      description: External integration provider settings.
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Provider metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: External integration Id.
-        provider:
-          type: string
-          description: Provider method.
-        providerName:
-          type: string
-          description: Provider name.
+    RoleType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      enum:
+      - SIGNER
+      - SENDER
     KnowledgeBasedAuthenticationStatus:
       type: string
       description: ''
@@ -1107,6 +1752,31 @@ components:
       - FAILED
       - INVALID_SIGNER
       - UPDATED
+    AuthWithQaSms:
+      type: object
+      description: Represents a question/answer or SMS-based verification challenge.
+      additionalProperties: false
+      properties:
+        question:
+          type: string
+          description: 'The question to be used for verification purposes.
+
+            Required when challengeType is "Challenge".'
+        answer:
+          type: string
+          description: 'The answer that must be entered to confirm verification.
+
+            Optional if using SMS only.'
+        maskInput:
+          type: boolean
+          description: Indicates whether the answer should be masked (true/false).
+        challengeType:
+          type: string
+          description: 'The type of challenge:
+
+            - "Challenge" for a question/answer verification
+
+            - "SMS" for a text-message verification.'
     Signer:
       type: object
       description: Object to manage a signer
@@ -1212,25 +1882,42 @@ components:
           description: Default notification methods for the signer.
           oneOf:
           - $ref: '#/components/schemas/NotificationMethods'
-    RoleType:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNER
-      - SENDER
-      enum:
-      - SIGNER
-      - SENDER
-    CcExpiration:
+    Translation:
       type: object
+      description: Field localization.
       additionalProperties: false
       properties:
-        month:
-          type: integer
-          format: int32
-        year:
-          type: integer
-          format: int32
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
+    MemberType:
+      type: string
+      description: Type of member in a group
+      x-enumNames:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
+      enum:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
     CreditCard:
       type: object
       additionalProperties: false
@@ -1245,599 +1932,6 @@ components:
           type: string
         type:
           type: string
-    Account:
-      type: object
-      description: Account information.
-      additionalProperties: false
-      properties:
-        company:
-          description: Company information.
-          oneOf:
-          - $ref: '#/components/schemas/Company'
-        created:
-          type:
-          - string
-          - 'null'
-          description: Account creation date.
-          format: date-time
-        customFields:
-          type: array
-          description: Account custom fields.
-          items:
-            $ref: '#/components/schemas/CustomField'
-        data:
-          type: object
-          description: Account metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: Account Id.
-        licenses:
-          type: array
-          description: Account license information.
-          items:
-            $ref: '#/components/schemas/License'
-        logoUrl:
-          type: string
-          description: Account Logo URL.
-        name:
-          type: string
-          description: Account name.
-        owner:
-          type: string
-          description: Unique Owner Id.
-        providers:
-          description: External document sources.
-          oneOf:
-          - $ref: '#/components/schemas/AccountProviders'
-        updated:
-          type:
-          - string
-          - 'null'
-          description: Account update date.
-          format: date-time
-    NotificationMethod:
-      type: string
-      description: Enumerates all available notification methods.
-      x-enumNames:
-      - EMAIL
-      - SMS
-      enum:
-      - EMAIL
-      - SMS
-    KnowledgeBasedAuthentication:
-      type: object
-      description: Object to manage KBA
-      additionalProperties: false
-      properties:
-        knowledgeBasedAuthenticationStatus:
-          description: The status of the KBA
-          oneOf:
-          - $ref: '#/components/schemas/KnowledgeBasedAuthenticationStatus'
-        signerInformationForEquifaxCanada:
-          description: SignerInformationForEquifaxCanada
-          oneOf:
-          - $ref: '#/components/schemas/SignerInformationForEquifaxCanada'
-        signerInformationForEquifaxUSA:
-          description: SignerInformationForEquifaxUSA
-          oneOf:
-          - $ref: '#/components/schemas/SignerInformationForEquifaxUSA'
-        equifaxCanada:
-          type: boolean
-          description: Indicates whether Equifax Canada is used for KBA.
-        equifaxUSA:
-          type: boolean
-          description: Indicates whether Equifax USA is used for KBA.
-        signerInformationForLexisNexis:
-          description: Signer information required for LexisNexis identity verification.
-          oneOf:
-          - $ref: '#/components/schemas/SignerInformationForLexisNexis'
-        lexisNexis:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether LexisNexis is used for KBA.
-    Price:
-      type: object
-      description: Object to manage price
-      additionalProperties: false
-      properties:
-        amount:
-          type: integer
-          description: Amount
-          format: int32
-        currency:
-          description: Currency
-          oneOf:
-          - $ref: '#/components/schemas/Currency'
-    AuthWithQaSms:
-      type: object
-      description: Represents a question/answer or SMS-based verification challenge.
-      additionalProperties: false
-      properties:
-        question:
-          type: string
-          description: 'The question to be used for verification purposes.
-
-            Required when challengeType is "Challenge".'
-        answer:
-          type: string
-          description: 'The answer that must be entered to confirm verification.
-
-            Optional if using SMS only.'
-        maskInput:
-          type: boolean
-          description: Indicates whether the answer should be masked (true/false).
-        challengeType:
-          type: string
-          description: 'The type of challenge:
-
-            - "Challenge" for a question/answer verification
-
-            - "SMS" for a text-message verification.'
-    SignerType:
-      type: string
-      description: Type of signer in OneSpan Sign
-      x-enumNames:
-      - ACCOUNT_SENDER
-      - EXTERNAL_SENDER
-      - EXTERNAL_SIGNER
-      - GROUP_SIGNER
-      - AD_HOC_GROUP_SIGNER
-      enum:
-      - ACCOUNT_SENDER
-      - EXTERNAL_SENDER
-      - EXTERNAL_SIGNER
-      - GROUP_SIGNER
-      - AD_HOC_GROUP_SIGNER
-    Plan:
-      type: object
-      additionalProperties: false
-      properties:
-        contract:
-          type: string
-        cycle:
-          $ref: '#/components/schemas/Cycle'
-        data:
-          type: object
-          additionalProperties: {}
-        description:
-          type: string
-        features:
-          type: object
-          additionalProperties: {}
-        freeCycles:
-          $ref: '#/components/schemas/CycleCount'
-        group:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        original:
-          type: string
-        price:
-          $ref: '#/components/schemas/Price'
-        quotas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Quota'
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
-    MemberType:
-      type: string
-      description: Type of member in a group
-      x-enumNames:
-      - REGULAR
-      - MANAGER
-      - SIGNER
-      - AD_HOC_GROUP_MEMBER
-      enum:
-      - REGULAR
-      - MANAGER
-      - SIGNER
-      - AD_HOC_GROUP_MEMBER
-    ProfessionalIdentityField:
-      type: object
-      description: Object to manage professional identity field
-      additionalProperties: false
-      properties:
-        category:
-          type: string
-          description: Category
-        data:
-          type: object
-          description: Custom data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-        translations:
-          type: array
-          description: List of translations
-          items:
-            $ref: '#/components/schemas/Translation'
-        type:
-          type: string
-          description: Type
-        value:
-          type: string
-          description: Value
-    CycleCount:
-      type: object
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-          format: int32
-        cycle:
-          $ref: '#/components/schemas/CycleCount'
-    LicenseStatus:
-      type: string
-      description: ''
-      x-enumNames:
-      - ACTIVE
-      - PENDING
-      - GRACE
-      enum:
-      - ACTIVE
-      - PENDING
-      - GRACE
-    SignerInformationForEquifaxUSA:
-      type: object
-      description: Object to manage Equifax USA information
-      additionalProperties: false
-      properties:
-        city:
-          type: string
-          description: City
-        dateOfBirth:
-          type:
-          - string
-          - 'null'
-          description: Date of birth
-          format: date-time
-        driversLicenseNumber:
-          type: string
-          description: Drivers license number
-        firstName:
-          type: string
-          description: First name
-        homePhoneNumber:
-          type: string
-          description: Home phone number
-        lastName:
-          type: string
-          description: Last name
-        socialSecurityNumber:
-          type: string
-          description: Social security number
-        state:
-          type: string
-          description: State
-        streetAddress:
-          type: string
-          description: Street address
-        timeAtAddress:
-          type:
-          - integer
-          - 'null'
-          description: Time at address
-          format: int32
-        zip:
-          type: string
-          description: Zip code
-    SignatureStyle:
-      type: object
-      additionalProperties: false
-      properties:
-        handdrawn:
-          type: string
-          description: Hand drawn signature image (base 64 encoding).
-        textual:
-          description: Textual signature style
-          oneOf:
-          - $ref: '#/components/schemas/TextualSignatureStyle'
-    Delivery:
-      type: object
-      description: Object to manage delivery of completed documents
-      additionalProperties: false
-      properties:
-        download:
-          type: boolean
-          description: Is download delivery enabled.
-        email:
-          type: boolean
-          description: Is email delivery enabled.
-        provider:
-          type: boolean
-          description: Is external integration delivery enabled.
-    RequirementStatus:
-      type: string
-      description: ''
-      x-enumNames:
-      - INCOMPLETE
-      - REJECTED
-      - COMPLETE
-      enum:
-      - INCOMPLETE
-      - REJECTED
-      - COMPLETE
-    Cycle:
-      type: string
-      description: ''
-      x-enumNames:
-      - DAY
-      - MONTH
-      - YEAR
-      enum:
-      - DAY
-      - MONTH
-      - YEAR
-    AccountProviders:
-      type: object
-      additionalProperties: false
-      properties:
-        documents:
-          type: array
-          description: List of external sources for documents
-          items:
-            $ref: '#/components/schemas/Provider'
-        users:
-          type: array
-          description: List of external sources for users
-          items:
-            $ref: '#/components/schemas/Provider'
-    Provider:
-      type: object
-      description: Object to manage account providers for documents and users
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom meta data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-        provides:
-          type: string
-          description: Provides
-    Target:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNER
-      - SENDER
-      - DOCUMENT
-      - PACKAGE
-      - STORAGE
-      enum:
-      - SIGNER
-      - SENDER
-      - DOCUMENT
-      - PACKAGE
-      - STORAGE
-    Group:
-      type: object
-      description: Object to manage a group
-      additionalProperties: false
-      properties:
-        account:
-          description: The account the group belongs to
-          oneOf:
-          - $ref: '#/components/schemas/Account'
-        created:
-          type:
-          - string
-          - 'null'
-          description: Created date
-          format: date-time
-        data:
-          type: object
-          description: Custom data
-          additionalProperties: {}
-        email:
-          type: string
-          description: Email address
-        emailMembers:
-          type: boolean
-          description: EmailMembers
-        id:
-          type: string
-          description: Unique id of the group
-        members:
-          type: array
-          description: List of group members
-          items:
-            $ref: '#/components/schemas/GroupMember'
-        name:
-          type: string
-          description: Name of the group
-        updated:
-          type:
-          - string
-          - 'null'
-          description: Updated date
-          format: date-time
-        reciprocalDelegation:
-          type: boolean
-          description: Reciprocal Delegation
-    BaseMessage:
-      type: object
-      additionalProperties: false
-      properties:
-        content:
-          type: string
-          description: Message text content.
-    Role:
-      type: object
-      additionalProperties: false
-      properties:
-        attachmentRequirements:
-          type: array
-          description: Signer attachment requirements.
-          items:
-            $ref: '#/components/schemas/AttachmentRequirement'
-        data:
-          type: object
-          description: Role metadata.
-          additionalProperties: {}
-        emailMessage:
-          description: Role email message.
-          oneOf:
-          - $ref: '#/components/schemas/BaseMessage'
-        id:
-          type: string
-          description: Role Id.
-        index:
-          type: integer
-          description: Role signing order index.
-          format: int32
-        locked:
-          type: boolean
-          description: Is role locked. Role will be locked after failing to sign in multiple times.
-        name:
-          type: string
-          description: Role name.
-        reassign:
-          type: boolean
-          description: Is the role able to reassign.
-        signers:
-          type: array
-          description: Signers associated with the role.
-          items:
-            $ref: '#/components/schemas/Signer'
-        specialTypes:
-          type: array
-          description: Special signer features. Currently only NOTARY is supported.
-          items:
-            type: string
-        type:
-          description: Role type. Currently there are two types, SIGNER and SENDER.
-          oneOf:
-          - $ref: '#/components/schemas/RoleType'
-        downloadEvidenceSummaryBySigner:
-          type: boolean
-          description: Indicates whether the signer assigned to this role can download the evidence summary once signing is complete.
-    CustomField:
-      type: object
-      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom field metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: The unique of id of the field
-        name:
-          type: string
-          description: Custom field name.
-        required:
-          type: boolean
-          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
-        translations:
-          type: array
-          description: Custom field localization.
-          items:
-            $ref: '#/components/schemas/Translation'
-        value:
-          type: string
-          description: Custom field default value.
-    Currency:
-      type: object
-      description: The currency used for the Price object
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-    ResultOfRole:
-      type: object
-      description: Object used to manage OneSpan list types
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-          description: Count
-          format: int32
-        results:
-          type: array
-          description: Results
-          items:
-            $ref: '#/components/schemas/Role'
-    SignerInformationForEquifaxCanada:
-      type: object
-      description: Object to manage Equifax Canada information
-      additionalProperties: false
-      properties:
-        city:
-          type: string
-          description: City
-        dateOfBirth:
-          type:
-          - string
-          - 'null'
-          description: Date of birth
-          format: date-time
-        driversLicenseNumber:
-          type: string
-          description: Drivers license number
-        firstName:
-          type: string
-          description: First name
-        homePhoneNumber:
-          type: string
-          description: Home phone number
-        lastName:
-          type: string
-          description: Last name
-        socialInsuranceNumber:
-          type: string
-          description: Social insurance number
-        province:
-          type: string
-          description: Province
-        streetAddress:
-          type: string
-          description: Street address
-        timeAtAddress:
-          type:
-          - integer
-          - 'null'
-          description: Time at address
-          format: int32
-        postalCode:
-          type: string
-          description: Postal code
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:

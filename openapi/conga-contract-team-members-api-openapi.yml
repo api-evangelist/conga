@@ -121,6 +121,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdTeammembers
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/teammembers/by-action/{actionName}:
     get:
       tags:
@@ -169,6 +171,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1ContractsByContractIdTeammembersByActionByActionName
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/teammembers/query:
     post:
       tags:
@@ -257,6 +261,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdTeammembersQuery
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/teammembers/{teamMemberId}:
     delete:
       tags:
@@ -313,6 +319,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: deleteApiClmV1ContractsByContractIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
     get:
       tags:
       - Contract Team Members
@@ -395,6 +403,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1ContractsByContractIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Team Members
@@ -489,22 +499,30 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: putApiClmV1ContractsByContractIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
 components:
   schemas:
-    ContractTeamMembersRequest:
+    LookupObject:
       type: object
       properties:
-        TeamMemberType:
-          $ref: '#/components/schemas/TeamMemberType'
-        TeamMember:
+        Id:
           type:
           - string
           - 'null'
-          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
-        TeamRole:
-          $ref: '#/components/schemas/LookupObject'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
-      description: Model for Contract Team Members Request
+    TeamMemberType:
+      enum:
+      - User
+      - UserGroup
+      - Contact
+      - ExternalMember
+      type: string
+      description: Defines types of Contract Team member
     BooleanAPIResponse:
       type: object
       properties:
@@ -530,6 +548,49 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
+    ContractTeamMembersListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractTeamMembers'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ContractTeamMembersRequest:
+      type: object
+      properties:
+        TeamMemberType:
+          $ref: '#/components/schemas/TeamMemberType'
+        TeamMember:
+          type:
+          - string
+          - 'null'
+          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: false
+      description: Model for Contract Team Members Request
     APIResponseError:
       type: object
       properties:
@@ -557,6 +618,43 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
+    CustomQueryTeamMember:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SearchText:
+          type:
+          - string
+          - 'null'
+          description: Search text to search team members by name or email
+      additionalProperties: false
+      description: Custom Query for Team Member search
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
     ContractTeamMembers:
       type: object
       properties:
@@ -606,77 +704,6 @@ components:
           description: Contract for which the user or user group is assigned
       additionalProperties: {}
       description: Model for Contract Team Members
-    CustomQueryTeamMember:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SearchText:
-          type:
-          - string
-          - 'null'
-          description: Search text to search team members by name or email
-      additionalProperties: false
-      description: Custom Query for Team Member search
-    ContractTeamMembersListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ContractTeamMembers'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    TeamMemberType:
-      enum:
-      - User
-      - UserGroup
-      - Contact
-      - ExternalMember
-      type: string
-      description: Defines types of Contract Team member
     WarningDetail:
       type: object
       properties:
@@ -692,21 +719,6 @@ components:
           description: Warning message
       additionalProperties: false
       description: Warning detail class for non-blocking issues
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
   securitySchemes:
     bearerAuth:
       type: http

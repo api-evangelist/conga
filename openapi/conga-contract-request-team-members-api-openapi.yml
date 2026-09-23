@@ -121,6 +121,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1RequestsByContractRequestIdTeammembers
+      x-operation-id-source: derived
   /api/clm/v1/requests/{contractRequestId}/teammembers/by-action/{actionName}:
     get:
       tags:
@@ -169,6 +171,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1RequestsByContractRequestIdTeammembersByActionByActionName
+      x-operation-id-source: derived
   /api/clm/v1/requests/{contractRequestId}/teammembers/query:
     post:
       tags:
@@ -257,6 +261,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1RequestsByContractRequestIdTeammembersQuery
+      x-operation-id-source: derived
   /api/clm/v1/requests/{contractRequestId}/teammembers/{teamMemberId}:
     delete:
       tags:
@@ -313,6 +319,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: deleteApiClmV1RequestsByContractRequestIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
     get:
       tags:
       - Contract Request Team Members
@@ -395,6 +403,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1RequestsByContractRequestIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Request Team Members
@@ -489,22 +499,30 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: putApiClmV1RequestsByContractRequestIdTeammembersByTeamMemberId
+      x-operation-id-source: derived
 components:
   schemas:
-    ContractTeamMembersRequest:
+    LookupObject:
       type: object
       properties:
-        TeamMemberType:
-          $ref: '#/components/schemas/TeamMemberType'
-        TeamMember:
+        Id:
           type:
           - string
           - 'null'
-          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
-        TeamRole:
-          $ref: '#/components/schemas/LookupObject'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
-      description: Model for Contract Team Members Request
+    TeamMemberType:
+      enum:
+      - User
+      - UserGroup
+      - Contact
+      - ExternalMember
+      type: string
+      description: Defines types of Contract Team member
     BooleanAPIResponse:
       type: object
       properties:
@@ -559,6 +577,20 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
+    ContractTeamMembersRequest:
+      type: object
+      properties:
+        TeamMemberType:
+          $ref: '#/components/schemas/TeamMemberType'
+        TeamMember:
+          type:
+          - string
+          - 'null'
+          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: false
+      description: Model for Contract Team Members Request
     APIResponseError:
       type: object
       properties:
@@ -586,28 +618,6 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
-    CustomQueryTeamMember:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SearchText:
-          type:
-          - string
-          - 'null'
-          description: Search text to search team members by name or email
-      additionalProperties: false
-      description: Custom Query for Team Member search
     ContractRequestTeamMembers:
       type: object
       properties:
@@ -657,26 +667,28 @@ components:
           description: Contract Request for which the user or user group is assigned
       additionalProperties: {}
       description: Model for Contract Request Team Members
-    LookupObject:
+    CustomQueryTeamMember:
       type: object
       properties:
-        Id:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SearchText:
           type:
           - string
           - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
+          description: Search text to search team members by name or email
       additionalProperties: false
-    TeamMemberType:
-      enum:
-      - User
-      - UserGroup
-      - Contact
-      - ExternalMember
-      type: string
-      description: Defines types of Contract Team member
+      description: Custom Query for Team Member search
     ErrorDetail:
       type: object
       properties:

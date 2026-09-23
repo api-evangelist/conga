@@ -77,6 +77,8 @@ paths:
                 StatusCode: OK
         '404':
           description: Not Found
+      operationId: getApiUserManagementV1Grantlogin
+      x-operation-id-source: derived
     post:
       tags:
       - Grant Login
@@ -107,6 +109,8 @@ paths:
                 StatusCode: Created
         '404':
           description: Not Found
+      operationId: postApiUserManagementV1Grantlogin
+      x-operation-id-source: derived
   /api/user-management/v1/grantlogin/durations:
     get:
       tags:
@@ -132,6 +136,8 @@ paths:
                 StatusCode: OK
         '404':
           description: Not Found
+      operationId: getApiUserManagementV1GrantloginDurations
+      x-operation-id-source: derived
   /api/user-management/v1/grantlogin/{grantLoginId}:
     get:
       tags:
@@ -178,6 +184,8 @@ paths:
                 StatusCode: OK
         '404':
           description: Not Found
+      operationId: getApiUserManagementV1GrantloginByGrantLoginId
+      x-operation-id-source: derived
     put:
       tags:
       - Grant Login
@@ -233,27 +241,56 @@ paths:
                 StatusCode: OK
         '404':
           description: Not Found
+      operationId: putApiUserManagementV1GrantloginByGrantLoginId
+      x-operation-id-source: derived
 components:
   schemas:
-    AccessDuration:
+    AccessDurationListAPIResponse:
       type: object
       properties:
-        DisplayValue:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccessDuration'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          description: The value displayed as a name in the list view.
-        Value:
-          type: integer
-          description: Value for the Access Duration
-          format: int32
-        ExpirationDate:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
-          description: Expiration Date
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-      description: AccessDuration
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -301,153 +338,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    GrantLoginDetailsAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/GrantLoginDetails'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    GrantLoginDetails:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        UserId:
-          type:
-          - string
-          - 'null'
-        UserName:
-          type:
-          - string
-          - 'null'
-        AccessDuration:
-          type:
-          - string
-          - 'null'
-        ExpiresOn:
-          type: string
-          format: date-time
-        Status:
-          type:
-          - string
-          - 'null'
-        IsCancelled:
-          type: boolean
-        CaseId:
-          type:
-          - string
-          - 'null'
-        Notes:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    AccessDurationListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AccessDuration'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
     LookupObject:
       type: object
       properties:
@@ -460,14 +350,25 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    ErrorDetail:
+    AccessDuration:
       type: object
       properties:
-        Message:
+        DisplayValue:
           type:
           - string
           - 'null'
+          description: The value displayed as a name in the list view.
+        Value:
+          type: integer
+          description: Value for the Access Duration
+          format: int32
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          description: Expiration Date
       additionalProperties: false
+      description: AccessDuration
     GrantLoginCreateRequest:
       type: object
       properties:
@@ -491,7 +392,7 @@ components:
           - 'null'
           description: Notes for additional info on grant login access.
       additionalProperties: false
-    StringAPIResponse:
+    GrantLoginDetailsAPIResponse:
       type: object
       properties:
         Success:
@@ -502,9 +403,7 @@ components:
           - 'null'
           format: int64
         Data:
-          type:
-          - string
-          - 'null'
+          $ref: '#/components/schemas/GrantLoginDetails'
         Errors:
           type:
           - array
@@ -599,6 +498,117 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    GrantLoginDetails:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        UserId:
+          type:
+          - string
+          - 'null'
+        UserName:
+          type:
+          - string
+          - 'null'
+        AccessDuration:
+          type:
+          - string
+          - 'null'
+        ExpiresOn:
+          type: string
+          format: date-time
+        Status:
+          type:
+          - string
+          - 'null'
+        IsCancelled:
+          type: boolean
+        CaseId:
+          type:
+          - string
+          - 'null'
+        Notes:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
   securitySchemes:
     Bearer:
       type: apiKey

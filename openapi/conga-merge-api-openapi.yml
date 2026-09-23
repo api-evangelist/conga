@@ -16,7 +16,7 @@ paths:
       tags:
       - Merge
       summary: Initiate the merge workflow
-      description: Translates the users' merge request inputs into data sets and initiate the merge. For more information, see [Conga Composer API Use Cases.](https://documentation.conga.com/composer/latest/conga-composer-api-use-cases-203496246.html)
+      description: Translates the users' merge request inputs into data sets and initiate the merge. For more information, see Conga Composer API Use Cases.
       operationId: Merge_Post
       requestBody:
         x-name: request
@@ -47,7 +47,7 @@ paths:
     get:
       tags:
       - Merge
-      summary: Returns the url list of merged and preview documents for a given correlationId.
+      summary: Returns the url list of merged and preview documents for a given correlationId
       operationId: Merge_GetPreviewFiles
       parameters:
       - name: correlationId
@@ -224,16 +224,118 @@ paths:
       - JWT: []
 components:
   schemas:
-    ComposerMergeResponseModel:
+    TemplateSourceRequest:
       type: object
       additionalProperties: false
       properties:
-        correlationId:
+        integrationName:
           type: string
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        fileId:
+          type: string
+          description: File ID that correspond to the cloud service provider's actual File ID. For more information on how to get the File ID, click [here](https://documentation.conga.com/composer/latest/conga-platform/how-to-get-file-id-for-composer-api-request-222431618.html)
+    SalesforceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        sessionId:
+          type:
+          - string
+          - 'null'
+          description: 'OPTIONAL Salesforce access token. Requires setting up a [connected app](https://documentation.conga.com/composer/latest/conga-platform/composer-api-connected-app-setup-239537625.html) in your Salesforce Org and [retrieving an access token from Salesforce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_username_password_flow.htm&type=5)
+
+            If SessionId it not provided, then Composer backend will retrieve SessionId from external connections created in Composer Settings UI.'
+        serverUrl:
+          type: string
+          description: 'REQUIRED Salesforce server URL. For example: *{{instanceUrl}}/services/Soap/50.0/{{Salesforce org ID}}*.
+
+            This field only required if SessionId provided in the request. Otherwise, Composer backend will retrieve server
+
+            URL from external connections created in Composer Settings UI.'
+        useSandbox:
+          type: boolean
+          description: 'OPTIONAL This field used when no SessionId provided in the request. This field is used to retrieve SessionId
+
+            from external Salesforce Sandbox connections created in Composer Settings UI. The default value is false.'
+        templateId:
+          type: string
+          description: Salesforce template ID.
+        masterId:
+          type: string
+          description: REQUIRED Salesforce master object record ID.
+        queryId:
+          type: string
+          description: Salesforce query ID.
+        emailTemplateId:
+          type: string
+          description: Salesforce email template ID.
+        instanceUrl:
+          type: string
+          description: Salesforce instance URL. You can get this while retiriving Salesforce access token.
+        targetOrigin:
+          type: string
+        relatedContactId:
+          type: string
+    DataSourceType:
+      type: string
+      description: Type of data source used
+      x-enumNames:
+      - None
+      - Webhook
+      enum:
+      - None
+      - Webhook
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
         status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    DataSource2:
+      type: object
+      description: 'Array of objects containing metadata on the payload source
+
+        ps: usecase identified for webhooks in the request. Further data sources discovered will be introduced here.'
+      additionalProperties: false
+      properties:
+        type:
+          description: 'Type of data source used. Ex: Webhooks'
+          oneOf:
+          - $ref: '#/components/schemas/DataSourceType'
+        dataSourceId:
           type: string
-        result:
-          $ref: '#/components/schemas/Result'
+          description: 'Unique source Id. Ex: WebHook Id'
+        integrationName:
+          description: Data source info
+          oneOf:
+          - $ref: '#/components/schemas/IntegrationOption'
+        parameters:
+          type: object
+          description: Key-value pair parameter collection
+          additionalProperties:
+            type: string
     MergedPreviewDocument:
       type: object
       additionalProperties: false
@@ -279,20 +381,14 @@ components:
           type: string
         subject:
           type: string
-    ComposerMergeRequest:
-      allOf:
-      - $ref: '#/components/schemas/ComposerMergeBaseRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          jsonData:
-            type: string
-            description: JSON payload. For more information on JSON payload use case, click [here](https://documentation.conga.com/composer/latest/generate-document-using-json-data-203491745.html)
-          dataSources:
-            type: array
-            description: Array of objects containing metadata on the payload source
-            items:
-              $ref: '#/components/schemas/DataSource2'
+    StatusMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        description:
+          type: string
     IntegrationOption:
       type: string
       description: ''
@@ -318,48 +414,41 @@ components:
       - OneDrive
       - S3
       - SFTP
-    SalesforceRequest:
+    SignCommands:
       type: object
       additionalProperties: false
       properties:
-        sessionId:
-          type:
-          - string
-          - 'null'
-          description: 'OPTIONAL Salesforce access token. Requires setting up a [connected app](https://documentation.conga.com/composer/latest/conga-platform/composer-api-connected-app-setup-239537625.html) in your Salesforce Org and [retrieving an access token from Salesforce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_username_password_flow.htm&type=5)
-
-            If SessionId it not provided, then Composer backend will retrieve SessionId from external connections created in Composer Settings UI.'
-        serverUrl:
+        provider:
           type: string
-          description: 'REQUIRED Salesforce server URL. For example: *{{instanceUrl}}/services/Soap/50.0/{{Salesforce org ID}}*.
-
-            This field only required if SessionId provided in the request. Otherwise, Composer backend will retrieve server
-
-            URL from external connections created in Composer Settings UI.'
-        useSandbox:
+          description: 'Providers: Conga Sign Powered by OneSpan.'
+        payload:
+          type: string
+          description: For information on structuring the JSON payload click [here](https://developer.conga.com/doc-automation/reference/package_createpackage).
+    OutputRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        generateDocumentDownload:
           type: boolean
-          description: 'OPTIONAL This field used when no SessionId provided in the request. This field is used to retrieve SessionId
-
-            from external Salesforce Sandbox connections created in Composer Settings UI. The default value is false.'
-        templateId:
+          description: Set this to **true** to enable document download for the merged document.
+    ComposerMergeResponseModel:
+      type: object
+      additionalProperties: false
+      properties:
+        correlationId:
           type: string
-          description: Salesforce template ID.
-        masterId:
+        status:
           type: string
-          description: REQUIRED Salesforce master object record ID.
-        queryId:
-          type: string
-          description: Salesforce query ID.
-        emailTemplateId:
-          type: string
-          description: Salesforce email template ID.
-        instanceUrl:
-          type: string
-          description: Salesforce instance URL. You can get this while retiriving Salesforce access token.
-        targetOrigin:
-          type: string
-        relatedContactId:
-          type: string
+        result:
+          $ref: '#/components/schemas/Result'
+    Adaptation:
+      type: object
+      additionalProperties: false
+      properties:
+        pdfCommands:
+          type: boolean
+        convertToPDF:
+          type: boolean
     StatusCodes:
       type: string
       description: ''
@@ -381,44 +470,29 @@ components:
       - SecurityException
       - InvalidRequestdata
       - ServiceUnavailable
-    Result:
+    SignTransaction:
       type: object
       additionalProperties: false
       properties:
-        statusCode:
-          $ref: '#/components/schemas/StatusCodes'
-        statusMessage:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatusMessage'
-    ProblemDetails:
-      type: object
-      additionalProperties: {}
-      properties:
-        type:
-          type:
-          - string
-          - 'null'
-        title:
-          type:
-          - string
-          - 'null'
+        packageId:
+          type: string
+        tagUrl:
+          type: string
+        esignTransactionId:
+          type: string
         status:
           type:
-          - integer
+          - boolean
           - 'null'
-          format: int32
-        detail:
-          type:
-          - string
-          - 'null'
-        instance:
-          type:
-          - string
-          - 'null'
-        extensions:
-          type: object
-          additionalProperties: {}
+    InfoObject:
+      type: object
+      description: Info Object
+      additionalProperties: false
+      properties:
+        signTransaction:
+          description: Sign transaction
+          oneOf:
+          - $ref: '#/components/schemas/SignTransaction'
     MergeInfo:
       type: object
       description: Merge Information
@@ -435,34 +509,6 @@ components:
           type: string
           description: Conga Org id
           format: guid
-    TemplateSourceRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        integrationName:
-          type: string
-          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
-        fileId:
-          type: string
-          description: File ID that correspond to the cloud service provider's actual File ID. For more information on how to get the File ID, click [here](https://documentation.conga.com/composer/latest/conga-platform/how-to-get-file-id-for-composer-api-request-222431618.html)
-    DestinationRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        integrationName:
-          type: string
-          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
-        folderId:
-          type: string
-          description: Folder ID that correspond to the cloud service provider's actual folder ID. For more information on how to get the folder ID, click [here](https://documentation.conga.com/composer/latest/how-to-get-file-id-for-composer-api-request-193698978.html)
-    StatusMessage:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-        description:
-          type: string
     SaveCopy:
       type: object
       additionalProperties: false
@@ -473,79 +519,16 @@ components:
           - 'null'
         saveTo:
           type: string
-    SignTransaction:
+    DestinationRequest:
       type: object
       additionalProperties: false
       properties:
-        packageId:
-          type: string
-        tagUrl:
-          type: string
-        esignTransactionId:
-          type: string
-        status:
-          type:
-          - boolean
-          - 'null'
-    Adaptation:
-      type: object
-      additionalProperties: false
-      properties:
-        pdfCommands:
-          type: boolean
-        convertToPDF:
-          type: boolean
-    DataSource2:
-      type: object
-      description: 'Array of objects containing metadata on the payload source
-
-        ps: usecase identified for webhooks in the request. Further data sources discovered will be introduced here.'
-      additionalProperties: false
-      properties:
-        type:
-          description: 'Type of data source used. Ex: Webhooks'
-          oneOf:
-          - $ref: '#/components/schemas/DataSourceType'
-        dataSourceId:
-          type: string
-          description: 'Unique source Id. Ex: WebHook Id'
         integrationName:
-          description: Data source info
-          oneOf:
-          - $ref: '#/components/schemas/IntegrationOption'
-        parameters:
-          type: object
-          description: Key-value pair parameter collection
-          additionalProperties:
-            type: string
-    DataSourceType:
-      type: string
-      description: Type of data source used
-      x-enumNames:
-      - None
-      - Webhook
-      enum:
-      - None
-      - Webhook
-    SignCommands:
-      type: object
-      additionalProperties: false
-      properties:
-        provider:
           type: string
-          description: 'Providers: Conga Sign Powered by OneSpan.'
-        payload:
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        folderId:
           type: string
-          description: For information on structuring the JSON payload click [here](https://developer.conga.com/doc-automation/reference/package_createpackage).
-    InfoObject:
-      type: object
-      description: Info Object
-      additionalProperties: false
-      properties:
-        signTransaction:
-          description: Sign transaction
-          oneOf:
-          - $ref: '#/components/schemas/SignTransaction'
+          description: Folder ID that correspond to the cloud service provider's actual folder ID. For more information on how to get the folder ID, click [here](https://documentation.conga.com/composer/latest/how-to-get-file-id-for-composer-api-request-193698978.html)
     ComposerMergeBaseRequest:
       type: object
       additionalProperties: false
@@ -579,13 +562,30 @@ components:
           $ref: '#/components/schemas/OutputRequest'
         locale:
           type: string
-    OutputRequest:
+    ComposerMergeRequest:
+      allOf:
+      - $ref: '#/components/schemas/ComposerMergeBaseRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          jsonData:
+            type: string
+            description: JSON payload. For more information on JSON payload use case, click [here](https://documentation.conga.com/composer/latest/generate-document-using-json-data-203491745.html)
+          dataSources:
+            type: array
+            description: Array of objects containing metadata on the payload source
+            items:
+              $ref: '#/components/schemas/DataSource2'
+    Result:
       type: object
       additionalProperties: false
       properties:
-        generateDocumentDownload:
-          type: boolean
-          description: Set this to **true** to enable document download for the merged document.
+        statusCode:
+          $ref: '#/components/schemas/StatusCodes'
+        statusMessage:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusMessage'
   securitySchemes:
     JWT:
       type: apiKey

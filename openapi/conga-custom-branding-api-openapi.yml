@@ -7,12 +7,12 @@ servers:
 security:
 - JWT: []
 tags:
-- name: CustomBranding
+- name: Custom Branding
 paths:
   /v1/CustomBranding:
     get:
       tags:
-      - CustomBranding
+      - Custom Branding
       summary: Get all uploaded customBrandings
       operationId: CustomBranding_GetAllCustomBrandings
       parameters:
@@ -64,8 +64,8 @@ paths:
       - JWT: []
     post:
       tags:
-      - CustomBranding
-      summary: Uploads a logo file with a custom name.
+      - Custom Branding
+      summary: Uploads a logo file with a custom name
       operationId: CustomBranding_UploadCustomBranding
       requestBody:
         content:
@@ -104,7 +104,7 @@ paths:
   /v1/CustomBranding/{id}:
     delete:
       tags:
-      - CustomBranding
+      - Custom Branding
       operationId: CustomBranding_DeleteCustomBranding
       parameters:
       - name: id
@@ -138,9 +138,11 @@ paths:
           description: ''
       security:
       - JWT: []
+      summary: Custom branding delete custom branding
+      x-summary-source: derived
     get:
       tags:
-      - CustomBranding
+      - Custom Branding
       summary: Get logo file details by ID
       operationId: CustomBranding_GetCustomBrandingById
       parameters:
@@ -185,8 +187,8 @@ paths:
       - JWT: []
     patch:
       tags:
-      - CustomBranding
-      summary: Updates a logo's image and/or custom name by ID.
+      - Custom Branding
+      summary: Updates a logo's image and/or custom name by ID
       operationId: CustomBranding_UpdateCustomBranding
       parameters:
       - name: id
@@ -239,7 +241,7 @@ paths:
   /v1/CustomBranding/{id}/download:
     get:
       tags:
-      - CustomBranding
+      - Custom Branding
       operationId: CustomBranding_DownloadLogoFileById
       parameters:
       - name: id
@@ -273,8 +275,56 @@ paths:
           description: ''
       security:
       - JWT: []
+      summary: Custom branding download logo file by id
+      x-summary-source: derived
 components:
   schemas:
+    Errors:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
+          oneOf:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
+    ComposerResponseOfCustomBrandingEntity:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponse'
+      - type: object
+        description: Represents the result of some operation, with status information and possibly a value and an error.
+        additionalProperties: false
+        properties:
+          data:
+            description: 'A safe version of Data that returns null if the result is a failure.
+
+              This is used for serialization only.'
+            oneOf:
+            - $ref: '#/components/schemas/CustomBrandingEntity'
     Stream:
       allOf:
       - $ref: '#/components/schemas/MarshalByRefObject'
@@ -290,30 +340,6 @@ components:
           writeTimeout:
             type: integer
             format: int32
-    ComposerResponse:
-      type: object
-      description: Represents a result of some operation, with status information and possibly an error.
-      additionalProperties: false
-      properties:
-        errors:
-          type: array
-          description: List of errors
-          items:
-            $ref: '#/components/schemas/Errors'
-        debugInfo:
-          description: Stack trace
-          oneOf:
-          - $ref: '#/components/schemas/DebugInfo'
-        isSuccess:
-          type: boolean
-          description: Gets a value indicating whether the result is a success result.
-        isFailure:
-          type: boolean
-          description: Gets a value indicating whether the result is a failure result.
-    MarshalByRefObject:
-      type: object
-      x-abstract: true
-      additionalProperties: false
     ResponseStatusCode:
       type: string
       description: Application-specific error code identified by Composer UI\
@@ -397,6 +423,30 @@ components:
       - FILE_NOT_FOUND
       - UNSUPPORTED_CUSTOMBRANDINGID
       - INVALID_CUSTOMBRANDINGID
+    MarshalByRefObject:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
     ProblemDetails:
       type: object
       additionalProperties: {}
@@ -425,79 +475,6 @@ components:
         extensions:
           type: object
           additionalProperties: {}
-    ComposerResponseOfCustomBrandingEntity:
-      allOf:
-      - $ref: '#/components/schemas/ComposerResponse'
-      - type: object
-        description: Represents the result of some operation, with status information and possibly a value and an error.
-        additionalProperties: false
-        properties:
-          data:
-            description: 'A safe version of Data that returns null if the result is a failure.
-
-              This is used for serialization only.'
-            oneOf:
-            - $ref: '#/components/schemas/CustomBrandingEntity'
-    CustomBrandingEntity:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type:
-          - string
-          - 'null'
-        logoMimeType:
-          type: string
-        logoPath:
-          type: string
-        customName:
-          type:
-          - string
-          - 'null'
-        lastModifiedDate:
-          type: string
-          format: date-time
-        logoImage:
-          oneOf:
-          - $ref: '#/components/schemas/Stream'
-        logoFileContent:
-          type:
-          - string
-          - 'null'
-          format: byte
-    Errors:
-      type: object
-      description: Error response
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique ID
-          format: guid
-        title:
-          type: string
-          description: Error title
-        details:
-          type: string
-          description: Error description
-        status:
-          description: Status code
-          oneOf:
-          - $ref: '#/components/schemas/HttpStatusCode'
-        code:
-          description: Unique Response code. This enum is foreseeably used by UI
-          oneOf:
-          - $ref: '#/components/schemas/ResponseStatusCode'
-    DebugInfo:
-      type: object
-      description: Model to capture stack trace information
-      additionalProperties: false
-      properties:
-        stackTrace:
-          type: array
-          description: Stack trace of code flow
-          items:
-            type: string
     HttpStatusCode:
       type: string
       description: ''
@@ -637,6 +614,33 @@ components:
       - LoopDetected
       - NotExtended
       - NetworkAuthenticationRequired
+    CustomBrandingEntity:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        logoMimeType:
+          type: string
+        logoPath:
+          type: string
+        customName:
+          type:
+          - string
+          - 'null'
+        lastModifiedDate:
+          type: string
+          format: date-time
+        logoImage:
+          oneOf:
+          - $ref: '#/components/schemas/Stream'
+        logoFileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
     CustomBrandingListResponse:
       type: object
       additionalProperties: false

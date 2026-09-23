@@ -71,6 +71,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1Roles
+      x-operation-id-source: derived
     post:
       tags:
       - Role Admin
@@ -107,6 +109,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1Roles
+      x-operation-id-source: derived
   /api/user-management/v1/roles/bulk:
     post:
       tags:
@@ -152,6 +156,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1RolesBulk
+      x-operation-id-source: derived
   /api/user-management/v1/roles/{roleId}:
     delete:
       tags:
@@ -184,6 +190,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1RolesByRoleId
+      x-operation-id-source: derived
     get:
       tags:
       - Role Admin
@@ -232,6 +240,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1RolesByRoleId
+      x-operation-id-source: derived
     put:
       tags:
       - Role Admin
@@ -288,6 +298,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1RolesByRoleId
+      x-operation-id-source: derived
   /api/user-management/v1/roles/{roleId}/admin-permissions:
     delete:
       tags:
@@ -349,6 +361,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1RolesByRoleIdAdminPermissions
+      x-operation-id-source: derived
     put:
       tags:
       - Role Admin
@@ -409,6 +423,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1RolesByRoleIdAdminPermissions
+      x-operation-id-source: derived
   /api/user-management/v1/roles/{roleId}/clone:
     post:
       tags:
@@ -452,6 +468,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1RolesByRoleIdClone
+      x-operation-id-source: derived
   /api/user-management/v1/roles/{roleId}/exists:
     get:
       tags:
@@ -484,6 +502,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1RolesByRoleIdExists
+      x-operation-id-source: derived
   /api/user-management/v1/roles/{roleId}/permissiongroups:
     delete:
       tags:
@@ -520,6 +540,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1RolesByRoleIdPermissiongroups
+      x-operation-id-source: derived
     put:
       tags:
       - Role Admin
@@ -580,74 +602,56 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1RolesByRoleIdPermissiongroups
+      x-operation-id-source: derived
 components:
   schemas:
-    RoleUpdateRequest:
+    Role:
       type: object
       properties:
+        Id:
+          type:
+          - string
+          - 'null'
         Name:
           type:
           - string
           - 'null'
-          description: The role's name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
         Description:
           type:
           - string
           - 'null'
-          description: The role's description
-      additionalProperties: false
-    DeleteAdminPermissions:
-      type: object
-      properties:
-        AdminPermissionNames:
+        PermissionGroups:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: string
-      additionalProperties: false
-    RoleAPIResponse:
-      type: object
-      properties:
-        Success:
+        IsDeleted:
           type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/Role'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        AdminPermissions:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
+      additionalProperties: {}
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -695,6 +699,29 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AssignPermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of permission group names to be assigned for the role.
+      additionalProperties: false
     BooleanNullableAPIResponse:
       type: object
       properties:
@@ -708,238 +735,6 @@ components:
         Data:
           type:
           - boolean
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    AssignAdminPermissions:
-      type: object
-      properties:
-        AdminPermissionNames:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The list of admin permission names to be assigned for the role.
-      additionalProperties: false
-    RoleCloneRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: The role's name
-        CopyPermissionGroups:
-          type: boolean
-          description: Indicates whether to clone permission groups from the role.
-        RoleType:
-          $ref: '#/components/schemas/RoleType'
-      additionalProperties: false
-    Role:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Description:
-          type:
-          - string
-          - 'null'
-        PermissionGroups:
-          type:
-          - string
-          - 'null'
-        IsDeleted:
-          type: boolean
-        AdminPermissions:
-          type:
-          - string
-          - 'null'
-        RoleType:
-          $ref: '#/components/schemas/RoleType'
-      additionalProperties: {}
-    RoleType:
-      enum:
-      - Internal
-      - External
-      type: string
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    RoleCreateRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: The role's ID
-        Name:
-          type:
-          - string
-          - 'null'
-          description: The role's name
-        Description:
-          type:
-          - string
-          - 'null'
-          description: The role's description
-        PermissionGroups:
-          type:
-          - string
-          - 'null'
-          description: Permission groups to assign for the role
-        ExternalId:
-          type:
-          - string
-          - 'null'
-          description: ExternalId
-        AdminPermissions:
-          type:
-          - string
-          - 'null'
-        RoleType:
-          $ref: '#/components/schemas/RoleType'
-      additionalProperties: false
-    DeletePermissionGroups:
-      type: object
-      properties:
-        PermissionGroupNames:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Collection of the PermissionGroupNames to be Deleted
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
           - 'null'
         Errors:
           type:
@@ -1035,7 +830,7 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    AssignPermissionGroups:
+    DeletePermissionGroups:
       type: object
       properties:
         PermissionGroupNames:
@@ -1044,7 +839,236 @@ components:
           - 'null'
           items:
             type: string
-          description: The list of permission group names to be assigned for the role.
+          description: Collection of the PermissionGroupNames to be Deleted
+      additionalProperties: false
+    DeleteAdminPermissions:
+      type: object
+      properties:
+        AdminPermissionNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    AssignAdminPermissions:
+      type: object
+      properties:
+        AdminPermissionNames:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of admin permission names to be assigned for the role.
+      additionalProperties: false
+    RoleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/Role'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RoleType:
+      enum:
+      - Internal
+      - External
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RoleUpdateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The role's description
+      additionalProperties: false
+    RoleCreateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The role's ID
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The role's description
+        PermissionGroups:
+          type:
+          - string
+          - 'null'
+          description: Permission groups to assign for the role
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+        AdminPermissions:
+          type:
+          - string
+          - 'null'
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RoleCloneRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The role's name
+        CopyPermissionGroups:
+          type: boolean
+          description: Indicates whether to clone permission groups from the role.
+        RoleType:
+          $ref: '#/components/schemas/RoleType'
       additionalProperties: false
   securitySchemes:
     Bearer:

@@ -8,15 +8,36 @@ servers:
 security:
 - Bearer: []
 tags:
-- name: SmartSearch
+- name: Smart Search
   description: Search APIs to search product details
 paths:
   /search:
     post:
       tags:
-      - SmartSearch
+      - Smart Search
       summary: Search products
-      description: "Applies search filters in the catalog to retrieve one or more products that satisfy the search filter criteria provided in the parameters and the request body. To filter out a product you can use the following facets/search criteria. \n <ul><li>Product Type(E.g., Equipment or service)</li><li>Family(E.g., Software or hardware)</li><li>Configuration Type(E.g., Standalone or bundle)</li><li>A custom multi-picklist field called AdminAuto_CustomMultiPicklistField_c(E.g., Bundle1, Bundle 2)</li></ul><p>Please note that the search filter that you are passing must be associated with the category ID on which you are performing the search.</p><p>This API also does multiple search criteria to filter out the product, it considers one or more of the conditions using AND/OR association.For example, to search within the family facet (Software or hardware) the facet value will only take the OR logic.But to search products across the Family facet and Product Type facet, the AND logic will be applicable.This API also sorts records in ascending order and applies pagination on the retrieved result.</p><p>Pass the Pricelist ID and Category ID in the header and select the Search Type in the query parameters to call this API.When you pass a specific Category ID, the search filters will be applied to all products associated with that specific category ID.When you pass Category ID as <b>All</b>, the search filters will be applied to all the products across all the categories. The Pricelist ID and Search Type are mandatory fields.You can also use the Filter and Includes query parameter to deepen your search by passing the categories and pricelist items.When you do not pass the category ID in the header or pass an empty request body, the API returns all the products without any facets/search filter.</p>"
+      description: 'Applies search filters in the catalog to retrieve one or more products that satisfy the search filter criteria provided in the parameters and the request body. To filter out a product you can use the following facets/search criteria.
+
+
+        Product Type(E.g., Equipment or service)
+
+
+        Family(E.g., Software or hardware)
+
+
+        Configuration Type(E.g., Standalone or bundle)
+
+
+        A custom multi-picklist field called AdminAuto_CustomMultiPicklistField_c(E.g., Bundle1, Bundle 2)
+
+
+        Please note that the search filter that you are passing must be associated with the category ID on which you are performing the search.
+
+
+        This API also does multiple search criteria to filter out the product, it considers one or more of the conditions using AND/OR association.For example, to search within the family facet (Software or hardware) the facet value will only take the OR logic.But to search products across the Family facet and Product Type facet, the AND logic will be applicable.This API also sorts records in ascending order and applies pagination on the retrieved result.
+
+
+        Pass the Pricelist ID and Category ID in the header and select the Search Type in the query parameters to call this API.When you pass a specific Category ID, the search filters will be applied to all products associated with that specific category ID.When you pass Category ID as All, the search filters will be applied to all the products across all the categories. The Pricelist ID and Search Type are mandatory fields.You can also use the Filter and Includes query parameter to deepen your search by passing the categories and pricelist items.When you do not pass the category ID in the header or pass an empty request body, the API returns all the products without any facets/search filter.'
       parameters:
       - name: pricelistid
         in: header
@@ -130,14 +151,17 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+      operationId: postSearch
+      x-operation-id-source: derived
   /search/typeahead:
     get:
       tags:
-      - SmartSearch
+      - Smart Search
       summary: Search products using typeahead
       description: 'Searches for products using typeahead search, an autosuggest method that predicts search results and gives users suggestions when they enter one or more letters related to their search.
 
-        <p>This API searches and retrieves products based on the query parameters that you have passed.You must select the Search-Type query parameter as <b>Product</b> to run this API.For example, to search for products that contain the letter �a�, select the Search-Type query parameter to product, and under the Query parameter, enter the letter �a�. Executing this API displays all the products that have the letter �a� in their Product Name, Description, and Product code.If you do not pass any Query parameters, all the products will be retrieved. The PriceList ID in the header is a mandatory field to execute this API.</p>'
+
+        This API searches and retrieves products based on the query parameters that you have passed.You must select the Search-Type query parameter as Product to run this API.For example, to search for products that contain the letter �a�, select the Search-Type query parameter to product, and under the Query parameter, enter the letter �a�. Executing this API displays all the products that have the letter �a� in their Product Name, Description, and Product code.If you do not pass any Query parameters, all the products will be retrieved. The PriceList ID in the header is a mandatory field to execute this API.'
       parameters:
       - name: pricelistid
         in: header
@@ -210,29 +234,10 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
+      operationId: getSearchTypeahead
+      x-operation-id-source: derived
 components:
   schemas:
-    Conga.Revenue.DataAccess.Models.Common.FacetValue:
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        displayName:
-          type:
-          - string
-          - 'null'
-        count:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        isEnabled:
-          type: boolean
-        isSelected:
-          type: boolean
-      additionalProperties: false
     Conga.Revenue.DataAccess.Models.Common.Facet:
       type: object
       properties:
@@ -295,6 +300,27 @@ components:
           - string
           - 'null'
       additionalProperties: {}
+    Conga.Revenue.DataAccess.Models.Common.FacetValue:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        count:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        isEnabled:
+          type: boolean
+        isSelected:
+          type: boolean
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

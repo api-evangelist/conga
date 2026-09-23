@@ -65,6 +65,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdGenerate
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/joindocuments:
     post:
       tags:
@@ -117,6 +119,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdJoindocuments
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/previewdocument:
     post:
       tags:
@@ -186,6 +190,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdPreviewdocument
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/regenerate:
     post:
       tags:
@@ -241,6 +247,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdRegenerate
+      x-operation-id-source: derived
   /api/clm/v1/contracts/{contractId}/supportingdocument:
     post:
       tags:
@@ -296,75 +304,39 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1ContractsByContractIdSupportingdocument
+      x-operation-id-source: derived
 components:
   schemas:
-    HeaderFooter:
-      type: object
-      properties:
-        HeaderText:
-          type:
-          - string
-          - 'null'
-          description: Custom header text to show in output document if retain header footer is set to false
-        FooterText:
-          type:
-          - string
-          - 'null'
-          description: Custom Footer text to show in output document if retain header footer is set to false
-        RetainHeaderFooter:
-          type: boolean
-          description: Retain value of header and footer from parent document in output document
-      additionalProperties: false
-      description: Header and Footer Document Generation
-    APIResponseError:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Error Class
-    DocumentJoinRequest:
+    DocumentPreviewRequest:
       required:
-      - DocumentIds
+      - TemplateId
       type: object
       properties:
-        DocumentIds:
-          type: array
-          items:
-            type: string
-          description: Documents ids of documents to be join
-        DocumentOutputOptions:
-          $ref: '#/components/schemas/OutputOptions'
+        TemplateId:
+          minLength: 1
+          type: string
+          description: Template Id
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: Output format. i.e. DOCX, PDF, PDF/A
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        IncludeWatermark:
+          type: boolean
+          description: Include Watermark or not
       additionalProperties: false
-      description: Request model for join documents
-    DocumentJoinResponseAPIResponse:
+      description: Request Model for Preview Documents
+    DocumentPreviewResponseAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          $ref: '#/components/schemas/DocumentJoinResponse'
+          $ref: '#/components/schemas/DocumentPreviewResponse'
         Warnings:
           type:
           - array
@@ -381,113 +353,6 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    OutputOptions:
-      required:
-      - FileName
-      type: object
-      properties:
-        FileName:
-          minLength: 1
-          type: string
-          description: Join Document Name
-        ConvertToPDF:
-          type: boolean
-          description: Output document format is PDF if true and is DOCX if false/default
-        ProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
-        HeaderFooter:
-          $ref: '#/components/schemas/HeaderFooter'
-        DocumentType:
-          type:
-          - string
-          - 'null'
-          description: Document type selected by user for output document like Contract, Supporting, Other
-        IncludeWatermark:
-          type: boolean
-          description: Include watermark in output Document true or false
-        WatermarkText:
-          type:
-          - string
-          - 'null'
-          description: Watermark text to show in output document if value of Include Watermark is true
-      additionalProperties: false
-      description: Output options for generated documents
-    DocumentJoinResponse:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Document Join success/failure message
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: Output Document Id
-        DocumentParentId:
-          type:
-          - string
-          - 'null'
-          description: Output Document parent Id
-        DocumentExtension:
-          type:
-          - string
-          - 'null'
-          description: Output document extension
-        Status:
-          type: boolean
-          description: Success status of DocGen service
-      additionalProperties: false
-      description: Response from Document Join
-    DocumentPreviewResponse:
-      type: object
-      properties:
-        DocumentVersionId:
-          type:
-          - string
-          - 'null'
-          description: Document version ID
-        Status:
-          type: boolean
-          description: Status of the document
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Message for document preview
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: ID of the document
-        DocumentParentId:
-          type:
-          - string
-          - 'null'
-          description: ID of the document\u0027s parent document (if any)
-        Document:
-          type:
-          - string
-          - 'null'
-          description: Actual document as blob (byte array)
-          format: byte
-        DocumentExtension:
-          type:
-          - string
-          - 'null'
-          description: File extension of the document (e.g., DOCX, PDF)
-      additionalProperties: false
-      description: Response Model for Document Preview
-    ProtectionLevelType:
-      enum:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - AllowOnlyReading
-      - NoProtection
-      type: string
-      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
     DocumentGenerationResult:
       type: object
       properties:
@@ -527,6 +392,85 @@ components:
           description: Document extension i.e. DOCX, PDF
       additionalProperties: false
       description: Response of Document Generation
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    DocumentJoinResponse:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Document Join success/failure message
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: Output Document Id
+        DocumentParentId:
+          type:
+          - string
+          - 'null'
+          description: Output Document parent Id
+        DocumentExtension:
+          type:
+          - string
+          - 'null'
+          description: Output document extension
+        Status:
+          type: boolean
+          description: Success status of DocGen service
+      additionalProperties: false
+      description: Response from Document Join
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
     DocGenAttributes:
       required:
       - TemplateId
@@ -553,27 +497,69 @@ components:
           $ref: '#/components/schemas/ProtectionLevelType'
       additionalProperties: false
       description: Document Generation model
-    DocumentPreviewRequest:
+    DocumentJoinRequest:
       required:
-      - TemplateId
+      - DocumentIds
       type: object
       properties:
-        TemplateId:
+        DocumentIds:
+          type: array
+          items:
+            type: string
+          description: Documents ids of documents to be join
+        DocumentOutputOptions:
+          $ref: '#/components/schemas/OutputOptions'
+      additionalProperties: false
+      description: Request model for join documents
+    OutputOptions:
+      required:
+      - FileName
+      type: object
+      properties:
+        FileName:
           minLength: 1
           type: string
-          description: Template Id
-        OutputFormat:
+          description: Join Document Name
+        ConvertToPDF:
+          type: boolean
+          description: Output document format is PDF if true and is DOCX if false/default
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        HeaderFooter:
+          $ref: '#/components/schemas/HeaderFooter'
+        DocumentType:
           type:
           - string
           - 'null'
-          description: Output format. i.e. DOCX, PDF, PDF/A
-        ProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
+          description: Document type selected by user for output document like Contract, Supporting, Other
         IncludeWatermark:
           type: boolean
-          description: Include Watermark or not
+          description: Include watermark in output Document true or false
+        WatermarkText:
+          type:
+          - string
+          - 'null'
+          description: Watermark text to show in output document if value of Include Watermark is true
       additionalProperties: false
-      description: Request Model for Preview Documents
+      description: Output options for generated documents
+    HeaderFooter:
+      type: object
+      properties:
+        HeaderText:
+          type:
+          - string
+          - 'null'
+          description: Custom header text to show in output document if retain header footer is set to false
+        FooterText:
+          type:
+          - string
+          - 'null'
+          description: Custom Footer text to show in output document if retain header footer is set to false
+        RetainHeaderFooter:
+          type: boolean
+          description: Retain value of header and footer from parent document in output document
+      additionalProperties: false
+      description: Header and Footer Document Generation
     DocumentGenerationResultAPIResponse:
       type: object
       properties:
@@ -582,6 +568,69 @@ components:
           description: The state of the API response
         Data:
           $ref: '#/components/schemas/DocumentGenerationResult'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentPreviewResponse:
+      type: object
+      properties:
+        DocumentVersionId:
+          type:
+          - string
+          - 'null'
+          description: Document version ID
+        Status:
+          type: boolean
+          description: Status of the document
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Message for document preview
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: ID of the document
+        DocumentParentId:
+          type:
+          - string
+          - 'null'
+          description: ID of the document\u0027s parent document (if any)
+        Document:
+          type:
+          - string
+          - 'null'
+          description: Actual document as blob (byte array)
+          format: byte
+        DocumentExtension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the document (e.g., DOCX, PDF)
+      additionalProperties: false
+      description: Response Model for Document Preview
+    DocumentJoinResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentJoinResponse'
         Warnings:
           type:
           - array
@@ -613,45 +662,6 @@ components:
           description: Warning message
       additionalProperties: false
       description: Warning detail class for non-blocking issues
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    DocumentPreviewResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/DocumentPreviewResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
   securitySchemes:
     bearerAuth:
       type: http

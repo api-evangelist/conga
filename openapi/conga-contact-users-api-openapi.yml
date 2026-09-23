@@ -13,7 +13,7 @@ paths:
     post:
       tags:
       - Contact Users
-      summary: Creates a contact user and creates a mapping between the user and the contact object.
+      summary: Creates a contact user and creates a mapping between the user and the contact…
       requestBody:
         content:
           application/json:
@@ -44,11 +44,13 @@ paths:
           description: Forbidden
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1ContactUsers
+      x-operation-id-source: derived
   /api/user-management/v1/contact-users/{userId}:
     delete:
       tags:
       - Contact Users
-      summary: Deactivate a contact user.
+      summary: Deactivate a contact user
       parameters:
       - name: userId
         in: path
@@ -74,10 +76,12 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1ContactUsersByUserId
+      x-operation-id-source: derived
     put:
       tags:
       - Contact Users
-      summary: Update a contact user.
+      summary: Update a contact user
       parameters:
       - name: userId
         in: path
@@ -110,11 +114,13 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1ContactUsersByUserId
+      x-operation-id-source: derived
   /api/user-management/v1/contact-users/{userId}/restore:
     put:
       tags:
       - Contact Users
-      summary: Reactivate a previously deactivated contact user.
+      summary: Reactivate a previously deactivated contact user
       parameters:
       - name: userId
         in: path
@@ -140,16 +146,22 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1ContactUsersByUserIdRestore
+      x-operation-id-source: derived
 components:
   schemas:
-    UserType:
-      enum:
-      - External
-      - Guest
-      - Community
-      - Integration
-      - Contact
-      type: string
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     UserAPIResponse:
       type: object
       properties:
@@ -191,26 +203,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
       additionalProperties: false
     User:
       type: object
@@ -347,6 +339,133 @@ components:
           - boolean
           - 'null'
       additionalProperties: {}
+    ContactUserBaseRequest:
+      type: object
+      properties:
+        FirstName:
+          type:
+          - string
+          - 'null'
+          description: The user's first name.
+        LastName:
+          type:
+          - string
+          - 'null'
+          description: The user's last name.
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user's email address.
+        Timezone:
+          type:
+          - string
+          - 'null'
+          description: The user's time zone ID.
+        Locale:
+          type:
+          - string
+          - 'null'
+          description: The user's locale name.
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: The user's currency.
+        Alias:
+          type:
+          - string
+          - 'null'
+          description: The user's alias name.
+        Language:
+          type:
+          - string
+          - 'null'
+          description: The user's language.
+        Address:
+          type:
+          - string
+          - 'null'
+          description: The user's address.
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: The user's phone number.
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        PermissionGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of permission groups to assign to the user.
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
     ContactUserCreateRequest:
       type: object
       properties:
@@ -436,6 +555,22 @@ components:
           description: The id of the primary object record.
       additionalProperties: false
       description: Request payload to create a contact user (username + OTP sign-in).
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserType:
+      enum:
+      - External
+      - Guest
+      - Community
+      - Integration
+      - Contact
+      type: string
     StringAPIResponse:
       type: object
       properties:
@@ -479,133 +614,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    ContactUserBaseRequest:
-      type: object
-      properties:
-        FirstName:
-          type:
-          - string
-          - 'null'
-          description: The user's first name.
-        LastName:
-          type:
-          - string
-          - 'null'
-          description: The user's last name.
-        Email:
-          type:
-          - string
-          - 'null'
-          description: The user's email address.
-        Timezone:
-          type:
-          - string
-          - 'null'
-          description: The user's time zone ID.
-        Locale:
-          type:
-          - string
-          - 'null'
-          description: The user's locale name.
-        Currency:
-          type:
-          - string
-          - 'null'
-          description: The user's currency.
-        Alias:
-          type:
-          - string
-          - 'null'
-          description: The user's alias name.
-        Language:
-          type:
-          - string
-          - 'null'
-          description: The user's language.
-        Address:
-          type:
-          - string
-          - 'null'
-          description: The user's address.
-        PhoneNumber:
-          type:
-          - string
-          - 'null'
-          description: The user's phone number.
-        Role:
-          $ref: '#/components/schemas/LookupObject'
-        PermissionGroups:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: List of permission groups to assign to the user.
       additionalProperties: false
   securitySchemes:
     Bearer:

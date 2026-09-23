@@ -19,7 +19,7 @@ paths:
     get:
       tags:
       - Invoice Request Results
-      summary: Retrieves an invoice request result by its identifier.
+      summary: Retrieves an invoice request result by its identifier
       parameters:
       - name: id
         in: path
@@ -59,11 +59,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getRequestResultsById
+      x-operation-id-source: derived
   /request-results/{id}/invoices:
     get:
       tags:
       - Invoice Request Results
-      summary: Retrieves all invoices associated with a specific invoice request result.
+      summary: Retrieves all invoices associated with a specific invoice request result
       parameters:
       - name: id
         in: path
@@ -102,8 +104,22 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+      operationId: getRequestResultsByIdInvoices
+      x-operation-id-source: derived
 components:
   schemas:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     CurrencyField:
       type: object
       properties:
@@ -125,6 +141,66 @@ components:
           - 'null'
           readOnly: true
       additionalProperties: false
+    InvoiceRequestResult:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        RequestName:
+          $ref: '#/components/schemas/LookupObject'
+        TotalAccountsInScope:
+          type: integer
+          format: int32
+        TotalOrdersInScope:
+          type: integer
+          format: int32
+        TotalBSRsInScope:
+          type: integer
+          format: int32
+        TotalInvoicesCreated:
+          type: integer
+          format: int32
+        TotalInvoicesAutoApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosCreated:
+          type: integer
+          format: int32
+        TotalCreditMemosApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosWithTaxProcessed:
+          type: integer
+          format: int32
+      additionalProperties: {}
     ApiError:
       type: object
       properties:
@@ -138,28 +214,6 @@ components:
           - 'null'
         Detail: {}
         Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
           type:
           - string
           - 'null'
@@ -282,66 +336,16 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    InvoiceRequestResult:
+    ErrorApiResponse:
       type: object
       properties:
-        Id:
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Status:
-          type:
-          - string
-          - 'null'
-        RequestName:
-          $ref: '#/components/schemas/LookupObject'
-        TotalAccountsInScope:
-          type: integer
-          format: int32
-        TotalOrdersInScope:
-          type: integer
-          format: int32
-        TotalBSRsInScope:
-          type: integer
-          format: int32
-        TotalInvoicesCreated:
-          type: integer
-          format: int32
-        TotalInvoicesAutoApproved:
-          type: integer
-          format: int32
-        TotalCreditMemosCreated:
-          type: integer
-          format: int32
-        TotalCreditMemosApproved:
-          type: integer
-          format: int32
-        TotalCreditMemosWithTaxProcessed:
-          type: integer
-          format: int32
-      additionalProperties: {}
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

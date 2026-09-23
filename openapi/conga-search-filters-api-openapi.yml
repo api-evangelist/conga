@@ -1,22 +1,18 @@
 openapi: 3.2.0
 info:
   title: Approvals Search Filters API
-  description: '
-
-    The Approvals API is used to submit, preview, and retrieve approval processes.
-
-    '
+  description: The Approvals API is used to submit, preview, and retrieve approval processes.
   version: v1
 servers:
 - url: https://rls.congacloud.com/api/approvals
 security: []
 tags:
-- name: SearchFilters
+- name: Search Filters
 paths:
   /v1/search-filters:
     get:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Get all search filters
       description: Retrieves all search filters matched by name using a search string.
       operationId: SearchFilters_GetAll
@@ -59,7 +55,7 @@ paths:
       - Bearer: []
     post:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Create or update a search filter
       description: Updates a search filter by a given ID. If no ID is passed, creates a new search filter.
       operationId: SearchFilters_Save
@@ -84,7 +80,7 @@ paths:
   /v1/search-filters/validate:
     get:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Validate a search filter name
       description: Checks whether a search filter name has already been used. Takes the filter name and business object types as inputs, and returns a Boolean (true if the name already exists and is not available).
       operationId: SearchFilters_Validate
@@ -120,7 +116,7 @@ paths:
   /v1/search-filters/{id}:
     delete:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Delete a search filter by ID
       description: Deletes a search filter identified by its ID string.
       operationId: SearchFilters_DeleteById
@@ -144,7 +140,7 @@ paths:
       - Bearer: []
     get:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Get a search filter by ID
       description: Gets a search filter by its ID.
       operationId: SearchFilters_GetById
@@ -168,7 +164,7 @@ paths:
   /v1/search-filters/{id}/activate:
     post:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Activate a search filter
       description: Activates a search filter identified by its ID string.
       operationId: SearchFilters_Activate
@@ -193,7 +189,7 @@ paths:
   /v1/search-filters/{id}/deactivate:
     post:
       tags:
-      - SearchFilters
+      - Search Filters
       summary: Deactivate a search filter
       description: Deactivates a search filter identified by its ID string.
       operationId: SearchFilters_Deactivate
@@ -217,6 +213,65 @@ paths:
       - Bearer: []
 components:
   schemas:
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    SearchFilterPayloadDTO:
+      allOf:
+      - $ref: '#/components/schemas/SearchFilterApprovals'
+      - type: object
+        additionalProperties: {}
+        properties:
+          BusinessObjectLabel:
+            type:
+            - string
+            - 'null'
     SearchFilterApprovals:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -255,65 +310,6 @@ components:
           FilterType:
             type: string
             minLength: 1
-    SearchFilterPayloadDTO:
-      allOf:
-      - $ref: '#/components/schemas/SearchFilterApprovals'
-      - type: object
-        additionalProperties: {}
-        properties:
-          BusinessObjectLabel:
-            type:
-            - string
-            - 'null'
-    LookupObject:
-      type: object
-      additionalProperties: false
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-    BaseObject:
-      type: object
-      additionalProperties: {}
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        CustomProperties:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
   securitySchemes:
     Bearer:
       type: apiKey

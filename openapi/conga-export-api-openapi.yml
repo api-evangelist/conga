@@ -14,12 +14,12 @@ paths:
     post:
       tags:
       - Export
-      summary: Export line items from a cart as a downloadable CSV file.
+      summary: Export line items from a cart as a downloadable CSV file
       description: 'Exports all line items associated with the specified cartId.
 
         The resulting CSV contains:
 
-        <list type="bullet"><item><description>Cart header fields</description></item><item><description>Primary line items</description></item><item><description>Secondary line items (options, charge types, etc.)</description></item></list>
+        Cart header fieldsPrimary line itemsSecondary line items (options, charge types, etc.)
 
         Provide `primaryLineNumbers` and `lineNumbers` in the request body.'
       parameters:
@@ -71,6 +71,8 @@ paths:
           description: Internal Server Error
       security:
       - Bearer: []
+      operationId: postApiCartV1CartsByCartIdExport
+      x-operation-id-source: derived
     servers:
     - url: https://rls.congacloud.com
   /api/clm/v1/objects/export/{fileName}/{format}:
@@ -135,6 +137,8 @@ paths:
                   Message: Internal server error occurred. Please contact admin.
       security:
       - bearerAuth: []
+      operationId: postApiClmV1ObjectsExportByFileNameByFormat
+      x-operation-id-source: derived
     servers:
     - url: https://rls.congacloud.com
     - url: https://preview-rls09.congacloud.com
@@ -197,6 +201,8 @@ paths:
                   Message: Internal server error occurred. Please contact admin.
       security:
       - bearerAuth: []
+      operationId: postApiClmV1ObjectsMultipleExportByFileNameByFormat
+      x-operation-id-source: derived
     servers:
     - url: https://rls.congacloud.com
     - url: https://preview-rls09.congacloud.com
@@ -220,33 +226,43 @@ components:
             type: integer
             format: int32
       additionalProperties: false
-    APIResponseError:
+    MultipleObjectsSearchQuery:
       type: object
       properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
+        DocumentSearchText:
           type:
           - string
           - 'null'
-          description: Generic data to return
-        Warnings:
+          description: Document search text
+        MultipleObjectSearchQueries:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
+            $ref: '#/components/schemas/MultipleObjectsQuery'
+          description: Array of Search queries for Multiple Objects
       additionalProperties: false
-      description: API Response Error Class
+      description: Multiple Objects Query
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    MultipleObjectsQuery:
+      type: object
+      properties:
+        Query:
+          $ref: '#/components/schemas/SearchQuery'
+        IsPrimaryObject:
+          type: boolean
+          description: Whether Primary object or not
+        ReferenceAliasName:
+          type:
+          - string
+          - 'null'
+          description: Reference Alias Name of related object
+      additionalProperties: false
+      description: Multiple Objects Query
     FileResultAPIResponse:
       type: object
       properties:
@@ -275,48 +291,33 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    AllowedTemplateDocumentFormats:
-      enum:
-      - csv
-      - xlsx
-      type: string
-    MultipleObjectsQuery:
+    APIResponseError:
       type: object
       properties:
-        Query:
-          $ref: '#/components/schemas/SearchQuery'
-        IsPrimaryObject:
+        Success:
           type: boolean
-          description: Whether Primary object or not
-        ReferenceAliasName:
+          description: The state of the API response
+        Data:
           type:
           - string
           - 'null'
-          description: Reference Alias Name of related object
-      additionalProperties: false
-      description: Multiple Objects Query
-    MultipleObjectsSearchQuery:
-      type: object
-      properties:
-        DocumentSearchText:
-          type:
-          - string
-          - 'null'
-          description: Document search text
-        MultipleObjectSearchQueries:
+          description: Generic data to return
+        Warnings:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/MultipleObjectsQuery'
-          description: Array of Search queries for Multiple Objects
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-      description: Multiple Objects Query
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
+      description: API Response Error Class
     Sort:
       type: object
       properties:
@@ -359,6 +360,11 @@ components:
           description: Warning message
       additionalProperties: false
       description: Warning detail class for non-blocking issues
+    AllowedTemplateDocumentFormats:
+      enum:
+      - csv
+      - xlsx
+      type: string
     SearchQuery:
       type: object
       properties:

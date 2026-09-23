@@ -1,11 +1,7 @@
 openapi: 3.2.0
 info:
   title: Approvals Rule Entries API
-  description: '
-
-    The Approvals API is used to submit, preview, and retrieve approval processes.
-
-    '
+  description: The Approvals API is used to submit, preview, and retrieve approval processes.
   version: v1
 servers:
 - url: https://rls.congacloud.com/api/approvals
@@ -128,6 +124,32 @@ paths:
       - Bearer: []
 components:
   schemas:
+    ReminderDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Days:
+          type: integer
+          format: int32
+        Hours:
+          type: integer
+          format: int32
+        Minutes:
+          type: integer
+          format: int32
+        Id:
+          type:
+          - string
+          - 'null'
     RuleEntryResponse:
       type: object
       additionalProperties: false
@@ -231,6 +253,18 @@ components:
           type:
           - string
           - 'null'
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
     ApprovalRuleLookupObject:
       type: object
       description: A lookup object that references an approval rule
@@ -249,82 +283,37 @@ components:
           description: The approval rule name
           minLength: 1
           example: my-approval-rule
-    BaseObject:
+    CustomAssigneeFilterPayload:
       type: object
-      additionalProperties: {}
+      description: CustomAssigneeFilterPayload
+      additionalProperties: false
       properties:
-        Id:
+        FilterFieldName:
           type:
           - string
           - 'null'
-        Name:
+        FilterFieldNameType:
           type:
           - string
           - 'null'
-        CreatedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
+        FilterFieldNameRefTo:
           type:
           - string
           - 'null'
-        ETag:
+        FilterFieldOperator:
           type:
           - string
           - 'null'
-        CustomProperties:
+        FilterFieldValue:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: {}
-    ApprovalRuleDimension:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        required:
-        - Name
-        - BusinessObject
-        - Datasource
-        - DimensionType
-        properties:
-          Name:
-            type: string
-            minLength: 1
-          BusinessObject:
-            type: string
-            minLength: 1
-          Datasource:
-            type: string
-            minLength: 1
-          Description:
-            type:
-            - string
-            - 'null'
-          DimensionType:
-            type: string
-            minLength: 1
-    ApprovalRuleDTO:
-      allOf:
-      - $ref: '#/components/schemas/ApprovalRule'
-      - type: object
-        additionalProperties: {}
-        properties:
-          RuleEntries:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/ApprovalRuleEntryDTO'
+        FilterFieldValueBindField:
+          type:
+          - string
+          - 'null'
+        UseBindFieldEnabled:
+          type: boolean
     EscalationDTO:
       type: object
       additionalProperties: false
@@ -469,26 +458,53 @@ components:
             type:
             - string
             - 'null'
-    ReorderApprovalRuleEntryRequest:
+    ApprovalRuleAssigneeDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRuleAssignee'
+      - type: object
+        additionalProperties: {}
+        properties:
+          CustomAssigneePayload:
+            oneOf:
+            - $ref: '#/components/schemas/CustomAssigneePayload'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/EscalationDTO'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ReminderDTO'
+    Reminder:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Sequence:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          TimeDurationUnit:
+            type:
+            - string
+            - 'null'
+          ReminderForId:
+            type:
+            - string
+            - 'null'
+          ReminderForType:
+            type:
+            - string
+            - 'null'
+    BaseObject:
       type: object
-      description: Request to reorder approval rule entries
-      additionalProperties: false
-      required:
-      - Id
-      - ApprovalRuleId
-      properties:
-        Id:
-          type: string
-          description: The approval rule entry id
-          minLength: 1
-          example: A5D22168-9AC5-41A2-B4F0-A6DB2ADA5A9B
-        ApprovalRuleId:
-          description: The approval rule
-          oneOf:
-          - $ref: '#/components/schemas/ApprovalRuleLookupObject'
-    LookupObject:
-      type: object
-      additionalProperties: false
+      additionalProperties: {}
       properties:
         Id:
           type:
@@ -498,6 +514,70 @@ components:
           type:
           - string
           - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    ApprovalRuleDimension:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        required:
+        - Name
+        - BusinessObject
+        - Datasource
+        - DimensionType
+        properties:
+          Name:
+            type: string
+            minLength: 1
+          BusinessObject:
+            type: string
+            minLength: 1
+          Datasource:
+            type: string
+            minLength: 1
+          Description:
+            type:
+            - string
+            - 'null'
+          DimensionType:
+            type: string
+            minLength: 1
+    ApprovalRuleDTO:
+      allOf:
+      - $ref: '#/components/schemas/ApprovalRule'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RuleEntries:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/ApprovalRuleEntryDTO'
     CustomAssigneePayload:
       type: object
       description: CustomAssigneePayload
@@ -534,63 +614,137 @@ components:
           description: Custom assignee filters
           items:
             $ref: '#/components/schemas/CustomAssigneeFilterPayload'
-    CustomAssigneeFilterPayload:
-      type: object
-      description: CustomAssigneeFilterPayload
-      additionalProperties: false
-      properties:
-        FilterFieldName:
-          type:
-          - string
-          - 'null'
-        FilterFieldNameType:
-          type:
-          - string
-          - 'null'
-        FilterFieldNameRefTo:
-          type:
-          - string
-          - 'null'
-        FilterFieldOperator:
-          type:
-          - string
-          - 'null'
-        FilterFieldValue:
-          type:
-          - string
-          - 'null'
-        FilterFieldValueBindField:
-          type:
-          - string
-          - 'null'
-        UseBindFieldEnabled:
-          type: boolean
-    ReminderDTO:
-      type: object
-      additionalProperties: false
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        Sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        Days:
-          type: integer
-          format: int32
-        Hours:
-          type: integer
-          format: int32
-        Minutes:
-          type: integer
-          format: int32
-        Id:
-          type:
-          - string
-          - 'null'
+    ApprovalRuleAssignee:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          Id:
+            type:
+            - string
+            - 'null'
+          Name:
+            type:
+            - string
+            - 'null'
+          NotifyOnly:
+            type: boolean
+          RuleEntryId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          SendEmail:
+            type: boolean
+          SendChat:
+            type:
+            - boolean
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          AssigneeId:
+            type:
+            - string
+            - 'null'
+          AssigneeType:
+            type:
+            - string
+            - 'null'
+          AssigneeDependsOn:
+            type:
+            - string
+            - 'null'
+          AssigneeSequence:
+            type: number
+            format: double
+          AssigneeDescription:
+            type:
+            - string
+            - 'null'
+          AutoComplete:
+            type: boolean
+          SkipUnresolvedAssignee:
+            type: boolean
+          EscalationEnabled:
+            type:
+            - boolean
+            - 'null'
+          ReminderEnabled:
+            type:
+            - boolean
+            - 'null'
+          Escalation:
+            oneOf:
+            - $ref: '#/components/schemas/Escalation'
+          Reminders:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/Reminder'
+    Escalation:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          EscalationLevel:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          TimeDuration:
+            type: integer
+            format: int32
+          EscalationForId:
+            type:
+            - string
+            - 'null'
+          EscalationForType:
+            type:
+            - string
+            - 'null'
+          EscalationToId:
+            type:
+            - string
+            - 'null'
+          EscalationToType:
+            type:
+            - string
+            - 'null'
+          EscalationToName:
+            type:
+            - string
+            - 'null'
+          CustomAssignee:
+            type:
+            - string
+            - 'null'
+          StepId:
+            type:
+            - string
+            - 'null'
+          Rule:
+            type:
+            - string
+            - 'null'
+          RuleStep:
+            type:
+            - string
+            - 'null'
+          ExpectedDaysToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedHoursToComplete:
+            type:
+            - string
+            - 'null'
+          ExpectedMinutesToComplete:
+            type:
+            - string
+            - 'null'
     ApprovalRule:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -710,86 +864,23 @@ components:
             - 'null'
             items:
               $ref: '#/components/schemas/ApprovalRuleEntry'
-    ApprovalRuleAssigneeDTO:
-      allOf:
-      - $ref: '#/components/schemas/ApprovalRuleAssignee'
-      - type: object
-        additionalProperties: {}
-        properties:
-          CustomAssigneePayload:
-            oneOf:
-            - $ref: '#/components/schemas/CustomAssigneePayload'
-          Escalation:
-            oneOf:
-            - $ref: '#/components/schemas/EscalationDTO'
-          Reminders:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/ReminderDTO'
-    Escalation:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          EscalationLevel:
-            type:
-            - integer
-            - 'null'
-            format: int32
-          TimeDuration:
-            type: integer
-            format: int32
-          EscalationForId:
-            type:
-            - string
-            - 'null'
-          EscalationForType:
-            type:
-            - string
-            - 'null'
-          EscalationToId:
-            type:
-            - string
-            - 'null'
-          EscalationToType:
-            type:
-            - string
-            - 'null'
-          EscalationToName:
-            type:
-            - string
-            - 'null'
-          CustomAssignee:
-            type:
-            - string
-            - 'null'
-          StepId:
-            type:
-            - string
-            - 'null'
-          Rule:
-            type:
-            - string
-            - 'null'
-          RuleStep:
-            type:
-            - string
-            - 'null'
-          ExpectedDaysToComplete:
-            type:
-            - string
-            - 'null'
-          ExpectedHoursToComplete:
-            type:
-            - string
-            - 'null'
-          ExpectedMinutesToComplete:
-            type:
-            - string
-            - 'null'
+    ReorderApprovalRuleEntryRequest:
+      type: object
+      description: Request to reorder approval rule entries
+      additionalProperties: false
+      required:
+      - Id
+      - ApprovalRuleId
+      properties:
+        Id:
+          type: string
+          description: The approval rule entry id
+          minLength: 1
+          example: A5D22168-9AC5-41A2-B4F0-A6DB2ADA5A9B
+        ApprovalRuleId:
+          description: The approval rule
+          oneOf:
+          - $ref: '#/components/schemas/ApprovalRuleLookupObject'
     ApprovalRuleEntry:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -888,101 +979,6 @@ components:
             - 'null'
             format: decimal
           DependencyKey:
-            type:
-            - string
-            - 'null'
-    ApprovalRuleAssignee:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          Id:
-            type:
-            - string
-            - 'null'
-          Name:
-            type:
-            - string
-            - 'null'
-          NotifyOnly:
-            type: boolean
-          RuleEntryId:
-            oneOf:
-            - $ref: '#/components/schemas/LookupObject'
-          SendEmail:
-            type: boolean
-          SendChat:
-            type:
-            - boolean
-            - 'null'
-          CustomAssignee:
-            type:
-            - string
-            - 'null'
-          AssigneeId:
-            type:
-            - string
-            - 'null'
-          AssigneeType:
-            type:
-            - string
-            - 'null'
-          AssigneeDependsOn:
-            type:
-            - string
-            - 'null'
-          AssigneeSequence:
-            type: number
-            format: double
-          AssigneeDescription:
-            type:
-            - string
-            - 'null'
-          AutoComplete:
-            type: boolean
-          SkipUnresolvedAssignee:
-            type: boolean
-          EscalationEnabled:
-            type:
-            - boolean
-            - 'null'
-          ReminderEnabled:
-            type:
-            - boolean
-            - 'null'
-          Escalation:
-            oneOf:
-            - $ref: '#/components/schemas/Escalation'
-          Reminders:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/Reminder'
-    Reminder:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          Sequence:
-            type:
-            - integer
-            - 'null'
-            format: int32
-          TimeDuration:
-            type: integer
-            format: int32
-          TimeDurationUnit:
-            type:
-            - string
-            - 'null'
-          ReminderForId:
-            type:
-            - string
-            - 'null'
-          ReminderForType:
             type:
             - string
             - 'null'

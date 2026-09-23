@@ -96,6 +96,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNameComplexFieldByComplexFieldMetadataName
+      x-operation-id-source: derived
     put:
       tags:
       - Complex Field Definition
@@ -181,6 +183,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectNameComplexFieldByComplexFieldMetadataName
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/complex-fields:
     post:
       tags:
@@ -263,6 +267,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNameComplexFields
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/complex-fields/{complexFieldMetadataName}:
     post:
       tags:
@@ -349,9 +355,16 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNameComplexFieldsByComplexFieldMetadataName
+      x-operation-id-source: derived
 components:
   schemas:
-    FieldMetadataAPIResponse:
+    IdentifierType:
+      enum:
+      - UUIDv4
+      - UID18
+      type: string
+    ComplexFieldMetadataAPIResponse:
       type: object
       properties:
         Success:
@@ -362,7 +375,7 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/FieldMetadata'
+          $ref: '#/components/schemas/ComplexFieldMetadata'
         Errors:
           type:
           - array
@@ -392,83 +405,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ComplexFieldMetadataEntryCreateModel:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Name of the complex field
-        DisplayName:
-          type:
-          - string
-          - 'null'
-          description: Display name of the complex field
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description of the complex field
-        DataType:
-          $ref: '#/components/schemas/DataType'
-        IsIndexField:
-          type: boolean
-          description: Indicates if the complex field is indexed.
-        Precision:
-          type: integer
-          description: Precision of the complex field when the data type is Currency, Decimal, or Double.
-          format: int32
-        Scale:
-          type: integer
-          description: Scale of the complex field when the data type is Currency, Decimal, or Double.
-          format: int32
-        Length:
-          type:
-          - integer
-          - 'null'
-          description: Length of the complex field when the data type is String or LongString.
-          format: int32
-      additionalProperties: false
-    ComplexFieldMetadataEntryUpdateModel:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Name of the complex field
-        DisplayName:
-          type:
-          - string
-          - 'null'
-          description: Display name of the complex field
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description of the complex field
-        IsIndexField:
-          type: boolean
-          description: Indicates if the complex field is indexed.
-        Length:
-          type:
-          - integer
-          - 'null'
-          description: Length of the complex field when the data type is String or LongString.
-          format: int32
-      additionalProperties: false
-    ComplexFieldMetadataEntryFieldsCreateRequest:
-      type: object
-      properties:
-        Fields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
-          description: Collection of the Complex Fields
       additionalProperties: false
     FieldMetadata:
       type: object
@@ -612,30 +548,77 @@ components:
         IdentifierType:
           $ref: '#/components/schemas/IdentifierType'
       additionalProperties: false
-    DataType:
-      enum:
-      - String
-      - Int
-      - Double
-      - Currency
-      - Boolean
-      - DateTime
-      - AutoNumber
-      - Lookup
-      - Picklist
-      - MultiPicklist
-      - Identifier
-      - LongString
-      - Complex
-      - ComplexArray
-      - Reference
-      - Rollup
-      - Decimal
-      - Image
-      - Alias
-      - Date
-      - Owner
-      type: string
+    ComplexFieldMetadataEntryUpdateRequest:
+      type: object
+      properties:
+        Field:
+          $ref: '#/components/schemas/ComplexFieldMetadataEntryUpdateModel'
+      additionalProperties: false
+    ComplexFieldMetadataEntryFieldsCreateRequest:
+      type: object
+      properties:
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
+          description: Collection of the Complex Fields
+      additionalProperties: false
+    ComplexFieldMetadataCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the complex field metadata
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
+          description: Collection of complex fields
+      additionalProperties: false
+    ComplexFieldMetadataEntryCreateModel:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Name of the complex field
+        DisplayName:
+          type:
+          - string
+          - 'null'
+          description: Display name of the complex field
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the complex field
+        DataType:
+          $ref: '#/components/schemas/DataType'
+        IsIndexField:
+          type: boolean
+          description: Indicates if the complex field is indexed.
+        Precision:
+          type: integer
+          description: Precision of the complex field when the data type is Currency, Decimal, or Double.
+          format: int32
+        Scale:
+          type: integer
+          description: Scale of the complex field when the data type is Currency, Decimal, or Double.
+          format: int32
+        Length:
+          type:
+          - integer
+          - 'null'
+          description: Length of the complex field when the data type is String or LongString.
+          format: int32
+      additionalProperties: false
     HttpStatusCode:
       enum:
       - Continue
@@ -700,11 +683,48 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    IdentifierType:
-      enum:
-      - UUIDv4
-      - UID18
-      type: string
+    FieldMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FieldMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
     FieldMetadataListAPIResponse:
       type: object
       properties:
@@ -751,21 +771,71 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    ComplexFieldMetadataCreateRequest:
+    ComplexFieldMetadataEntryCreateRequest:
       type: object
       properties:
-        Name:
+        Field:
+          $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
+      additionalProperties: false
+    DataType:
+      enum:
+      - String
+      - Int
+      - Double
+      - Currency
+      - Boolean
+      - DateTime
+      - AutoNumber
+      - Lookup
+      - Picklist
+      - MultiPicklist
+      - Identifier
+      - LongString
+      - Complex
+      - ComplexArray
+      - Reference
+      - Rollup
+      - Decimal
+      - Image
+      - Alias
+      - Date
+      - Owner
+      type: string
+    ComplexFieldMetadataEntryUpdateModel:
+      type: object
+      properties:
+        FieldName:
           type:
           - string
           - 'null'
-          description: Name of the complex field metadata
-        Fields:
+          description: Name of the complex field
+        DisplayName:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
-          description: Collection of complex fields
+          description: Display name of the complex field
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the complex field
+        IsIndexField:
+          type: boolean
+          description: Indicates if the complex field is indexed.
+        Length:
+          type:
+          - integer
+          - 'null'
+          description: Length of the complex field when the data type is String or LongString.
+          format: int32
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     ComplexFieldMetadata:
       type: object
@@ -780,68 +850,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/FieldMetadata'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ComplexFieldMetadataEntryCreateRequest:
-      type: object
-      properties:
-        Field:
-          $ref: '#/components/schemas/ComplexFieldMetadataEntryCreateModel'
-      additionalProperties: false
-    ComplexFieldMetadataAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/ComplexFieldMetadata'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ComplexFieldMetadataEntryUpdateRequest:
-      type: object
-      properties:
-        Field:
-          $ref: '#/components/schemas/ComplexFieldMetadataEntryUpdateModel'
       additionalProperties: false
   securitySchemes:
     bearerAuth:

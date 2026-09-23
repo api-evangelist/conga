@@ -81,6 +81,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1SettingsDocumentsContractTypeRequirements
+      x-operation-id-source: derived
     put:
       tags:
       - Contract Type Document Requirement Settings
@@ -164,6 +166,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: putApiClmV1SettingsDocumentsContractTypeRequirements
+      x-operation-id-source: derived
   /api/clm/v1/settings/documents/contract-type-requirements/query:
     post:
       tags:
@@ -239,6 +243,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: postApiClmV1SettingsDocumentsContractTypeRequirementsQuery
+      x-operation-id-source: derived
   /api/clm/v1/settings/documents/contract-type-requirements/{id}:
     get:
       tags:
@@ -300,18 +306,16 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiClmV1SettingsDocumentsContractTypeRequirementsById
+      x-operation-id-source: derived
 components:
   schemas:
-    StringObjectDictionaryQueryResponse:
+    StringObjectDictionaryListAPIResponse:
       type: object
       properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
+        Success:
+          type: boolean
+          description: The state of the API response
         Data:
           type:
           - array
@@ -319,15 +323,28 @@ components:
           items:
             type: object
             additionalProperties: {}
-        HasMoreRecords:
+          description: Generic data to return
+        Warnings:
           type:
-          - boolean
+          - array
           - 'null'
-        NextCursor:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
+      description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     StringObjectDictionaryAPIResponse:
       type: object
       properties:
@@ -340,6 +357,30 @@ components:
           - 'null'
           additionalProperties: {}
           description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    StringObjectDictionaryQueryResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
         Warnings:
           type:
           - array
@@ -383,12 +424,16 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
-    StringObjectDictionaryListAPIResponse:
+    StringObjectDictionaryQueryResponse:
       type: object
       properties:
-        Success:
-          type: boolean
-          description: The state of the API response
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
         Data:
           type:
           - array
@@ -396,126 +441,15 @@ components:
           items:
             type: object
             additionalProperties: {}
-          description: Generic data to return
-        Warnings:
+        HasMoreRecords:
           type:
-          - array
+          - boolean
           - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    CustomQuery:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
+        NextCursor:
           type:
           - string
           - 'null'
-          description: Criteria Expression to filter the records
-        Distinct:
-          type: boolean
-          description: Whether to fetch only distinct records
-        Fields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The list of fields to be fetched
-        GroupBy:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Group Field name if the result to be grouped
-        IncludeTotalCount:
-          type: boolean
-          description: Whether to include total count in the query response. Defaults to true.
       additionalProperties: false
-      description: Custom Query
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    StringObjectDictionaryQueryResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/StringObjectDictionaryQueryResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
     SortInfo:
       type: object
       properties:
@@ -592,6 +526,80 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    CustomQuery:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+        Distinct:
+          type: boolean
+          description: Whether to fetch only distinct records
+        Fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The list of fields to be fetched
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Group Field name if the result to be grouped
+        IncludeTotalCount:
+          type: boolean
+          description: Whether to include total count in the query response. Defaults to true.
+      additionalProperties: false
+      description: Custom Query
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
   securitySchemes:
     bearerAuth:
       type: http

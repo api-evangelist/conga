@@ -46,6 +46,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1Permissiongroups
+      x-operation-id-source: derived
     get:
       tags:
       - Permission Groups
@@ -93,6 +95,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1Permissiongroups
+      x-operation-id-source: derived
     post:
       tags:
       - Permission Groups
@@ -152,6 +156,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1Permissiongroups
+      x-operation-id-source: derived
   /api/user-management/v1/permissiongroups/{permissionGroupName}/clone:
     post:
       tags:
@@ -194,8 +200,45 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1PermissiongroupsByPermissionGroupNameClone
+      x-operation-id-source: derived
 components:
   schemas:
+    PermissionGroupsDeleteRequest:
+      type: object
+      properties:
+        PermissionGroupNamesList:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Collection of the permission group names to be deleted
+      additionalProperties: false
+    PermissionGroupsCloneRequest:
+      type: object
+      properties:
+        PermissionGroupNameToClone:
+          $ref: '#/components/schemas/PermissionGroupValue'
+      additionalProperties: false
+      description: ''
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PermissionGroupType:
+      enum:
+      - Internal
+      - External
+      type: string
     PermissionGroup:
       type: object
       properties:
@@ -244,94 +287,6 @@ components:
           $ref: '#/components/schemas/PermissionGroupType'
       additionalProperties: {}
       description: PermissionGroupValue
-    PermissionGroupsAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/PermissionGroups'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PermissionGroupType:
-      enum:
-      - Internal
-      - External
-      type: string
-    PermissionGroups:
-      type: object
-      properties:
-        PermissionGroupNamesList:
-          uniqueItems: true
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PermissionGroup'
-          description: PermissionGroupNamesList
-      additionalProperties: false
-      description: PermissionGroups
-    PermissionGroupValue:
-      type: object
-      properties:
-        DisplayValue:
-          type:
-          - string
-          - 'null'
-          description: The value displayed as a name in the list view.
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value for the permission group
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description of the permission group
-        PermissionGroupType:
-          $ref: '#/components/schemas/PermissionGroupType'
-      additionalProperties: false
-    PermissionGroupsCloneRequest:
-      type: object
-      properties:
-        PermissionGroupNameToClone:
-          $ref: '#/components/schemas/PermissionGroupValue'
-      additionalProperties: false
-      description: ''
     PermissionGroupsCreateRequest:
       type: object
       properties:
@@ -344,81 +299,6 @@ components:
           description: Collection of permission group names
       additionalProperties: false
       description: ''
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    PermissionGroupsDeleteRequest:
-      type: object
-      properties:
-        PermissionGroupNamesList:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Collection of the permission group names to be deleted
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
     HttpStatusCode:
       enum:
       - Continue
@@ -483,6 +363,134 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PermissionGroupValue:
+      type: object
+      properties:
+        DisplayValue:
+          type:
+          - string
+          - 'null'
+          description: The value displayed as a name in the list view.
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value for the permission group
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description of the permission group
+        PermissionGroupType:
+          $ref: '#/components/schemas/PermissionGroupType'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PermissionGroups:
+      type: object
+      properties:
+        PermissionGroupNamesList:
+          uniqueItems: true
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PermissionGroup'
+          description: PermissionGroupNamesList
+      additionalProperties: false
+      description: PermissionGroups
+    PermissionGroupsAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PermissionGroups'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

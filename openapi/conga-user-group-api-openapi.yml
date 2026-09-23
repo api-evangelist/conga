@@ -69,6 +69,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1UserGroups
+      x-operation-id-source: derived
     post:
       tags:
       - User Group
@@ -105,12 +107,16 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiUserManagementV1UserGroups
+      x-operation-id-source: derived
   /api/user-management/v1/user-groups/bulk-upsert-userGroups:
     put:
       tags:
       - User Group
       summary: Create and update multiple user groups
-      description: 'Creates and updates multiple user groups and returns the ids of the user groups created and updated. <p>**Note**: If a user group already exists (based on a Platform user record identifier), the API will update the existing user group instead of creating a duplicate record , else if the user group is not present new record is created.</p>'
+      description: 'Creates and updates multiple user groups and returns the ids of the user groups created and updated.
+
+        **Note**: If a user group already exists (based on a Platform user record identifier), the API will update the existing user group instead of creating a duplicate record , else if the user group is not present new record is created.'
       requestBody:
         description: User group model data to be created or updated
         content:
@@ -156,6 +162,8 @@ paths:
           description: Forbidden
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1UserGroupsBulkUpsertUserGroups
+      x-operation-id-source: derived
   /api/user-management/v1/user-groups/{userGroupId}:
     delete:
       tags:
@@ -188,6 +196,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: deleteApiUserManagementV1UserGroupsByUserGroupId
+      x-operation-id-source: derived
     get:
       tags:
       - User Group
@@ -234,6 +244,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiUserManagementV1UserGroupsByUserGroupId
+      x-operation-id-source: derived
     put:
       tags:
       - User Group
@@ -277,48 +289,245 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiUserManagementV1UserGroupsByUserGroupId
+      x-operation-id-source: derived
+  /v1/user-group:
+    post:
+      tags:
+      - User Group
+      summary: Create a user group
+      description: Creates a new user group with the provided details. Returns the created user group object with its assigned ID.
+      operationId: UserGroup_CreateUserGroup
+      requestBody:
+        x-name: userGroup
+        description: User group to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroup'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The created user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - User Group
+      summary: List user groups
+      description: Gets a list of all user groups
+      operationId: UserGroup_GetUserGroups
+      parameters:
+      - name: filter
+        in: query
+        description: 'The filter string (example: IsActive = ''true'')'
+        schema:
+          type:
+          - string
+          - 'null'
+        x-position: 1
+      - name: page
+        in: query
+        description: 'The page number (default: 1)'
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        x-position: 2
+      - name: limit
+        in: query
+        description: The maximum number of items to be returned
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+        x-position: 3
+      responses:
+        '200':
+          description: A list of user groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+    put:
+      tags:
+      - User Group
+      summary: Update a user group
+      description: Updates an existing user group with new information. Provide the user group ID and updated fields in the request body. Returns the updated user group object.
+      operationId: UserGroup_UpdateUserGroup
+      requestBody:
+        x-name: userGroup
+        description: User group to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGroup'
+        required: true
+        x-position: 1
+      responses:
+        '200':
+          description: The updated user group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{groupId}/members:
+    post:
+      tags:
+      - User Group
+      summary: Add a member
+      description: Adds a member to an existing user group.
+      operationId: UserGroup_AddUserGroupMember
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      requestBody:
+        x-name: request
+        description: User group member to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupMemberPayloadDTO'
+        required: true
+        x-position: 2
+      responses:
+        '200':
+          description: The added member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupMember'
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - User Group
+      summary: List user group members
+      description: Lists all members of the given user group.
+      operationId: UserGroup_GetUserGroupMembers
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: A list of user group members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroupMember'
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{groupId}/members/{memberId}:
+    delete:
+      tags:
+      - User Group
+      summary: Delete a member by ID
+      description: Deletes the user group member identified in the request.
+      operationId: UserGroup_DeleteUserGroupMemberById
+      parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      - name: memberId
+        in: path
+        required: true
+        description: User group member ID
+        schema:
+          type: string
+        x-position: 2
+      responses:
+        '200':
+          description: True if the delete succeeded; else false.
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+  /v1/user-group/{id}:
+    delete:
+      tags:
+      - User Group
+      summary: Delete a user group by ID
+      description: Deletes the user group.
+      operationId: UserGroup_DeleteUserGroupById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: True or False depends on if the delete succeeded
+          content:
+            application/json:
+              schema:
+                type: boolean
+      security:
+      - oauth2: []
+      - Bearer: []
+    get:
+      tags:
+      - User Group
+      summary: List a user group's membership
+      description: 'Returns the user group (ID, name, email) with all members. Each member contains: ID, name, type (User or Group), member ID, and group ID.'
+      operationId: UserGroup_GetUserGroupById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User group ID
+        schema:
+          type: string
+        x-position: 1
+      responses:
+        '200':
+          description: The user group and its members.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupWithMembers'
+      security:
+      - oauth2: []
+      - Bearer: []
 components:
   schemas:
-    UserGroup:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Email:
-          type:
-          - string
-          - 'null'
-        IsSendEmailToMembers:
-          type: boolean
-        ParentUserGroups:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -366,62 +575,17 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    StringObjectDictionaryAPIResponse:
+    LookupObject:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        Id:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
+        Name:
           type:
           - string
           - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    UserGroupUpdateRequest:
-      type: object
-      properties:
-        Email:
-          type:
-          - string
-          - 'null'
-          description: The user group's email address
-        IsSendEmailToMembers:
-          type: boolean
-          description: The user group's Send Email flag
       additionalProperties: false
     UserGroupCreateRequest:
       type: object
@@ -440,91 +604,7 @@ components:
           type: boolean
           description: The user group's Send Email flag
       additionalProperties: false
-    UserGroupUpsertRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: The unique identifier for user group
-        Name:
-          type:
-          - string
-          - 'null'
-          description: The user group name
-        Email:
-          type:
-          - string
-          - 'null'
-          description: The user group's email address
-        IsSendEmailToMembers:
-          type: boolean
-          description: The user group's Send Email flag
-      additionalProperties: false
-    UserGroupAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/UserGroup'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringAPIResponse:
+    StringObjectDictionaryAPIResponse:
       type: object
       properties:
         Success:
@@ -536,8 +616,9 @@ components:
           format: int64
         Data:
           type:
-          - string
+          - object
           - 'null'
+          additionalProperties: {}
         Errors:
           type:
           - array
@@ -632,9 +713,279 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    UserGroup:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        IsSendEmailToMembers:
+          type: boolean
+        ParentUserGroups:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    UserGroupUpdateRequest:
+      type: object
+      properties:
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user group's email address
+        IsSendEmailToMembers:
+          type: boolean
+          description: The user group's Send Email flag
+      additionalProperties: false
+    UserGroupUpsertRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier for user group
+        Name:
+          type:
+          - string
+          - 'null'
+          description: The user group name
+        Email:
+          type:
+          - string
+          - 'null'
+          description: The user group's email address
+        IsSendEmailToMembers:
+          type: boolean
+          description: The user group's Send Email flag
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserGroupAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserGroup'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserGroupMember:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          UserGroupId:
+            type:
+            - string
+            - 'null'
+          MemberId:
+            type:
+            - string
+            - 'null'
+          MemberType:
+            $ref: '#/components/schemas/OwnerType'
+    AddGroupMemberPayloadDTO:
+      type: object
+      description: AddGroupMemberPayloadDTO
+      additionalProperties: false
+      required:
+      - MemberId
+      - MemberType
+      properties:
+        MemberId:
+          type: string
+          description: MemberId
+          minLength: 1
+        MemberType:
+          type: string
+          description: MemberType
+          minLength: 1
+    OwnerType:
+      type: string
+      description: ''
+      x-enumNames:
+      - User
+      - UserGroup
+      enum:
+      - User
+      - UserGroup
+    UserGroupWithMembers:
+      allOf:
+      - $ref: '#/components/schemas/UserGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          members:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/UserGroupMember'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
   securitySchemes:
     Bearer:
       type: apiKey
       description: Please insert JWT with Bearer into field
       name: Authorization
       in: header
+    oauth2:
+      type: oauth2
+      description: Login with a Salesforce or SalesforceSandbox account
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login-rls.congacloud.com/api/v1/auth//connect/authorize
+          tokenUrl: https://login-rls.congacloud.com/api/v1/auth//connect/token
+          scopes:
+            openid: openid
+            profile: profile
+            offline_access: offline_access
+            Auth.Api.Platform: Auth.Api.Platform

@@ -64,6 +64,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNamePicklists
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/picklists/rename:
     patch:
       tags:
@@ -102,6 +104,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: patchApiSchemaV1ObjectsByObjectNamePicklistsRename
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/picklists/{picklistName}:
     put:
       tags:
@@ -162,6 +166,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectNamePicklistsByPicklistName
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/picklists/{picklistName}/picklist-entries:
     post:
       tags:
@@ -214,6 +220,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNamePicklistsByPicklistNamePicklistEntries
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/picklists/{picklistName}/picklist-entries/bulk:
     post:
       tags:
@@ -272,6 +280,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSchemaV1ObjectsByObjectNamePicklistsByPicklistNamePicklistEntriesBulk
+      x-operation-id-source: derived
     put:
       tags:
       - Picklist Definition
@@ -329,6 +339,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectNamePicklistsByPicklistNamePicklistEntriesBulk
+      x-operation-id-source: derived
   /api/schema/v1/objects/{objectName}/picklists/{picklistName}/picklist-entries/{picklistEntryValue}:
     put:
       tags:
@@ -387,16 +399,13 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: putApiSchemaV1ObjectsByObjectNamePicklistsByPicklistNamePicklistEntriesByPicklistEntryValue
+      x-operation-id-source: derived
 components:
   schemas:
-    PicklistEntryBulkUpdateRequest:
+    PicklistEntryUpdateRequest:
       type: object
       properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value of the picklist entry
         DisplayText:
           type:
           - string
@@ -410,47 +419,15 @@ components:
           type: boolean
           description: Indicates if the picklist entry is deprecated.
       additionalProperties: false
-    PicklistMetadataAPIResponse:
+    PicklistMetadataUpdateRequest:
       type: object
       properties:
-        Success:
+        IsDeprecated:
           type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/PicklistMetadata'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          description: Indicates if the picklist is deprecated.
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+          description: Indicates whether values other than those defined in the picklist are allowed.
       additionalProperties: false
     BooleanAPIResponse:
       type: object
@@ -493,40 +470,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PicklistRenameRequest:
-      type: object
-      properties:
-        OldPicklistName:
-          type:
-          - string
-          - 'null'
-          description: Old name of the picklist.
-        NewPicklistName:
-          type:
-          - string
-          - 'null'
-          description: New name of the picklist.
-      additionalProperties: false
-      description: Represents a request to rename a picklist.
-    PicklistMetadataCreateRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the picklist
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-          description: Indicates whether values other than those defined in the picklist are allowed.
-        PicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntryCreateRequest'
-          description: Colletion of the picklist entries
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -592,9 +535,14 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    PicklistEntryUpdateRequest:
+    PicklistEntryCreateRequest:
       type: object
       properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of the picklist entry
         DisplayText:
           type:
           - string
@@ -604,10 +552,72 @@ components:
           type: integer
           description: Sequence of the picklist entry
           format: int32
-        IsDeprecated:
-          type: boolean
-          description: Indicates if the picklist entry is deprecated.
       additionalProperties: false
+    PicklistMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PicklistMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    PicklistRenameRequest:
+      type: object
+      properties:
+        OldPicklistName:
+          type:
+          - string
+          - 'null'
+          description: Old name of the picklist.
+        NewPicklistName:
+          type:
+          - string
+          - 'null'
+          description: New name of the picklist.
+      additionalProperties: false
+      description: Represents a request to rename a picklist.
     PicklistEntryListAPIResponse:
       type: object
       properties:
@@ -654,7 +664,24 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    PicklistEntryCreateRequest:
+    PicklistEntry:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+        DisplayText:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    PicklistEntryBulkUpdateRequest:
       type: object
       properties:
         Value:
@@ -671,24 +698,46 @@ components:
           type: integer
           description: Sequence of the picklist entry
           format: int32
-      additionalProperties: false
-    PicklistMetadataUpdateRequest:
-      type: object
-      properties:
         IsDeprecated:
           type: boolean
-          description: Indicates if the picklist is deprecated.
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-          description: Indicates whether values other than those defined in the picklist are allowed.
+          description: Indicates if the picklist entry is deprecated.
       additionalProperties: false
-    ErrorDetail:
+    PicklistMetadata:
       type: object
       properties:
-        Message:
+        Name:
           type:
           - string
           - 'null'
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    PicklistMetadataCreateRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the picklist
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+          description: Indicates whether values other than those defined in the picklist are allowed.
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntryCreateRequest'
+          description: Colletion of the picklist entries
       additionalProperties: false
     PicklistEntryAPIResponse:
       type: object
@@ -731,41 +780,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PicklistMetadata:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-        PicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntry'
-        IsDeprecated:
-          type: boolean
-      additionalProperties: false
-    PicklistEntry:
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-        DisplayText:
-          type:
-          - string
-          - 'null'
-        Sequence:
-          type: integer
-          format: int32
-        IsDeprecated:
-          type: boolean
       additionalProperties: false
   securitySchemes:
     bearerAuth:

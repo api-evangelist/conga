@@ -111,8 +111,70 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1GlobalQuery
+      x-operation-id-source: derived
 components:
   schemas:
+    GlobalSearchObjectResult:
+      type: object
+      properties:
+        RecordCount:
+          type: integer
+          description: Total number of records found
+          format: int32
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+            description: Global Search Generic Records for each Object.
+          description: The list of matching records, where each record is represented as a dictionary of key-value pairs.
+      additionalProperties: false
+      description: 'Represents the result of a global search operation, including the total number of records found and the list of
+
+        matching records.'
+    GlobalSearchQueryObject:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: The name of the object to be searched. This identifies the specific entity type to query.
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names to be returned in the search results. Specifies which properties of the object should be included in the response.
+        FilterCriteria:
+          type:
+          - string
+          - 'null'
+          description: Optional filter criteria to narrow down search results. Defines conditions that records must meet to be included in the results.
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
+          format: int32
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: The maximum number of records to return. Used for pagination along with Skip.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/SortInfo'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     GlobalSearchRequest:
       type: object
       properties:
@@ -158,131 +220,6 @@ components:
             Any objects specified here will be omitted from search results, even if they appear in ObjectList or defaults.'
       additionalProperties: false
       description: Global Search Request
-    GlobalSearchResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/GlobalSearchObjectResult'
-          description: GlobalSearchResponse
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    GlobalSearchQueryObject:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: The name of the object to be searched. This identifies the specific entity type to query.
-        Select:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: List of field names to be returned in the search results. Specifies which properties of the object should be included in the response.
-        FilterCriteria:
-          type:
-          - string
-          - 'null'
-          description: Optional filter criteria to narrow down search results. Defines conditions that records must meet to be included in the results.
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
-          format: int32
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: The maximum number of records to return. Used for pagination along with Skip.
-          format: int32
-        Sort:
-          $ref: '#/components/schemas/SortInfo'
-      additionalProperties: false
-    GlobalSearchObjectResult:
-      type: object
-      properties:
-        RecordCount:
-          type: integer
-          description: Total number of records found
-          format: int32
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-            description: Global Search Generic Records for each Object.
-          description: The list of matching records, where each record is represented as a dictionary of key-value pairs.
-      additionalProperties: false
-      description: 'Represents the result of a global search operation, including the total number of records found and the list of
-
-        matching records.'
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SortInfo:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
     HttpStatusCode:
       enum:
       - Continue
@@ -347,6 +284,71 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    GlobalSearchResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/GlobalSearchObjectResult'
+          description: GlobalSearchResponse
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey

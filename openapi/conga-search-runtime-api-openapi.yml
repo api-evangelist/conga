@@ -61,12 +61,16 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1DocumentQuery
+      x-operation-id-source: derived
   /api/search/v1/objects/multiple/query:
     post:
       tags:
       - Search Runtime
       summary: Search objects
-      description: Searches over multiple objects using various query parameters (for example, Advanced, Fulltext, and Typeahead) and returns the results along with the record count.<p>When searching the text across all the documents, the response provides the total DocumentCount (which indicates in how many documents the document search text was found) and the NoOfOccurrances count (which indicates how many times the document search text appeared in all documents).</p>
+      description: 'Searches over multiple objects using various query parameters (for example, Advanced, Fulltext, and Typeahead) and returns the results along with the record count.
+
+        When searching the text across all the documents, the response provides the total DocumentCount (which indicates in how many documents the document search text was found) and the NoOfOccurrances count (which indicates how many times the document search text appeared in all documents).'
       parameters:
       - name: IncludeTotalCount
         in: query
@@ -108,12 +112,14 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1ObjectsMultipleQuery
+      x-operation-id-source: derived
   /api/search/v1/objects/{objectName}/indexedfields:
     get:
       tags:
       - Search Runtime
       summary: Retrieve fields from the search settings or database
-      description: Retrieves the list of fields first from the [search settings](https://documentation.conga.com/congaplatform/latest/creating-and-managing-search-settings-222430006.html), and if no fields are enabled for search for the object, it displays indexed fields from the database.
+      description: Retrieves the list of fields first from the search settings, and if no fields are enabled for search for the object, it displays indexed fields from the database.
       parameters:
       - name: objectName
         in: path
@@ -141,12 +147,16 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1ObjectsByObjectNameIndexedfields
+      x-operation-id-source: derived
   /api/search/v1/objects/{objectName}/query:
     post:
       tags:
       - Search Runtime
       summary: Search an object
-      description: 'Searches an object using various query parameters (for example, Advanced, Fulltext, and Typeahead) and returns the results along with a count.<p>**Note**: If no search settings are configured for User, Role, and Object Permission objects, the API searches the database for object details.</p>'
+      description: 'Searches an object using various query parameters (for example, Advanced, Fulltext, and Typeahead) and returns the results along with a count.
+
+        **Note**: If no search settings are configured for User, Role, and Object Permission objects, the API searches the database for object details.'
       parameters:
       - name: objectName
         in: path
@@ -194,12 +204,14 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: postApiSearchV1ObjectsByObjectNameQuery
+      x-operation-id-source: derived
   /api/search/v1/setting/list:
     get:
       tags:
       - Search Runtime
       summary: Get a list of objects for which the search setting is enabled
-      description: Retrieves a list of objects for which the search setting is enabled.
+      description: Retrieves a list of objects for which the search setting is enabled.
       responses:
         '200':
           description: Success
@@ -213,6 +225,8 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1SettingList
+      x-operation-id-source: derived
   /api/search/v1/setting/{objectName}:
     get:
       tags:
@@ -267,24 +281,10 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      operationId: getApiSearchV1SettingByObjectName
+      x-operation-id-source: derived
 components:
   schemas:
-    MultipleObjectDocumentSearchRequest:
-      type: object
-      properties:
-        DocumentSearchText:
-          type:
-          - string
-          - 'null'
-        IsInverseRelation:
-          type: boolean
-        MultipleObjectSearchQueries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/MultipleObjectSearchQuery'
-      additionalProperties: false
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -332,6 +332,18 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     PriorityField:
       type: object
       properties:
@@ -343,6 +355,18 @@ components:
           type: integer
           format: int32
       additionalProperties: false
+    MultipleObjectSearchQuery:
+      type: object
+      properties:
+        Query:
+          $ref: '#/components/schemas/Query'
+        IsPrimaryObject:
+          type: boolean
+        ReferenceAliasName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     TableField:
       type: object
       properties:
@@ -351,6 +375,86 @@ components:
           - string
           - 'null'
       additionalProperties: false
+    MultipleObjectDocumentSearchRequest:
+      type: object
+      properties:
+        DocumentSearchText:
+          type:
+          - string
+          - 'null'
+        IsInverseRelation:
+          type: boolean
+        MultipleObjectSearchQueries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MultipleObjectSearchQuery'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
     GlobalSearchField:
       type: object
       properties:
@@ -361,6 +465,31 @@ components:
           description: Gets or sets the name of the field.
       additionalProperties: false
       description: Contains the definition of a global search field.
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+      description: Sort information for records.
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     SearchSettingResponse:
       type: object
       properties:
@@ -437,100 +566,50 @@ components:
             $ref: '#/components/schemas/PriorityField'
           description: Based on Priority fields - result should be sort.
       additionalProperties: false
-    Query:
+    StringAPIResponse:
       type: object
       properties:
-        ObjectName:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
           type:
           - string
           - 'null'
-          description: Name of object on which querying needs to be done.
-        Criteria:
-          type:
-          - string
-          - 'null'
-        Select:
+        Errors:
           type:
           - array
           - 'null'
           items:
-            type: string
-          description: The fields which are to be displayed.
-        Distinct:
-          type: boolean
-          description: Select true to get distinct records
-        Limit:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
-          - integer
+          - string
           - 'null'
-          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
-          format: int32
-        Skip:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
           type:
-          - integer
+          - boolean
           - 'null'
-          description: Number of records to be skipped.
-          format: int32
-        Sort:
-          $ref: '#/components/schemas/Sort'
-        GroupBy:
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
           type:
           - array
           - 'null'
           items:
-            type: string
-          description: List of field names which are to be grouped.
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-      description: Schema Model for Query
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    Sort:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
-        OrderBy:
-          $ref: '#/components/schemas/OrderBy'
-      additionalProperties: false
-      description: Sort information for records.
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    MultipleObjectSearchQuery:
-      type: object
-      properties:
-        Query:
-          $ref: '#/components/schemas/Query'
-        IsPrimaryObject:
-          type: boolean
-        ReferenceAliasName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    OrderBy:
-      enum:
-      - Ascending
-      - Descending
-      type: string
     SearchAPIQuery:
       type: object
       properties:
@@ -583,114 +662,6 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
     SearchSettingResponseAPIResponse:
       type: object
       properties:
@@ -733,6 +704,51 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    Query:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of object on which querying needs to be done.
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The fields which are to be displayed.
+        Distinct:
+          type: boolean
+          description: Select true to get distinct records
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of records to be skipped.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names which are to be grouped.
+      additionalProperties: false
+      description: Schema Model for Query
   securitySchemes:
     Bearer:
       type: apiKey

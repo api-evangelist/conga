@@ -81,6 +81,8 @@ paths:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
         '500':
           description: Internal Server Error
+      operationId: getApiReviewV1ByReviewtypeByReviewidReviewers
+      x-operation-id-source: derived
     post:
       tags:
       - Reviewer
@@ -175,6 +177,8 @@ paths:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
         '500':
           description: Internal Server Error
+      operationId: postApiReviewV1ByReviewtypeByReviewidReviewers
+      x-operation-id-source: derived
   /api/review/v1/{reviewtype}/{reviewid}/reviewers/{reviewerid}:
     delete:
       tags:
@@ -251,6 +255,8 @@ paths:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
         '500':
           description: Internal Server Error
+      operationId: deleteApiReviewV1ByReviewtypeByReviewidReviewersByReviewerid
+      x-operation-id-source: derived
   /api/review/v1/{reviewtype}/{reviewid}/reviewers/{reviewerid}/end:
     post:
       tags:
@@ -327,25 +333,16 @@ paths:
                 $ref: '#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails'
         '500':
           description: Internal Server Error
+      operationId: postApiReviewV1ByReviewtypeByReviewidReviewersByRevieweridEnd
+      x-operation-id-source: derived
 components:
   schemas:
-    Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum:
+    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
       enum:
-      - External
-      - Internal
+      - Email
+      - User
+      - Contact
       type: string
-    Conga.Review.Service.Application.Models.LookUp:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     Microsoft.AspNetCore.Mvc.ProblemDetails:
       type: object
       properties:
@@ -371,12 +368,40 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
+    Conga.Review.Service.Application.Models.LookUp:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum:
       enum:
-      - Email
-      - User
-      - Contact
+      - External
+      - Internal
       type: string
+    Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest:
+      type: object
+      properties:
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
+          description: The list of reviewers to add to the review.
+        EmailTemplateId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the email template to use when notifying reviewers.
+      additionalProperties: false
+      description: This class represents a Request for adding reviewers to a review.
     Conga.Review.Service.Application.Commands.StartReview.Reviewer:
       type: object
       properties:
@@ -465,23 +490,6 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    Conga.Review.Service.API.RequestResponseContracts.AddReviewers.AddReviewersRequest:
-      type: object
-      properties:
-        Reviewers:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
-          description: The list of reviewers to add to the review.
-        EmailTemplateId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the email template to use when notifying reviewers.
-      additionalProperties: false
-      description: This class represents a Request for adding reviewers to a review.
   securitySchemes:
     Bearer:
       type: apiKey

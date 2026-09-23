@@ -15,7 +15,11 @@ paths:
       tags:
       - Package Deployment
       summary: Retrieve all data of deployment package history
-      description: "Returns data of deployment package history that meet the parameter conditions.\n            **isSnapshot=true** indicates that we want to fetch packages that are not eligible for promotion\n            **isSnapshot=false** indicates that we want to fetch packages that are eligible for promotion"
+      description: 'Returns data of deployment package history that meet the parameter conditions.
+
+        **isSnapshot=true** indicates that we want to fetch packages that are not eligible for promotion
+
+        **isSnapshot=false** indicates that we want to fetch packages that are eligible for promotion'
       parameters:
       - name: pageSize
         in: query
@@ -80,6 +84,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: getApiExtensibilityV2DeploymentHistory
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/package/deploy:
     post:
       tags:
@@ -135,12 +141,16 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: postApiExtensibilityV2DeploymentPackageDeploy
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/package/promote:
     post:
       tags:
       - Package Deployment
       summary: Promote a package to the target environment
-      description: 'Promotes a package to a target environment using the provided integration user''s credentials (client ID and secret) and Release URI information.<p>Note: - Use the GET ​/api​/extensibility​/v2​/deployment​/package​/{name}​/info endpoint to get the Release URI. - For more information on how to create the integration user and get the client ID and secret, see the [Adding Users](https://documentation.conga.com/en/advantage-platform-administration/current/conga-advantage-platform-for-administrators/managing-users/adding-users) topic.</p>'
+      description: 'Promotes a package to a target environment using the provided integration user''s credentials (client ID and secret) and Release URI information.
+
+        Note: - Use the GET ​/api​/extensibility​/v2​/deployment​/package​/{name}​/info endpoint to get the Release URI. - For more information on how to create the integration user and get the client ID and secret, see the Adding Users topic.'
       requestBody:
         description: Package promotion request information
         content:
@@ -181,6 +191,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: postApiExtensibilityV2DeploymentPackagePromote
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/package/{name}/history:
     get:
       tags:
@@ -232,6 +244,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: getApiExtensibilityV2DeploymentPackageByNameHistory
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/package/{name}/info:
     get:
       tags:
@@ -279,6 +293,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: getApiExtensibilityV2DeploymentPackageByNameInfo
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/package/{name}/rollback:
     post:
       tags:
@@ -320,6 +336,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: postApiExtensibilityV2DeploymentPackageByNameRollback
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/{deploymentId}/logs:
     get:
       tags:
@@ -360,6 +378,8 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: getApiExtensibilityV2DeploymentByDeploymentIdLogs
+      x-operation-id-source: derived
   /api/extensibility/v2/deployment/{deploymentId}/status:
     get:
       tags:
@@ -406,8 +426,229 @@ paths:
                 NextCursor: null
         '500':
           description: Internal Server Error
+      operationId: getApiExtensibilityV2DeploymentByDeploymentIdStatus
+      x-operation-id-source: derived
 components:
   schemas:
+    PromoteRequest:
+      type: object
+      properties:
+        LoginUri:
+          type:
+          - string
+          - 'null'
+          description: login URI for source environment
+        ReleaseUri:
+          type:
+          - string
+          - 'null'
+          description: Release URI to promote a package on target environment
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: ClientId
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+          description: Client Secret
+      additionalProperties: false
+      description: Request to promote a package
+    PackageDeploymentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PackageDeploymentResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CustomCodeDeploymentLogResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CustomCodeDeploymentLogResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageInformationResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PackageInformationResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    PackageDeploymentResponse:
+      type: object
+      properties:
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the uploaded package
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Unique Id to track deployment status of the package/custom code project
+      additionalProperties: false
+      description: Custom code package deployment response
     CustomCodeDeploymentLogResponse:
       type: object
       properties:
@@ -462,6 +703,49 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    PackageInformationResponse:
+      type: object
+      properties:
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the deployment package
+        Description:
+          type:
+          - string
+          - 'null'
+          description: More information about the package
+        ReleaseURI:
+          type:
+          - string
+          - 'null'
+          description: Release URI of the deployment package
+        ReleaseLabel:
+          type:
+          - string
+          - 'null'
+          description: Release label of the deployment package
+        Language:
+          type:
+          - string
+          - 'null'
+          description: Language used for the resources in this deployment package
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status of the deployment package
+        DeployedBy:
+          type:
+          - string
+          - 'null'
+          description: Information of the user who deployed this package
+        DeployedOn:
+          type: string
+          description: Date and time when the package was created
+          format: date-time
       additionalProperties: false
     PackageDeploymentStatusResponseAPIResponse:
       type: object
@@ -551,235 +835,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    CustomCodeDeploymentLogResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/CustomCodeDeploymentLogResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PromoteRequest:
-      type: object
-      properties:
-        LoginUri:
-          type:
-          - string
-          - 'null'
-          description: login URI for source environment
-        ReleaseUri:
-          type:
-          - string
-          - 'null'
-          description: Release URI to promote a package on target environment
-        ClientId:
-          type:
-          - string
-          - 'null'
-          description: ClientId
-        ClientSecret:
-          type:
-          - string
-          - 'null'
-          description: Client Secret
-      additionalProperties: false
-      description: Request to promote a package
-    PackageDeploymentResponse:
-      type: object
-      properties:
-        PackageName:
-          type:
-          - string
-          - 'null'
-          description: Name of the uploaded package
-        DeploymentId:
-          type:
-          - string
-          - 'null'
-          description: Unique Id to track deployment status of the package/custom code project
-      additionalProperties: false
-      description: Custom code package deployment response
-    PackageDeploymentResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/PackageDeploymentResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    BadRequestErrorResponseExample:
-      type: object
-      additionalProperties: false
-    ResourceStatusInfoResponse:
-      type: object
-      properties:
-        ResourceName:
-          type:
-          - string
-          - 'null'
-          description: Name of the custom code project
-        ResourceType:
-          type:
-          - string
-          - 'null'
-          description: Type of the resource
-        Status:
-          $ref: '#/components/schemas/PackageDeploymentStatus'
-      additionalProperties: false
-      description: Resource information
-    PackageInformationResponse:
-      type: object
-      properties:
-        PackageName:
-          type:
-          - string
-          - 'null'
-          description: Name of the deployment package
-        Description:
-          type:
-          - string
-          - 'null'
-          description: More information about the package
-        ReleaseURI:
-          type:
-          - string
-          - 'null'
-          description: Release URI of the deployment package
-        ReleaseLabel:
-          type:
-          - string
-          - 'null'
-          description: Release label of the deployment package
-        Language:
-          type:
-          - string
-          - 'null'
-          description: Language used for the resources in this deployment package
-        Status:
-          type:
-          - string
-          - 'null'
-          description: Status of the deployment package
-        DeployedBy:
-          type:
-          - string
-          - 'null'
-          description: Information of the user who deployed this package
-        DeployedOn:
-          type: string
-          description: Date and time when the package was created
-          format: date-time
-      additionalProperties: false
-    PackageInformationResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/PackageInformationResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
     PackageDeploymentStatus:
       enum:
       - Queued
@@ -791,122 +846,6 @@ components:
       - RollbackSucceeded
       - RollbackFailed
       type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    BadRequestErrorResponseExampleAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/BadRequestErrorResponseExample'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PackageDeploymentStatusResponse:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Package Name
-        Status:
-          $ref: '#/components/schemas/PackageDeploymentStatus'
-        DeploymentId:
-          type:
-          - string
-          - 'null'
-          description: Deployment Id
-        ProjectStatus:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceStatusInfoResponse'
-          description: List of Custom Code Project Status informations
-      additionalProperties: false
-      description: Custom code package deployment information
-    PackageDeploymentHistoryResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
-        PackageName:
-          type:
-          - string
-          - 'null'
-          description: Name of the deployment package
-        DeploymentId:
-          type:
-          - string
-          - 'null'
-          description: Deployment Id for the package
-        Status:
-          type:
-          - string
-          - 'null'
-          description: Status of the deployment package
-        DeployedBy:
-          type:
-          - string
-          - 'null'
-          description: Information of the user who created this deployment package
-        DeployedOn:
-          type: string
-          description: Date and time when the package was deployed.
-          format: date-time
-        IsRollbackEnabled:
-          type: boolean
-        ReleaseLabel:
-          type:
-          - string
-          - 'null'
-          description: Release label of the deployment package
-        IsSnapshot:
-          type: boolean
-      additionalProperties: false
     HttpStatusCode:
       enum:
       - Continue
@@ -1003,6 +942,89 @@ components:
           type: string
           description: Date and time when the custom code was created
           format: date-time
+      additionalProperties: false
+    PackageDeploymentStatusResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Package Name
+        Status:
+          $ref: '#/components/schemas/PackageDeploymentStatus'
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Deployment Id
+        ProjectStatus:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceStatusInfoResponse'
+          description: List of Custom Code Project Status informations
+      additionalProperties: false
+      description: Custom code package deployment information
+    ResourceStatusInfoResponse:
+      type: object
+      properties:
+        ResourceName:
+          type:
+          - string
+          - 'null'
+          description: Name of the custom code project
+        ResourceType:
+          type:
+          - string
+          - 'null'
+          description: Type of the resource
+        Status:
+          $ref: '#/components/schemas/PackageDeploymentStatus'
+      additionalProperties: false
+      description: Resource information
+    PackageDeploymentHistoryResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        PackageName:
+          type:
+          - string
+          - 'null'
+          description: Name of the deployment package
+        DeploymentId:
+          type:
+          - string
+          - 'null'
+          description: Deployment Id for the package
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Status of the deployment package
+        DeployedBy:
+          type:
+          - string
+          - 'null'
+          description: Information of the user who created this deployment package
+        DeployedOn:
+          type: string
+          description: Date and time when the package was deployed.
+          format: date-time
+        IsRollbackEnabled:
+          type: boolean
+        ReleaseLabel:
+          type:
+          - string
+          - 'null'
+          description: Release label of the deployment package
+        IsSnapshot:
+          type: boolean
       additionalProperties: false
   securitySchemes:
     bearerAuth:

@@ -1,11 +1,7 @@
 openapi: 3.2.0
 info:
   title: Approvals Async Operation Status API
-  description: '
-
-    The Approvals API is used to submit, preview, and retrieve approval processes.
-
-    '
+  description: The Approvals API is used to submit, preview, and retrieve approval processes.
   version: v1
 servers:
 - url: https://rls.congacloud.com/api/approvals
@@ -46,6 +42,46 @@ paths:
       - Bearer: []
 components:
   schemas:
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        Type:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Detail:
+          type:
+          - string
+          - 'null'
+        Instance:
+          type:
+          - string
+          - 'null'
+        Extensions:
+          type: object
+          additionalProperties: {}
     BaseObject:
       type: object
       additionalProperties: {}
@@ -83,6 +119,35 @@ components:
           - object
           - 'null'
           additionalProperties: {}
+    AsyncOperationStatusAPIResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        description: Async operation status
+        additionalProperties: {}
+        required:
+        - CorrelationId
+        - Status
+        - Message
+        - Transactions
+        properties:
+          CorrelationId:
+            type: string
+            description: The correlation id
+            minLength: 1
+          Status:
+            type: string
+            description: The operation status
+            minLength: 1
+          Message:
+            type: string
+            description: The operation status message
+            minLength: 1
+          Transactions:
+            type: array
+            description: The list of operation transactions
+            items:
+              $ref: '#/components/schemas/OperationTransactionAPIResponse'
     OperationTransactionAPIResponse:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -116,75 +181,6 @@ components:
             type: string
             description: Additional details about the transaction
             minLength: 1
-    ProblemDetails:
-      type: object
-      additionalProperties: {}
-      properties:
-        Type:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Status:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        Detail:
-          type:
-          - string
-          - 'null'
-        Instance:
-          type:
-          - string
-          - 'null'
-        Extensions:
-          type: object
-          additionalProperties: {}
-    LookupObject:
-      type: object
-      additionalProperties: false
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-    AsyncOperationStatusAPIResponse:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        description: Async operation status
-        additionalProperties: {}
-        required:
-        - CorrelationId
-        - Status
-        - Message
-        - Transactions
-        properties:
-          CorrelationId:
-            type: string
-            description: The correlation id
-            minLength: 1
-          Status:
-            type: string
-            description: The operation status
-            minLength: 1
-          Message:
-            type: string
-            description: The operation status message
-            minLength: 1
-          Transactions:
-            type: array
-            description: The list of operation transactions
-            items:
-              $ref: '#/components/schemas/OperationTransactionAPIResponse'
   securitySchemes:
     Bearer:
       type: apiKey

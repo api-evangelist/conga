@@ -72,6 +72,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1Opportunity
+      x-operation-id-source: derived
     post:
       tags:
       - Opportunity
@@ -125,6 +127,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiDataV1Opportunity
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/bulk:
     delete:
       tags:
@@ -193,6 +197,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: deleteApiDataV1OpportunityBulk
+      x-operation-id-source: derived
     patch:
       tags:
       - Opportunity
@@ -253,6 +259,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: patchApiDataV1OpportunityBulk
+      x-operation-id-source: derived
     post:
       tags:
       - Opportunity
@@ -302,6 +310,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiDataV1OpportunityBulk
+      x-operation-id-source: derived
     put:
       tags:
       - Opportunity
@@ -347,6 +357,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: putApiDataV1OpportunityBulk
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/by-externalId/{externalId}:
     delete:
       tags:
@@ -392,6 +404,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: deleteApiDataV1OpportunityByExternalIdByExternalId
+      x-operation-id-source: derived
     get:
       tags:
       - Opportunity
@@ -424,6 +438,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1OpportunityByExternalIdByExternalId
+      x-operation-id-source: derived
     put:
       tags:
       - Opportunity
@@ -479,6 +495,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: putApiDataV1OpportunityByExternalIdByExternalId
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/query:
     post:
       tags:
@@ -526,6 +544,8 @@ paths:
           description: Bad Request
         '403':
           description: Forbidden
+      operationId: postApiDataV1OpportunityQuery
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/recordtypes:
     get:
       tags:
@@ -552,6 +572,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1OpportunityRecordtypes
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/summary:
     get:
       tags:
@@ -587,6 +609,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1OpportunitySummary
+      x-operation-id-source: derived
   /api/data/v1/Opportunity/{id}:
     delete:
       tags:
@@ -632,6 +656,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: deleteApiDataV1OpportunityById
+      x-operation-id-source: derived
     get:
       tags:
       - Opportunity
@@ -664,6 +690,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1OpportunityById
+      x-operation-id-source: derived
     put:
       tags:
       - Opportunity
@@ -719,9 +747,16 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: putApiDataV1OpportunityById
+      x-operation-id-source: derived
 components:
   schemas:
-    StringObjectDictionaryAPIResponse:
+    UpdateByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    StringObjectDictionaryListAPIResponse:
       type: object
       properties:
         Success:
@@ -733,9 +768,11 @@ components:
           format: int64
         Data:
           type:
-          - object
+          - array
           - 'null'
-          additionalProperties: {}
+          items:
+            type: object
+            additionalProperties: {}
         Errors:
           type:
           - array
@@ -766,7 +803,12 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    StringObjectDictionaryListAPIResponse:
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    StringObjectDictionaryAPIResponse:
       type: object
       properties:
         Success:
@@ -778,11 +820,9 @@ components:
           format: int64
         Data:
           type:
-          - array
+          - object
           - 'null'
-          items:
-            type: object
-            additionalProperties: {}
+          additionalProperties: {}
         Errors:
           type:
           - array
@@ -924,181 +964,6 @@ components:
           description: Total opportuninty qunatity for record
       additionalProperties: false
       description: Opportunity Request Example
-    UpdateByField:
-      enum:
-      - Id
-      - ExternalId
-      type: string
-    Query:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Name of object on which querying needs to be done.
-        Criteria:
-          type:
-          - string
-          - 'null'
-        Select:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The fields which are to be displayed.
-        Distinct:
-          type: boolean
-          description: Select true to get distinct records
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of records to be skipped.
-          format: int32
-        Sort:
-          $ref: '#/components/schemas/Sort'
-        GroupBy:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: List of field names which are to be grouped.
-      additionalProperties: false
-      description: Schema Model for Query
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Sort:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
-        OrderBy:
-          $ref: '#/components/schemas/OrderBy'
-      additionalProperties: false
-      description: Sort information for records.
-    OrderBy:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    DeleteByField:
-      enum:
-      - Id
-      - ExternalId
-      type: string
     HttpStatusCode:
       enum:
       - Continue
@@ -1163,11 +1028,176 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+      description: Sort information for records.
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     DeleteBehaviour:
       enum:
       - SoftDelete
       - HardDelete
       type: string
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    DeleteByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    Query:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of object on which querying needs to be done.
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The fields which are to be displayed.
+        Distinct:
+          type: boolean
+          description: Select true to get distinct records
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of records to be skipped.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of field names which are to be grouped.
+      additionalProperties: false
+      description: Schema Model for Query
   securitySchemes:
     Bearer:
       type: apiKey

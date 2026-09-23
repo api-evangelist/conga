@@ -65,6 +65,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiConversionManagementV1QueryFrequencyConversion
+      x-operation-id-source: derived
   /api/conversion-management/v1/query/frequency-conversion-rates:
     post:
       tags:
@@ -124,6 +126,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiConversionManagementV1QueryFrequencyConversionRates
+      x-operation-id-source: derived
   /api/conversion-management/v1/query/frequency-conversion-rates/bulk:
     post:
       tags:
@@ -208,8 +212,41 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiConversionManagementV1QueryFrequencyConversionRatesBulk
+      x-operation-id-source: derived
 components:
   schemas:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: User Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: User Name.
+      additionalProperties: false
+    BulkFrequencyConversionRates:
+      type: object
+      properties:
+        FrequencyConversionRates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FrequencyConversionRate'
+          description: A collection of FrequencyConversionRates
+        Error:
+          type:
+          - string
+          - 'null'
+          description: General error details that apply to the entire operation
+      additionalProperties: false
+      description: Bulk Frequency conversion rates
     FrequencyConversionRate:
       type: object
       properties:
@@ -268,23 +305,209 @@ components:
           format: double
       additionalProperties: {}
       description: Frequency conversion rate schema
-    BulkFrequencyConversionRates:
+    FrequencyConversionGetRequest:
       type: object
       properties:
-        FrequencyConversionRates:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source Frequency. **For example:** Hourly, Daily, etc.
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target Frequency. **For example:** Hourly, Daily, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    ConvertedFrequency:
+      type: object
+      properties:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source frequency
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target frequency
+        Value:
+          type: number
+          description: Input value in source frequency
+          format: double
+        ConvertedValue:
+          type: number
+          description: Converted value in target frequency
+          format: double
+        ConversionRate:
+          type: number
+          description: Conversion rate used
+          format: double
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
+      description: Converted frequency value
+    FrequencyConversionRequest:
+      type: object
+      properties:
+        FromFrequency:
+          type:
+          - string
+          - 'null'
+          description: Source Frequency. **For example:** Hourly, Daily, etc.
+        ToFrequency:
+          type:
+          - string
+          - 'null'
+          description: Target Frequency. **For example:** Hourly, Daily, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        Value:
+          type: number
+          description: Conversion value
+          format: double
+      additionalProperties: false
+      description: Frequency conversion request schema
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/FrequencyConversionRate'
-          description: A collection of FrequencyConversionRates
-        Error:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          description: General error details that apply to the entire operation
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-      description: Bulk Frequency conversion rates
     ConvertedFrequencyAPIResponse:
       type: object
       properties:
@@ -297,6 +520,48 @@ components:
           format: int64
         Data:
           $ref: '#/components/schemas/ConvertedFrequency'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    FrequencyConversionRateAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/FrequencyConversionRate'
         Errors:
           type:
           - array
@@ -369,265 +634,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    FrequencyConversionGetRequest:
-      type: object
-      properties:
-        FromFrequency:
-          type:
-          - string
-          - 'null'
-          description: Source Frequency. **For example:** Hourly, Daily, etc.
-        ToFrequency:
-          type:
-          - string
-          - 'null'
-          description: Target Frequency. **For example:** Hourly, Daily, etc.
-        ProductId:
-          type:
-          - string
-          - 'null'
-          description: Product ID
-        ProductFamily:
-          type:
-          - string
-          - 'null'
-          description: Product Family
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: User Id.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: User Name.
-      additionalProperties: false
-    FrequencyConversionRequest:
-      type: object
-      properties:
-        FromFrequency:
-          type:
-          - string
-          - 'null'
-          description: Source Frequency. **For example:** Hourly, Daily, etc.
-        ToFrequency:
-          type:
-          - string
-          - 'null'
-          description: Target Frequency. **For example:** Hourly, Daily, etc.
-        ProductId:
-          type:
-          - string
-          - 'null'
-          description: Product ID
-        ProductFamily:
-          type:
-          - string
-          - 'null'
-          description: Product Family
-        Value:
-          type: number
-          description: Conversion value
-          format: double
-      additionalProperties: false
-      description: Frequency conversion request schema
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ConvertedFrequency:
-      type: object
-      properties:
-        FromFrequency:
-          type:
-          - string
-          - 'null'
-          description: Source frequency
-        ToFrequency:
-          type:
-          - string
-          - 'null'
-          description: Target frequency
-        Value:
-          type: number
-          description: Input value in source frequency
-          format: double
-        ConvertedValue:
-          type: number
-          description: Converted value in target frequency
-          format: double
-        ConversionRate:
-          type: number
-          description: Conversion rate used
-          format: double
-        Product:
-          $ref: '#/components/schemas/LookupObject'
-        ProductFamily:
-          type:
-          - string
-          - 'null'
-          description: Product Family
-      additionalProperties: false
-      description: Converted frequency value
-    FrequencyConversionRateAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/FrequencyConversionRate'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
   securitySchemes:
     bearerAuth:
       type: http

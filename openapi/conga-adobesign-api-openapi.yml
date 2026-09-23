@@ -17,7 +17,9 @@ paths:
       tags:
       - AdobeSign
       summary: Get Adobe sign events by esign transaction
-      description: "Retrieves list of events from Adobe based on the transaction ID provided in the parameters. The transaction ID is the esign ID generated during envelope creation.\n            This API returns events details as the agreement events happened during transaction, from esign transaction id will get the external id which is agreement id in Adobe."
+      description: 'Retrieves list of events from Adobe based on the transaction ID provided in the parameters. The transaction ID is the esign ID generated during envelope creation.
+
+        This API returns events details as the agreement events happened during transaction, from esign transaction id will get the external id which is agreement id in Adobe.'
       parameters:
       - name: transactionId
         in: path
@@ -83,6 +85,8 @@ paths:
                 Errors:
                 - Id: null
                   Message: Internal server error occurred. Please contact admin.
+      operationId: getApiEsignV1AdobeByTransactionIdAudittrail
+      x-operation-id-source: derived
 components:
   schemas:
     AgreementEvent:
@@ -158,6 +162,35 @@ components:
           - string
           - 'null'
       additionalProperties: false
+    ParticipantRoleEnum:
+      enum:
+      - SIGNER
+      - DELEGATETOSIGNER
+      - APPROVER
+      - DELEGATETOAPPROVER
+      - ACCEPTOR
+      - DELEGATETOACCEPTOR
+      - FORMFILLER
+      - DELEGATETOFORMFILLER
+      - CERTIFIEDRECIPIENT
+      - DELEGATETOCERTIFIEDRECIPIENT
+      - SHARE
+      - SENDER
+      type: string
+    AgreementEventListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/AgreementEventList'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
     APIResponseError:
       type: object
       properties:
@@ -184,19 +217,17 @@ components:
           items:
             $ref: '#/components/schemas/AgreementEvent'
       additionalProperties: false
-    DeviceLocation:
+    ErrorDetail:
       type: object
       properties:
-        Latitude:
+        Id:
           type:
-          - number
+          - string
           - 'null'
-          format: float
-        Longitude:
+        Message:
           type:
-          - number
+          - string
           - 'null'
-          format: float
       additionalProperties: false
     TypeEnum:
       enum:
@@ -271,47 +302,20 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    AgreementEventListAPIResponse:
+    DeviceLocation:
       type: object
       properties:
-        Success:
-          type: boolean
-        Data:
-          $ref: '#/components/schemas/AgreementEventList'
-        Errors:
+        Latitude:
           type:
-          - array
+          - number
           - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          format: float
+        Longitude:
+          type:
+          - number
+          - 'null'
+          format: float
       additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ParticipantRoleEnum:
-      enum:
-      - SIGNER
-      - DELEGATETOSIGNER
-      - APPROVER
-      - DELEGATETOAPPROVER
-      - ACCEPTOR
-      - DELEGATETOACCEPTOR
-      - FORMFILLER
-      - DELEGATETOFORMFILLER
-      - CERTIFIEDRECIPIENT
-      - DELEGATETOCERTIFIEDRECIPIENT
-      - SHARE
-      - SENDER
-      type: string
   securitySchemes:
     bearerAuth:
       type: http

@@ -81,6 +81,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: putApiDataV1ObjectsByObjectNameByRecordIdAccessLevel
+      x-operation-id-source: derived
   /api/data/v1/objects/{objectName}/{recordId}/share:
     post:
       tags:
@@ -158,6 +160,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: postApiDataV1ObjectsByObjectNameByRecordIdShare
+      x-operation-id-source: derived
   /api/data/v1/objects/{objectName}/{recordId}/sharing-info:
     get:
       tags:
@@ -240,6 +244,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1ObjectsByObjectNameByRecordIdSharingInfo
+      x-operation-id-source: derived
   /api/data/v1/objects/{objectName}/{recordId}/un-share:
     delete:
       tags:
@@ -297,6 +303,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: deleteApiDataV1ObjectsByObjectNameByRecordIdUnShare
+      x-operation-id-source: derived
   /api/data/v1/objects/{objectName}/{recordId}/{trackingId}/sharing-status:
     get:
       tags:
@@ -368,6 +376,8 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1ObjectsByObjectNameByRecordIdByTrackingIdSharingStatus
+      x-operation-id-source: derived
   /api/data/v1/objects/{objectName}/{recordId}/{userId}/access-level:
     get:
       tags:
@@ -424,68 +434,56 @@ paths:
                 Errors:
                 - Message: Internal server error occurred. Please contact admin.
                 StatusCode: OK
+      operationId: getApiDataV1ObjectsByObjectNameByRecordIdByUserIdAccessLevel
+      x-operation-id-source: derived
 components:
   schemas:
-    RecordShareTrackingInfo:
+    RecordShareTrackingInfoListAPIResponse:
       type: object
       properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        RecordId:
-          type:
-          - string
-          - 'null'
-        TrackingId:
-          type:
-          - string
-          - 'null'
-        Status:
-          type:
-          - string
-          - 'null'
-        MemberId:
-          type:
-          - string
-          - 'null'
-        MemberType:
-          type:
-          - string
-          - 'null'
-        ShouldSendEmail:
+        Success:
           type: boolean
-        EmailMessage:
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecordShareTrackingInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-      additionalProperties: {}
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -533,6 +531,28 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    OwnerType:
+      enum:
+      - User
+      - UserGroup
+      type: string
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     StringObjectDictionaryAPIResponse:
       type: object
       properties:
@@ -578,140 +598,24 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    RecordShareInfo:
+    ShareRecordRequest:
       type: object
       properties:
-        RecordShareType:
-          $ref: '#/components/schemas/OwnerType'
-        UserId:
-          type:
-          - string
-          - 'null'
-        UserGroupId:
-          type:
-          - string
-          - 'null'
-        AccessLevel:
-          $ref: '#/components/schemas/SharedObjectAccessLevel'
-      additionalProperties: false
-    OwnerType:
-      enum:
-      - User
-      - UserGroup
-      type: string
-    UserAccessDetailsOnRecord:
-      type: object
-      properties:
-        IsSharingEnabled:
-          type: boolean
-        IsRecordShared:
-          type:
-          - boolean
-          - 'null'
-        RecordAccessDetail:
-          $ref: '#/components/schemas/RecordAccessDetail'
-      additionalProperties: false
-    RecordAccessDetail:
-      type: object
-      properties:
-        View:
-          type: boolean
-        Edit:
-          type: boolean
-      additionalProperties: false
-    UserAccessDetailsOnRecordAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/UserAccessDetailsOnRecord'
-        Errors:
+        RecordShareInfo:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    RecordShareTrackingInfoListAPIResponse:
-      type: object
-      properties:
-        Success:
+            $ref: '#/components/schemas/RecordShareInfo'
+        IsSendEmailNotification:
           type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RecordShareTrackingInfo'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+          description: Should we send an email to the user/usergroup the record is shared with.
+        EmailMessage:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          description: Email message body to be sent to the user/usergroup when the record is shared.
       additionalProperties: false
-    SharedObjectAccessLevel:
-      enum:
-      - View
-      - Edit
-      type: string
     HttpStatusCode:
       enum:
       - Continue
@@ -776,23 +680,71 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    ShareRecordRequest:
+    RecordShareTrackingInfoAPIResponse:
       type: object
       properties:
-        RecordShareInfo:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/RecordShareTrackingInfo'
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/RecordShareInfo'
-        IsSendEmailNotification:
-          type: boolean
-          description: Should we send an email to the user/usergroup the record is shared with.
-        EmailMessage:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          description: Email message body to be sent to the user/usergroup when the record is shared.
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordShareInfo:
+      type: object
+      properties:
+        RecordShareType:
+          $ref: '#/components/schemas/OwnerType'
+        UserId:
+          type:
+          - string
+          - 'null'
+        UserGroupId:
+          type:
+          - string
+          - 'null'
+        AccessLevel:
+          $ref: '#/components/schemas/SharedObjectAccessLevel'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     UnShareRecordRequest:
       type: object
@@ -810,30 +762,47 @@ components:
           - 'null'
           description: User Group to which the record is shared with. Should be provided when RecordShareType is UserGroup.
       additionalProperties: false
-    LookupObject:
+    UserAccessDetailsOnRecordAPIResponse:
       type: object
       properties:
-        Id:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserAccessDetailsOnRecord'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-        Name:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     StringAPIResponse:
       type: object
@@ -879,47 +848,90 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    RecordShareTrackingInfoAPIResponse:
+    SharedObjectAccessLevel:
+      enum:
+      - View
+      - Edit
+      type: string
+    UserAccessDetailsOnRecord:
       type: object
       properties:
-        Success:
+        IsSharingEnabled:
           type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/RecordShareTrackingInfo'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
+        IsRecordShared:
           type:
           - boolean
           - 'null'
-        NextCursor:
+        RecordAccessDetail:
+          $ref: '#/components/schemas/RecordAccessDetail'
+      additionalProperties: false
+    RecordShareTrackingInfo:
+      type: object
+      properties:
+        Id:
           type:
           - string
           - 'null'
-        Warnings:
+        Name:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        RecordId:
+          type:
+          - string
+          - 'null'
+        TrackingId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        MemberId:
+          type:
+          - string
+          - 'null'
+        MemberType:
+          type:
+          - string
+          - 'null'
+        ShouldSendEmail:
+          type: boolean
+        EmailMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    RecordAccessDetail:
+      type: object
+      properties:
+        View:
+          type: boolean
+        Edit:
+          type: boolean
       additionalProperties: false
   securitySchemes:
     Bearer:

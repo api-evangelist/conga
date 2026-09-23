@@ -532,7 +532,7 @@ paths:
     delete:
       tags:
       - Approval
-      summary: Delete a field from an approval.
+      summary: Delete a field from an approval
       description: Deletes a field added to an existing approval.
       operationId: Approval_DeleteFieldById
       parameters:
@@ -761,7 +761,17 @@ paths:
       tags:
       - Approval
       summary: Updates the conditions for a given approval field
-      description: "Updates the conditions for a given field. In addition to the array of conditions, \nthe payload should contain all Field properties. The value of the field is replaced by this payload.\n\nConditional fields allow you to show/hide or enable/disable fields based on the values \nof other fields in the document.\n\nExample use case: Show \"Company Name\" field only if user selects \"Business\" in the \"Account Type\" field."
+      description: 'Updates the conditions for a given field. In addition to the array of conditions,
+
+        the payload should contain all Field properties. The value of the field is replaced by this payload.
+
+
+        Conditional fields allow you to show/hide or enable/disable fields based on the values
+
+        of other fields in the document.
+
+
+        Example use case: Show "Company Name" field only if user selects "Business" in the "Account Type" field.'
       operationId: Approval_UpdateConditionalFields
       parameters:
       - name: packageId
@@ -910,6 +920,33 @@ paths:
       - JWT: []
 components:
   schemas:
+    AnchorPointType:
+      type: string
+      description: ''
+      x-enumNames:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+      enum:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+    FieldCondition:
+      type: object
+      description: Object to manage field conditions
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: The id of the field condition
+        condition:
+          type: string
+          description: The condition that determines if action is needed
+        action:
+          type: string
+          description: The action to take when the condition is true
     Error2:
       type: object
       description: Object representing an error condition
@@ -937,6 +974,42 @@ components:
         technical:
           type: string
           description: Technical information about the error
+    ExtractAnchor:
+      type: object
+      description: Text extraction anchor object.
+      additionalProperties: false
+      properties:
+        anchorPoint:
+          description: Which corner of the specified character to use as the base for calculating position
+          oneOf:
+          - $ref: '#/components/schemas/AnchorPointType'
+        characterIndex:
+          type: integer
+          description: The index of the character within the Anchor Text that will be used to calculate position
+          format: int32
+        height:
+          type: integer
+          description: The height of the field position to be calculated
+          format: int32
+        index:
+          type: integer
+          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
+          format: int32
+        leftOffset:
+          type: integer
+          description: An absolute offset applied to the final x value
+          format: int32
+        text:
+          type: string
+          description: The exact string that will be searched for in the uploaded document
+        topOffset:
+          type: integer
+          description: An absolute offset applied to the final y value
+          format: int32
+        width:
+          type: integer
+          description: The width of the field position to be calculated
+          format: int32
     ResultOfApproval:
       type: object
       description: Object used to manage OneSpan list types
@@ -951,6 +1024,62 @@ components:
           description: Results
           items:
             $ref: '#/components/schemas/Approval'
+    FieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+      enum:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+    FieldValidation:
+      type: object
+      description: Field validation object
+      additionalProperties: false
+      properties:
+        enum:
+          type: array
+          items:
+            type: string
+        errorCode:
+          type:
+          - integer
+          - 'null'
+          description: Field validation error code.
+          format: int32
+        errorMessage:
+          type: string
+          description: "Field validation error message.\n            "
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation maximum length.
+          format: int32
+        minLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation minimum length.
+          format: int32
+        pattern:
+          type: string
+          description: Pattern
+        required:
+          type: boolean
+          description: Determines if field is required
+        group:
+          type: string
+          description: Field validation group.
+        minimumRequired:
+          type:
+          - integer
+          - 'null'
+          description: Minimum Required (Grouped Checkboxes)
+          format: int32
     Approval:
       type: object
       description: Signing Approval object.
@@ -1002,127 +1131,6 @@ components:
           type: object
           description: Additional approval From File data properties.
           additionalProperties: {}
-    FieldCondition:
-      type: object
-      description: Object to manage field conditions
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: The id of the field condition
-        condition:
-          type: string
-          description: The condition that determines if action is needed
-        action:
-          type: string
-          description: The action to take when the condition is true
-    FieldValidation:
-      type: object
-      description: Field validation object
-      additionalProperties: false
-      properties:
-        enum:
-          type: array
-          items:
-            type: string
-        errorCode:
-          type:
-          - integer
-          - 'null'
-          description: Field validation error code.
-          format: int32
-        errorMessage:
-          type: string
-          description: "Field validation error message.\n            "
-        maxLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation maximum length.
-          format: int32
-        minLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation minimum length.
-          format: int32
-        pattern:
-          type: string
-          description: Pattern
-        required:
-          type: boolean
-          description: Determines if field is required
-        group:
-          type: string
-          description: Field validation group.
-        minimumRequired:
-          type:
-          - integer
-          - 'null'
-          description: Minimum Required (Grouped Checkboxes)
-          format: int32
-    ExtractAnchor:
-      type: object
-      description: Text extraction anchor object.
-      additionalProperties: false
-      properties:
-        anchorPoint:
-          description: Which corner of the specified character to use as the base for calculating position
-          oneOf:
-          - $ref: '#/components/schemas/AnchorPointType'
-        characterIndex:
-          type: integer
-          description: The index of the character within the Anchor Text that will be used to calculate position
-          format: int32
-        height:
-          type: integer
-          description: The height of the field position to be calculated
-          format: int32
-        index:
-          type: integer
-          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
-          format: int32
-        leftOffset:
-          type: integer
-          description: An absolute offset applied to the final x value
-          format: int32
-        text:
-          type: string
-          description: The exact string that will be searched for in the uploaded document
-        topOffset:
-          type: integer
-          description: An absolute offset applied to the final y value
-          format: int32
-        width:
-          type: integer
-          description: The width of the field position to be calculated
-          format: int32
-    FieldType:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-      enum:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
     ConditionalField:
       allOf:
       - $ref: '#/components/schemas/Field'
@@ -1135,19 +1143,6 @@ components:
             description: List of conditions for a field
             items:
               $ref: '#/components/schemas/FieldCondition'
-    AnchorPointType:
-      type: string
-      description: ''
-      x-enumNames:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-      enum:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
     Field:
       type: object
       description: Approval fields object.
@@ -1213,6 +1208,21 @@ components:
           type: number
           description: Field width.
           format: double
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
   securitySchemes:
     JWT:
       type: apiKey

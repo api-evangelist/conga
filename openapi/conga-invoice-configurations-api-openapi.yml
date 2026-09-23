@@ -15,7 +15,7 @@ paths:
     patch:
       tags:
       - Invoice Configurations
-      summary: Updates an existing invoice configuration request with modified settings.
+      summary: Updates an existing invoice configuration request with modified settings
       requestBody:
         description: The invoice configuration request containing updated settings for the invoice run.
         content:
@@ -68,10 +68,12 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: patchConfigureRequests
+      x-operation-id-source: derived
     post:
       tags:
       - Invoice Configurations
-      summary: Configures and creates an invoice run request based on the provided configuration.
+      summary: Configures and creates an invoice run request based on the provided…
       requestBody:
         description: The invoice configuration request containing settings for the invoice run.
         content:
@@ -124,11 +126,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postConfigureRequests
+      x-operation-id-source: derived
   /configure-requests/estimate:
     post:
       tags:
       - Invoice Configurations
-      summary: Retrieves a preview of an invoice request based on the provided configuration without persisting the request.
+      summary: Retrieves a preview of an invoice request based on the provided configuration…
       requestBody:
         description: The invoice configuration request containing settings to preview.
         content:
@@ -169,11 +173,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/InvoiceRequestPreviewResponse'
+      operationId: postConfigureRequestsEstimate
+      x-operation-id-source: derived
   /configure-requests/{id}:
     get:
       tags:
       - Invoice Configurations
-      summary: Retrieves an invoice configuration request by its unique identifier.
+      summary: Retrieves an invoice configuration request by its unique identifier
       parameters:
       - name: id
         in: path
@@ -206,11 +212,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getConfigureRequestsById
+      x-operation-id-source: derived
   /configure-requests/{id}/clone:
     post:
       tags:
       - Invoice Configurations
-      summary: Clones an existing invoice configuration request to create a new configuration based on the specified source.
+      summary: Clones an existing invoice configuration request to create a new configuration…
       parameters:
       - name: id
         in: path
@@ -255,11 +263,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: postConfigureRequestsByIdClone
+      x-operation-id-source: derived
   /configure-requests/{id}/estimate:
     get:
       tags:
       - Invoice Configurations
-      summary: Retrieves a preview of an invoice request, including billing schedule records and estimated invoice details.
+      summary: Retrieves a preview of an invoice request, including billing schedule records…
       parameters:
       - name: id
         in: path
@@ -292,11 +302,13 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/InvoiceRequestPreviewResponse'
+      operationId: getConfigureRequestsByIdEstimate
+      x-operation-id-source: derived
   /configure-requests/{id}/request-results:
     get:
       tags:
       - Invoice Configurations
-      summary: Retrieves an invoice request result by configuration request identifier.
+      summary: Retrieves an invoice request result by configuration request identifier
       parameters:
       - name: id
         in: path
@@ -342,29 +354,130 @@ paths:
             text/json:
               schema:
                 $ref: '#/components/schemas/ErrorApiResponse'
+      operationId: getConfigureRequestsByIdRequestResults
+      x-operation-id-source: derived
 components:
   schemas:
-    CurrencyField:
+    ChildFilter:
       type: object
       properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
+        CondExpr:
           type:
           - string
           - 'null'
-          readOnly: true
-        CurrencySymbol:
+        Predicates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Predicate'
+        HasRHSFields:
+          type: boolean
+        ChildFilter:
+          $ref: '#/components/schemas/ChildFilter'
+        ChildObjectLabel:
           type:
           - string
           - 'null'
-          readOnly: true
+        ChildObjectName:
+          type:
+          - string
+          - 'null'
+        RelationFieldName:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
+    UserFilter:
+      type: object
+      properties:
+        CondExpr:
+          type:
+          - string
+          - 'null'
+        Predicates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Predicate'
+        HasRHSFields:
+          type: boolean
+        ChildFilter:
+          $ref: '#/components/schemas/ChildFilter'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    InvoiceRequestResult:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - string
+          - 'null'
+        RequestName:
+          $ref: '#/components/schemas/LookupObject'
+        TotalAccountsInScope:
+          type: integer
+          format: int32
+        TotalOrdersInScope:
+          type: integer
+          format: int32
+        TotalBSRsInScope:
+          type: integer
+          format: int32
+        TotalInvoicesCreated:
+          type: integer
+          format: int32
+        TotalInvoicesAutoApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosCreated:
+          type: integer
+          format: int32
+        TotalCreditMemosApproved:
+          type: integer
+          format: int32
+        TotalCreditMemosWithTaxProcessed:
+          type: integer
+          format: int32
+      additionalProperties: {}
     ApiError:
       type: object
       properties:
@@ -382,6 +495,221 @@ components:
           - string
           - 'null'
       additionalProperties: false
+    InvoiceConfigurationRequestResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        RequestType:
+          type:
+          - string
+          - 'null'
+        AutoApproveInvoices:
+          type: boolean
+        InvoiceDateBasedOn:
+          type:
+          - string
+          - 'null'
+        ProcessFrom:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ProcessTo:
+          type: string
+          format: date-time
+        FilterCriteria:
+          $ref: '#/components/schemas/FilterDefinition'
+        Status:
+          type:
+          - string
+          - 'null'
+        CreateCreditMemos:
+          type:
+          - boolean
+          - 'null'
+        CreditMemoCreationOption:
+          type:
+          - string
+          - 'null'
+        InvoiceDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        CreditMemoDateBasedOn:
+          type:
+          - string
+          - 'null'
+        CreditMemoDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        AutoApproveAmountOperator:
+          type:
+          - string
+          - 'null'
+        AutoApproveAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        SuppressCriterion:
+          type:
+          - string
+          - 'null'
+        SuppressOperator:
+          type:
+          - string
+          - 'null'
+        SuppressInvoiceAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        AutoApplyCreditMemo:
+          type: boolean
+        AutoApproveCreditMemos:
+          type: boolean
+        Frequency:
+          type:
+          - string
+          - 'null'
+        WeekOfTheMonth:
+          type:
+          - string
+          - 'null'
+        WeekDay:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        InvoiceDayReference:
+          type:
+          - string
+          - 'null'
+        InvoiceMonthReference:
+          type:
+          - string
+          - 'null'
+        InvoiceDateOffset:
+          type:
+          - string
+          - 'null'
+        ProcessThroughOffset:
+          type:
+          - string
+          - 'null'
+        StartHour:
+          type:
+          - string
+          - 'null'
+        StartMinute:
+          type:
+          - string
+          - 'null'
+        OverwriteInvoiceTemplates:
+          type: boolean
+        InvoiceDocumentTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        InvoiceEmailTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        OverwriteCreditMemoTemplates:
+          type: boolean
+        CreditMemoDocumentTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        CreditMemoEmailTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        CronExpression:
+          type:
+          - string
+          - 'null'
+        NextScheduledRunAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        SplitCriteria:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/LookupObject'
+        MonthlyDate:
+          type:
+          - string
+          - 'null'
+        ProcessFromDayReference:
+          type:
+          - string
+          - 'null'
+        ProcessFromMonthReference:
+          type:
+          - string
+          - 'null'
+        ProcessToDayReference:
+          type:
+          - string
+          - 'null'
+        ProcessToMonthReference:
+          type:
+          - string
+          - 'null'
+        ProcessFromOffset:
+          type:
+          - string
+          - 'null'
+        ScheduleFrom:
+          type:
+          - string
+          - 'null'
+          format: date
+        ScheduleTo:
+          type:
+          - string
+          - 'null'
+          format: date
+      additionalProperties: false
+    InvoiceRequestPreviewResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Gets or sets the name of the invoice request preview response.
+        NumberOfAccountsSelected:
+          type: integer
+          description: Gets or sets the number of accounts selected during the invoice run.
+          format: int32
+        NumberOfOrdersSelected:
+          type: integer
+          description: Gets or sets the number of orders selected during the invoice run.
+          format: int32
+        NumberOfBillingScheduleRecordsSelected:
+          type: integer
+          description: Gets or sets the number of billing schedule records selected during the invoice run.
+          format: int32
+        NumberOfInvoicesGenerated:
+          type: integer
+          description: Gets or sets the number of invoices generated during the invoice run.
+          format: int32
+        NumberOfInvoicesAutoApproved:
+          type: integer
+          description: Gets or sets the number of invoices that were auto-approved during the invoice run.
+          format: int32
+        NumberOfCreditMemosGenerated:
+          type: integer
+          description: Gets or sets the number of credit memos generated during the invoice run.
+          format: int32
+        NumberOfCreditMemosAutoApproved:
+          type: integer
+          description: Gets or sets the number of credit memos that were auto-approved during the invoice run.
+          format: int32
+      additionalProperties: false
+      description: Represents the result of an invoice run operation.
     InvoiceConfigurationRequest:
       type: object
       properties:
@@ -564,280 +892,6 @@ components:
           - 'null'
           format: date
       additionalProperties: false
-    Filter:
-      type: object
-      properties:
-        CondExpr:
-          type:
-          - string
-          - 'null'
-        Predicates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Predicate'
-        HasRHSFields:
-          type: boolean
-        ChildFilter:
-          $ref: '#/components/schemas/ChildFilter'
-      additionalProperties: false
-    ChildFilter:
-      type: object
-      properties:
-        CondExpr:
-          type:
-          - string
-          - 'null'
-        Predicates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Predicate'
-        HasRHSFields:
-          type: boolean
-        ChildFilter:
-          $ref: '#/components/schemas/ChildFilter'
-        ChildObjectLabel:
-          type:
-          - string
-          - 'null'
-        ChildObjectName:
-          type:
-          - string
-          - 'null'
-        RelationFieldName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    InvoiceConfigurationRequestResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        RequestType:
-          type:
-          - string
-          - 'null'
-        AutoApproveInvoices:
-          type: boolean
-        InvoiceDateBasedOn:
-          type:
-          - string
-          - 'null'
-        ProcessFrom:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        ProcessTo:
-          type: string
-          format: date-time
-        FilterCriteria:
-          $ref: '#/components/schemas/FilterDefinition'
-        Status:
-          type:
-          - string
-          - 'null'
-        CreateCreditMemos:
-          type:
-          - boolean
-          - 'null'
-        CreditMemoCreationOption:
-          type:
-          - string
-          - 'null'
-        InvoiceDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        CreditMemoDateBasedOn:
-          type:
-          - string
-          - 'null'
-        CreditMemoDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        AutoApproveAmountOperator:
-          type:
-          - string
-          - 'null'
-        AutoApproveAmount:
-          $ref: '#/components/schemas/CurrencyField'
-        SuppressCriterion:
-          type:
-          - string
-          - 'null'
-        SuppressOperator:
-          type:
-          - string
-          - 'null'
-        SuppressInvoiceAmount:
-          $ref: '#/components/schemas/CurrencyField'
-        AutoApplyCreditMemo:
-          type: boolean
-        AutoApproveCreditMemos:
-          type: boolean
-        Frequency:
-          type:
-          - string
-          - 'null'
-        WeekOfTheMonth:
-          type:
-          - string
-          - 'null'
-        WeekDay:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        InvoiceDayReference:
-          type:
-          - string
-          - 'null'
-        InvoiceMonthReference:
-          type:
-          - string
-          - 'null'
-        InvoiceDateOffset:
-          type:
-          - string
-          - 'null'
-        ProcessThroughOffset:
-          type:
-          - string
-          - 'null'
-        StartHour:
-          type:
-          - string
-          - 'null'
-        StartMinute:
-          type:
-          - string
-          - 'null'
-        OverwriteInvoiceTemplates:
-          type: boolean
-        InvoiceDocumentTemplate:
-          $ref: '#/components/schemas/LookupObject'
-        InvoiceEmailTemplate:
-          $ref: '#/components/schemas/LookupObject'
-        OverwriteCreditMemoTemplates:
-          type: boolean
-        CreditMemoDocumentTemplate:
-          $ref: '#/components/schemas/LookupObject'
-        CreditMemoEmailTemplate:
-          $ref: '#/components/schemas/LookupObject'
-        CronExpression:
-          type:
-          - string
-          - 'null'
-        NextScheduledRunAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        SplitCriteria:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/LookupObject'
-        MonthlyDate:
-          type:
-          - string
-          - 'null'
-        ProcessFromDayReference:
-          type:
-          - string
-          - 'null'
-        ProcessFromMonthReference:
-          type:
-          - string
-          - 'null'
-        ProcessToDayReference:
-          type:
-          - string
-          - 'null'
-        ProcessToMonthReference:
-          type:
-          - string
-          - 'null'
-        ProcessFromOffset:
-          type:
-          - string
-          - 'null'
-        ScheduleFrom:
-          type:
-          - string
-          - 'null'
-          format: date
-        ScheduleTo:
-          type:
-          - string
-          - 'null'
-          format: date
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    UserFilter:
-      type: object
-      properties:
-        CondExpr:
-          type:
-          - string
-          - 'null'
-        Predicates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Predicate'
-        HasRHSFields:
-          type: boolean
-        ChildFilter:
-          $ref: '#/components/schemas/ChildFilter'
-      additionalProperties: false
-    FilterNode:
-      type: object
-      properties:
-        IsEmpty:
-          type: boolean
-          readOnly: true
-      additionalProperties: false
-    InvoiceConfigurationResponseBatchResponse:
-      type: object
-      properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/InvoiceConfigurationResponse'
-      additionalProperties: false
     FilterDefinition:
       type: object
       properties:
@@ -854,122 +908,30 @@ components:
         QueryPlan:
           $ref: '#/components/schemas/QueryPlan'
       additionalProperties: false
-    QueryPlan:
+    ErrorApiResponse:
       type: object
       properties:
-        AccountQuery:
-          type:
-          - string
-          - 'null'
-        LocationQuery:
-          type:
-          - string
-          - 'null'
-        ProductQuery:
-          type:
-          - string
-          - 'null'
-        BillingScheduleQuery:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    Criteria:
-      type: object
-      properties:
-        SearchText:
-          type:
-          - string
-          - 'null'
-        ExprStr:
-          type:
-          - string
-          - 'null'
-        ObjectLabel:
-          type:
-          - string
-          - 'null'
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        Fields:
+        Errors:
           type:
           - array
           - 'null'
           items:
-            type: string
-        Filter:
-          $ref: '#/components/schemas/Filter'
-        UserFilter:
-          $ref: '#/components/schemas/UserFilter'
-        UserFields:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    FilterDefinitionRequest:
+      type: object
+      properties:
+        ParentOperator:
+          type:
+          - string
+          - 'null'
+        Rules:
           type:
           - array
           - 'null'
           items:
-            type: string
+            $ref: '#/components/schemas/FilterNode'
       additionalProperties: false
-    InvoiceRequestResult:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Status:
-          type:
-          - string
-          - 'null'
-        RequestName:
-          $ref: '#/components/schemas/LookupObject'
-        TotalAccountsInScope:
-          type: integer
-          format: int32
-        TotalOrdersInScope:
-          type: integer
-          format: int32
-        TotalBSRsInScope:
-          type: integer
-          format: int32
-        TotalInvoicesCreated:
-          type: integer
-          format: int32
-        TotalInvoicesAutoApproved:
-          type: integer
-          format: int32
-        TotalCreditMemosCreated:
-          type: integer
-          format: int32
-        TotalCreditMemosApproved:
-          type: integer
-          format: int32
-        TotalCreditMemosWithTaxProcessed:
-          type: integer
-          format: int32
-      additionalProperties: {}
     Predicate:
       type: object
       properties:
@@ -1040,69 +1002,121 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    InvoiceRequestPreviewResponse:
+    Criteria:
       type: object
       properties:
-        Name:
+        SearchText:
           type:
           - string
           - 'null'
-          description: Gets or sets the name of the invoice request preview response.
-        NumberOfAccountsSelected:
-          type: integer
-          description: Gets or sets the number of accounts selected during the invoice run.
-          format: int32
-        NumberOfOrdersSelected:
-          type: integer
-          description: Gets or sets the number of orders selected during the invoice run.
-          format: int32
-        NumberOfBillingScheduleRecordsSelected:
-          type: integer
-          description: Gets or sets the number of billing schedule records selected during the invoice run.
-          format: int32
-        NumberOfInvoicesGenerated:
-          type: integer
-          description: Gets or sets the number of invoices generated during the invoice run.
-          format: int32
-        NumberOfInvoicesAutoApproved:
-          type: integer
-          description: Gets or sets the number of invoices that were auto-approved during the invoice run.
-          format: int32
-        NumberOfCreditMemosGenerated:
-          type: integer
-          description: Gets or sets the number of credit memos generated during the invoice run.
-          format: int32
-        NumberOfCreditMemosAutoApproved:
-          type: integer
-          description: Gets or sets the number of credit memos that were auto-approved during the invoice run.
-          format: int32
-      additionalProperties: false
-      description: Represents the result of an invoice run operation.
-    LookupObject:
-      type: object
-      properties:
-        Id:
+        ExprStr:
           type:
           - string
           - 'null'
-        Name:
+        ObjectLabel:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    FilterDefinitionRequest:
-      type: object
-      properties:
-        ParentOperator:
+        ObjectName:
           type:
           - string
           - 'null'
-        Rules:
+        Fields:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/FilterNode'
+            type: string
+        Filter:
+          $ref: '#/components/schemas/Filter'
+        UserFilter:
+          $ref: '#/components/schemas/UserFilter'
+        UserFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    InvoiceConfigurationResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/InvoiceConfigurationResponse'
+      additionalProperties: false
+    FilterNode:
+      type: object
+      properties:
+        IsEmpty:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    QueryPlan:
+      type: object
+      properties:
+        AccountQuery:
+          type:
+          - string
+          - 'null'
+        LocationQuery:
+          type:
+          - string
+          - 'null'
+        ProductQuery:
+          type:
+          - string
+          - 'null'
+        BillingScheduleQuery:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Filter:
+      type: object
+      properties:
+        CondExpr:
+          type:
+          - string
+          - 'null'
+        Predicates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Predicate'
+        HasRHSFields:
+          type: boolean
+        ChildFilter:
+          $ref: '#/components/schemas/ChildFilter'
+      additionalProperties: false
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
       additionalProperties: false
     InvoiceConfigurationResponse:
       type: object
