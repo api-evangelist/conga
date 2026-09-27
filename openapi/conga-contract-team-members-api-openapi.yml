@@ -503,34 +503,18 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    TeamMemberType:
-      enum:
-      - User
-      - UserGroup
-      - Contact
-      - ExternalMember
-      type: string
-      description: Defines types of Contract Team member
-    BooleanAPIResponse:
+    ContractTeamMembersListAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type: boolean
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractTeamMembers'
           description: Generic data to return
         Warnings:
           type:
@@ -548,18 +532,75 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    ContractTeamMembersListAPIResponse:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ContractTeamMembers:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        User:
+          $ref: '#/components/schemas/LookupObject'
+        UserGroup:
+          $ref: '#/components/schemas/LookupObject'
+        Contact:
+          $ref: '#/components/schemas/LookupObject'
+        ExternalMember:
+          type:
+          - string
+          - 'null'
+          description: External Email Id assigned to the contract as a team member
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+        Agreement:
+          type:
+          - string
+          - 'null'
+          description: Contract for which the user or user group is assigned
+      additionalProperties: {}
+      description: Model for Contract Team Members
+    BooleanAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ContractTeamMembers'
+          type: boolean
           description: Generic data to return
         Warnings:
           type:
@@ -618,6 +659,29 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
+    TeamMemberType:
+      enum:
+      - User
+      - UserGroup
+      - Contact
+      - ExternalMember
+      type: string
+      description: Defines types of Contract Team member
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
     CustomQueryTeamMember:
       type: object
       properties:
@@ -655,70 +719,6 @@ components:
           description: Error message
       additionalProperties: false
       description: Error detail class
-    ContractTeamMembers:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        User:
-          $ref: '#/components/schemas/LookupObject'
-        UserGroup:
-          $ref: '#/components/schemas/LookupObject'
-        Contact:
-          $ref: '#/components/schemas/LookupObject'
-        ExternalMember:
-          type:
-          - string
-          - 'null'
-          description: External Email Id assigned to the contract as a team member
-        TeamRole:
-          $ref: '#/components/schemas/LookupObject'
-        Agreement:
-          type:
-          - string
-          - 'null'
-          description: Contract for which the user or user group is assigned
-      additionalProperties: {}
-      description: Model for Contract Team Members
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
   securitySchemes:
     bearerAuth:
       type: http

@@ -1078,14 +1078,14 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    DocumentMetadataAPIResponse:
+    DocumentSearchResponseAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          $ref: '#/components/schemas/DocumentMetadata'
+          $ref: '#/components/schemas/DocumentSearchResponse'
         Warnings:
           type:
           - array
@@ -1102,45 +1102,237 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    Document:
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ContractRelatedDocumentsResponseListAPIResponse:
       type: object
       properties:
-        Id:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractRelatedDocumentsResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CustomQueryBase:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
           type:
           - string
           - 'null'
-        Name:
+          description: Criteria Expression to filter the records
+      additionalProperties: false
+      description: Base Class for Custom Query
+    ProtectDocumentRequest:
+      type: object
+      properties:
+        DocumentAction:
+          $ref: '#/components/schemas/DocumentAction'
+        UserSelectedProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+      description: Request model for Protect Document
+    ProtectDocumentResponseListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ProtectDocumentResponse'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    CustomQueryWithReviewStatus:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
           type:
           - string
           - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
+          description: Criteria Expression to filter the records
+        IncludeReviewStatus:
+          type: boolean
+          description: Require Review Status
+        IncludeDocumentVersions:
+          type: boolean
+          description: Require Document Versions
+      additionalProperties: false
+      description: Custom Query
+    ContractDocumentResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractDocumentResponse'
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-        ETag:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-        DocumentMetadata:
-          $ref: '#/components/schemas/DocumentMetadata'
-        BlobData:
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentSearchResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        Data:
           type:
-          - string
+          - array
           - 'null'
-          description: Actual document as a blob (byte array)
-          format: byte
-      additionalProperties: {}
-      description: Represents documents associated with contracts and agreements
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+      additionalProperties: false
     DocumentMetadata:
       type: object
       properties:
@@ -1220,42 +1412,108 @@ components:
           - boolean
           - 'null'
       additionalProperties: {}
-    ContractRelatedDocumentsResponse:
+    Document:
       type: object
       properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
         DocumentMetadata:
           $ref: '#/components/schemas/DocumentMetadata'
-        RelationshipType:
+        BlobData:
           type:
           - string
           - 'null'
-          description: Relationship with Contract Id
-      additionalProperties: false
-      description: Contract Related Documents Response
-    CustomQueryBase:
+          description: Actual document as a blob (byte array)
+          format: byte
+      additionalProperties: {}
+      description: Represents documents associated with contracts and agreements
+    DocumentAPIResponse:
       type: object
       properties:
-        Limit:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/Document'
+        Warnings:
           type:
-          - integer
+          - array
           - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - integer
+          - array
           - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
           type:
           - string
           - 'null'
-          description: Criteria Expression to filter the records
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
       additionalProperties: false
-      description: Base Class for Custom Query
+      description: Error detail class
+    DocumentMetadataAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/DocumentMetadata'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
     APIResponseError:
       type: object
       properties:
@@ -1283,48 +1541,15 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
     DocumentAction:
       enum:
       - PREVIEW
@@ -1355,6 +1580,101 @@ components:
           $ref: '#/components/schemas/SortDirection'
       additionalProperties: false
       description: Sorting Information for Fields
+    ContractDocumentResponse:
+      type: object
+      properties:
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ContractDocument'
+          description: Documents
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          description: RecordCount
+          format: int64
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+      additionalProperties: false
+      description: Response for Documents with Action and Status
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ProtectDocumentResponse:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: Id of document on which protection is applied
+        ProtectedDocument:
+          type:
+          - string
+          - 'null'
+          description: Copy of protected document in Base64 string format
+      additionalProperties: false
+      description: Response Model for Protected Document
+    ContractLargeDocumentRequest:
+      required:
+      - Contract
+      - FileName
+      - FilePath
+      type: object
+      properties:
+        FileName:
+          minLength: 1
+          type: string
+          description: The name of the file to be imported.
+        FilePath:
+          minLength: 1
+          type: string
+          description: The path where the file is stored in the filestore.
+        DocumentAttributes:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document attributes like description, tags, etc.
+        WorksheetId:
+          type:
+          - string
+          - 'null'
+          description: Worksheet ID for DAI processing
+        ProcessDAI:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to indicate if DAI processing should be performed
+          default: false
+        ContractType:
+          type:
+          - string
+          - 'null'
+          description: Contract type needed during import offline when DAI processing is enabled.
+        MetadataChecksum:
+          type:
+          - string
+          - 'null'
+          description: Checksum calculated for the file. Used by DiscoveryAgent for duplicate detection.
+        Contract:
+          type: object
+          additionalProperties: {}
+          description: Contract details associated with the document.
+      additionalProperties: false
+      description: Request Model for Large documents with contract
     ContractDocument:
       type: object
       properties:
@@ -1476,66 +1796,14 @@ components:
           format: date-time
       additionalProperties: {}
       description: Document with Origin Action and Review Status
-    ContractLargeDocumentRequest:
-      required:
-      - Contract
-      - FileName
-      - FilePath
-      type: object
-      properties:
-        FileName:
-          minLength: 1
-          type: string
-          description: The name of the file to be imported.
-        FilePath:
-          minLength: 1
-          type: string
-          description: The path where the file is stored in the filestore.
-        DocumentAttributes:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          description: Document attributes like description, tags, etc.
-        WorksheetId:
-          type:
-          - string
-          - 'null'
-          description: Worksheet ID for DAI processing
-        ProcessDAI:
-          type:
-          - boolean
-          - 'null'
-          description: Flag to indicate if DAI processing should be performed
-          default: false
-        ContractType:
-          type:
-          - string
-          - 'null'
-          description: Contract type needed during import offline when DAI processing is enabled.
-        MetadataChecksum:
-          type:
-          - string
-          - 'null'
-          description: Checksum calculated for the file. Used by DiscoveryAgent for duplicate detection.
-        Contract:
-          type: object
-          additionalProperties: {}
-          description: Contract details associated with the document.
-      additionalProperties: false
-      description: Request Model for Large documents with contract
-    ContractRelatedDocumentsResponseListAPIResponse:
+    BooleanAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ContractRelatedDocumentsResponse'
+          type: boolean
           description: Generic data to return
         Warnings:
           type:
@@ -1553,138 +1821,33 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    ContractDocumentResponseAPIResponse:
+    ContractRelatedDocumentsResponse:
       type: object
       properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/ContractDocumentResponse'
-        Warnings:
+        DocumentMetadata:
+          $ref: '#/components/schemas/DocumentMetadata'
+        RelationshipType:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
+          description: Relationship with Contract Id
       additionalProperties: false
-      description: API Response Class
-    ContractDocumentResponse:
+      description: Contract Related Documents Response
+    WarningDetail:
       type: object
       properties:
-        Data:
+        Code:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ContractDocument'
-          description: Documents
-        RecordCount:
+          description: Warning code
+        Message:
           type:
-          - integer
+          - string
           - 'null'
-          description: RecordCount
-          format: int64
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
+          description: Warning message
       additionalProperties: false
-      description: Response for Documents with Action and Status
-    DocumentAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/Document'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    ProtectDocumentRequest:
-      type: object
-      properties:
-        DocumentAction:
-          $ref: '#/components/schemas/DocumentAction'
-        UserSelectedProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
-      additionalProperties: false
-      description: Request model for Protect Document
-    ProtectionLevelType:
-      enum:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - AllowOnlyReading
-      - NoProtection
-      type: string
-      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
-    DocumentSearchResponse:
-      type: object
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DocumentMetadata'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-      additionalProperties: false
-    ProtectDocumentResponseListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ProtectDocumentResponse'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
+      description: Warning detail class for non-blocking issues
     LargeDocumentRequest:
       required:
       - FileName
@@ -1728,169 +1891,6 @@ components:
           description: Checksum calculated for the file. Used by DiscoveryAgent for duplicate detection.
       additionalProperties: false
       description: Request Model for Large documents
-    ProtectDocumentResponse:
-      type: object
-      properties:
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: Id of document on which protection is applied
-        ProtectedDocument:
-          type:
-          - string
-          - 'null'
-          description: Copy of protected document in Base64 string format
-      additionalProperties: false
-      description: Response Model for Protected Document
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    BooleanAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type: boolean
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    CustomQueryWithReviewStatus:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
-          type:
-          - string
-          - 'null'
-          description: Criteria Expression to filter the records
-        IncludeReviewStatus:
-          type: boolean
-          description: Require Review Status
-        IncludeDocumentVersions:
-          type: boolean
-          description: Require Document Versions
-      additionalProperties: false
-      description: Custom Query
-    DocumentSearchResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/DocumentSearchResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
   securitySchemes:
     bearerAuth:
       type: http

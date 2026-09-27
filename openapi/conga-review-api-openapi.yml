@@ -1221,7 +1221,33 @@ paths:
     - url: https://rls.congacloud.com
 components:
   schemas:
-    APIResponseError:
+    Role:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Role Id
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Role Name
+      additionalProperties: false
+    UserDefinedProtectionLevels:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: DocumentId used for applying protection level
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+      description: Model for User Defined Protection Levels
+    ReviewResponseListAPIResponse:
       type: object
       properties:
         Success:
@@ -1229,8 +1255,10 @@ components:
           description: The state of the API response
         Data:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewResponse'
           description: Generic data to return
         Warnings:
           type:
@@ -1247,7 +1275,159 @@ components:
             $ref: '#/components/schemas/ErrorDetail'
           description: Error detail list in case of failure
       additionalProperties: false
-      description: API Response Error Class
+      description: API Response Class
+    ReviewerResponse:
+      type: object
+      properties:
+        ReviewerId:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Id
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Name
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Email Id
+        ReviewStatus:
+          type:
+          - string
+          - 'null'
+          description: Review cycle status ("Initiated", "In Progress", "Completed", or "Canceled")
+        CreatedDate:
+          type: string
+          description: Start date of reviewer
+          format: date-time
+        CompletedDate:
+          type:
+          - string
+          - 'null'
+          description: End date of reviewer
+          format: date-time
+        CanceledDate:
+          type:
+          - string
+          - 'null'
+          description: Canceled date of reviewer
+          format: date-time
+        Comment:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Comment
+      additionalProperties: false
+      description: Response model for Reviewer
+    Recipient:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Id of Recipient
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of Recipient
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Email id of Recipient
+        RecipientType:
+          $ref: '#/components/schemas/RecipientType'
+        Role:
+          $ref: '#/components/schemas/Role'
+      additionalProperties: false
+      description: Model for Recipient
+    RecipientType:
+      enum:
+      - Contact
+      - Email
+      - User
+      type: string
+      description: Type of Recipient
+    ReviewersAddRequest:
+      type: object
+      properties:
+        Reviewers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReviewerInfo'
+          description: List of Reviewers
+      additionalProperties: false
+      description: Request model to add Reviewers
+    ReviewersUpdateRequest:
+      type: object
+      properties:
+        ReviewerIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of Reviewer Ids
+      additionalProperties: false
+      description: Request model for updating reviewers
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    ReviewerInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Name
+        EmailId:
+          type:
+          - string
+          - 'null'
+          description: Reviewer Email
+        ADMemberId:
+          type:
+          - string
+          - 'null'
+          description: Active directory member Id if a reviewer has active directory access
+        RecipientType:
+          type:
+          - string
+          - 'null'
+          description: "Recipient type (\"Email\", \"User\", or \"Contact\")\nEmail - Reviewer is an external user or has active directory access \nUser - Reviewer is an internal user\nContact - Reviewer is an external user but is in contacts"
+        RecipientId:
+          type:
+          - string
+          - 'null'
+          description: 'Recipient Id
+
+            When Recipient Type is User, then Id in the User Object.
+
+            When Recipient Type is Contact, then Id in the Contact Object.
+
+            When Recipient Type is Email, leave it empty/blank/null.'
+      additionalProperties: false
+      description: Model for Reviewer Information
     RecipientListAPIResponse:
       type: object
       properties:
@@ -1277,43 +1457,124 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    ErrorDetail:
+    APIResponseError:
       type: object
       properties:
-        Id:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
           type:
           - string
           - 'null'
-          description: Error ID
-        Message:
+          description: Generic data to return
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-          description: Error message
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-      description: Error detail class
-    EmailAttachment:
+      description: API Response Error Class
+    StringAPIResponse:
       type: object
       properties:
-        Name:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
           type:
           - string
           - 'null'
-        MimeType:
+          description: Generic data to return
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-        FileData:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-          deprecated: true
-        FileContent:
-          type:
-          - string
-          - 'null'
-          format: byte
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
+      description: API Response Class
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
+    AccessTokenRequest:
+      type: object
+      properties:
+        LoginUrl:
+          type:
+          - string
+          - 'null'
+          description: Login URL for Office 365 authentication
+        Scope:
+          type:
+          - string
+          - 'null'
+          description: Scope for Office 365 authentication
+        ClientId:
+          type:
+          - string
+          - 'null'
+          description: Client Id for Office 365 authentication
+        ClientSecret:
+          type:
+          - string
+          - 'null'
+          description: Client Secret for Office 365 authentication
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Authentication code provided by Microsoft for Office 365 delegate authentication
+      additionalProperties: false
+      description: Microsoft O365 Authentication details
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
     ReviewStartRequest:
       required:
       - EmailBody
@@ -1394,163 +1655,6 @@ components:
       description: 'Request model for starting a Review Cycle.
 
         Inherits all common properties from Conga.Contracts.Model.DTO.Review.ReviewStartRequestBase and adds the required `Name` field.'
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    UserDefinedProtectionLevels:
-      type: object
-      properties:
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: DocumentId used for applying protection level
-        ProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
-      additionalProperties: false
-      description: Model for User Defined Protection Levels
-    ReviewersAddRequest:
-      type: object
-      properties:
-        Reviewers:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ReviewerInfo'
-          description: List of Reviewers
-      additionalProperties: false
-      description: Request model to add Reviewers
-    ReviewersUpdateRequest:
-      type: object
-      properties:
-        ReviewerIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: List of Reviewer Ids
-      additionalProperties: false
-      description: Request model for updating reviewers
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    Recipient:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Id of Recipient
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of Recipient
-        EmailId:
-          type:
-          - string
-          - 'null'
-          description: Email id of Recipient
-        RecipientType:
-          $ref: '#/components/schemas/RecipientType'
-        Role:
-          $ref: '#/components/schemas/Role'
-      additionalProperties: false
-      description: Model for Recipient
-    ProtectionLevelType:
-      enum:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - AllowOnlyReading
-      - NoProtection
-      type: string
-      description: Protection Level. i.e. Full Access, Insert and Comment changes etc.
-    ReviewerResponse:
-      type: object
-      properties:
-        ReviewerId:
-          type:
-          - string
-          - 'null'
-          description: Reviewer Id
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Reviewer Name
-        EmailId:
-          type:
-          - string
-          - 'null'
-          description: Email Id
-        ReviewStatus:
-          type:
-          - string
-          - 'null'
-          description: Review cycle status ("Initiated", "In Progress", "Completed", or "Canceled")
-        CreatedDate:
-          type: string
-          description: Start date of reviewer
-          format: date-time
-        CompletedDate:
-          type:
-          - string
-          - 'null'
-          description: End date of reviewer
-          format: date-time
-        CanceledDate:
-          type:
-          - string
-          - 'null'
-          description: Canceled date of reviewer
-          format: date-time
-        Comment:
-          type:
-          - string
-          - 'null'
-          description: Reviewer Comment
-      additionalProperties: false
-      description: Response model for Reviewer
     ReviewResponse:
       type: object
       properties:
@@ -1629,147 +1733,81 @@ components:
           description: Reviewers List
       additionalProperties: false
       description: Response model for Review
-    Role:
+    WarningDetail:
       type: object
       properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Role Id
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Role Name
-      additionalProperties: false
-    RecipientType:
-      enum:
-      - Contact
-      - Email
-      - User
-      type: string
-      description: Type of Recipient
-    BooleanAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type: boolean
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    AccessTokenRequest:
-      type: object
-      properties:
-        LoginUrl:
-          type:
-          - string
-          - 'null'
-          description: Login URL for Office 365 authentication
-        Scope:
-          type:
-          - string
-          - 'null'
-          description: Scope for Office 365 authentication
-        ClientId:
-          type:
-          - string
-          - 'null'
-          description: Client Id for Office 365 authentication
-        ClientSecret:
-          type:
-          - string
-          - 'null'
-          description: Client Secret for Office 365 authentication
         Code:
           type:
           - string
           - 'null'
-          description: Authentication code provided by Microsoft for Office 365 delegate authentication
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
       additionalProperties: false
-      description: Microsoft O365 Authentication details
-    ReviewerInfo:
+      description: Warning detail class for non-blocking issues
+    EmailAttachment:
       type: object
       properties:
         Name:
           type:
           - string
           - 'null'
-          description: Reviewer Name
-        EmailId:
+        MimeType:
           type:
           - string
           - 'null'
-          description: Reviewer Email
-        ADMemberId:
+        FileData:
           type:
           - string
           - 'null'
-          description: Active directory member Id if a reviewer has active directory access
-        RecipientType:
+          deprecated: true
+        FileContent:
           type:
           - string
           - 'null'
-          description: "Recipient type (\"Email\", \"User\", or \"Contact\")\nEmail - Reviewer is an external user or has active directory access \nUser - Reviewer is an internal user\nContact - Reviewer is an external user but is in contacts"
-        RecipientId:
-          type:
-          - string
-          - 'null'
-          description: 'Recipient Id
-
-            When Recipient Type is User, then Id in the User Object.
-
-            When Recipient Type is Contact, then Id in the Contact Object.
-
-            When Recipient Type is Email, leave it empty/blank/null.'
+          format: byte
       additionalProperties: false
-      description: Model for Reviewer Information
-    ReviewResponseListAPIResponse:
+    Conga.Review.Service.Application.Models.StartReviewResponse:
       type: object
       properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
+        SuccessfulReviews:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ReviewResponse'
-          description: Generic data to return
-        Warnings:
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.SuccessfulReview'
+        FailedReviews:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
+            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.FailedReview'
       additionalProperties: false
-      description: API Response Class
+    Conga.Review.Service.Application.Models.SuccessfulReview:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings:
+      type: object
+      properties:
+        ProtectionLevel:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.ProtectionLevel'
+        Password:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     Conga.Review.Service.Application.Commands.StartReview.ReviewNotification:
       type: object
       properties:
@@ -1800,38 +1838,6 @@ components:
           items:
             $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.Reviewer'
       additionalProperties: false
-    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
-      enum:
-      - Email
-      - User
-      - Contact
-      type: string
-    Conga.Review.Service.Application.Commands.StartReview.ReviewObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    Conga.Review.Service.Application.Commands.StartReview.DocumentDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Password:
-          type:
-          - string
-          - 'null'
-        AdditionalSettings:
-          $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings'
-      additionalProperties: false
     Microsoft.AspNetCore.Mvc.ProblemDetails:
       type: object
       properties:
@@ -1857,6 +1863,60 @@ components:
           - string
           - 'null'
       additionalProperties: {}
+    Conga.Review.Service.Application.Commands.StartReview.DocumentDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Password:
+          type:
+          - string
+          - 'null'
+        AdditionalSettings:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings'
+      additionalProperties: false
+    Conga.Review.Service.Application.Models.FailedReview:
+      type: object
+      properties:
+        ReviewId:
+          type:
+          - string
+          - 'null'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Conga.Review.Service.Application.Commands.StartReview.Reviewer:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Email:
+          type:
+          - string
+          - 'null'
+        MemberId:
+          type:
+          - string
+          - 'null'
+        RecipientType:
+          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.RecipientTypeEnum'
+        RecipientId:
+          type:
+          - string
+          - 'null'
+        ReviewerType:
+          $ref: '#/components/schemas/Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum'
+      additionalProperties: false
     Conga.Review.Service.Application.Models.LookUp:
       type: object
       properties:
@@ -1869,33 +1929,11 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    Conga.Review.Service.Application.Commands.StartReview.AdditionalSettings:
-      type: object
-      properties:
-        ProtectionLevel:
-          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.ProtectionLevel'
-        Password:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum:
       enum:
       - External
       - Internal
       type: string
-    Conga.Review.Service.Application.Models.SuccessfulReview:
-      type: object
-      properties:
-        ReviewId:
-          type:
-          - string
-          - 'null'
-        DocumentId:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     Conga.Review.Service.Application.Models.ReviewStatusResponse:
       type: object
       properties:
@@ -1970,22 +2008,12 @@ components:
       - ReadOnly
       - NoProtection
       type: string
-    Conga.Review.Service.Application.Models.FailedReview:
-      type: object
-      properties:
-        ReviewId:
-          type:
-          - string
-          - 'null'
-        DocumentId:
-          type:
-          - string
-          - 'null'
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
+    Conga.Review.Service.Application.Enum.RecipientTypeEnum:
+      enum:
+      - Email
+      - User
+      - Contact
+      type: string
     Conga.Review.Service.API.RequestResponseContracts.StartReview.StartReviewRequest:
       type: object
       properties:
@@ -2018,45 +2046,17 @@ components:
             Default: WebOnlyExternal'
       additionalProperties: false
       description: Start review request containing information required to start review
-    Conga.Review.Service.Application.Models.StartReviewResponse:
+    Conga.Review.Service.Application.Commands.StartReview.ReviewObject:
       type: object
       properties:
-        SuccessfulReviews:
+        Id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.SuccessfulReview'
-        FailedReviews:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Review.Service.Application.Models.FailedReview'
-      additionalProperties: false
-    Conga.Review.Service.Application.Commands.StartReview.Reviewer:
-      type: object
-      properties:
         Name:
           type:
           - string
           - 'null'
-        Email:
-          type:
-          - string
-          - 'null'
-        MemberId:
-          type:
-          - string
-          - 'null'
-        RecipientType:
-          $ref: '#/components/schemas/Conga.Review.Service.Application.Enum.RecipientTypeEnum'
-        RecipientId:
-          type:
-          - string
-          - 'null'
-        ReviewerType:
-          $ref: '#/components/schemas/Conga.Review.Service.Domain.Models.Enum.ReviewerTypeEnum'
       additionalProperties: false
   securitySchemes:
     bearerAuth:

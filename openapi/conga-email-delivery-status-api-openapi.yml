@@ -134,11 +134,77 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    EmailStatusDetails:
+      type: object
+      properties:
+        Status:
+          $ref: '#/components/schemas/ProviderStatus'
+        Events:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusEvent'
+      additionalProperties: false
+    Event:
+      enum:
+      - Processed
+      - Delivered
+      - Deferred
+      - Drop
+      - Bounce
+      - Blocked
+      - Failed
+      - Open
+      - Click
+      type: string
     ProviderStatus:
       enum:
       - Delivered
       - NotDelivered
       type: string
+    EmailJobStatusResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/EmailJobStatusResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
     EmailStatusResponse:
       type: object
       properties:
@@ -157,7 +223,7 @@ components:
         EmailStatusDetails:
           $ref: '#/components/schemas/EmailStatusDetails'
       additionalProperties: false
-    EmailStatusBatchResponseAPIResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -168,7 +234,9 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/EmailStatusBatchResponse'
+          type:
+          - string
+          - 'null'
         Errors:
           type:
           - array
@@ -220,6 +288,33 @@ components:
           - 'null'
         EmailStatusDetails:
           $ref: '#/components/schemas/EmailStatusDetails'
+      additionalProperties: false
+    EmailStatusBatchResponse:
+      type: object
+      properties:
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+        Jobs:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailStatusResponse'
+      additionalProperties: false
+    EmailStatusEvent:
+      type: object
+      properties:
+        Event:
+          $ref: '#/components/schemas/Event'
+        Reason:
+          type:
+          - string
+          - 'null'
+        Timestamp:
+          type: string
+          format: date-time
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -285,7 +380,7 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    StringAPIResponse:
+    EmailStatusBatchResponseAPIResponse:
       type: object
       properties:
         Success:
@@ -296,9 +391,7 @@ components:
           - 'null'
           format: int64
         Data:
-          type:
-          - string
-          - 'null'
+          $ref: '#/components/schemas/EmailStatusBatchResponse'
         Errors:
           type:
           - array
@@ -328,32 +421,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Event:
-      enum:
-      - Processed
-      - Delivered
-      - Deferred
-      - Drop
-      - Bounce
-      - Blocked
-      - Failed
-      - Open
-      - Click
-      type: string
-    EmailStatusBatchResponse:
-      type: object
-      properties:
-        EmailSendId:
-          type:
-          - string
-          - 'null'
-        Jobs:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailStatusResponse'
       additionalProperties: false
     EmailDeliveryStatusBatchRequest:
       type: object
@@ -376,73 +443,6 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    EmailStatusDetails:
-      type: object
-      properties:
-        Status:
-          $ref: '#/components/schemas/ProviderStatus'
-        Events:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailStatusEvent'
-      additionalProperties: false
-    EmailStatusEvent:
-      type: object
-      properties:
-        Event:
-          $ref: '#/components/schemas/Event'
-        Reason:
-          type:
-          - string
-          - 'null'
-        Timestamp:
-          type: string
-          format: date-time
-      additionalProperties: false
-    EmailJobStatusResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/EmailJobStatusResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
   securitySchemes:
     Bearer:

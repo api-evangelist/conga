@@ -580,6 +580,20 @@ paths:
       - JWT: []
 components:
   schemas:
+    ResultOfSender:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Sender'
     External:
       type: object
       description: External integration provider settings.
@@ -598,33 +612,209 @@ components:
         providerName:
           type: string
           description: Provider name.
-    Error2:
+    Provider:
       type: object
-      description: Object representing an error condition
+      description: Object to manage account providers for documents and users
       additionalProperties: false
       properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
-          format: int32
-        entity:
-          description: The Microsoft Dynamics entity
-          oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
+        data:
+          type: object
+          description: Custom meta data
+          additionalProperties: {}
+        id:
           type: string
-          description: The error message
-        messageKey:
-          type: string
-          description: The error message key
+          description: Id
         name:
           type: string
-          description: The error name
-        technical:
+          description: Name
+        provides:
           type: string
-          description: Technical information about the error
+          description: Provides
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    Account:
+      type: object
+      description: Account information.
+      additionalProperties: false
+      properties:
+        company:
+          description: Company information.
+          oneOf:
+          - $ref: '#/components/schemas/Company'
+        created:
+          type:
+          - string
+          - 'null'
+          description: Account creation date.
+          format: date-time
+        customFields:
+          type: array
+          description: Account custom fields.
+          items:
+            $ref: '#/components/schemas/CustomField'
+        data:
+          type: object
+          description: Account metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Account Id.
+        licenses:
+          type: array
+          description: Account license information.
+          items:
+            $ref: '#/components/schemas/License'
+        logoUrl:
+          type: string
+          description: Account Logo URL.
+        name:
+          type: string
+          description: Account name.
+        owner:
+          type: string
+          description: Unique Owner Id.
+        providers:
+          description: External document sources.
+          oneOf:
+          - $ref: '#/components/schemas/AccountProviders'
+        updated:
+          type:
+          - string
+          - 'null'
+          description: Account update date.
+          format: date-time
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    SenderType:
+      type: string
+      description: ''
+      x-enumNames:
+      - REGULAR
+      - MANAGER
+      enum:
+      - REGULAR
+      - MANAGER
+    MemberType:
+      type: string
+      description: Type of member in a group
+      x-enumNames:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
+      enum:
+      - REGULAR
+      - MANAGER
+      - SIGNER
+      - AD_HOC_GROUP_MEMBER
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    TextualSignatureStyle:
+      type: object
+      description: Object to manage a text signature
+      additionalProperties: false
+      properties:
+        color:
+          type: string
+          description: Signature color.
+        font:
+          type: string
+          description: Signature font.
+    Credentials:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        newPassword:
+          type: string
+        password:
+          type: string
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
     Sender:
       type: object
       description: Sender
@@ -737,168 +927,6 @@ components:
           - boolean
           - 'null'
           description: Has Delegates
-    Quota:
-      type: object
-      additionalProperties: false
-      properties:
-        cycle:
-          type: string
-        limit:
-          type: integer
-          format: int32
-        scope:
-          type: string
-        target:
-          $ref: '#/components/schemas/Target'
-    Transaction:
-      type: object
-      additionalProperties: false
-      properties:
-        created:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        creditCard:
-          $ref: '#/components/schemas/CreditCard'
-        price:
-          $ref: '#/components/schemas/Price'
-    UserCustomField:
-      type: object
-      description: Object to manage a user custom field
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-        translations:
-          type: array
-          description: List of translations
-          items:
-            $ref: '#/components/schemas/Translation'
-        value:
-          type: string
-          description: Value
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
-    GroupMembership:
-      type: object
-      description: Object to manage group membership
-      additionalProperties: false
-      properties:
-        groupId:
-          type: string
-          description: GroupId
-        groupName:
-          type: string
-          description: GroupName
-        memberType:
-          description: MemberType
-          oneOf:
-          - $ref: '#/components/schemas/MemberType'
-    Address:
-      type: object
-      additionalProperties: false
-      properties:
-        address1:
-          type: string
-          description: Address1
-        address2:
-          type: string
-          description: Address2
-        city:
-          type: string
-          description: City
-        country:
-          type: string
-          description: Country
-        state:
-          type: string
-          description: State
-        zipcode:
-          type: string
-          description: Zipcode
-    Plan:
-      type: object
-      additionalProperties: false
-      properties:
-        contract:
-          type: string
-        cycle:
-          $ref: '#/components/schemas/Cycle'
-        data:
-          type: object
-          additionalProperties: {}
-        description:
-          type: string
-        features:
-          type: object
-          additionalProperties: {}
-        freeCycles:
-          $ref: '#/components/schemas/CycleCount'
-        group:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        original:
-          type: string
-        price:
-          $ref: '#/components/schemas/Price'
-        quotas:
-          type: array
-          items:
-            $ref: '#/components/schemas/Quota'
-    Company:
-      type: object
-      description: Company information.
-      additionalProperties: false
-      properties:
-        address:
-          description: Company address.
-          oneOf:
-          - $ref: '#/components/schemas/Address'
-        data:
-          type: object
-          description: Company metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique company Id.
-        name:
-          type: string
-          description: Company name.
-    CcExpiration:
-      type: object
-      additionalProperties: false
-      properties:
-        month:
-          type: integer
-          format: int32
-        year:
-          type: integer
-          format: int32
     CycleCount:
       type: object
       additionalProperties: false
@@ -938,20 +966,33 @@ components:
           description: Transactions associated with this license
           items:
             $ref: '#/components/schemas/Transaction'
-    AccountProviders:
+    Price:
       type: object
+      description: Object to manage price
       additionalProperties: false
       properties:
-        documents:
-          type: array
-          description: List of external sources for documents
-          items:
-            $ref: '#/components/schemas/Provider'
-        users:
-          type: array
-          description: List of external sources for users
-          items:
-            $ref: '#/components/schemas/Provider'
+        amount:
+          type: integer
+          description: Amount
+          format: int32
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
+    SignatureImage:
+      type: object
+      description: Object to manage a senders signature image
+      additionalProperties: false
+      properties:
+        fileName:
+          type: string
+          description: File name
+        mediaType:
+          type: string
+          description: Media type
+        content:
+          type: string
+          description: Base64 encoded image
     Currency:
       type: object
       description: The currency used for the Price object
@@ -967,57 +1008,6 @@ components:
         name:
           type: string
           description: Name
-    Price:
-      type: object
-      description: Object to manage price
-      additionalProperties: false
-      properties:
-        amount:
-          type: integer
-          description: Amount
-          format: int32
-        currency:
-          description: Currency
-          oneOf:
-          - $ref: '#/components/schemas/Currency'
-    SenderType:
-      type: string
-      description: ''
-      x-enumNames:
-      - REGULAR
-      - MANAGER
-      enum:
-      - REGULAR
-      - MANAGER
-    SignatureStyle:
-      type: object
-      additionalProperties: false
-      properties:
-        handdrawn:
-          type: string
-          description: Hand drawn signature image (base 64 encoding).
-        textual:
-          description: Textual signature style
-          oneOf:
-          - $ref: '#/components/schemas/TextualSignatureStyle'
-    Provider:
-      type: object
-      description: Object to manage account providers for documents and users
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom meta data
-          additionalProperties: {}
-        id:
-          type: string
-          description: Id
-        name:
-          type: string
-          description: Name
-        provides:
-          type: string
-          description: Provides
     Target:
       type: string
       description: ''
@@ -1033,154 +1023,137 @@ components:
       - DOCUMENT
       - PACKAGE
       - STORAGE
-    CustomField:
+    SignatureStyle:
       type: object
-      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
       additionalProperties: false
       properties:
-        data:
-          type: object
-          description: Custom field metadata.
-          additionalProperties: {}
-        id:
+        handdrawn:
           type: string
-          description: The unique of id of the field
-        name:
-          type: string
-          description: Custom field name.
-        required:
-          type: boolean
-          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
-        translations:
-          type: array
-          description: Custom field localization.
-          items:
-            $ref: '#/components/schemas/Translation'
-        value:
-          type: string
-          description: Custom field default value.
-    SignatureImage:
-      type: object
-      description: Object to manage a senders signature image
-      additionalProperties: false
-      properties:
-        fileName:
-          type: string
-          description: File name
-        mediaType:
-          type: string
-          description: Media type
-        content:
-          type: string
-          description: Base64 encoded image
-    Account:
-      type: object
-      description: Account information.
-      additionalProperties: false
-      properties:
-        company:
-          description: Company information.
+          description: Hand drawn signature image (base 64 encoding).
+        textual:
+          description: Textual signature style
           oneOf:
-          - $ref: '#/components/schemas/Company'
-        created:
-          type:
-          - string
-          - 'null'
-          description: Account creation date.
-          format: date-time
-        customFields:
-          type: array
-          description: Account custom fields.
-          items:
-            $ref: '#/components/schemas/CustomField'
-        data:
-          type: object
-          description: Account metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: Account Id.
-        licenses:
-          type: array
-          description: Account license information.
-          items:
-            $ref: '#/components/schemas/License'
-        logoUrl:
-          type: string
-          description: Account Logo URL.
-        name:
-          type: string
-          description: Account name.
-        owner:
-          type: string
-          description: Unique Owner Id.
-        providers:
-          description: External document sources.
-          oneOf:
-          - $ref: '#/components/schemas/AccountProviders'
-        updated:
-          type:
-          - string
-          - 'null'
-          description: Account update date.
-          format: date-time
-    SenderStatus:
-      type: string
-      description: ''
-      x-enumNames:
-      - INVITED
-      - ACTIVE
-      - LOCKED
-      enum:
-      - INVITED
-      - ACTIVE
-      - LOCKED
-    Credentials:
+          - $ref: '#/components/schemas/TextualSignatureStyle'
+    Quota:
       type: object
       additionalProperties: false
       properties:
-        email:
+        cycle:
           type: string
-        newPassword:
-          type: string
-        password:
-          type: string
-    TextualSignatureStyle:
-      type: object
-      description: Object to manage a text signature
-      additionalProperties: false
-      properties:
-        color:
-          type: string
-          description: Signature color.
-        font:
-          type: string
-          description: Signature font.
-    ResultOfSender:
-      type: object
-      description: Object used to manage OneSpan list types
-      additionalProperties: false
-      properties:
-        count:
+        limit:
           type: integer
-          description: Count
           format: int32
-        results:
-          type: array
-          description: Results
-          items:
-            $ref: '#/components/schemas/Sender'
-    Cycle:
+        scope:
+          type: string
+        target:
+          $ref: '#/components/schemas/Target'
+    LicenseStatus:
       type: string
       description: ''
       x-enumNames:
-      - DAY
-      - MONTH
-      - YEAR
+      - ACTIVE
+      - PENDING
+      - GRACE
       enum:
-      - DAY
-      - MONTH
-      - YEAR
+      - ACTIVE
+      - PENDING
+      - GRACE
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    Translation:
+      type: object
+      description: Field localization.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
+    Plan:
+      type: object
+      additionalProperties: false
+      properties:
+        contract:
+          type: string
+        cycle:
+          $ref: '#/components/schemas/Cycle'
+        data:
+          type: object
+          additionalProperties: {}
+        description:
+          type: string
+        features:
+          type: object
+          additionalProperties: {}
+        freeCycles:
+          $ref: '#/components/schemas/CycleCount'
+        group:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        original:
+          type: string
+        price:
+          $ref: '#/components/schemas/Price'
+        quotas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quota'
+    CreditCard:
+      type: object
+      additionalProperties: false
+      properties:
+        cvv:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/CcExpiration'
+        name:
+          type: string
+        number:
+          type: string
+        type:
+          type: string
     ProfessionalIdentityField:
       type: object
       description: Object to manage professional identity field
@@ -1210,67 +1183,94 @@ components:
         value:
           type: string
           description: Value
-    LicenseStatus:
+    Cycle:
       type: string
       description: ''
       x-enumNames:
-      - ACTIVE
-      - PENDING
-      - GRACE
+      - DAY
+      - MONTH
+      - YEAR
       enum:
+      - DAY
+      - MONTH
+      - YEAR
+    SenderStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - INVITED
       - ACTIVE
-      - PENDING
-      - GRACE
-    Translation:
+      - LOCKED
+      enum:
+      - INVITED
+      - ACTIVE
+      - LOCKED
+    Entity:
       type: object
-      description: Field localization.
+      description: Object used to manage entities from Microsoft Dynamics
       additionalProperties: false
       properties:
         data:
           type: object
-          description: Localization metadata.
+          description: Custom data for the entity
           additionalProperties: {}
-        description:
-          type: string
-          description: Optionally provide a description of the selected language.
         id:
           type: string
-          description: Localization Id.
-        language:
-          type: string
-          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+          description: Unique id of the entity
         name:
           type: string
-          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
-
-            as your users see it in their account profiles and on transactions in which they participate.'
-    MemberType:
-      type: string
-      description: Type of member in a group
-      x-enumNames:
-      - REGULAR
-      - MANAGER
-      - SIGNER
-      - AD_HOC_GROUP_MEMBER
-      enum:
-      - REGULAR
-      - MANAGER
-      - SIGNER
-      - AD_HOC_GROUP_MEMBER
-    CreditCard:
+          description: Name of the entity
+    GroupMembership:
+      type: object
+      description: Object to manage group membership
+      additionalProperties: false
+      properties:
+        groupId:
+          type: string
+          description: GroupId
+        groupName:
+          type: string
+          description: GroupName
+        memberType:
+          description: MemberType
+          oneOf:
+          - $ref: '#/components/schemas/MemberType'
+    UserCustomField:
+      type: object
+      description: Object to manage a user custom field
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data
+          additionalProperties: {}
+        id:
+          type: string
+          description: Id
+        name:
+          type: string
+          description: Name
+        translations:
+          type: array
+          description: List of translations
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Value
+    Transaction:
       type: object
       additionalProperties: false
       properties:
-        cvv:
-          type: string
-        expiration:
-          $ref: '#/components/schemas/CcExpiration'
-        name:
-          type: string
-        number:
-          type: string
-        type:
-          type: string
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
   securitySchemes:
     JWT:
       type: apiKey

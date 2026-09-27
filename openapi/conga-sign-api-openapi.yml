@@ -903,6 +903,201 @@ paths:
     - url: https://preview-rls09.congacloud.com
 components:
   schemas:
+    SignResponse:
+      type: object
+      properties:
+        PackageId:
+          type:
+          - string
+          - 'null'
+        TagUrl:
+          type:
+          - string
+          - 'null'
+        EsignTransactionId:
+          type:
+          - string
+          - 'null'
+        Status:
+          type:
+          - boolean
+          - 'null'
+        SigningUrl:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DocProtectionSettings:
+      type: object
+      properties:
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+        DocumentId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserDefinedProtectionLevels:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+        ProtectionLevel:
+          $ref: '#/components/schemas/ProtectionLevelType'
+      additionalProperties: false
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Email:
+      type: object
+      properties:
+        EmailSubject:
+          type:
+          - string
+          - 'null'
+        EmailContent:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Template:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        TemplateId:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    TemplateListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Template'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SignProviderTypeAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          $ref: '#/components/schemas/SignProviderType'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    Reminder:
+      type: object
+      properties:
+        ReminderEnabled:
+          type: boolean
+        ReminderDelay:
+          type:
+          - string
+          - 'null'
+        ReminderFrequency:
+          type:
+          - string
+          - 'null'
+        ReminderCount:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Recipient:
+      required:
+      - Email
+      type: object
+      properties:
+        Email:
+          minLength: 1
+          type: string
+        FirstName:
+          type:
+          - string
+          - 'null'
+        LastName:
+          type:
+          - string
+          - 'null'
+        Role:
+          type:
+          - string
+          - 'null'
+        RoutingOrder:
+          type: integer
+          format: int32
+        ReciepentIdentityVerification:
+          type:
+          - string
+          - 'null'
+        RecipientTitle:
+          type:
+          - string
+          - 'null'
+        RecipientCompany:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     SignRequest:
       required:
       - DocumentIds
@@ -1015,18 +1210,20 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    Template:
+    RecipientType:
+      enum:
+      - Contact
+      - Email
+      - User
+      type: string
+    ErrorDetail:
       type: object
       properties:
-        Name:
+        Id:
           type:
           - string
           - 'null'
-        TemplateId:
-          type:
-          - string
-          - 'null'
-        Description:
+        Message:
           type:
           - string
           - 'null'
@@ -1047,25 +1244,64 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SignProviderTypeAPIResponse:
+    DeliveryMethods:
+      enum:
+      - EMAIL
+      - URL
+      type: string
+    SignResponseAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
         Data:
-          $ref: '#/components/schemas/SignProviderType'
+          $ref: '#/components/schemas/SignResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SignProviderType:
+      enum:
+      - AdobeSign
+      - CongaSign
+      - DocuSign
+      - WetSign
+      type: string
+    ProtectionLevelType:
+      enum:
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - AllowOnlyReading
+      - NoProtection
+      type: string
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type: boolean
         Errors:
           type:
           - array
@@ -1109,6 +1345,36 @@ components:
         Role:
           $ref: '#/components/schemas/UserRole'
       additionalProperties: false
+    RecipientInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RecipientInfo'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UserRole:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     EmailAttachment:
       type: object
       properties:
@@ -1130,272 +1396,6 @@ components:
           - string
           - 'null'
           format: byte
-      additionalProperties: false
-    DocProtectionSettings:
-      type: object
-      properties:
-        ProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
-        DocumentId:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    UserRole:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    DeliveryMethods:
-      enum:
-      - EMAIL
-      - URL
-      type: string
-    UserDefinedProtectionLevels:
-      type: object
-      properties:
-        DocumentId:
-          type:
-          - string
-          - 'null'
-        ProtectionLevel:
-          $ref: '#/components/schemas/ProtectionLevelType'
-      additionalProperties: false
-    StringObjectDictionaryAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Reminder:
-      type: object
-      properties:
-        ReminderEnabled:
-          type: boolean
-        ReminderDelay:
-          type:
-          - string
-          - 'null'
-        ReminderFrequency:
-          type:
-          - string
-          - 'null'
-        ReminderCount:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SignProviderType:
-      enum:
-      - AdobeSign
-      - CongaSign
-      - DocuSign
-      - WetSign
-      type: string
-    TemplateListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Template'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Recipient:
-      required:
-      - Email
-      type: object
-      properties:
-        Email:
-          minLength: 1
-          type: string
-        FirstName:
-          type:
-          - string
-          - 'null'
-        LastName:
-          type:
-          - string
-          - 'null'
-        Role:
-          type:
-          - string
-          - 'null'
-        RoutingOrder:
-          type: integer
-          format: int32
-        ReciepentIdentityVerification:
-          type:
-          - string
-          - 'null'
-        RecipientTitle:
-          type:
-          - string
-          - 'null'
-        RecipientCompany:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringObjectDictionaryListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    RecipientInfoListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RecipientInfo'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ProtectionLevelType:
-      enum:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - AllowOnlyReading
-      - NoProtection
-      type: string
-    StringListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    Email:
-      type: object
-      properties:
-        EmailSubject:
-          type:
-          - string
-          - 'null'
-        EmailContent:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    RecipientType:
-      enum:
-      - Contact
-      - Email
-      - User
-      type: string
-    BooleanAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    SignResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        Data:
-          $ref: '#/components/schemas/SignResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    SignResponse:
-      type: object
-      properties:
-        PackageId:
-          type:
-          - string
-          - 'null'
-        TagUrl:
-          type:
-          - string
-          - 'null'
-        EsignTransactionId:
-          type:
-          - string
-          - 'null'
-        Status:
-          type:
-          - boolean
-          - 'null'
-        SigningUrl:
-          type:
-          - string
-          - 'null'
       additionalProperties: false
   securitySchemes:
     bearerAuth:

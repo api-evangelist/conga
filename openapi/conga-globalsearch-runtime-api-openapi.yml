@@ -115,26 +115,21 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    GlobalSearchObjectResult:
+    SortInfo:
       type: object
       properties:
-        RecordCount:
-          type: integer
-          description: Total number of records found
-          format: int32
-        Results:
+        FieldName:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-            description: Global Search Generic Records for each Object.
-          description: The list of matching records, where each record is represented as a dictionary of key-value pairs.
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
       additionalProperties: false
-      description: 'Represents the result of a global search operation, including the total number of records found and the list of
-
-        matching records.'
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     GlobalSearchQueryObject:
       type: object
       properties:
@@ -170,56 +165,81 @@ components:
         Sort:
           $ref: '#/components/schemas/SortInfo'
       additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    GlobalSearchRequest:
+    GlobalSearchResponseAPIResponse:
       type: object
       properties:
-        SearchTerm:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/GlobalSearchObjectResult'
+          description: GlobalSearchResponse
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          description: The search term or keyword to search across objects. Used for search operations.
-        PhraseSearch:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
           type:
           - boolean
           - 'null'
-          description: "Flag indicating phrase search mode. \nIf true, the search term will be treated as an exact phrase, and results will only include records that match the entire phrase."
-        ObjectList:
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/GlobalSearchQueryObject'
-          description: 'List of objects to be searched along with their specific search criteria, filters, and field selections.
-
-            Each entry in this list represents a separate object query with its own configuration.'
-        Skip:
-          type: integer
-          description: 'The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
-
-            Default is 0 if not specified.'
-          format: int32
-        Limit:
-          type: integer
-          description: 'The maximum number of records to return per page. Used for pagination along with Skip.
-
-            Default page size applies if not specified.'
-          format: int32
-        ExcludeObjectList:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: 'List of object identifiers or names to exclude from the global search operation.
-
-            Any objects specified here will be omitted from search results, even if they appear in ObjectList or defaults.'
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-      description: Global Search Request
+    GlobalSearchObjectResult:
+      type: object
+      properties:
+        RecordCount:
+          type: integer
+          description: Total number of records found
+          format: int32
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+            description: Global Search Generic Records for each Object.
+          description: The list of matching records, where each record is represented as a dictionary of key-value pairs.
+      additionalProperties: false
+      description: 'Represents the result of a global search operation, including the total number of records found and the list of
+
+        matching records.'
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     HttpStatusCode:
       enum:
       - Continue
@@ -284,71 +304,51 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    SortInfo:
+    GlobalSearchRequest:
       type: object
       properties:
-        FieldName:
+        SearchTerm:
           type:
           - string
           - 'null'
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    GlobalSearchResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/GlobalSearchObjectResult'
-          description: GlobalSearchResponse
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
+          description: The search term or keyword to search across objects. Used for search operations.
+        PhraseSearch:
           type:
           - boolean
           - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
+          description: "Flag indicating phrase search mode. \nIf true, the search term will be treated as an exact phrase, and results will only include records that match the entire phrase."
+        ObjectList:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: '#/components/schemas/GlobalSearchQueryObject'
+          description: 'List of objects to be searched along with their specific search criteria, filters, and field selections.
+
+            Each entry in this list represents a separate object query with its own configuration.'
+        Skip:
+          type: integer
+          description: 'The number of records to skip for pagination. Used in conjunction with Limit to implement paging.
+
+            Default is 0 if not specified.'
+          format: int32
+        Limit:
+          type: integer
+          description: 'The maximum number of records to return per page. Used for pagination along with Skip.
+
+            Default page size applies if not specified.'
+          format: int32
+        ExcludeObjectList:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'List of object identifiers or names to exclude from the global search operation.
+
+            Any objects specified here will be omitted from search results, even if they appear in ObjectList or defaults.'
       additionalProperties: false
+      description: Global Search Request
   securitySchemes:
     Bearer:
       type: apiKey

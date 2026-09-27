@@ -481,129 +481,23 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    DocumentProtectionDTO:
+    SortInfo:
       type: object
       properties:
-        Id:
+        FieldName:
           type:
           - string
           - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Action:
-          type:
-          - string
-          - 'null'
-          description: Action
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description
-        Role:
-          $ref: '#/components/schemas/LookupObject'
-        ProtectionLevel:
-          type:
-          - string
-          - 'null'
-          description: Protection Level
-        ProtectionType:
-          type:
-          - string
-          - 'null'
-          description: Protection Type
-      additionalProperties: {}
-      description: DTO containing necessary properties for Contract Protection
-    DocumentOutputFormatRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        RecordType:
-          type:
-          - string
-          - 'null'
-          description: Record Type
-        AllowOverrideWatermark:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether the user is allowed to override the default watermark setting during the agreement document generation process.
-        AllowOverride:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether the user is allowed to override the default output format during the agreement document generation process
-        IncludeWatermark:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether watermark will be added to the document
-        OutputFormat:
-          type:
-          - string
-          - 'null'
-          description: The document output format (either PDF, RTF or DOC or DOCX)
-        Role:
-          $ref: '#/components/schemas/LookupObject'
-        DocumentAction:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Indicates the document actions on which the output formats are supposed to be applied
-        DefaultWatermarkSelection:
-          type:
-          - boolean
-          - 'null'
-          description: The default watermark selection when IncludeWatermark is UserSelection
-      additionalProperties: {}
-      description: Request Model for Document Output Format
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     LookupObject:
       type: object
       properties:
@@ -616,19 +510,42 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    BooleanAPIResponse:
+    DocumentProtectionDTOAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
+          $ref: '#/components/schemas/DocumentProtectionDTO'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentOutputFormatListAPIResponse:
+      type: object
+      properties:
+        Success:
           type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentOutputFormat'
           description: Generic data to return
         Warnings:
           type:
@@ -646,17 +563,14 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    StringObjectDictionaryAPIResponse:
+    BooleanAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
+          type: boolean
           description: Generic data to return
         Warnings:
           type:
@@ -701,64 +615,6 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    SortInfo:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Field name on which records will be sorted
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
-      description: Sorting Information for Fields
-    DocumentProtectionRequest:
-      required:
-      - DestinationRoles
-      - SourceRoleId
-      type: object
-      properties:
-        SourceRoleId:
-          minLength: 1
-          type: string
-          description: Role Id for Source
-        DestinationRoles:
-          type: array
-          items:
-            $ref: '#/components/schemas/LookupObject'
-          description: List of Destination Roles
-        DocumentProtection:
-          $ref: '#/components/schemas/DocumentProtectionDTO'
-      additionalProperties: false
-      description: Request Model for Document Request
     ErrorDetail:
       type: object
       properties:
@@ -774,7 +630,7 @@ components:
           description: Error message
       additionalProperties: false
       description: Error detail class
-    StringListAPIResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -782,39 +638,8 @@ components:
           description: The state of the API response
         Data:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: string
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    DocumentOutputFormatListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DocumentOutputFormat'
           description: Generic data to return
         Warnings:
           type:
@@ -876,30 +701,6 @@ components:
           description: Whether to include total count in the query response. Defaults to true.
       additionalProperties: false
       description: Custom Query
-    DocumentProtectionDTOAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/DocumentProtectionDTO'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
     DocumentOutputFormat:
       type: object
       properties:
@@ -985,6 +786,205 @@ components:
           description: Warning message
       additionalProperties: false
       description: Warning detail class for non-blocking issues
+    DocumentProtectionDTO:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Action:
+          type:
+          - string
+          - 'null'
+          description: Action
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        ProtectionLevel:
+          type:
+          - string
+          - 'null'
+          description: Protection Level
+        ProtectionType:
+          type:
+          - string
+          - 'null'
+          description: Protection Type
+      additionalProperties: {}
+      description: DTO containing necessary properties for Contract Protection
+    StringObjectDictionaryAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    DocumentOutputFormatRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        RecordType:
+          type:
+          - string
+          - 'null'
+          description: Record Type
+        AllowOverrideWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default watermark setting during the agreement document generation process.
+        AllowOverride:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the user is allowed to override the default output format during the agreement document generation process
+        IncludeWatermark:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether watermark will be added to the document
+        OutputFormat:
+          type:
+          - string
+          - 'null'
+          description: The document output format (either PDF, RTF or DOC or DOCX)
+        Role:
+          $ref: '#/components/schemas/LookupObject'
+        DocumentAction:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Indicates the document actions on which the output formats are supposed to be applied
+        DefaultWatermarkSelection:
+          type:
+          - boolean
+          - 'null'
+          description: The default watermark selection when IncludeWatermark is UserSelection
+      additionalProperties: {}
+      description: Request Model for Document Output Format
+    DocumentProtectionRequest:
+      required:
+      - DestinationRoles
+      - SourceRoleId
+      type: object
+      properties:
+        SourceRoleId:
+          minLength: 1
+          type: string
+          description: Role Id for Source
+        DestinationRoles:
+          type: array
+          items:
+            $ref: '#/components/schemas/LookupObject'
+          description: List of Destination Roles
+        DocumentProtection:
+          $ref: '#/components/schemas/DocumentProtectionDTO'
+      additionalProperties: false
+      description: Request Model for Document Request
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
   securitySchemes:
     bearerAuth:
       type: http

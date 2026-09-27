@@ -259,6 +259,262 @@ paths:
       - JWT: []
 components:
   schemas:
+    Email:
+      type: object
+      additionalProperties: false
+      properties:
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        cc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        bcc:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        additionalTo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailRecipient'
+        subject:
+          type: string
+        emailTemplateId:
+          type: string
+        isOn:
+          type: boolean
+    Template:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          description: Template Id
+    Behavior:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        parameterName:
+          type: string
+    SolutionResponse:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+        properties:
+          createdDate:
+            type: string
+            format: date-time
+          createdBy:
+            $ref: '#/components/schemas/LookupObject'
+          modifiedDate:
+            type: string
+            format: date-time
+          modifiedBy:
+            $ref: '#/components/schemas/LookupObject'
+          status:
+            type: string
+          isDeleted:
+            type: boolean
+          congaOrgId:
+            type: string
+    Sender:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName:
+          type:
+          - string
+          - 'null'
+        lastName:
+          type:
+          - string
+          - 'null'
+        email:
+          type:
+          - string
+          - 'null'
+    Recipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        order:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        id:
+          type:
+          - string
+          - 'null'
+    ProblemDetails:
+      type: object
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    CongaSignSalesforceConnector:
+      type: object
+      additionalProperties: false
+      properties:
+        isConnected:
+          type: boolean
+        name:
+          type: string
+        salesforceOrg:
+          type: string
+        signingOrder:
+          $ref: '#/components/schemas/SigningOrder'
+        autoSend:
+          type: boolean
+        language:
+          type: string
+        timeZone:
+          type: string
+        sendReminders:
+          type: boolean
+        sendReminderInDays:
+          type: integer
+          format: int32
+        repeatReminder:
+          type: boolean
+        expirationDays:
+          type: integer
+          format: int32
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        repeatReminderInDays:
+          type: integer
+          format: int32
+        totalReminders:
+          type: integer
+          format: int32
+        expirationType:
+          $ref: '#/components/schemas/ExpirationType'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        isOn:
+          type: boolean
+    DataModel:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+    SolutionPayloadCreateRequest:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+    EmailRecipient:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+    SolutionBase:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        environment:
+          type: string
+        region:
+          type: string
+        highVolumeApiLanguage:
+          type: string
+        composerApiLanguage:
+          type: string
+        dataModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataModel'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        outputBehaviors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Behavior'
+        deliveryOptions:
+          $ref: '#/components/schemas/DeliveryOptions'
+        highVolumeDeliveryOptions:
+          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Destination'
+        customBrandingId:
+          type: string
+    SigningOrder:
+      type: string
+      description: ''
+      x-enumNames:
+      - Parallel
+      - Serial
+      enum:
+      - Parallel
+      - Serial
+    ComposerParameterType:
+      type: string
+      description: ''
+      x-enumNames:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
+      enum:
+      - HighVolumeApi
+      - ComposerApi
+      - Generic
     Solution:
       type: object
       additionalProperties: false
@@ -278,6 +534,42 @@ components:
           items:
             $ref: '#/components/schemas/Destination'
         emailTemplateId:
+          type: string
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+    SnippetModel:
+      type: object
+      additionalProperties: false
+      properties:
+        solution:
+          $ref: '#/components/schemas/Solution'
+        deliveryOptions:
+          $ref: '#/components/schemas/DeliveryOptions'
+        highVolumeDeliveryOptions:
+          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
+        connector:
+          type: string
+        highVolumeConnector:
+          type: string
+        language:
+          type: string
+        baseUrl:
+          type: string
+        type:
+          $ref: '#/components/schemas/ComposerParameterType'
+        locale:
+          type: string
+        emailFrom:
           type: string
     Destination:
       type: object
@@ -319,65 +611,31 @@ components:
         pageSize:
           type: integer
           format: int32
-    DataModel:
+    ExpirationType:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Date
+      - Days
+      enum:
+      - None
+      - Date
+      - Days
+    DeliveryOptions:
       type: object
       additionalProperties: false
       properties:
-        id:
+        composerOutputOptions:
           type: string
-    Template:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type:
-          - string
-          - 'null'
-          description: Template Id
-    Sender:
-      type: object
-      additionalProperties: false
-      properties:
-        firstName:
-          type:
-          - string
-          - 'null'
-        lastName:
-          type:
-          - string
-          - 'null'
+        congaSignAPI:
+          $ref: '#/components/schemas/CongaSignAPI'
+        congaSignSalesforceConnector:
+          $ref: '#/components/schemas/CongaSignSalesforceConnector'
         email:
-          type:
-          - string
-          - 'null'
-    ProblemDetails:
-      type: object
-      additionalProperties: {}
-      properties:
-        type:
-          type:
-          - string
-          - 'null'
-        title:
-          type:
-          - string
-          - 'null'
-        status:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        detail:
-          type:
-          - string
-          - 'null'
-        instance:
-          type:
-          - string
-          - 'null'
-        extensions:
-          type: object
-          additionalProperties: {}
+          $ref: '#/components/schemas/Email'
+        download:
+          type: boolean
     CongaSignAPI:
       type: object
       additionalProperties: false
@@ -434,148 +692,6 @@ components:
         sender:
           oneOf:
           - $ref: '#/components/schemas/Sender'
-    LookupObject:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-    SolutionPayloadCreateRequest:
-      allOf:
-      - $ref: '#/components/schemas/SolutionBase'
-      - type: object
-        additionalProperties: false
-    SigningOrder:
-      type: string
-      description: ''
-      x-enumNames:
-      - Parallel
-      - Serial
-      enum:
-      - Parallel
-      - Serial
-    EmailRecipient:
-      type: object
-      additionalProperties: false
-      properties:
-        email:
-          type: string
-    ExpirationType:
-      type: string
-      description: ''
-      x-enumNames:
-      - None
-      - Date
-      - Days
-      enum:
-      - None
-      - Date
-      - Days
-    SolutionResponse:
-      allOf:
-      - $ref: '#/components/schemas/SolutionBase'
-      - type: object
-        additionalProperties: false
-        properties:
-          createdDate:
-            type: string
-            format: date-time
-          createdBy:
-            $ref: '#/components/schemas/LookupObject'
-          modifiedDate:
-            type: string
-            format: date-time
-          modifiedBy:
-            $ref: '#/components/schemas/LookupObject'
-          status:
-            type: string
-          isDeleted:
-            type: boolean
-          congaOrgId:
-            type: string
-    Behavior:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        value:
-          type: string
-        parameterName:
-          type: string
-    SnippetModel:
-      type: object
-      additionalProperties: false
-      properties:
-        solution:
-          $ref: '#/components/schemas/Solution'
-        deliveryOptions:
-          $ref: '#/components/schemas/DeliveryOptions'
-        highVolumeDeliveryOptions:
-          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
-        connector:
-          type: string
-        highVolumeConnector:
-          type: string
-        language:
-          type: string
-        baseUrl:
-          type: string
-        type:
-          $ref: '#/components/schemas/ComposerParameterType'
-        locale:
-          type: string
-        emailFrom:
-          type: string
-    Recipient:
-      type: object
-      additionalProperties: false
-      properties:
-        email:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        userName:
-          type: string
-        order:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        id:
-          type:
-          - string
-          - 'null'
-    SolutionPayloadPatchRequest:
-      allOf:
-      - $ref: '#/components/schemas/SolutionBase'
-      - type: object
-        additionalProperties: false
-        properties:
-          status:
-            type: string
-    DeliveryOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        composerOutputOptions:
-          type: string
-        congaSignAPI:
-          $ref: '#/components/schemas/CongaSignAPI'
-        congaSignSalesforceConnector:
-          $ref: '#/components/schemas/CongaSignSalesforceConnector'
-        email:
-          $ref: '#/components/schemas/Email'
-        download:
-          type: boolean
     HighVolumeDeliveryOptions:
       type: object
       additionalProperties: false
@@ -586,130 +702,14 @@ components:
           type: string
         highVolumeSFTPFilePath:
           type: string
-    CongaSignSalesforceConnector:
-      type: object
-      additionalProperties: false
-      properties:
-        isConnected:
-          type: boolean
-        name:
-          type: string
-        salesforceOrg:
-          type: string
-        signingOrder:
-          $ref: '#/components/schemas/SigningOrder'
-        autoSend:
-          type: boolean
-        language:
-          type: string
-        timeZone:
-          type: string
-        sendReminders:
-          type: boolean
-        sendReminderInDays:
-          type: integer
-          format: int32
-        repeatReminder:
-          type: boolean
-        expirationDays:
-          type: integer
-          format: int32
-        expirationDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        repeatReminderInDays:
-          type: integer
-          format: int32
-        totalReminders:
-          type: integer
-          format: int32
-        expirationType:
-          $ref: '#/components/schemas/ExpirationType'
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recipient'
-        isOn:
-          type: boolean
-    Email:
-      type: object
-      additionalProperties: false
-      properties:
-        to:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailRecipient'
-        cc:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailRecipient'
-        bcc:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailRecipient'
-        additionalTo:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailRecipient'
-        subject:
-          type: string
-        emailTemplateId:
-          type: string
-        isOn:
-          type: boolean
-    ComposerParameterType:
-      type: string
-      description: ''
-      x-enumNames:
-      - HighVolumeApi
-      - ComposerApi
-      - Generic
-      enum:
-      - HighVolumeApi
-      - ComposerApi
-      - Generic
-    SolutionBase:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        environment:
-          type: string
-        region:
-          type: string
-        highVolumeApiLanguage:
-          type: string
-        composerApiLanguage:
-          type: string
-        dataModels:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataModel'
-        templates:
-          type: array
-          items:
-            $ref: '#/components/schemas/Template'
-        outputBehaviors:
-          type: array
-          items:
-            $ref: '#/components/schemas/Behavior'
-        deliveryOptions:
-          $ref: '#/components/schemas/DeliveryOptions'
-        highVolumeDeliveryOptions:
-          $ref: '#/components/schemas/HighVolumeDeliveryOptions'
-        destinations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Destination'
-        customBrandingId:
-          type: string
+    SolutionPayloadPatchRequest:
+      allOf:
+      - $ref: '#/components/schemas/SolutionBase'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            type: string
   securitySchemes:
     JWT:
       type: apiKey

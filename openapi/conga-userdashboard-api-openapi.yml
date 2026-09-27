@@ -121,6 +121,18 @@ paths:
       - Bearer: []
 components:
   schemas:
+    Sort:
+      type: object
+      additionalProperties: false
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OrderBy:
+          type:
+          - string
+          - 'null'
     DashboardApprovalsCountDTO:
       type: object
       additionalProperties: false
@@ -143,6 +155,96 @@ components:
         ObjectData:
           oneOf:
           - $ref: '#/components/schemas/QueryResponseOfDictionaryOfStringAndObject'
+    BaseResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+    DashboardApprovalsRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        DashboardCountOnly:
+          type: boolean
+        BusinessObject:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Distinct:
+          type:
+          - boolean
+          - 'null'
+        Limit:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Sort:
+          oneOf:
+          - $ref: '#/components/schemas/Sort'
+    SearchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        SerializedResultEntities:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        TotalNumberOfRecords:
+          type: integer
+          format: int32
+        MoreRecords:
+          type: boolean
+    QueryResponseOfDictionaryOfStringAndObject:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          RecordCount:
+            type:
+            - integer
+            - 'null'
+            format: int64
+          Data:
+            type:
+            - array
+            - 'null'
+            items:
+              type: object
+              additionalProperties: {}
+          HasMoreRecords:
+            type:
+            - boolean
+            - 'null'
+          NextCursor:
+            type:
+            - string
+            - 'null'
     UserDashboardStatusType:
       type: string
       description: ''
@@ -293,108 +395,6 @@ components:
       - LoopDetected
       - NotExtended
       - NetworkAuthenticationRequired
-    DashboardApprovalsRequestDTO:
-      type: object
-      additionalProperties: false
-      properties:
-        DashboardCountOnly:
-          type: boolean
-        BusinessObject:
-          type:
-          - string
-          - 'null'
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        Criteria:
-          type:
-          - string
-          - 'null'
-        Select:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Distinct:
-          type:
-          - boolean
-          - 'null'
-        Limit:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        Sort:
-          oneOf:
-          - $ref: '#/components/schemas/Sort'
-    Sort:
-      type: object
-      additionalProperties: false
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-        OrderBy:
-          type:
-          - string
-          - 'null'
-    SearchResult:
-      type: object
-      additionalProperties: false
-      properties:
-        SerializedResultEntities:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-        TotalNumberOfRecords:
-          type: integer
-          format: int32
-        MoreRecords:
-          type: boolean
-    BaseResponse:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-    QueryResponseOfDictionaryOfStringAndObject:
-      allOf:
-      - $ref: '#/components/schemas/BaseResponse'
-      - type: object
-        additionalProperties: false
-        properties:
-          RecordCount:
-            type:
-            - integer
-            - 'null'
-            format: int64
-          Data:
-            type:
-            - array
-            - 'null'
-            items:
-              type: object
-              additionalProperties: {}
-          HasMoreRecords:
-            type:
-            - boolean
-            - 'null'
-          NextCursor:
-            type:
-            - string
-            - 'null'
   securitySchemes:
     Bearer:
       type: apiKey

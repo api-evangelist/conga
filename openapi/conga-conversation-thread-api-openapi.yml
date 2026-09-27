@@ -82,6 +82,47 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    CustomQueryBase:
+      type: object
+      properties:
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of the records to be skipped
+          format: int32
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+        CriteriaExpression:
+          type:
+          - string
+          - 'null'
+          description: Criteria Expression to filter the records
+      additionalProperties: false
+      description: Base Class for Custom Query
     LookupObject:
       type: object
       properties:
@@ -94,35 +135,43 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ConversationThreadResponseQueryResponseAPIResponse:
+    ConversationThreadResponse:
       type: object
       properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/ConversationThreadResponseQueryResponse'
-        Warnings:
+        Id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
+          description: The unique identifier of the conversation thread.
+        Name:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
+          description: The name of the conversation thread.
+        ObjectType:
+          type:
+          - string
+          - 'null'
+          description: The type of the object the thread is linked to (e.g., "Agreement", "ContractRequest").
+        ObjectId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the object the thread is linked to.
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: The date and time when the thread was created.
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: The date and time when the thread was last modified.
+          format: date-time
       additionalProperties: false
-      description: API Response Class
+      description: Response DTO for a conversation thread.
     APIResponseError:
       type: object
       properties:
@@ -150,6 +199,46 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
+    ConversationThreadResponseQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ConversationThreadResponse'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
     HttpStatusCode:
       enum:
       - Continue
@@ -214,42 +303,6 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    CustomQueryBase:
-      type: object
-      properties:
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be fetched
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of the records to be skipped
-          format: int32
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-        CriteriaExpression:
-          type:
-          - string
-          - 'null'
-          description: Criteria Expression to filter the records
-      additionalProperties: false
-      description: Base Class for Custom Query
-    SortInfo:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Field name on which records will be sorted
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
-      description: Sorting Information for Fields
     ErrorDetail:
       type: object
       properties:
@@ -265,83 +318,30 @@ components:
           description: Error message
       additionalProperties: false
       description: Error detail class
-    ConversationThreadResponseQueryResponse:
+    ConversationThreadResponseQueryResponseAPIResponse:
       type: object
       properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
+        Success:
+          type: boolean
+          description: The state of the API response
         Data:
+          $ref: '#/components/schemas/ConversationThreadResponseQueryResponse'
+        Warnings:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ConversationThreadResponse'
-        HasMoreRecords:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - boolean
+          - array
           - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-    ConversationThreadResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: The unique identifier of the conversation thread.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: The name of the conversation thread.
-        ObjectType:
-          type:
-          - string
-          - 'null'
-          description: The type of the object the thread is linked to (e.g., "Agreement", "ContractRequest").
-        ObjectId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the object the thread is linked to.
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          description: The date and time when the thread was created.
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          description: The date and time when the thread was last modified.
-          format: date-time
-      additionalProperties: false
-      description: Response DTO for a conversation thread.
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
+      description: API Response Class
   securitySchemes:
     bearerAuth:
       type: http

@@ -217,66 +217,27 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    LookupObject:
+    CreditMemoResponse:
       type: object
       properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ApprovalResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
+        CreditMemo:
+          $ref: '#/components/schemas/CreditMemo'
+        CreditMemoLineItems:
           type:
           - array
           - 'null'
           items:
-            type: string
-        ErrorMessage:
+            $ref: '#/components/schemas/CreditMemoLineItem'
+          description: Gets or sets the list of credit memo line items.
+        ARTransactions:
           type:
-          - string
+          - array
           - 'null'
-          deprecated: true
+          items:
+            $ref: '#/components/schemas/RelatedARTransaction'
+          description: Gets or sets the list of related accounts receivable transactions.
       additionalProperties: false
-      description: 'Represents the result of approving a single entity (e.g., invoice or credit memo) within a batch approval operation.
-
-        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
-    CurrencyField:
-      type: object
-      properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        CurrencySymbol:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
+      description: Represents the response for a credit memo, containing the credit memo details, associated line items, and accounts receivable transactions.
     CreditMemo:
       type: object
       properties:
@@ -386,44 +347,51 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    ApiError:
+    LookupObject:
       type: object
       properties:
-        Source:
+        Id:
           type:
           - string
           - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
+        Name:
           type:
           - string
           - 'null'
       additionalProperties: false
-    CreditMemoResponse:
+    CurrencyField:
       type: object
       properties:
-        CreditMemo:
-          $ref: '#/components/schemas/CreditMemo'
-        CreditMemoLineItems:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/CreditMemoLineItem'
-          description: Gets or sets the list of credit memo line items.
-        ARTransactions:
+          readOnly: true
+        CurrencySymbol:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/RelatedARTransaction'
-          description: Gets or sets the list of related accounts receivable transactions.
+          readOnly: true
       additionalProperties: false
-      description: Represents the response for a credit memo, containing the credit memo details, associated line items, and accounts receivable transactions.
+    CreditMemoApprovalRequest:
+      type: object
+      properties:
+        Ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of invoice IDs to approve.
+      additionalProperties: false
+      description: Represents a request to approve one or more credit memos.
     CreditMemoLineItem:
       type: object
       properties:
@@ -517,18 +485,60 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    CreditMemoApprovalRequest:
+    ErrorApiResponse:
       type: object
       properties:
-        Ids:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CancellationResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
           type:
           - array
           - 'null'
           items:
             type: string
-          description: Gets or sets the list of invoice IDs to approve.
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
       additionalProperties: false
-      description: Represents a request to approve one or more credit memos.
+      description: 'Represents the result of cancelling a single entity (e.g., invoice or credit memo).
+
+        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
     CreditMemoCancellationRequest:
       type: object
       properties:
@@ -541,6 +551,33 @@ components:
           description: Gets or sets the list of credit memo IDs to cancel.
       additionalProperties: false
       description: Represents a request to cancel one or more credit memos.
+    ApprovalResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+      description: 'Represents the result of approving a single entity (e.g., invoice or credit memo) within a batch approval operation.
+
+        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
     CancellationResponseBatchResponse:
       type: object
       properties:
@@ -620,33 +657,6 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    CancellationResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-      additionalProperties: false
-      description: 'Represents the result of cancelling a single entity (e.g., invoice or credit memo).
-
-        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
     ApprovalResponseBatchResponse:
       type: object
       properties:
@@ -660,16 +670,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ApprovalResponse'
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
       additionalProperties: false
   securitySchemes:
     Bearer:

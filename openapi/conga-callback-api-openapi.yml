@@ -705,60 +705,6 @@ paths:
     - url: https://preview-rls09.congacloud.com
 components:
   schemas:
-    CustomParameter:
-      type: object
-      description: 'Represents a custom parameter for OAuth token requests.
-
-        Used to send additional parameters to the OAuth authorization server.'
-      additionalProperties: false
-      properties:
-        key:
-          type: string
-          description: The parameter key/name (e.g., "user-id", "tenant-id")
-        value:
-          type: string
-          description: The parameter value
-    ResultOfCallback:
-      type: object
-      description: Object used to manage OneSpan list types
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-          description: Count
-          format: int32
-        results:
-          type: array
-          description: Results
-          items:
-            $ref: '#/components/schemas/Callback'
-    Error2:
-      type: object
-      description: Object representing an error condition
-      additionalProperties: false
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
-          format: int32
-        entity:
-          description: The Microsoft Dynamics entity
-          oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
-          type: string
-          description: The error message
-        messageKey:
-          type: string
-          description: The error message key
-        name:
-          type: string
-          description: The error name
-        technical:
-          type: string
-          description: Technical information about the error
     OAuthSettings:
       type: object
       description: Represents the OAuth settings for callback authentication
@@ -847,6 +793,21 @@ components:
             Allows adding custom HTTP headers to callback webhook calls.'
           items:
             $ref: '#/components/schemas/CustomHeader'
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
     CallbackEvent:
       type: string
       description: ''
@@ -912,40 +873,146 @@ components:
       - EDEPOSIT_FAILURE
       - PACKAGE_SMS_NOTIFICATIONS_LIMIT_REACHED
       - RECIPIENT_OPT_OUT_SMS
-    Entity:
+    CustomParameter:
       type: object
-      description: Object used to manage entities from Microsoft Dynamics
+      description: 'Represents a custom parameter for OAuth token requests.
+
+        Used to send additional parameters to the OAuth authorization server.'
       additionalProperties: false
       properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
+        key:
           type: string
-          description: Unique id of the entity
+          description: The parameter key/name (e.g., "user-id", "tenant-id")
+        value:
+          type: string
+          description: The parameter value
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
         name:
           type: string
-          description: Name of the entity
-    CallbackCustomCodeMappingInfo:
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    ResultOfCallback:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Callback'
+    CallbackCustomCodeSettingsResponseAPIResponse:
       type: object
       properties:
-        ModuleName:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-        ContractName:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
-        ProjectName:
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-        ClassName:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     CallbackContractResponseListAPIResponse:
       type: object
@@ -993,6 +1060,115 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    CustomCodeMapping:
+      type: object
+      properties:
+        ProjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of the Project
+        ClassName:
+          type:
+          - string
+          - 'null'
+          description: Class Name
+      additionalProperties: false
+      description: Project Mapping information for a contract.
+    CallbackCustomCodeMappingInfo:
+      type: object
+      properties:
+        ModuleName:
+          type:
+          - string
+          - 'null'
+        ContractName:
+          type:
+          - string
+          - 'null'
+        ProjectName:
+          type:
+          - string
+          - 'null'
+        ClassName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CallbackContractResponse:
+      type: object
+      properties:
+        CallbackName:
+          type:
+          - string
+          - 'null'
+          description: Fully qualified contract name
+        CallbackShortName:
+          type:
+          - string
+          - 'null'
+          description: Fully qualified contract name
+        CallbackDescription:
+          type:
+          - string
+          - 'null'
+          description: Description
+        CallbackDisplayName:
+          type:
+          - string
+          - 'null'
+          description: Display Name
+        CallbackCategoryName:
+          type:
+          - string
+          - 'null'
+          description: Category Name
+        CustomCodeMapping:
+          $ref: '#/components/schemas/CustomCodeMapping'
+      additionalProperties: false
+      description: Response of object for All contracts
+    CallbackContractResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/CallbackContractResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
     BooleanNullableAPIResponse:
       type: object
       properties:
@@ -1007,6 +1183,111 @@ components:
           type:
           - boolean
           - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CallbackCustomCodeSettingsRequest:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          description: Time interval, in milliseconds, to abort the custom code's execution
+          format: int32
+      additionalProperties: false
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CallbackCustomCodeMappingInfoListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CallbackCustomCodeMappingInfo'
         Errors:
           type:
           - array
@@ -1101,56 +1382,6 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    CallbackCustomCodeSettingsRequest:
-      type: object
-      properties:
-        ExecutionAbortTimeout:
-          type: integer
-          description: Time interval, in milliseconds, to abort the custom code's execution
-          format: int32
-      additionalProperties: false
-    BadRequestErrorResponseExampleAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/BadRequestErrorResponseExample'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
     ErrorDetail:
       type: object
       properties:
@@ -1158,80 +1389,6 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: false
-    CallbackContractResponse:
-      type: object
-      properties:
-        CallbackName:
-          type:
-          - string
-          - 'null'
-          description: Fully qualified contract name
-        CallbackShortName:
-          type:
-          - string
-          - 'null'
-          description: Fully qualified contract name
-        CallbackDescription:
-          type:
-          - string
-          - 'null'
-          description: Description
-        CallbackDisplayName:
-          type:
-          - string
-          - 'null'
-          description: Display Name
-        CallbackCategoryName:
-          type:
-          - string
-          - 'null'
-          description: Category Name
-        CustomCodeMapping:
-          $ref: '#/components/schemas/CustomCodeMapping'
-      additionalProperties: false
-      description: Response of object for All contracts
-    CallbackContractResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/CallbackContractResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     StringListAPIResponse:
       type: object
@@ -1249,163 +1406,6 @@ components:
           - 'null'
           items:
             type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    CallbackCustomCodeSettingsResponse:
-      type: object
-      properties:
-        ExecutionAbortTimeout:
-          type: integer
-          format: int32
-      additionalProperties: false
-    CustomCodeMapping:
-      type: object
-      properties:
-        ProjectName:
-          type:
-          - string
-          - 'null'
-          description: Name of the Project
-        ClassName:
-          type:
-          - string
-          - 'null'
-          description: Class Name
-      additionalProperties: false
-      description: Project Mapping information for a contract.
-    CallbackCustomCodeMappingInfoListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CallbackCustomCodeMappingInfo'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    BadRequestErrorResponseExample:
-      type: object
-      additionalProperties: false
-    CallbackCustomCodeSettingsResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
         Errors:
           type:
           - array

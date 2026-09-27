@@ -920,19 +920,18 @@ paths:
       - JWT: []
 components:
   schemas:
-    AnchorPointType:
-      type: string
-      description: ''
-      x-enumNames:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-      enum:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
+    ConditionalField:
+      allOf:
+      - $ref: '#/components/schemas/Field'
+      - type: object
+        description: Conditional fields
+        additionalProperties: false
+        properties:
+          conditions:
+            type: array
+            description: List of conditions for a field
+            items:
+              $ref: '#/components/schemas/FieldCondition'
     FieldCondition:
       type: object
       description: Object to manage field conditions
@@ -947,139 +946,6 @@ components:
         action:
           type: string
           description: The action to take when the condition is true
-    Error2:
-      type: object
-      description: Object representing an error condition
-      additionalProperties: false
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
-          format: int32
-        entity:
-          description: The Microsoft Dynamics entity
-          oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
-          type: string
-          description: The error message
-        messageKey:
-          type: string
-          description: The error message key
-        name:
-          type: string
-          description: The error name
-        technical:
-          type: string
-          description: Technical information about the error
-    ExtractAnchor:
-      type: object
-      description: Text extraction anchor object.
-      additionalProperties: false
-      properties:
-        anchorPoint:
-          description: Which corner of the specified character to use as the base for calculating position
-          oneOf:
-          - $ref: '#/components/schemas/AnchorPointType'
-        characterIndex:
-          type: integer
-          description: The index of the character within the Anchor Text that will be used to calculate position
-          format: int32
-        height:
-          type: integer
-          description: The height of the field position to be calculated
-          format: int32
-        index:
-          type: integer
-          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
-          format: int32
-        leftOffset:
-          type: integer
-          description: An absolute offset applied to the final x value
-          format: int32
-        text:
-          type: string
-          description: The exact string that will be searched for in the uploaded document
-        topOffset:
-          type: integer
-          description: An absolute offset applied to the final y value
-          format: int32
-        width:
-          type: integer
-          description: The width of the field position to be calculated
-          format: int32
-    ResultOfApproval:
-      type: object
-      description: Object used to manage OneSpan list types
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-          description: Count
-          format: int32
-        results:
-          type: array
-          description: Results
-          items:
-            $ref: '#/components/schemas/Approval'
-    FieldType:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-      enum:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-    FieldValidation:
-      type: object
-      description: Field validation object
-      additionalProperties: false
-      properties:
-        enum:
-          type: array
-          items:
-            type: string
-        errorCode:
-          type:
-          - integer
-          - 'null'
-          description: Field validation error code.
-          format: int32
-        errorMessage:
-          type: string
-          description: "Field validation error message.\n            "
-        maxLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation maximum length.
-          format: int32
-        minLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation minimum length.
-          format: int32
-        pattern:
-          type: string
-          description: Pattern
-        required:
-          type: boolean
-          description: Determines if field is required
-        group:
-          type: string
-          description: Field validation group.
-        minimumRequired:
-          type:
-          - integer
-          - 'null'
-          description: Minimum Required (Grouped Checkboxes)
-          format: int32
     Approval:
       type: object
       description: Signing Approval object.
@@ -1131,18 +997,31 @@ components:
           type: object
           description: Additional approval From File data properties.
           additionalProperties: {}
-    ConditionalField:
-      allOf:
-      - $ref: '#/components/schemas/Field'
-      - type: object
-        description: Conditional fields
-        additionalProperties: false
-        properties:
-          conditions:
-            type: array
-            description: List of conditions for a field
-            items:
-              $ref: '#/components/schemas/FieldCondition'
+    FieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+      enum:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+    ResultOfApproval:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Approval'
     Field:
       type: object
       description: Approval fields object.
@@ -1223,6 +1102,127 @@ components:
         name:
           type: string
           description: Name of the entity
+    FieldValidation:
+      type: object
+      description: Field validation object
+      additionalProperties: false
+      properties:
+        enum:
+          type: array
+          items:
+            type: string
+        errorCode:
+          type:
+          - integer
+          - 'null'
+          description: Field validation error code.
+          format: int32
+        errorMessage:
+          type: string
+          description: "Field validation error message.\n            "
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation maximum length.
+          format: int32
+        minLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation minimum length.
+          format: int32
+        pattern:
+          type: string
+          description: Pattern
+        required:
+          type: boolean
+          description: Determines if field is required
+        group:
+          type: string
+          description: Field validation group.
+        minimumRequired:
+          type:
+          - integer
+          - 'null'
+          description: Minimum Required (Grouped Checkboxes)
+          format: int32
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    ExtractAnchor:
+      type: object
+      description: Text extraction anchor object.
+      additionalProperties: false
+      properties:
+        anchorPoint:
+          description: Which corner of the specified character to use as the base for calculating position
+          oneOf:
+          - $ref: '#/components/schemas/AnchorPointType'
+        characterIndex:
+          type: integer
+          description: The index of the character within the Anchor Text that will be used to calculate position
+          format: int32
+        height:
+          type: integer
+          description: The height of the field position to be calculated
+          format: int32
+        index:
+          type: integer
+          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
+          format: int32
+        leftOffset:
+          type: integer
+          description: An absolute offset applied to the final x value
+          format: int32
+        text:
+          type: string
+          description: The exact string that will be searched for in the uploaded document
+        topOffset:
+          type: integer
+          description: An absolute offset applied to the final y value
+          format: int32
+        width:
+          type: integer
+          description: The width of the field position to be calculated
+          format: int32
+    AnchorPointType:
+      type: string
+      description: ''
+      x-enumNames:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+      enum:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
   securitySchemes:
     JWT:
       type: apiKey

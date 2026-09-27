@@ -279,29 +279,21 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Errors:
-      type: object
-      description: Error response
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique ID
-          format: guid
-        title:
-          type: string
-          description: Error title
-        details:
-          type: string
-          description: Error description
-        status:
-          description: Status code
-          oneOf:
-          - $ref: '#/components/schemas/HttpStatusCode'
-        code:
-          description: Unique Response code. This enum is foreseeably used by UI
-          oneOf:
-          - $ref: '#/components/schemas/ResponseStatusCode'
+    Stream:
+      allOf:
+      - $ref: '#/components/schemas/MarshalByRefObject'
+      - type: object
+        x-abstract: true
+        additionalProperties: false
+        properties:
+          canTimeout:
+            type: boolean
+          readTimeout:
+            type: integer
+            format: int32
+          writeTimeout:
+            type: integer
+            format: int32
     DebugInfo:
       type: object
       description: Model to capture stack trace information
@@ -325,128 +317,33 @@ components:
               This is used for serialization only.'
             oneOf:
             - $ref: '#/components/schemas/CustomBrandingEntity'
-    Stream:
-      allOf:
-      - $ref: '#/components/schemas/MarshalByRefObject'
-      - type: object
-        x-abstract: true
-        additionalProperties: false
-        properties:
-          canTimeout:
-            type: boolean
-          readTimeout:
-            type: integer
-            format: int32
-          writeTimeout:
-            type: integer
-            format: int32
-    ResponseStatusCode:
-      type: string
-      description: Application-specific error code identified by Composer UI\
-      x-enumNames:
-      - BAD_CONNECTION
-      - INTERNAL_SERVER_ERROR
-      - INVALID_MERGE_REQUEST
-      - FILE_UPLOAD_ERROR
-      - INSERT_RECORD_ERROR
-      - UPDATE_RECORD_ERROR
-      - DUPLICATE_RECORD
-      - RECORD_ALREADY_DELETED
-      - REQUEST_VALIDATION
-      - INVALID_BASE_URL
-      - INVALID_LANGUAGE
-      - INVALID_EMAIL_TEMPLATE_ID
-      - INVALID_OUTPUT_BEHAVIOR
-      - INVALID_OUTPUT_BEHAVIOR_VALUE
-      - SNIPPET_NOT_FOUND
-      - FEATURE_FLAG_NULL
-      - INVALID_DATAMODEL
-      - UNSUPPORTED_DATAMODEL
-      - SINGLE_DATAMODEL_PERMITTED
-      - INVALID_TEMPLATE
-      - UNSUPPORTED_TEMPLATE_TYPE
-      - TEMPLATE_COUNT_LIMIT
-      - SINGLE_TEMPLATE_PERMITTED
-      - SOLUTION_NOT_FOUND
-      - PARAMETER_NOT_FOUND
-      - SOLUTION_UPDATE_FAILED
-      - INVALID_PAGE_NUMBER
-      - INVALID_PAGE_SIZE
-      - INVALID_PAGINATION
-      - INVALID_DESTINATION
-      - UNSUPPORTED_DESTINATION
-      - SHORT_PARAM_LENGTH
-      - FILE_UPLOAD_FAILED
-      - CUSTOMBRANDING_DELETE_FAILED
-      - INVALID_CUSTOMBRANDING_INPUT
-      - CUSTOMBRANDING_NOT_FOUND
-      - FILE_NOT_FOUND
-      - UNSUPPORTED_CUSTOMBRANDINGID
-      - INVALID_CUSTOMBRANDINGID
-      enum:
-      - BAD_CONNECTION
-      - INTERNAL_SERVER_ERROR
-      - INVALID_MERGE_REQUEST
-      - FILE_UPLOAD_ERROR
-      - INSERT_RECORD_ERROR
-      - UPDATE_RECORD_ERROR
-      - DUPLICATE_RECORD
-      - RECORD_ALREADY_DELETED
-      - REQUEST_VALIDATION
-      - INVALID_BASE_URL
-      - INVALID_LANGUAGE
-      - INVALID_EMAIL_TEMPLATE_ID
-      - INVALID_OUTPUT_BEHAVIOR
-      - INVALID_OUTPUT_BEHAVIOR_VALUE
-      - SNIPPET_NOT_FOUND
-      - FEATURE_FLAG_NULL
-      - INVALID_DATAMODEL
-      - UNSUPPORTED_DATAMODEL
-      - SINGLE_DATAMODEL_PERMITTED
-      - INVALID_TEMPLATE
-      - UNSUPPORTED_TEMPLATE_TYPE
-      - TEMPLATE_COUNT_LIMIT
-      - SINGLE_TEMPLATE_PERMITTED
-      - SOLUTION_NOT_FOUND
-      - PARAMETER_NOT_FOUND
-      - SOLUTION_UPDATE_FAILED
-      - INVALID_PAGE_NUMBER
-      - INVALID_PAGE_SIZE
-      - INVALID_PAGINATION
-      - INVALID_DESTINATION
-      - UNSUPPORTED_DESTINATION
-      - SHORT_PARAM_LENGTH
-      - FILE_UPLOAD_FAILED
-      - CUSTOMBRANDING_DELETE_FAILED
-      - INVALID_CUSTOMBRANDING_INPUT
-      - CUSTOMBRANDING_NOT_FOUND
-      - FILE_NOT_FOUND
-      - UNSUPPORTED_CUSTOMBRANDINGID
-      - INVALID_CUSTOMBRANDINGID
-    MarshalByRefObject:
+    CustomBrandingEntity:
       type: object
-      x-abstract: true
-      additionalProperties: false
-    ComposerResponse:
-      type: object
-      description: Represents a result of some operation, with status information and possibly an error.
       additionalProperties: false
       properties:
-        errors:
-          type: array
-          description: List of errors
-          items:
-            $ref: '#/components/schemas/Errors'
-        debugInfo:
-          description: Stack trace
+        id:
+          type:
+          - string
+          - 'null'
+        logoMimeType:
+          type: string
+        logoPath:
+          type: string
+        customName:
+          type:
+          - string
+          - 'null'
+        lastModifiedDate:
+          type: string
+          format: date-time
+        logoImage:
           oneOf:
-          - $ref: '#/components/schemas/DebugInfo'
-        isSuccess:
-          type: boolean
-          description: Gets a value indicating whether the result is a success result.
-        isFailure:
-          type: boolean
-          description: Gets a value indicating whether the result is a failure result.
+          - $ref: '#/components/schemas/Stream'
+        logoFileContent:
+          type:
+          - string
+          - 'null'
+          format: byte
     ProblemDetails:
       type: object
       additionalProperties: {}
@@ -475,6 +372,55 @@ components:
         extensions:
           type: object
           additionalProperties: {}
+    CustomBrandingListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomBrandingEntity'
+        recordCount:
+          type: integer
+          format: int32
+        totalRecords:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
     HttpStatusCode:
       type: string
       description: ''
@@ -614,62 +560,116 @@ components:
       - LoopDetected
       - NotExtended
       - NetworkAuthenticationRequired
-    CustomBrandingEntity:
+    Errors:
       type: object
+      description: Error response
       additionalProperties: false
       properties:
         id:
-          type:
-          - string
-          - 'null'
-        logoMimeType:
           type: string
-        logoPath:
+          description: Unique ID
+          format: guid
+        title:
           type: string
-        customName:
-          type:
-          - string
-          - 'null'
-        lastModifiedDate:
+          description: Error title
+        details:
           type: string
-          format: date-time
-        logoImage:
+          description: Error description
+        status:
+          description: Status code
           oneOf:
-          - $ref: '#/components/schemas/Stream'
-        logoFileContent:
-          type:
-          - string
-          - 'null'
-          format: byte
-    CustomBrandingListResponse:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
+    ResponseStatusCode:
+      type: string
+      description: Application-specific error code identified by Composer UI\
+      x-enumNames:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+      enum:
+      - BAD_CONNECTION
+      - INTERNAL_SERVER_ERROR
+      - INVALID_MERGE_REQUEST
+      - FILE_UPLOAD_ERROR
+      - INSERT_RECORD_ERROR
+      - UPDATE_RECORD_ERROR
+      - DUPLICATE_RECORD
+      - RECORD_ALREADY_DELETED
+      - REQUEST_VALIDATION
+      - INVALID_BASE_URL
+      - INVALID_LANGUAGE
+      - INVALID_EMAIL_TEMPLATE_ID
+      - INVALID_OUTPUT_BEHAVIOR
+      - INVALID_OUTPUT_BEHAVIOR_VALUE
+      - SNIPPET_NOT_FOUND
+      - FEATURE_FLAG_NULL
+      - INVALID_DATAMODEL
+      - UNSUPPORTED_DATAMODEL
+      - SINGLE_DATAMODEL_PERMITTED
+      - INVALID_TEMPLATE
+      - UNSUPPORTED_TEMPLATE_TYPE
+      - TEMPLATE_COUNT_LIMIT
+      - SINGLE_TEMPLATE_PERMITTED
+      - SOLUTION_NOT_FOUND
+      - PARAMETER_NOT_FOUND
+      - SOLUTION_UPDATE_FAILED
+      - INVALID_PAGE_NUMBER
+      - INVALID_PAGE_SIZE
+      - INVALID_PAGINATION
+      - INVALID_DESTINATION
+      - UNSUPPORTED_DESTINATION
+      - SHORT_PARAM_LENGTH
+      - FILE_UPLOAD_FAILED
+      - CUSTOMBRANDING_DELETE_FAILED
+      - INVALID_CUSTOMBRANDING_INPUT
+      - CUSTOMBRANDING_NOT_FOUND
+      - FILE_NOT_FOUND
+      - UNSUPPORTED_CUSTOMBRANDINGID
+      - INVALID_CUSTOMBRANDINGID
+    MarshalByRefObject:
       type: object
+      x-abstract: true
       additionalProperties: false
-      properties:
-        isSuccess:
-          type: boolean
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        message:
-          type: string
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomBrandingEntity'
-        recordCount:
-          type: integer
-          format: int32
-        totalRecords:
-          type: integer
-          format: int32
-        totalPages:
-          type: integer
-          format: int32
-        currentPage:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
   securitySchemes:
     JWT:
       type: apiKey
