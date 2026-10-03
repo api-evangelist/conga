@@ -403,32 +403,186 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    PicklistEntry:
+    PicklistRenameRequest:
+      type: object
+      properties:
+        OldPicklistName:
+          type:
+          - string
+          - 'null'
+          description: Old name of the picklist.
+        NewPicklistName:
+          type:
+          - string
+          - 'null'
+          description: New name of the picklist.
+      additionalProperties: false
+      description: Represents a request to rename a picklist.
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    PicklistMetadata:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+        PicklistEntries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    PicklistEntryCreateRequest:
       type: object
       properties:
         Value:
           type:
           - string
           - 'null'
+          description: Value of the picklist entry
         DisplayText:
           type:
           - string
           - 'null'
+          description: Display text of the picklist entry
         Sequence:
           type: integer
+          description: Sequence of the picklist entry
+          format: int32
+      additionalProperties: false
+    PicklistEntryUpdateRequest:
+      type: object
+      properties:
+        DisplayText:
+          type:
+          - string
+          - 'null'
+          description: Display text of the picklist entry
+        Sequence:
+          type: integer
+          description: Sequence of the picklist entry
           format: int32
         IsDeprecated:
           type: boolean
+          description: Indicates if the picklist entry is deprecated.
       additionalProperties: false
-    PicklistMetadataUpdateRequest:
+    PicklistEntryAPIResponse:
       type: object
       properties:
-        IsDeprecated:
+        Success:
           type: boolean
-          description: Indicates if the picklist is deprecated.
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-          description: Indicates whether values other than those defined in the picklist are allowed.
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/PicklistEntry'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     PicklistMetadataCreateRequest:
       type: object
@@ -495,6 +649,54 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    PicklistEntryBulkUpdateRequest:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of the picklist entry
+        DisplayText:
+          type:
+          - string
+          - 'null'
+          description: Display text of the picklist entry
+        Sequence:
+          type: integer
+          description: Sequence of the picklist entry
+          format: int32
+        IsDeprecated:
+          type: boolean
+          description: Indicates if the picklist entry is deprecated.
+      additionalProperties: false
+    PicklistEntry:
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+        DisplayText:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type: integer
+          format: int32
+        IsDeprecated:
+          type: boolean
+      additionalProperties: false
+    PicklistMetadataUpdateRequest:
+      type: object
+      properties:
+        IsDeprecated:
+          type: boolean
+          description: Indicates if the picklist is deprecated.
+        AllowNonConfiguredPicklistEntries:
+          type: boolean
+          description: Indicates whether values other than those defined in the picklist are allowed.
+      additionalProperties: false
     BooleanAPIResponse:
       type: object
       properties:
@@ -536,208 +738,6 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    PicklistEntryCreateRequest:
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value of the picklist entry
-        DisplayText:
-          type:
-          - string
-          - 'null'
-          description: Display text of the picklist entry
-        Sequence:
-          type: integer
-          description: Sequence of the picklist entry
-          format: int32
-      additionalProperties: false
-    PicklistRenameRequest:
-      type: object
-      properties:
-        OldPicklistName:
-          type:
-          - string
-          - 'null'
-          description: Old name of the picklist.
-        NewPicklistName:
-          type:
-          - string
-          - 'null'
-          description: New name of the picklist.
-      additionalProperties: false
-      description: Represents a request to rename a picklist.
-    PicklistMetadata:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        AllowNonConfiguredPicklistEntries:
-          type: boolean
-        PicklistEntries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntry'
-        IsDeprecated:
-          type: boolean
-      additionalProperties: false
-    PicklistEntryUpdateRequest:
-      type: object
-      properties:
-        DisplayText:
-          type:
-          - string
-          - 'null'
-          description: Display text of the picklist entry
-        Sequence:
-          type: integer
-          description: Sequence of the picklist entry
-          format: int32
-        IsDeprecated:
-          type: boolean
-          description: Indicates if the picklist entry is deprecated.
-      additionalProperties: false
-    PicklistEntryBulkUpdateRequest:
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value of the picklist entry
-        DisplayText:
-          type:
-          - string
-          - 'null'
-          description: Display text of the picklist entry
-        Sequence:
-          type: integer
-          description: Sequence of the picklist entry
-          format: int32
-        IsDeprecated:
-          type: boolean
-          description: Indicates if the picklist entry is deprecated.
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    PicklistEntryAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/PicklistEntry'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
       additionalProperties: false
     PicklistMetadataAPIResponse:
       type: object

@@ -336,6 +336,83 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    BaseResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+    BaseResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
+          type:
+          - string
+          - 'null'
+        Results:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BaseResponse'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
     PlanTemplate:
       type: object
       properties:
@@ -398,7 +475,7 @@ components:
             $ref: '#/components/schemas/PlanTemplateLineItem'
           description: Child collection of PlanTemplateLineItem (included when 'Items' is requested via the includes parameter).
       additionalProperties: {}
-    LookupObject:
+    PlanTemplateLineItem:
       type: object
       properties:
         Id:
@@ -409,7 +486,47 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: false
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        PlanTemplate:
+          $ref: '#/components/schemas/LookupObject'
+        OffsetType:
+          type:
+          - string
+          - 'null'
+        OffsetNumber:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        Percent:
+          type:
+          - number
+          - 'null'
+          format: double
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        TemplateLineNumber:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
     CustomPlanTemplateLineItemRequest:
       type: object
       properties:
@@ -444,84 +561,6 @@ components:
           $ref: '#/components/schemas/LookupObject'
       additionalProperties: false
       description: CustomPlanTemplateLineItemRequest
-    BaseResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-      additionalProperties: false
-    BaseResponseBatchResponse:
-      type: object
-      properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BaseResponse'
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    CustomPlanToggleActiveRequest:
-      type: object
-      properties:
-        Active:
-          type: boolean
-          description: The flag contains whether the transaction has been successful or failed
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Created/Updated record Id on processed in a transaction
-      additionalProperties: false
-      description: CustomPlanToggleActiveRequest
-    ApiError:
-      type: object
-      properties:
-        Source:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     CustomPlanTemplateRequest:
       type: object
       properties:
@@ -579,58 +618,19 @@ components:
       description: 'Represents a request to create or update a custom billing plan template, including its configuration,
 
         computation method, and associated line items.'
-    PlanTemplateLineItem:
+    CustomPlanToggleActiveRequest:
       type: object
       properties:
+        Active:
+          type: boolean
+          description: The flag contains whether the transaction has been successful or failed
         Id:
           type:
           - string
           - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        PlanTemplate:
-          $ref: '#/components/schemas/LookupObject'
-        OffsetType:
-          type:
-          - string
-          - 'null'
-        OffsetNumber:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        Percent:
-          type:
-          - number
-          - 'null'
-          format: double
-        PaymentTerm:
-          $ref: '#/components/schemas/LookupObject'
-        TemplateLineNumber:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
+          description: Created/Updated record Id on processed in a transaction
+      additionalProperties: false
+      description: CustomPlanToggleActiveRequest
   securitySchemes:
     Bearer:
       type: apiKey

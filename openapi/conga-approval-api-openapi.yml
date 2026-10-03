@@ -920,94 +920,51 @@ paths:
       - JWT: []
 components:
   schemas:
-    ConditionalField:
-      allOf:
-      - $ref: '#/components/schemas/Field'
-      - type: object
-        description: Conditional fields
-        additionalProperties: false
-        properties:
-          conditions:
-            type: array
-            description: List of conditions for a field
-            items:
-              $ref: '#/components/schemas/FieldCondition'
-    FieldCondition:
+    FieldValidation:
       type: object
-      description: Object to manage field conditions
+      description: Field validation object
       additionalProperties: false
       properties:
-        id:
-          type: string
-          description: The id of the field condition
-        condition:
-          type: string
-          description: The condition that determines if action is needed
-        action:
-          type: string
-          description: The action to take when the condition is true
-    Approval:
-      type: object
-      description: Signing Approval object.
-      additionalProperties: false
-      properties:
-        accepted:
-          type:
-          - string
-          - 'null'
-          description: Date of approval acceptance.
-          format: date-time
-        data:
-          type: object
-          description: Additional approval ata properties.
-          additionalProperties: {}
-        fields:
+        enum:
           type: array
-          description: Approval Signature/Input fields.
           items:
-            $ref: '#/components/schemas/Field'
-        id:
-          type: string
-          description: The unique approval Id.
-        name:
-          type: string
-          description: The unique approval name.
-        role:
-          type: string
-          description: The approval role name.
-        signed:
+            type: string
+        errorCode:
           type:
-          - string
+          - integer
           - 'null'
-          description: The approval signed date.
-          format: date-time
-        optional:
+          description: Field validation error code.
+          format: int32
+        errorMessage:
+          type: string
+          description: "Field validation error message.\n            "
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation maximum length.
+          format: int32
+        minLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation minimum length.
+          format: int32
+        pattern:
+          type: string
+          description: Pattern
+        required:
           type: boolean
-          description: Check if for optional information.
-        enforceCaptureSignature:
-          type: boolean
-          description: Check if required on Capture Signature
-        disabled:
-          type: boolean
-          description: Check if disabled for approval.
-        fromFile:
-          type: boolean
-          description: Check if signature is uploaded From File.
-        fromFileData:
-          type: object
-          description: Additional approval From File data properties.
-          additionalProperties: {}
-    FieldType:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-      enum:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
+          description: Determines if field is required
+        group:
+          type: string
+          description: Field validation group.
+        minimumRequired:
+          type:
+          - integer
+          - 'null'
+          description: Minimum Required (Grouped Checkboxes)
+          format: int32
     ResultOfApproval:
       type: object
       description: Object used to manage OneSpan list types
@@ -1022,6 +979,87 @@ components:
           description: Results
           items:
             $ref: '#/components/schemas/Approval'
+    ConditionalField:
+      allOf:
+      - $ref: '#/components/schemas/Field'
+      - type: object
+        description: Conditional fields
+        additionalProperties: false
+        properties:
+          conditions:
+            type: array
+            description: List of conditions for a field
+            items:
+              $ref: '#/components/schemas/FieldCondition'
+    Error2:
+      type: object
+      description: Object representing an error condition
+      additionalProperties: false
+      properties:
+        code:
+          type:
+          - integer
+          - 'null'
+          description: The error code
+          format: int32
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
+          type: string
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
+        name:
+          type: string
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
+    FieldCondition:
+      type: object
+      description: Object to manage field conditions
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: The id of the field condition
+        condition:
+          type: string
+          description: The condition that determines if action is needed
+        action:
+          type: string
+          description: The action to take when the condition is true
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
+    AnchorPointType:
+      type: string
+      description: ''
+      x-enumNames:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+      enum:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
     Field:
       type: object
       description: Approval fields object.
@@ -1087,93 +1125,17 @@ components:
           type: number
           description: Field width.
           format: double
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
-    FieldValidation:
-      type: object
-      description: Field validation object
-      additionalProperties: false
-      properties:
-        enum:
-          type: array
-          items:
-            type: string
-        errorCode:
-          type:
-          - integer
-          - 'null'
-          description: Field validation error code.
-          format: int32
-        errorMessage:
-          type: string
-          description: "Field validation error message.\n            "
-        maxLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation maximum length.
-          format: int32
-        minLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation minimum length.
-          format: int32
-        pattern:
-          type: string
-          description: Pattern
-        required:
-          type: boolean
-          description: Determines if field is required
-        group:
-          type: string
-          description: Field validation group.
-        minimumRequired:
-          type:
-          - integer
-          - 'null'
-          description: Minimum Required (Grouped Checkboxes)
-          format: int32
-    Error2:
-      type: object
-      description: Object representing an error condition
-      additionalProperties: false
-      properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
-          format: int32
-        entity:
-          description: The Microsoft Dynamics entity
-          oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
-          type: string
-          description: The error message
-        messageKey:
-          type: string
-          description: The error message key
-        name:
-          type: string
-          description: The error name
-        technical:
-          type: string
-          description: Technical information about the error
+    FieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+      enum:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
     ExtractAnchor:
       type: object
       description: Text extraction anchor object.
@@ -1210,19 +1172,57 @@ components:
           type: integer
           description: The width of the field position to be calculated
           format: int32
-    AnchorPointType:
-      type: string
-      description: ''
-      x-enumNames:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-      enum:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
+    Approval:
+      type: object
+      description: Signing Approval object.
+      additionalProperties: false
+      properties:
+        accepted:
+          type:
+          - string
+          - 'null'
+          description: Date of approval acceptance.
+          format: date-time
+        data:
+          type: object
+          description: Additional approval ata properties.
+          additionalProperties: {}
+        fields:
+          type: array
+          description: Approval Signature/Input fields.
+          items:
+            $ref: '#/components/schemas/Field'
+        id:
+          type: string
+          description: The unique approval Id.
+        name:
+          type: string
+          description: The unique approval name.
+        role:
+          type: string
+          description: The approval role name.
+        signed:
+          type:
+          - string
+          - 'null'
+          description: The approval signed date.
+          format: date-time
+        optional:
+          type: boolean
+          description: Check if for optional information.
+        enforceCaptureSignature:
+          type: boolean
+          description: Check if required on Capture Signature
+        disabled:
+          type: boolean
+          description: Check if disabled for approval.
+        fromFile:
+          type: boolean
+          description: Check if signature is uploaded From File.
+        fromFileData:
+          type: object
+          description: Additional approval From File data properties.
+          additionalProperties: {}
   securitySchemes:
     JWT:
       type: apiKey

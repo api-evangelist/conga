@@ -446,18 +446,27 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    LookupObject:
+    CycleTimeDashboardResponse:
       type: object
       properties:
-        Id:
+        Stage:
           type:
           - string
           - 'null'
-        Name:
+          description: Configured From and to values
+        RecordType:
           type:
           - string
           - 'null'
+          description: Record Type
+        AverageDuration:
+          type:
+          - number
+          - 'null'
+          description: Average duration for the group
+          format: double
       additionalProperties: false
+      description: Cycle Time response for dashboard
     CycleTimeGroupRequest:
       required:
       - FieldLabel
@@ -497,14 +506,73 @@ components:
           description: Indicates whether the group is active for cycle time data capture.
       additionalProperties: false
       description: Holds the groups monitored for cycle time data capture.
-    BooleanAPIResponse:
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CycleTimeGroupResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: CycleTimeGroup ID.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: CycleTimeGroup name.
+        CycleTimeField:
+          type:
+          - string
+          - 'null'
+          description: The field associated with the cycle time data.
+        Description:
+          type:
+          - string
+          - 'null'
+          description: The group description.
+        FieldLabel:
+          type:
+          - string
+          - 'null'
+          description: The associated field label.
+        FromValue:
+          type:
+          - string
+          - 'null'
+          description: The field value which marks the beginning of the group.
+        ToValue:
+          type:
+          - string
+          - 'null'
+          description: The field value which marks the end of the group.
+        IsActive:
+          type: boolean
+          description: Indicates whether the group is active for cycle time data capture.
+      additionalProperties: false
+      description: CycleTimeGroup response model.
+    StringListAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type: boolean
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
           description: Generic data to return
         Warnings:
           type:
@@ -551,160 +619,6 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    APIResponseError:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Error Class
-    CycleTimeGroupAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/CycleTimeGroup'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    CycleTimeGroupResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/CycleTimeGroupResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    CycleTimeGroupResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: CycleTimeGroup ID.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: CycleTimeGroup name.
-        CycleTimeField:
-          type:
-          - string
-          - 'null'
-          description: The field associated with the cycle time data.
-        Description:
-          type:
-          - string
-          - 'null'
-          description: The group description.
-        FieldLabel:
-          type:
-          - string
-          - 'null'
-          description: The associated field label.
-        FromValue:
-          type:
-          - string
-          - 'null'
-          description: The field value which marks the beginning of the group.
-        ToValue:
-          type:
-          - string
-          - 'null'
-          description: The field value which marks the end of the group.
-        IsActive:
-          type: boolean
-          description: Indicates whether the group is active for cycle time data capture.
-      additionalProperties: false
-      description: CycleTimeGroup response model.
-    CycleTimeDashboardResponse:
-      type: object
-      properties:
-        Stage:
-          type:
-          - string
-          - 'null'
-          description: Configured From and to values
-        RecordType:
-          type:
-          - string
-          - 'null'
-          description: Record Type
-        AverageDuration:
-          type:
-          - number
-          - 'null'
-          description: Average duration for the group
-          format: double
-      additionalProperties: false
-      description: Cycle Time response for dashboard
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
     CycleTimeGroup:
       required:
       - CycleTimeField
@@ -780,7 +694,22 @@ components:
           description: Error message
       additionalProperties: false
       description: Error detail class
-    StringListAPIResponse:
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    APIResponseError:
       type: object
       properties:
         Success:
@@ -788,10 +717,81 @@ components:
           description: The state of the API response
         Data:
           type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
           - array
           - 'null'
           items:
-            type: string
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
+    CycleTimeGroupAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/CycleTimeGroup'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    CycleTimeGroupResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/CycleTimeGroupResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    BooleanAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
           description: Generic data to return
         Warnings:
           type:

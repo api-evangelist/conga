@@ -212,6 +212,213 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    StringAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UOMConversionRate:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          description: Created date
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          description: Modified date
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        ETag:
+          type:
+          - string
+          - 'null'
+          description: Etag
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+        ConversionRate:
+          type: number
+          description: Conversion rate
+          format: double
+      additionalProperties: {}
+      description: UOM conversion rate schema
+    BulkUOMConversionRates:
+      type: object
+      properties:
+        UOMConversionRates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UOMConversionRate'
+          description: A collection of UOMConversionRates
+        Error:
+          type:
+          - string
+          - 'null'
+          description: General error details that apply to the entire operation
+      additionalProperties: false
+      description: Bulk UOM conversion rates
+    UOMConversionGetRequest:
+      type: object
+      properties:
+        FromUOM:
+          type:
+          - string
+          - 'null'
+          description: Source unit. **For example:** Each, Box, etc.
+        ToUOM:
+          type:
+          - string
+          - 'null'
+          description: Target unit. **For example:** Each, Box, etc.
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Product ID
+        ProductFamily:
+          type:
+          - string
+          - 'null'
+          description: Product Family
+      additionalProperties: false
     LookupObject:
       type: object
       properties:
@@ -255,24 +462,15 @@ components:
           format: double
       additionalProperties: false
       description: UOM conversion request schema
-    BulkUOMConversionRates:
+    ErrorDetail:
       type: object
       properties:
-        UOMConversionRates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/UOMConversionRate'
-          description: A collection of UOMConversionRates
-        Error:
+        Message:
           type:
           - string
           - 'null'
-          description: General error details that apply to the entire operation
       additionalProperties: false
-      description: Bulk UOM conversion rates
-    BulkUOMConversionRatesAPIResponse:
+    UOMConversionRateAPIResponse:
       type: object
       properties:
         Success:
@@ -283,51 +481,7 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/BulkUOMConversionRates'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
+          $ref: '#/components/schemas/UOMConversionRate'
         Errors:
           type:
           - array
@@ -400,93 +554,47 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    UOMConversionGetRequest:
+    BulkUOMConversionRatesAPIResponse:
       type: object
       properties:
-        FromUOM:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BulkUOMConversionRates'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          description: Source unit. **For example:** Each, Box, etc.
-        ToUOM:
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
           type:
           - string
           - 'null'
-          description: Target unit. **For example:** Each, Box, etc.
-        ProductId:
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-          description: Product ID
-        ProductFamily:
-          type:
-          - string
-          - 'null'
-          description: Product Family
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     ConvertedUOM:
       type: object
@@ -522,114 +630,6 @@ components:
           format: double
       additionalProperties: false
       description: Converted UOM
-    UOMConversionRateAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/UOMConversionRate'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    UOMConversionRate:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: A global unique identifier. **For example :** 1111ee11-1e11-11e11f11-1f1111c11e11
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          description: Created date
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          description: Modified date
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-          description: External ID
-        ETag:
-          type:
-          - string
-          - 'null'
-          description: Etag
-        FromUOM:
-          type:
-          - string
-          - 'null'
-          description: Source unit. **For example:** Each, Box, etc.
-        ToUOM:
-          type:
-          - string
-          - 'null'
-          description: Target unit. **For example:** Each, Box, etc.
-        Product:
-          $ref: '#/components/schemas/LookupObject'
-        ProductFamily:
-          type:
-          - string
-          - 'null'
-          description: Product Family
-        ConversionRate:
-          type: number
-          description: Conversion rate
-          format: double
-      additionalProperties: {}
-      description: UOM conversion rate schema
   securitySchemes:
     bearerAuth:
       type: http

@@ -226,23 +226,23 @@ components:
             type: integer
             format: int32
       additionalProperties: false
-    Sort:
+    MultipleObjectsSearchQuery:
       type: object
       properties:
-        FieldName:
+        DocumentSearchText:
           type:
           - string
           - 'null'
-          description: Field name on which records will be sorted
-        OrderBy:
-          $ref: '#/components/schemas/SortDirection'
+          description: Document search text
+        MultipleObjectSearchQueries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MultipleObjectsQuery'
+          description: Array of Search queries for Multiple Objects
       additionalProperties: false
-      description: Sorting Information for Fields
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
+      description: Multiple Objects Query
     FileResultAPIResponse:
       type: object
       properties:
@@ -271,6 +271,41 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    MultipleObjectsQuery:
+      type: object
+      properties:
+        Query:
+          $ref: '#/components/schemas/SearchQuery'
+        IsPrimaryObject:
+          type: boolean
+          description: Whether Primary object or not
+        ReferenceAliasName:
+          type:
+          - string
+          - 'null'
+          description: Reference Alias Name of related object
+      additionalProperties: false
+      description: Multiple Objects Query
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
     SearchQuery:
       type: object
       properties:
@@ -317,21 +352,21 @@ components:
           description: Group by provided properties
       additionalProperties: false
       description: Search Query
-    MultipleObjectsQuery:
+    WarningDetail:
       type: object
       properties:
-        Query:
-          $ref: '#/components/schemas/SearchQuery'
-        IsPrimaryObject:
-          type: boolean
-          description: Whether Primary object or not
-        ReferenceAliasName:
+        Code:
           type:
           - string
           - 'null'
-          description: Reference Alias Name of related object
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
       additionalProperties: false
-      description: Multiple Objects Query
+      description: Warning detail class for non-blocking issues
     APIResponseError:
       type: object
       properties:
@@ -359,58 +394,23 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Error Class
-    MultipleObjectsSearchQuery:
-      type: object
-      properties:
-        DocumentSearchText:
-          type:
-          - string
-          - 'null'
-          description: Document search text
-        MultipleObjectSearchQueries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/MultipleObjectsQuery'
-          description: Array of Search queries for Multiple Objects
-      additionalProperties: false
-      description: Multiple Objects Query
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
     AllowedTemplateDocumentFormats:
       enum:
       - csv
       - xlsx
       type: string
-    ErrorDetail:
+    Sort:
       type: object
       properties:
-        Id:
+        FieldName:
           type:
           - string
           - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
+          description: Field name on which records will be sorted
+        OrderBy:
+          $ref: '#/components/schemas/SortDirection'
       additionalProperties: false
-      description: Error detail class
+      description: Sorting Information for Fields
   securitySchemes:
     Bearer:
       type: apiKey

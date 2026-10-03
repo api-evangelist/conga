@@ -356,47 +356,105 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    SortInfo:
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    BulkJobResultResponseListAPIResponse:
       type: object
       properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Field name on which records will be sorted
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
-      description: Sorting Information for Fields
-    BulkImportResponseQueryResponse:
-      type: object
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
+        Success:
+          type: boolean
+          description: The state of the API response
         Data:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/BulkImportResponse'
-        HasMoreRecords:
+            $ref: '#/components/schemas/BulkJobResultResponse'
+          description: Generic data to return
+        Warnings:
           type:
-          - boolean
+          - array
           - 'null'
-        NextCursor:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-    SortDirection:
+      description: API Response Class
+    JobState:
       enum:
-      - Ascending
-      - Descending
+      - Queued
+      - InProgress
+      - Completed
+      - Failed
       type: string
     FileResultAPIResponse:
       type: object
@@ -426,14 +484,14 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    BulkImportResponseQueryResponseAPIResponse:
+    JobAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          $ref: '#/components/schemas/BulkImportResponseQueryResponse'
+          $ref: '#/components/schemas/Job'
         Warnings:
           type:
           - array
@@ -462,97 +520,23 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    JobAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/Job'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    BulkJobResultResponse:
-      type: object
-      properties:
-        State:
-          $ref: '#/components/schemas/JobState'
-        BatchId:
-          type:
-          - string
-          - 'null'
-          description: BatchId
-        FileName:
-          type:
-          - string
-          - 'null'
-          description: FileName
-        FileContent:
-          type:
-          - string
-          - 'null'
-          description: FileContent
-          format: byte
-      additionalProperties: false
-      description: Bulk Job result
-    Job:
-      type: object
-      properties:
-        JobId:
-          type:
-          - string
-          - 'null'
-        State:
-          $ref: '#/components/schemas/JobState'
-      additionalProperties: false
-    APIResponseError:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Error Class
-    JobState:
+    SortDirection:
       enum:
-      - Queued
-      - InProgress
-      - Completed
-      - Failed
+      - Ascending
+      - Descending
       type: string
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
     CustomQuery:
       type: object
       properties:
@@ -664,7 +648,72 @@ components:
           format: int32
       additionalProperties: false
       description: Bulk job Details
-    BulkJobResultResponseListAPIResponse:
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Error ID
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Error message
+      additionalProperties: false
+      description: Error detail class
+    Job:
+      type: object
+      properties:
+        JobId:
+          type:
+          - string
+          - 'null'
+        State:
+          $ref: '#/components/schemas/JobState'
+      additionalProperties: false
+    BulkImportResponseQueryResponse:
+      type: object
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BulkImportResponse'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
+    APIResponseError:
       type: object
       properties:
         Success:
@@ -672,10 +721,8 @@ components:
           description: The state of the API response
         Data:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/BulkJobResultResponse'
           description: Generic data to return
         Warnings:
           type:
@@ -692,106 +739,59 @@ components:
             $ref: '#/components/schemas/ErrorDetail'
           description: Error detail list in case of failure
       additionalProperties: false
-      description: API Response Class
-    WarningDetail:
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Warning code
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Warning message
-      additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
+      description: API Response Error Class
     AllowedTemplateDocumentFormats:
       enum:
       - csv
       - xlsx
       type: string
-    ErrorDetail:
+    BulkImportResponseQueryResponseAPIResponse:
       type: object
       properties:
-        Id:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/BulkImportResponseQueryResponse'
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-          description: Error ID
-        Message:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-          description: Error message
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-      description: Error detail class
+      description: API Response Class
+    BulkJobResultResponse:
+      type: object
+      properties:
+        State:
+          $ref: '#/components/schemas/JobState'
+        BatchId:
+          type:
+          - string
+          - 'null'
+          description: BatchId
+        FileName:
+          type:
+          - string
+          - 'null'
+          description: FileName
+        FileContent:
+          type:
+          - string
+          - 'null'
+          description: FileContent
+          format: byte
+      additionalProperties: false
+      description: Bulk Job result
   securitySchemes:
     bearerAuth:
       type: http

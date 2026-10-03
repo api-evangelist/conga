@@ -1045,15 +1045,7 @@ paths:
     - url: https://rls.congacloud.com/api/catalog/v1
 components:
   schemas:
-    StructLayoutAttribute:
-      type: object
-      properties:
-        TypeId:
-          readOnly: true
-        Value:
-          $ref: '#/components/schemas/LayoutKind'
-      additionalProperties: false
-    Type:
+    FieldInfo:
       type: object
       properties:
         Name:
@@ -1061,6 +1053,12 @@ components:
           - string
           - 'null'
           readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
         CustomAttributes:
           type:
           - array
@@ -1075,180 +1073,47 @@ components:
           type: integer
           format: int32
           readOnly: true
-        IsInterface:
-          type: boolean
-          readOnly: true
         MemberType:
           $ref: '#/components/schemas/MemberTypes'
-        Namespace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        AssemblyQualifiedName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        FullName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Assembly:
-          $ref: '#/components/schemas/Assembly'
-        Module:
-          $ref: '#/components/schemas/Module'
-        IsNested:
-          type: boolean
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        DeclaringMethod:
-          $ref: '#/components/schemas/MethodBase'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        UnderlyingSystemType:
-          $ref: '#/components/schemas/Type'
-        IsTypeDefinition:
-          type: boolean
-          readOnly: true
-        IsArray:
-          type: boolean
-          readOnly: true
-        IsByRef:
-          type: boolean
-          readOnly: true
-        IsPointer:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericType:
-          type: boolean
-          readOnly: true
-        IsGenericParameter:
-          type: boolean
-          readOnly: true
-        IsGenericTypeParameter:
-          type: boolean
-          readOnly: true
-        IsGenericMethodParameter:
-          type: boolean
-          readOnly: true
-        IsGenericType:
-          type: boolean
-          readOnly: true
-        IsGenericTypeDefinition:
-          type: boolean
-          readOnly: true
-        IsSZArray:
-          type: boolean
-          readOnly: true
-        IsVariableBoundArray:
-          type: boolean
-          readOnly: true
-        IsByRefLike:
-          type: boolean
-          readOnly: true
-        IsFunctionPointer:
-          type: boolean
-          readOnly: true
-        IsUnmanagedFunctionPointer:
-          type: boolean
-          readOnly: true
-        HasElementType:
-          type: boolean
-          readOnly: true
-        GenericTypeArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Type'
-          readOnly: true
-        GenericParameterPosition:
-          type: integer
-          format: int32
-          readOnly: true
-        GenericParameterAttributes:
-          $ref: '#/components/schemas/GenericParameterAttributes'
         Attributes:
-          $ref: '#/components/schemas/TypeAttributes'
-        IsAbstract:
+          $ref: '#/components/schemas/FieldAttributes'
+        FieldType:
+          $ref: '#/components/schemas/Type'
+        IsInitOnly:
           type: boolean
           readOnly: true
-        IsImport:
+        IsLiteral:
           type: boolean
           readOnly: true
-        IsSealed:
+        IsNotSerialized:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        IsPinvokeImpl:
           type: boolean
           readOnly: true
         IsSpecialName:
           type: boolean
           readOnly: true
-        IsClass:
+        IsStatic:
           type: boolean
           readOnly: true
-        IsNestedAssembly:
+        IsAssembly:
           type: boolean
           readOnly: true
-        IsNestedFamANDAssem:
+        IsFamily:
           type: boolean
           readOnly: true
-        IsNestedFamily:
+        IsFamilyAndAssembly:
           type: boolean
           readOnly: true
-        IsNestedFamORAssem:
+        IsFamilyOrAssembly:
           type: boolean
           readOnly: true
-        IsNestedPrivate:
-          type: boolean
-          readOnly: true
-        IsNestedPublic:
-          type: boolean
-          readOnly: true
-        IsNotPublic:
+        IsPrivate:
           type: boolean
           readOnly: true
         IsPublic:
-          type: boolean
-          readOnly: true
-        IsAutoLayout:
-          type: boolean
-          readOnly: true
-        IsExplicitLayout:
-          type: boolean
-          readOnly: true
-        IsLayoutSequential:
-          type: boolean
-          readOnly: true
-        IsAnsiClass:
-          type: boolean
-          readOnly: true
-        IsAutoClass:
-          type: boolean
-          readOnly: true
-        IsUnicodeClass:
-          type: boolean
-          readOnly: true
-        IsCOMObject:
-          type: boolean
-          readOnly: true
-        IsContextful:
-          type: boolean
-          readOnly: true
-        IsEnum:
-          type: boolean
-          readOnly: true
-        IsMarshalByRef:
-          type: boolean
-          readOnly: true
-        IsPrimitive:
-          type: boolean
-          readOnly: true
-        IsValueType:
-          type: boolean
-          readOnly: true
-        IsSignatureType:
           type: boolean
           readOnly: true
         IsSecurityCritical:
@@ -1260,28 +1125,528 @@ components:
         IsSecurityTransparent:
           type: boolean
           readOnly: true
-        StructLayoutAttribute:
-          $ref: '#/components/schemas/StructLayoutAttribute'
-        TypeInitializer:
-          $ref: '#/components/schemas/ConstructorInfo'
-        TypeHandle:
-          $ref: '#/components/schemas/RuntimeTypeHandle'
-        GUID:
+        FieldHandle:
+          $ref: '#/components/schemas/RuntimeFieldHandle'
+      additionalProperties: false
+    IntPtr:
+      type: object
+      additionalProperties: false
+    Category:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
           type: string
-          format: uuid
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        DefaultSearchCategory:
+          type:
+          - boolean
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        ExpandedByDefault:
+          type:
+          - boolean
+          - 'null'
+        GuidePage:
+          type:
+          - string
+          - 'null'
+        HideAllSearchFilters:
+          type:
+          - boolean
+          - 'null'
+        ImageURL:
+          type:
+          - string
+          - 'null'
+        IncludeInTotalsView:
+          type:
+          - boolean
+          - 'null'
+        IsHidden:
+          type:
+          - boolean
+          - 'null'
+        IsLeaf:
+          type:
+          - boolean
+          - 'null'
+        IsPicklist:
+          type:
+          - boolean
+          - 'null'
+        Label:
+          type:
+          - string
+          - 'null'
+        LargeImageURL:
+          type:
+          - string
+          - 'null'
+        LongDescription:
+          type:
+          - string
+          - 'null'
+        SearchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Ancestor:
+          $ref: '#/components/schemas/LookupObject'
+        AncestorPath:
+          type:
+          - string
+          - 'null'
+        Hierarchy:
+          $ref: '#/components/schemas/LookupObject'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+      example:
+        Name: CategoryName
+        DefaultSearchCategory: true
+        Description: Category description
+        ExpandedByDefault: false
+        GuidePage: Guide_Pagetest
+        HideAllSearchFilters: false
+        ImageURL: https://test.jpeg
+        IncludeInTotalsView: false
+        IsHidden: false
+        IsLeaf: false
+        IsPicklist: false
+        Label: Label
+        LargeImageURL: https://test.jpeg
+        LongDescription: Description
+        SearchFilterFields:
+        - Family
+        Ancestor: null
+        AncestorPath: null
+        Hierarchy: null
+        Sequence: 1
+    RevenueException:
+      type: object
+      properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
           readOnly: true
-        BaseType:
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    CustomAttributeData:
+      type: object
+      properties:
+        AttributeType:
           $ref: '#/components/schemas/Type'
-        IsSerializable:
+        Constructor:
+          $ref: '#/components/schemas/ConstructorInfo'
+        ConstructorArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeTypedArgument'
+          readOnly: true
+        NamedArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeNamedArgument'
+          readOnly: true
+      additionalProperties: false
+    MethodInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
           type: boolean
           readOnly: true
-          deprecated: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
         ContainsGenericParameters:
           type: boolean
           readOnly: true
-        IsVisible:
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
           type: boolean
           readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        ReturnParameter:
+          $ref: '#/components/schemas/ParameterInfo'
+        ReturnType:
+          $ref: '#/components/schemas/Type'
+        ReturnTypeCustomAttributes:
+          $ref: '#/components/schemas/ICustomAttributeProvider'
+      additionalProperties: false
+    CustomAttributeTypedArgument:
+      type: object
+      properties:
+        ArgumentType:
+          $ref: '#/components/schemas/Type'
+        Value: {}
+      additionalProperties: false
+    RuntimeTypeHandle:
+      type: object
+      properties:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    ModuleHandle:
+      type: object
+      properties:
+        MDStreamVersion:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    CallingConventions:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 32
+      - 64
+      type: integer
+      format: int32
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    MethodImplAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 4096
+      - 65535
+      type: integer
+      format: int32
+    EventInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Attributes:
+          $ref: '#/components/schemas/EventAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        AddMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RemoveMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RaiseMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        IsMulticast:
+          type: boolean
+          readOnly: true
+        EventHandlerType:
+          $ref: '#/components/schemas/Type'
+      additionalProperties: false
+    EventAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      type: integer
+      format: int32
+    ConstructorInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+      additionalProperties: false
+    PropertyAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 62464
+      type: integer
+      format: int32
+    StructLayoutAttribute:
+      type: object
+      properties:
+        TypeId:
+          readOnly: true
+        Value:
+          $ref: '#/components/schemas/LayoutKind'
       additionalProperties: false
     TypeInfo:
       type: object
@@ -1576,27 +1941,339 @@ components:
             $ref: '#/components/schemas/Type'
           readOnly: true
       additionalProperties: false
-    LayoutKind:
-      enum:
-      - 0
-      - 2
-      - 3
-      type: integer
-      format: int32
-    RuntimeFieldHandle:
+    RuntimeMethodHandle:
       type: object
       properties:
         Value:
           $ref: '#/components/schemas/IntPtr'
       additionalProperties: false
-    ICustomAttributeProvider:
-      type: object
-      additionalProperties: false
-    MemberInfo:
+    MemberTypes:
+      enum:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 191
+      type: integer
+      format: int32
+    Exception:
       type: object
       properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    GenericParameterAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 28
+      type: integer
+      format: int32
+    MethodAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 53248
+      type: integer
+      format: int32
+    AddExistingCategoryRequest:
+      type: object
+      properties:
+        SourceCategory:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    Type:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        IsInterface:
+          type: boolean
+          readOnly: true
         MemberType:
           $ref: '#/components/schemas/MemberTypes'
+        Namespace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        AssemblyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        Module:
+          $ref: '#/components/schemas/Module'
+        IsNested:
+          type: boolean
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        DeclaringMethod:
+          $ref: '#/components/schemas/MethodBase'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        UnderlyingSystemType:
+          $ref: '#/components/schemas/Type'
+        IsTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsArray:
+          type: boolean
+          readOnly: true
+        IsByRef:
+          type: boolean
+          readOnly: true
+        IsPointer:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericParameter:
+          type: boolean
+          readOnly: true
+        IsGenericTypeParameter:
+          type: boolean
+          readOnly: true
+        IsGenericMethodParameter:
+          type: boolean
+          readOnly: true
+        IsGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsSZArray:
+          type: boolean
+          readOnly: true
+        IsVariableBoundArray:
+          type: boolean
+          readOnly: true
+        IsByRefLike:
+          type: boolean
+          readOnly: true
+        IsFunctionPointer:
+          type: boolean
+          readOnly: true
+        IsUnmanagedFunctionPointer:
+          type: boolean
+          readOnly: true
+        HasElementType:
+          type: boolean
+          readOnly: true
+        GenericTypeArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        GenericParameterPosition:
+          type: integer
+          format: int32
+          readOnly: true
+        GenericParameterAttributes:
+          $ref: '#/components/schemas/GenericParameterAttributes'
+        Attributes:
+          $ref: '#/components/schemas/TypeAttributes'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsImport:
+          type: boolean
+          readOnly: true
+        IsSealed:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsClass:
+          type: boolean
+          readOnly: true
+        IsNestedAssembly:
+          type: boolean
+          readOnly: true
+        IsNestedFamANDAssem:
+          type: boolean
+          readOnly: true
+        IsNestedFamily:
+          type: boolean
+          readOnly: true
+        IsNestedFamORAssem:
+          type: boolean
+          readOnly: true
+        IsNestedPrivate:
+          type: boolean
+          readOnly: true
+        IsNestedPublic:
+          type: boolean
+          readOnly: true
+        IsNotPublic:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsAutoLayout:
+          type: boolean
+          readOnly: true
+        IsExplicitLayout:
+          type: boolean
+          readOnly: true
+        IsLayoutSequential:
+          type: boolean
+          readOnly: true
+        IsAnsiClass:
+          type: boolean
+          readOnly: true
+        IsAutoClass:
+          type: boolean
+          readOnly: true
+        IsUnicodeClass:
+          type: boolean
+          readOnly: true
+        IsCOMObject:
+          type: boolean
+          readOnly: true
+        IsContextful:
+          type: boolean
+          readOnly: true
+        IsEnum:
+          type: boolean
+          readOnly: true
+        IsMarshalByRef:
+          type: boolean
+          readOnly: true
+        IsPrimitive:
+          type: boolean
+          readOnly: true
+        IsValueType:
+          type: boolean
+          readOnly: true
+        IsSignatureType:
+          type: boolean
+          readOnly: true
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        StructLayoutAttribute:
+          $ref: '#/components/schemas/StructLayoutAttribute'
+        TypeInitializer:
+          $ref: '#/components/schemas/ConstructorInfo'
+        TypeHandle:
+          $ref: '#/components/schemas/RuntimeTypeHandle'
+        GUID:
+          type: string
+          format: uuid
+          readOnly: true
+        BaseType:
+          $ref: '#/components/schemas/Type'
+        IsSerializable:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        IsVisible:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    PropertyInfo:
+      type: object
+      properties:
         Name:
           type:
           - string
@@ -1622,6 +2299,25 @@ components:
           type: integer
           format: int32
           readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        PropertyType:
+          $ref: '#/components/schemas/Type'
+        Attributes:
+          $ref: '#/components/schemas/PropertyAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        CanRead:
+          type: boolean
+          readOnly: true
+        CanWrite:
+          type: boolean
+          readOnly: true
+        GetMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        SetMethod:
+          $ref: '#/components/schemas/MethodInfo'
       additionalProperties: false
     ParameterInfo:
       type: object
@@ -1675,9 +2371,118 @@ components:
           format: int32
           readOnly: true
       additionalProperties: false
-    MethodInfo:
+    FieldAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 32768
+      - 38144
+      type: integer
+      format: int32
+    ProductCategory:
       type: object
       properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        Category:
+          $ref: '#/components/schemas/LookupObject'
+        Default:
+          type:
+          - boolean
+          - 'null'
+        DefaultQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        MaxQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        MinQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        Modifiable:
+          type:
+          - boolean
+          - 'null'
+        Sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        UniqueKey:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+      example:
+        Name: Name of the record
+        Product:
+          Id: Product-Id
+          Name: Product-Name
+        Default: true
+        DefaultQuantity: 1
+        MaxQuantity: 100
+        MinQuantity: 1
+        Modifiable: true
+        Sequence: 1
+    LayoutKind:
+      enum:
+      - 0
+      - 2
+      - 3
+      type: integer
+      format: int32
+    MemberInfo:
+      type: object
+      properties:
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
         Name:
           type:
           - string
@@ -1703,82 +2508,64 @@ components:
           type: integer
           format: int32
           readOnly: true
-        Attributes:
-          $ref: '#/components/schemas/MethodAttributes'
-        MethodImplementationFlags:
-          $ref: '#/components/schemas/MethodImplAttributes'
-        CallingConvention:
-          $ref: '#/components/schemas/CallingConventions'
-        IsAbstract:
+      additionalProperties: false
+    CustomAttributeNamedArgument:
+      type: object
+      properties:
+        MemberInfo:
+          $ref: '#/components/schemas/MemberInfo'
+        TypedValue:
+          $ref: '#/components/schemas/CustomAttributeTypedArgument'
+        MemberName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        IsField:
           type: boolean
           readOnly: true
-        IsConstructor:
-          type: boolean
+      additionalProperties: false
+    Module:
+      type: object
+      properties:
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        FullyQualifiedName:
+          type:
+          - string
+          - 'null'
           readOnly: true
-        IsFinal:
-          type: boolean
+        Name:
+          type:
+          - string
+          - 'null'
           readOnly: true
-        IsHideBySig:
-          type: boolean
+        MDStreamVersion:
+          type: integer
+          format: int32
           readOnly: true
-        IsSpecialName:
-          type: boolean
+        ModuleVersionId:
+          type: string
+          format: uuid
           readOnly: true
-        IsStatic:
-          type: boolean
+        ScopeName:
+          type:
+          - string
+          - 'null'
           readOnly: true
-        IsVirtual:
-          type: boolean
+        ModuleHandle:
+          $ref: '#/components/schemas/ModuleHandle'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
           readOnly: true
-        IsAssembly:
-          type: boolean
+        MetadataToken:
+          type: integer
+          format: int32
           readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethodDefinition:
-          type: boolean
-          readOnly: true
-        ContainsGenericParameters:
-          type: boolean
-          readOnly: true
-        MethodHandle:
-          $ref: '#/components/schemas/RuntimeMethodHandle'
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        ReturnParameter:
-          $ref: '#/components/schemas/ParameterInfo'
-        ReturnType:
-          $ref: '#/components/schemas/Type'
-        ReturnTypeCustomAttributes:
-          $ref: '#/components/schemas/ICustomAttributeProvider'
       additionalProperties: false
     Assembly:
       type: object
@@ -1865,147 +2652,14 @@ components:
         SecurityRuleSet:
           $ref: '#/components/schemas/SecurityRuleSet'
       additionalProperties: false
-    ProductCategory:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Product:
-          $ref: '#/components/schemas/LookupObject'
-        Category:
-          $ref: '#/components/schemas/LookupObject'
-        Default:
-          type:
-          - boolean
-          - 'null'
-        DefaultQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        MaxQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        MinQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        Modifiable:
-          type:
-          - boolean
-          - 'null'
-        Sequence:
-          type:
-          - number
-          - 'null'
-          format: double
-        UniqueKey:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-      example:
-        Name: Name of the record
-        Product:
-          Id: Product-Id
-          Name: Product-Name
-        Default: true
-        DefaultQuantity: 1
-        MaxQuantity: 100
-        MinQuantity: 1
-        Modifiable: true
-        Sequence: 1
-    RuntimeMethodHandle:
-      type: object
-      properties:
-        Value:
-          $ref: '#/components/schemas/IntPtr'
-      additionalProperties: false
-    RevenueException:
-      type: object
-      properties:
-        TargetSite:
-          $ref: '#/components/schemas/MethodBase'
-        Message:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          readOnly: true
-        InnerException:
-          $ref: '#/components/schemas/Exception'
-        HelpLink:
-          type:
-          - string
-          - 'null'
-        Source:
-          type:
-          - string
-          - 'null'
-        HResult:
-          type: integer
-          format: int32
-        StackTrace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    CustomAttributeData:
-      type: object
-      properties:
-        AttributeType:
-          $ref: '#/components/schemas/Type'
-        Constructor:
-          $ref: '#/components/schemas/ConstructorInfo'
-        ConstructorArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeTypedArgument'
-          readOnly: true
-        NamedArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeNamedArgument'
-          readOnly: true
-      additionalProperties: false
-    FieldAttributes:
+    SecurityRuleSet:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
+    TypeAttributes:
       enum:
       - 0
       - 1
@@ -2015,122 +2669,26 @@ components:
       - 5
       - 6
       - 7
+      - 8
       - 16
+      - 24
       - 32
-      - 64
       - 128
       - 256
-      - 512
       - 1024
+      - 2048
       - 4096
       - 8192
-      - 32768
-      - 38144
+      - 16384
+      - 65536
+      - 131072
+      - 196608
+      - 262144
+      - 264192
+      - 1048576
+      - 12582912
       type: integer
       format: int32
-    IntPtr:
-      type: object
-      additionalProperties: false
-    AddExistingCategoryRequest:
-      type: object
-      properties:
-        SourceCategory:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    CallingConventions:
-      enum:
-      - 1
-      - 2
-      - 3
-      - 32
-      - 64
-      type: integer
-      format: int32
-    FieldInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        Attributes:
-          $ref: '#/components/schemas/FieldAttributes'
-        FieldType:
-          $ref: '#/components/schemas/Type'
-        IsInitOnly:
-          type: boolean
-          readOnly: true
-        IsLiteral:
-          type: boolean
-          readOnly: true
-        IsNotSerialized:
-          type: boolean
-          readOnly: true
-          deprecated: true
-        IsPinvokeImpl:
-          type: boolean
-          readOnly: true
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        IsStatic:
-          type: boolean
-          readOnly: true
-        IsAssembly:
-          type: boolean
-          readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        FieldHandle:
-          $ref: '#/components/schemas/RuntimeFieldHandle'
-      additionalProperties: false
     ParameterAttributes:
       enum:
       - 0
@@ -2144,370 +2702,6 @@ components:
       - 16384
       - 32768
       - 61440
-      type: integer
-      format: int32
-    CustomAttributeNamedArgument:
-      type: object
-      properties:
-        MemberInfo:
-          $ref: '#/components/schemas/MemberInfo'
-        TypedValue:
-          $ref: '#/components/schemas/CustomAttributeTypedArgument'
-        MemberName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        IsField:
-          type: boolean
-          readOnly: true
-      additionalProperties: false
-    PropertyAttributes:
-      enum:
-      - 0
-      - 512
-      - 1024
-      - 4096
-      - 8192
-      - 16384
-      - 32768
-      - 62464
-      type: integer
-      format: int32
-    SecurityRuleSet:
-      enum:
-      - 0
-      - 1
-      - 2
-      type: integer
-      format: int32
-    CustomAttributeTypedArgument:
-      type: object
-      properties:
-        ArgumentType:
-          $ref: '#/components/schemas/Type'
-        Value: {}
-      additionalProperties: false
-    Module:
-      type: object
-      properties:
-        Assembly:
-          $ref: '#/components/schemas/Assembly'
-        FullyQualifiedName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        MDStreamVersion:
-          type: integer
-          format: int32
-          readOnly: true
-        ModuleVersionId:
-          type: string
-          format: uuid
-          readOnly: true
-        ScopeName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        ModuleHandle:
-          $ref: '#/components/schemas/ModuleHandle'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-      additionalProperties: false
-    EventAttributes:
-      enum:
-      - 0
-      - 512
-      - 1024
-      type: integer
-      format: int32
-    BulkAddExistingCategoryRequest:
-      type: object
-      properties:
-        SourceCategories:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-      additionalProperties: false
-    Exception:
-      type: object
-      properties:
-        TargetSite:
-          $ref: '#/components/schemas/MethodBase'
-        Message:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          readOnly: true
-        InnerException:
-          $ref: '#/components/schemas/Exception'
-        HelpLink:
-          type:
-          - string
-          - 'null'
-        Source:
-          type:
-          - string
-          - 'null'
-        HResult:
-          type: integer
-          format: int32
-        StackTrace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    ModuleHandle:
-      type: object
-      properties:
-        MDStreamVersion:
-          type: integer
-          format: int32
-          readOnly: true
-      additionalProperties: false
-    RuntimeTypeHandle:
-      type: object
-      properties:
-        Value:
-          $ref: '#/components/schemas/IntPtr'
-      additionalProperties: false
-    ConstructorInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        Attributes:
-          $ref: '#/components/schemas/MethodAttributes'
-        MethodImplementationFlags:
-          $ref: '#/components/schemas/MethodImplAttributes'
-        CallingConvention:
-          $ref: '#/components/schemas/CallingConventions'
-        IsAbstract:
-          type: boolean
-          readOnly: true
-        IsConstructor:
-          type: boolean
-          readOnly: true
-        IsFinal:
-          type: boolean
-          readOnly: true
-        IsHideBySig:
-          type: boolean
-          readOnly: true
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        IsStatic:
-          type: boolean
-          readOnly: true
-        IsVirtual:
-          type: boolean
-          readOnly: true
-        IsAssembly:
-          type: boolean
-          readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethodDefinition:
-          type: boolean
-          readOnly: true
-        ContainsGenericParameters:
-          type: boolean
-          readOnly: true
-        MethodHandle:
-          $ref: '#/components/schemas/RuntimeMethodHandle'
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    GenericParameterAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 8
-      - 16
-      - 28
-      type: integer
-      format: int32
-    EventInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        Attributes:
-          $ref: '#/components/schemas/EventAttributes'
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        AddMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        RemoveMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        RaiseMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        IsMulticast:
-          type: boolean
-          readOnly: true
-        EventHandlerType:
-          $ref: '#/components/schemas/Type'
-      additionalProperties: false
-    MethodAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 1024
-      - 2048
-      - 4096
-      - 8192
-      - 16384
-      - 32768
-      - 53248
-      type: integer
-      format: int32
-    MethodImplAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 4096
-      - 65535
       type: integer
       format: int32
     MethodBase:
@@ -2609,220 +2803,26 @@ components:
           type: boolean
           readOnly: true
       additionalProperties: false
-    Category:
+    RuntimeFieldHandle:
       type: object
       properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        DefaultSearchCategory:
-          type:
-          - boolean
-          - 'null'
-        Description:
-          type:
-          - string
-          - 'null'
-        ExpandedByDefault:
-          type:
-          - boolean
-          - 'null'
-        GuidePage:
-          type:
-          - string
-          - 'null'
-        HideAllSearchFilters:
-          type:
-          - boolean
-          - 'null'
-        ImageURL:
-          type:
-          - string
-          - 'null'
-        IncludeInTotalsView:
-          type:
-          - boolean
-          - 'null'
-        IsHidden:
-          type:
-          - boolean
-          - 'null'
-        IsLeaf:
-          type:
-          - boolean
-          - 'null'
-        IsPicklist:
-          type:
-          - boolean
-          - 'null'
-        Label:
-          type:
-          - string
-          - 'null'
-        LargeImageURL:
-          type:
-          - string
-          - 'null'
-        LongDescription:
-          type:
-          - string
-          - 'null'
-        SearchFilterFields:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    ICustomAttributeProvider:
+      type: object
+      additionalProperties: false
+    BulkAddExistingCategoryRequest:
+      type: object
+      properties:
+        SourceCategories:
           type:
           - array
           - 'null'
           items:
             type: string
-        Ancestor:
-          $ref: '#/components/schemas/LookupObject'
-        AncestorPath:
-          type:
-          - string
-          - 'null'
-        Hierarchy:
-          $ref: '#/components/schemas/LookupObject'
-        Sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-      additionalProperties: {}
-      example:
-        Name: CategoryName
-        DefaultSearchCategory: true
-        Description: Category description
-        ExpandedByDefault: false
-        GuidePage: Guide_Pagetest
-        HideAllSearchFilters: false
-        ImageURL: https://test.jpeg
-        IncludeInTotalsView: false
-        IsHidden: false
-        IsLeaf: false
-        IsPicklist: false
-        Label: Label
-        LargeImageURL: https://test.jpeg
-        LongDescription: Description
-        SearchFilterFields:
-        - Family
-        Ancestor: null
-        AncestorPath: null
-        Hierarchy: null
-        Sequence: 1
-    TypeAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 16
-      - 24
-      - 32
-      - 128
-      - 256
-      - 1024
-      - 2048
-      - 4096
-      - 8192
-      - 16384
-      - 65536
-      - 131072
-      - 196608
-      - 262144
-      - 264192
-      - 1048576
-      - 12582912
-      type: integer
-      format: int32
-    PropertyInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        PropertyType:
-          $ref: '#/components/schemas/Type'
-        Attributes:
-          $ref: '#/components/schemas/PropertyAttributes'
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        CanRead:
-          type: boolean
-          readOnly: true
-        CanWrite:
-          type: boolean
-          readOnly: true
-        GetMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        SetMethod:
-          $ref: '#/components/schemas/MethodInfo'
       additionalProperties: false
-    MemberTypes:
-      enum:
-      - 1
-      - 2
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 191
-      type: integer
-      format: int32
-    Conga.Revenue.Entities.ProductCategory:
+    Conga.Revenue.Entities.ProductOptionComponent:
       type: object
       properties:
         createdBy:
@@ -2855,189 +2855,82 @@ components:
           type:
           - string
           - 'null'
-        categoryId:
+        allowCloning:
+          type: boolean
+        autoUpdateQuantity:
+          type: boolean
+        componentProductId:
           type:
           - string
           - 'null'
-        default:
-          type: boolean
+        configType:
+          type:
+          - string
+          - 'null'
+        defaultQuantityExpression:
+          type:
+          - string
+          - 'null'
         defaultQuantity:
           type:
           - number
           - 'null'
           format: double
-        modifiable:
+        inclusionCriteria:
+          type:
+          - string
+          - 'null'
+        isDefault:
           type: boolean
+        isModifiable:
+          type: boolean
+        isRequired:
+          type: boolean
+        maxQuantityExpression:
+          type:
+          - string
+          - 'null'
         maxQuantity:
           type:
           - number
           - 'null'
           format: double
+        minQuantityExpression:
+          type:
+          - string
+          - 'null'
         minQuantity:
           type:
           - number
           - 'null'
           format: double
-        productId:
+        parentProductId:
+          type:
+          - string
+          - 'null'
+        productOptionGroupId:
+          type:
+          - string
+          - 'null'
+        relationshipType:
           type:
           - string
           - 'null'
         sequence:
           type:
-          - number
-          - 'null'
-          format: double
-        category:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Category'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductOptionGroup:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        contentType:
-          type:
-          - string
-          - 'null'
-        detailPage:
-          type:
-          - string
-          - 'null'
-        isHidden:
-          type:
-          - boolean
-          - 'null'
-        isGlobal:
-          type:
-          - boolean
-          - 'null'
-        isLeaf:
-          type:
-          - boolean
-          - 'null'
-        isModifiable:
-          type:
-          - boolean
-          - 'null'
-        isPicklist:
-          type:
-          - boolean
-          - 'null'
-        level:
-          type:
           - integer
           - 'null'
           format: int32
-        maxOptions:
-          type:
-          - number
-          - 'null'
-          format: double
-        maxTotalQuantityExpression:
+        componentProductName:
           type:
           - string
           - 'null'
-        maxTotalQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        minOptions:
-          type:
-          - number
-          - 'null'
-          format: double
-        minTotalQuantityExpression:
-          type:
-          - string
-          - 'null'
-        minTotalQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        modifiableType:
-          type:
-          - string
-          - 'null'
-        optionGroupId:
-          type:
-          - string
-          - 'null'
-        parentOptionGroupId:
-          type:
-          - string
-          - 'null'
-        productAttributeGroupId:
-          type:
-          - string
-          - 'null'
-        productId:
-          type:
-          - string
-          - 'null'
-        rootOptionGroupId:
-          type:
-          - string
-          - 'null'
-        rootSequence:
-          type:
-          - number
-          - 'null'
-          format: double
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        type:
-          type:
-          - string
-          - 'null'
-        productOptionComponents:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionComponent'
-        product:
+        componentProduct:
           $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
-        parentOptionGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
-        productAttributeGroupMember:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroupMember'
-        rootOptionGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
-        optionGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+        parentProduct:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        productOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup'
       additionalProperties: {}
     Conga.Revenue.Entities.AttributeGroupTranslation:
       type: object
@@ -3086,81 +2979,6 @@ components:
           - 'null'
         productAttributeGroup:
           $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
-      additionalProperties: {}
-    Conga.Revenue.Entities.AttributeGroupMember:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        attribute:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Attribute'
-        attributeGroupId:
-          type:
-          - string
-          - 'null'
-        attributeId:
-          type:
-          - string
-          - 'null'
-        cascadeSharedAttributeStatus:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        cascadeSharedAttributeUpdates:
-          type:
-          - string
-          - 'null'
-        displayType:
-          type:
-          - string
-          - 'null'
-        isHidden:
-          type:
-          - boolean
-          - 'null'
-        isPrimary:
-          type:
-          - boolean
-          - 'null'
-        isReadOnly:
-          type:
-          - boolean
-          - 'null'
-        sequence:
-          type:
-          - number
-          - 'null'
-          format: double
       additionalProperties: {}
     Conga.Revenue.Entities.ProductAttributeMatrixView:
       type: object
@@ -3222,391 +3040,7 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    Conga.Revenue.Entities.Attribute:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        defaultValue:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        displayName:
-          type:
-          - string
-          - 'null'
-        isRequired:
-          type:
-          - boolean
-          - 'null'
-        lookupObjectName:
-          type:
-          - string
-          - 'null'
-        pickListValue:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.PickListValueItem'
-        type:
-          type:
-          - string
-          - 'null'
-        helpText:
-          type:
-          - string
-          - 'null'
-        precision:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        scale:
-          type:
-          - integer
-          - 'null'
-          format: int32
-      additionalProperties: {}
-    Conga.Revenue.Entities.Platform.PickListValueItem:
-      type: object
-      properties:
-        key:
-          type:
-          - string
-          - 'null'
-        value:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-      additionalProperties: false
-    Conga.Revenue.Entities.Feature:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        featureSetId:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-      additionalProperties: {}
-    Conga.Revenue.Entities.OptionGroup:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        ancestorId:
-          type:
-          - string
-          - 'null'
-        ancestorPath:
-          type:
-          - string
-          - 'null'
-        defaultSearchOptionGroup:
-          type:
-          - boolean
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        expandedByDefault:
-          type:
-          - boolean
-          - 'null'
-        guidePage:
-          type:
-          - string
-          - 'null'
-        hideAllSearchFilters:
-          type:
-          - boolean
-          - 'null'
-        hierarchyId:
-          type:
-          - string
-          - 'null'
-        imageURL:
-          type:
-          - string
-          - 'null'
-        includeInTotalsView:
-          type:
-          - boolean
-          - 'null'
-        isHidden:
-          type:
-          - boolean
-          - 'null'
-        isLeaf:
-          type:
-          - boolean
-          - 'null'
-        isModifiable:
-          type:
-          - boolean
-          - 'null'
-        isPicklist:
-          type:
-          - boolean
-          - 'null'
-        label:
-          type:
-          - string
-          - 'null'
-        largeImageURL:
-          type:
-          - string
-          - 'null'
-        longDescription:
-          type:
-          - string
-          - 'null'
-        maxOptions:
-          type:
-          - number
-          - 'null'
-          format: double
-        maxTotalQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        maxTotalQuantityExpression:
-          type:
-          - string
-          - 'null'
-        minOptions:
-          type:
-          - number
-          - 'null'
-          format: double
-        minTotalQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        minTotalQuantityExpression:
-          type:
-          - string
-          - 'null'
-        modifiableType:
-          type:
-          - string
-          - 'null'
-        searchFilterFields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        type:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductGroupMember:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        productId:
-          type:
-          - string
-          - 'null'
-        productGroupId:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        product:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
-        productGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductGroup'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductGroup:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        groupType:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductAttributeGroup:
+    Conga.Revenue.Entities.ProductAttributeGroupMember:
       type: object
       properties:
         createdBy:
@@ -3653,19 +3087,15 @@ components:
           - 'null'
         sequence:
           type:
-          - number
+          - integer
           - 'null'
-          format: double
-        attributeGroupTranslationes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroupTranslation'
-        attributeGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroup'
+          format: int32
+        productAttributeGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
       additionalProperties: {}
-    Conga.Revenue.Entities.FeatureSet:
+    Conga.Revenue.Entities.RelatedPriceListItem:
       type: object
       properties:
         createdBy:
@@ -3698,15 +3128,53 @@ components:
           type:
           - string
           - 'null'
-        description:
+        priceListItemId:
           type:
           - string
           - 'null'
-        sequence:
+        relatedAdjustmentAmount:
           type:
-          - integer
+          - number
           - 'null'
-          format: int32
+          format: double
+        relatedAdjustmentType:
+          type:
+          - string
+          - 'null'
+        relatedChargeType:
+          type:
+          - string
+          - 'null'
+        relatedCustomGroup:
+          type:
+          - string
+          - 'null'
+        relatedCustomField:
+          type:
+          - string
+          - 'null'
+        relatedItem:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.PriceListItem'
+        relatedPriceListItemId:
+          type:
+          - string
+          - 'null'
+        relatedProductId:
+          type:
+          - string
+          - 'null'
+        relatedProductFamily:
+          type:
+          - string
+          - 'null'
+        relatedProductGroupId:
+          type:
+          - string
+          - 'null'
+        relationType:
+          type:
+          - string
+          - 'null'
       additionalProperties: {}
     Conga.Revenue.Entities.ProductTranslation:
       type: object
@@ -3821,6 +3289,133 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroupMember'
+      additionalProperties: {}
+    Conga.Revenue.Entities.PriceList:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        accountId:
+          type:
+          - string
+          - 'null'
+        basedOnAdjustmentAmount:
+          type:
+          - number
+          - 'null'
+          format: double
+        basedOnAdjustmentType:
+          type:
+          - string
+          - 'null'
+        basedOnPriceList:
+          type:
+          - string
+          - 'null'
+        basedOnPriceListId:
+          type:
+          - string
+          - 'null'
+        contractNumber:
+          type:
+          - string
+          - 'null'
+        costModel:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        disableCurrencyAdjustment:
+          type: boolean
+        isActive:
+          type: boolean
+        effectiveDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        expirationDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        type:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        groupType:
+          type:
+          - string
+          - 'null'
       additionalProperties: {}
     Conga.Revenue.Entities.PriceListItem:
       type: object
@@ -4179,6 +3774,702 @@ components:
         priceList:
           $ref: '#/components/schemas/Conga.Revenue.Entities.PriceList'
       additionalProperties: {}
+    Conga.Revenue.Entities.ProductFeature:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        featureSetId:
+          type:
+          - string
+          - 'null'
+        includedFeatures:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        featureSet:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.FeatureSet'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductOptionGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        contentType:
+          type:
+          - string
+          - 'null'
+        detailPage:
+          type:
+          - string
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isGlobal:
+          type:
+          - boolean
+          - 'null'
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isModifiable:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type:
+          - boolean
+          - 'null'
+        level:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        maxOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        maxTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        minTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        modifiableType:
+          type:
+          - string
+          - 'null'
+        optionGroupId:
+          type:
+          - string
+          - 'null'
+        parentOptionGroupId:
+          type:
+          - string
+          - 'null'
+        productAttributeGroupId:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        rootOptionGroupId:
+          type:
+          - string
+          - 'null'
+        rootSequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        type:
+          type:
+          - string
+          - 'null'
+        productOptionComponents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionComponent'
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        parentOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+        productAttributeGroupMember:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroupMember'
+        rootOptionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+        optionGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.OptionGroup'
+      additionalProperties: {}
+    Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput:
+      type: object
+      properties:
+        isPointOfSale:
+          type: boolean
+        lineItems:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+      additionalProperties: false
+    Conga.Revenue.Entities.Category:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        ancestorId:
+          type:
+          - string
+          - 'null'
+        ancestorPath:
+          type:
+          - string
+          - 'null'
+        hierarchyId:
+          type:
+          - string
+          - 'null'
+        defaultSearchCategory:
+          type: boolean
+        description:
+          type:
+          - string
+          - 'null'
+        expandedByDefault:
+          type: boolean
+        guidePage:
+          type:
+          - string
+          - 'null'
+        hideAllSearchFilters:
+          type: boolean
+        imageURL:
+          type:
+          - string
+          - 'null'
+        includeInTotalsView:
+          type: boolean
+        isHidden:
+          type: boolean
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type: boolean
+        label:
+          type:
+          - string
+          - 'null'
+        largeImageURL:
+          type:
+          - string
+          - 'null'
+        longDescription:
+          type:
+          - string
+          - 'null'
+        searchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        type:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductCategory:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        categoryId:
+          type:
+          - string
+          - 'null'
+        default:
+          type: boolean
+        defaultQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        modifiable:
+          type: boolean
+        maxQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        productId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+        category:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Category'
+      additionalProperties: {}
+    Conga.Revenue.Entities.Attribute:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        defaultValue:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        isRequired:
+          type:
+          - boolean
+          - 'null'
+        lookupObjectName:
+          type:
+          - string
+          - 'null'
+        pickListValue:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.Platform.PickListValueItem'
+        type:
+          type:
+          - string
+          - 'null'
+        helpText:
+          type:
+          - string
+          - 'null'
+        precision:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        scale:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.BaseEntity:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductGroupMember:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        productId:
+          type:
+          - string
+          - 'null'
+        productGroupId:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        product:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
+        productGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductGroup'
+      additionalProperties: {}
+    Conga.Revenue.Entities.OptionGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        ancestorId:
+          type:
+          - string
+          - 'null'
+        ancestorPath:
+          type:
+          - string
+          - 'null'
+        defaultSearchOptionGroup:
+          type:
+          - boolean
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        expandedByDefault:
+          type:
+          - boolean
+          - 'null'
+        guidePage:
+          type:
+          - string
+          - 'null'
+        hideAllSearchFilters:
+          type:
+          - boolean
+          - 'null'
+        hierarchyId:
+          type:
+          - string
+          - 'null'
+        imageURL:
+          type:
+          - string
+          - 'null'
+        includeInTotalsView:
+          type:
+          - boolean
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isLeaf:
+          type:
+          - boolean
+          - 'null'
+        isModifiable:
+          type:
+          - boolean
+          - 'null'
+        isPicklist:
+          type:
+          - boolean
+          - 'null'
+        label:
+          type:
+          - string
+          - 'null'
+        largeImageURL:
+          type:
+          - string
+          - 'null'
+        longDescription:
+          type:
+          - string
+          - 'null'
+        maxOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        maxTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        minOptions:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantity:
+          type:
+          - number
+          - 'null'
+          format: double
+        minTotalQuantityExpression:
+          type:
+          - string
+          - 'null'
+        modifiableType:
+          type:
+          - string
+          - 'null'
+        searchFilterFields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        type:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
     Conga.Revenue.Entities.ProductFeatureValue:
       type: object
       properties:
@@ -4234,7 +4525,7 @@ components:
         feature:
           $ref: '#/components/schemas/Conga.Revenue.Entities.Feature'
       additionalProperties: {}
-    Conga.Revenue.Entities.ProductFeature:
+    Conga.Revenue.Entities.Feature:
       type: object
       properties:
         createdBy:
@@ -4271,7 +4562,129 @@ components:
           type:
           - string
           - 'null'
-        includedFeatures:
+        description:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
+    Conga.Revenue.Entities.AttributeGroupMember:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attribute:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.Attribute'
+        attributeGroupId:
+          type:
+          - string
+          - 'null'
+        attributeId:
+          type:
+          - string
+          - 'null'
+        cascadeSharedAttributeStatus:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        cascadeSharedAttributeUpdates:
+          type:
+          - string
+          - 'null'
+        displayType:
+          type:
+          - string
+          - 'null'
+        isHidden:
+          type:
+          - boolean
+          - 'null'
+        isPrimary:
+          type:
+          - boolean
+          - 'null'
+        isReadOnly:
+          type:
+          - boolean
+          - 'null'
+        sequence:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: {}
+    Conga.Revenue.Entities.ProductAttributeGroup:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        id:
+          type:
+          - string
+          - 'null'
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        attributeGroupId:
+          type:
+          - string
+          - 'null'
+        fieldUpdateCriteriaIds:
           type:
           - string
           - 'null'
@@ -4281,269 +4694,26 @@ components:
           - 'null'
         sequence:
           type:
-          - integer
+          - number
           - 'null'
-          format: int32
-        featureSet:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.FeatureSet'
+          format: double
+        attributeGroupTranslationes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroupTranslation'
+        attributeGroup:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.AttributeGroup'
       additionalProperties: {}
-    Conga.Revenue.Entities.PriceList:
+    Conga.Revenue.Entities.Platform.PickListValueItem:
       type: object
       properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
+        key:
           type:
           - string
           - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        accountId:
-          type:
-          - string
-          - 'null'
-        basedOnAdjustmentAmount:
-          type:
-          - number
-          - 'null'
-          format: double
-        basedOnAdjustmentType:
-          type:
-          - string
-          - 'null'
-        basedOnPriceList:
-          type:
-          - string
-          - 'null'
-        basedOnPriceListId:
-          type:
-          - string
-          - 'null'
-        contractNumber:
-          type:
-          - string
-          - 'null'
-        costModel:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-        disableCurrencyAdjustment:
-          type: boolean
-        isActive:
-          type: boolean
-        effectiveDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        expirationDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        type:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.RelatedPriceListItem:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        priceListItemId:
-          type:
-          - string
-          - 'null'
-        relatedAdjustmentAmount:
-          type:
-          - number
-          - 'null'
-          format: double
-        relatedAdjustmentType:
-          type:
-          - string
-          - 'null'
-        relatedChargeType:
-          type:
-          - string
-          - 'null'
-        relatedCustomGroup:
-          type:
-          - string
-          - 'null'
-        relatedCustomField:
-          type:
-          - string
-          - 'null'
-        relatedItem:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.PriceListItem'
-        relatedPriceListItemId:
-          type:
-          - string
-          - 'null'
-        relatedProductId:
-          type:
-          - string
-          - 'null'
-        relatedProductFamily:
-          type:
-          - string
-          - 'null'
-        relatedProductGroupId:
-          type:
-          - string
-          - 'null'
-        relationType:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductOptionComponent:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        allowCloning:
-          type: boolean
-        autoUpdateQuantity:
-          type: boolean
-        componentProductId:
-          type:
-          - string
-          - 'null'
-        configType:
-          type:
-          - string
-          - 'null'
-        defaultQuantityExpression:
-          type:
-          - string
-          - 'null'
-        defaultQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        inclusionCriteria:
-          type:
-          - string
-          - 'null'
-        isDefault:
-          type: boolean
-        isModifiable:
-          type: boolean
-        isRequired:
-          type: boolean
-        maxQuantityExpression:
-          type:
-          - string
-          - 'null'
-        maxQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        minQuantityExpression:
-          type:
-          - string
-          - 'null'
-        minQuantity:
-          type:
-          - number
-          - 'null'
-          format: double
-        parentProductId:
-          type:
-          - string
-          - 'null'
-        productOptionGroupId:
-          type:
-          - string
-          - 'null'
-        relationshipType:
+        value:
           type:
           - string
           - 'null'
@@ -4552,30 +4722,50 @@ components:
           - integer
           - 'null'
           format: int32
-        componentProductName:
+      additionalProperties: false
+    Conga.Revenue.Entities.FeatureSet:
+      type: object
+      properties:
+        createdBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        createdDate:
           type:
           - string
           - 'null'
-        componentProduct:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
-        parentProduct:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
-        productOptionGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductOptionGroup'
-      additionalProperties: {}
-    Conga.Revenue.Catalog.Manager.Models.SearchServiceProductsInput:
-      type: object
-      properties:
-        isPointOfSale:
-          type: boolean
-        lineItems:
+          format: date-time
+        id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-      additionalProperties: false
+        modifiedBy:
+          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        name:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        digest:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+      additionalProperties: {}
     Conga.Revenue.Entities.Product:
       type: object
       properties:
@@ -4771,196 +4961,6 @@ components:
           type:
           - string
           - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.Category:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        ancestorId:
-          type:
-          - string
-          - 'null'
-        ancestorPath:
-          type:
-          - string
-          - 'null'
-        hierarchyId:
-          type:
-          - string
-          - 'null'
-        defaultSearchCategory:
-          type: boolean
-        description:
-          type:
-          - string
-          - 'null'
-        expandedByDefault:
-          type: boolean
-        guidePage:
-          type:
-          - string
-          - 'null'
-        hideAllSearchFilters:
-          type: boolean
-        imageURL:
-          type:
-          - string
-          - 'null'
-        includeInTotalsView:
-          type: boolean
-        isHidden:
-          type: boolean
-        isLeaf:
-          type:
-          - boolean
-          - 'null'
-        isPicklist:
-          type: boolean
-        label:
-          type:
-          - string
-          - 'null'
-        largeImageURL:
-          type:
-          - string
-          - 'null'
-        longDescription:
-          type:
-          - string
-          - 'null'
-        searchFilterFields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        type:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-      additionalProperties: {}
-    Conga.Revenue.Entities.BaseEntity:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
-    Conga.Revenue.Entities.ProductAttributeGroupMember:
-      type: object
-      properties:
-        createdBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        id:
-          type:
-          - string
-          - 'null'
-        modifiedBy:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.BaseEntity'
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        name:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        digest:
-          type:
-          - string
-          - 'null'
-        attributeGroupId:
-          type:
-          - string
-          - 'null'
-        fieldUpdateCriteriaIds:
-          type:
-          - string
-          - 'null'
-        productId:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        productAttributeGroup:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.ProductAttributeGroup'
-        product:
-          $ref: '#/components/schemas/Conga.Revenue.Entities.Product'
       additionalProperties: {}
   securitySchemes:
     Bearer:

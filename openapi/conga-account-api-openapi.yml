@@ -853,19 +853,76 @@ paths:
     - url: https://xauthor-preview-rls09.congacloud.com
 components:
   schemas:
-    Sort:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
-        OrderBy:
-          $ref: '#/components/schemas/OrderBy'
-      additionalProperties: false
-      description: Sort information for records.
-    StringObjectDictionaryAPIResponse:
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
+    UpdateByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -877,9 +934,57 @@ components:
           format: int64
         Data:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DeleteByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
         Errors:
           type:
           - array
@@ -915,6 +1020,65 @@ components:
       - Ascending
       - Descending
       type: string
+    StringListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    OrderBy:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     Query:
       type: object
       properties:
@@ -960,7 +1124,7 @@ components:
           description: List of field names which are to be grouped.
       additionalProperties: false
       description: Schema Model for Query
-    StringObjectDictionaryListAPIResponse:
+    StringObjectDictionaryAPIResponse:
       type: object
       properties:
         Success:
@@ -972,11 +1136,9 @@ components:
           format: int64
         Data:
           type:
-          - array
+          - object
           - 'null'
-          items:
-            type: object
-            additionalProperties: {}
+          additionalProperties: {}
         Errors:
           type:
           - array
@@ -1007,10 +1169,10 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    DeleteByField:
+    DeleteBehaviour:
       enum:
-      - Id
-      - ExternalId
+      - SoftDelete
+      - HardDelete
       type: string
     AccountRequestExample:
       type: object
@@ -1195,182 +1357,19 @@ components:
           description: PriceList Id and Name associated with record
       additionalProperties: false
       description: Account Request Example
-    BooleanNullableAPIResponse:
+    Sort:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - boolean
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        FieldName:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
       additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    UpdateByField:
-      enum:
-      - Id
-      - ExternalId
-      type: string
-    OrderBy:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    DeleteBehaviour:
-      enum:
-      - SoftDelete
-      - HardDelete
-      type: string
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringListAPIResponse:
+      description: Sort information for records.
+    StringObjectDictionaryListAPIResponse:
       type: object
       properties:
         Success:
@@ -1385,7 +1384,8 @@ components:
           - array
           - 'null'
           items:
-            type: string
+            type: object
+            additionalProperties: {}
         Errors:
           type:
           - array

@@ -336,61 +336,46 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ContractRelationshipRequestV2:
+    WarningDetail:
       type: object
       properties:
-        RelatedContractId:
+        Code:
           type:
           - string
           - 'null'
-          description: Id of Related Contract
-        RelationshipFromType:
+          description: Warning code
+        Message:
           type:
           - string
           - 'null'
-          description: How current contract is related to the related contract
-        RelationshipToType:
-          type:
-          - string
-          - 'null'
-          description: How related contract is related to the current contract
+          description: Warning message
       additionalProperties: false
-      description: Request model for Contract Relationship
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ContractHierarchicalFieldsResponse:
+      description: Warning detail class for non-blocking issues
+    BooleanAPIResponse:
       type: object
       properties:
-        Id:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type: boolean
+          description: Generic data to return
+        Warnings:
           type:
-          - string
+          - array
           - 'null'
-          description: Contract Id.
-        Name:
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-          description: Contract Name.
-        StatusCategory:
-          type:
-          - string
-          - 'null'
-          description: Contract Status Category.
-        Status:
-          type:
-          - string
-          - 'null'
-          description: Contract Status
-        ContractNumber:
-          type:
-          - string
-          - 'null'
-          description: Contract Number.
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
       additionalProperties: false
-      description: ''
+      description: API Response Class
     ContractHierarchiesResponse:
       type: object
       properties:
@@ -437,6 +422,99 @@ components:
           description: Automatically Renewed contracts of a given contract id.
       additionalProperties: false
       description: ''
+    RelationshipCategory:
+      enum:
+      - System
+      - Manual
+      - ParentChild
+      type: string
+      description: Relationship Categories
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ContractHierarchicalFieldsResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Contract Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Contract Name.
+        StatusCategory:
+          type:
+          - string
+          - 'null'
+          description: Contract Status Category.
+        Status:
+          type:
+          - string
+          - 'null'
+          description: Contract Status
+        ContractNumber:
+          type:
+          - string
+          - 'null'
+          description: Contract Number.
+      additionalProperties: false
+      description: ''
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    SortingRequest:
+      type: object
+      properties:
+        SortInfo:
+          $ref: '#/components/schemas/SortInfo'
+      additionalProperties: false
+      description: Request model for Sorting
+    SortInfo:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: Field name on which records will be sorted
+        Direction:
+          $ref: '#/components/schemas/SortDirection'
+      additionalProperties: false
+      description: Sorting Information for Fields
+    SupplierResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Supplier Id.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Supplier Name.
+        SupplierCode:
+          type:
+          - string
+          - 'null'
+          description: Supplier Number.
+      additionalProperties: false
+      description: Response model for supplier information in contract hierarchies.
     RelatedAgreement:
       type: object
       properties:
@@ -485,199 +563,6 @@ components:
           description: RelationshipToType
       additionalProperties: {}
       description: RelatedAgreement entity model
-    AccountResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Account Id.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Account Name.
-        AccountNumber:
-          type:
-          - string
-          - 'null'
-          description: Account Number.
-      additionalProperties: false
-      description: ''
-    SortingRequest:
-      type: object
-      properties:
-        SortInfo:
-          $ref: '#/components/schemas/SortInfo'
-      additionalProperties: false
-      description: Request model for Sorting
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    ContractHierarchiesResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/ContractHierarchiesResponse'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    RelatedAgreementListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RelatedAgreement'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    SupplierResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Supplier Id.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Supplier Name.
-        SupplierCode:
-          type:
-          - string
-          - 'null'
-          description: Supplier Number.
-      additionalProperties: false
-      description: Response model for supplier information in contract hierarchies.
-    APIResponseError:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          type:
-          - string
-          - 'null'
-          description: Generic data to return
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Error Class
-    RelatedAgreementAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-          description: The state of the API response
-        Data:
-          $ref: '#/components/schemas/RelatedAgreement'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/WarningDetail'
-          description: Warning detail list for non-blocking issues
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-          description: Error detail list in case of failure
-      additionalProperties: false
-      description: API Response Class
-    ContractRelationshipRequest:
-      type: object
-      properties:
-        RelatedContractId:
-          type:
-          - string
-          - 'null'
-          description: Id of Related Contract
-        RelationshipType:
-          type:
-          - string
-          - 'null'
-          description: Type of Relationship i.e. "IsAmendmentFor", "IsAmendedBy", "IsRenewalFor", "IsRenewedBy", "IsParentOf", "IsChildOf"
-      additionalProperties: false
-      description: Request model for Contract Relationship
-    SortInfo:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-          description: Field name on which records will be sorted
-        Direction:
-          $ref: '#/components/schemas/SortDirection'
-      additionalProperties: false
-      description: Sorting Information for Fields
     ContractRelationshipResponse:
       type: object
       properties:
@@ -720,33 +605,58 @@ components:
           $ref: '#/components/schemas/RelationshipCategory'
       additionalProperties: false
       description: Contract relationships response model
-    LookupObject:
+    ContractRelationshipRequestV2:
+      type: object
+      properties:
+        RelatedContractId:
+          type:
+          - string
+          - 'null'
+          description: Id of Related Contract
+        RelationshipFromType:
+          type:
+          - string
+          - 'null'
+          description: How current contract is related to the related contract
+        RelationshipToType:
+          type:
+          - string
+          - 'null'
+          description: How related contract is related to the current contract
+      additionalProperties: false
+      description: Request model for Contract Relationship
+    AccountResponse:
       type: object
       properties:
         Id:
           type:
           - string
           - 'null'
+          description: Account Id.
         Name:
           type:
           - string
           - 'null'
+          description: Account Name.
+        AccountNumber:
+          type:
+          - string
+          - 'null'
+          description: Account Number.
       additionalProperties: false
-    RelationshipCategory:
-      enum:
-      - System
-      - Manual
-      - ParentChild
-      type: string
-      description: Relationship Categories
-    BooleanAPIResponse:
+      description: ''
+    RelatedAgreementListAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
           description: The state of the API response
         Data:
-          type: boolean
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RelatedAgreement'
           description: Generic data to return
         Warnings:
           type:
@@ -793,21 +703,111 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    WarningDetail:
+    ContractHierarchiesResponseAPIResponse:
       type: object
       properties:
-        Code:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/ContractHierarchiesResponse'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    ErrorDetail:
+      type: object
+      properties:
+        Id:
           type:
           - string
           - 'null'
-          description: Warning code
+          description: Error ID
         Message:
           type:
           - string
           - 'null'
-          description: Warning message
+          description: Error message
       additionalProperties: false
-      description: Warning detail class for non-blocking issues
+      description: Error detail class
+    ContractRelationshipRequest:
+      type: object
+      properties:
+        RelatedContractId:
+          type:
+          - string
+          - 'null'
+          description: Id of Related Contract
+        RelationshipType:
+          type:
+          - string
+          - 'null'
+          description: Type of Relationship i.e. "IsAmendmentFor", "IsAmendedBy", "IsRenewalFor", "IsRenewedBy", "IsParentOf", "IsChildOf"
+      additionalProperties: false
+      description: Request model for Contract Relationship
+    RelatedAgreementAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          $ref: '#/components/schemas/RelatedAgreement'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Class
+    APIResponseError:
+      type: object
+      properties:
+        Success:
+          type: boolean
+          description: The state of the API response
+        Data:
+          type:
+          - string
+          - 'null'
+          description: Generic data to return
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WarningDetail'
+          description: Warning detail list for non-blocking issues
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: Error detail list in case of failure
+      additionalProperties: false
+      description: API Response Error Class
   securitySchemes:
     bearerAuth:
       type: http

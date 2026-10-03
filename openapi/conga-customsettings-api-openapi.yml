@@ -1351,15 +1351,7 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    StructLayoutAttribute:
-      type: object
-      properties:
-        TypeId:
-          readOnly: true
-        Value:
-          $ref: '#/components/schemas/LayoutKind'
-      additionalProperties: false
-    Type:
+    FieldInfo:
       type: object
       properties:
         Name:
@@ -1367,6 +1359,12 @@ components:
           - string
           - 'null'
           readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
         CustomAttributes:
           type:
           - array
@@ -1381,180 +1379,47 @@ components:
           type: integer
           format: int32
           readOnly: true
-        IsInterface:
-          type: boolean
-          readOnly: true
         MemberType:
           $ref: '#/components/schemas/MemberTypes'
-        Namespace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        AssemblyQualifiedName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        FullName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Assembly:
-          $ref: '#/components/schemas/Assembly'
-        Module:
-          $ref: '#/components/schemas/Module'
-        IsNested:
-          type: boolean
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        DeclaringMethod:
-          $ref: '#/components/schemas/MethodBase'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        UnderlyingSystemType:
-          $ref: '#/components/schemas/Type'
-        IsTypeDefinition:
-          type: boolean
-          readOnly: true
-        IsArray:
-          type: boolean
-          readOnly: true
-        IsByRef:
-          type: boolean
-          readOnly: true
-        IsPointer:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericType:
-          type: boolean
-          readOnly: true
-        IsGenericParameter:
-          type: boolean
-          readOnly: true
-        IsGenericTypeParameter:
-          type: boolean
-          readOnly: true
-        IsGenericMethodParameter:
-          type: boolean
-          readOnly: true
-        IsGenericType:
-          type: boolean
-          readOnly: true
-        IsGenericTypeDefinition:
-          type: boolean
-          readOnly: true
-        IsSZArray:
-          type: boolean
-          readOnly: true
-        IsVariableBoundArray:
-          type: boolean
-          readOnly: true
-        IsByRefLike:
-          type: boolean
-          readOnly: true
-        IsFunctionPointer:
-          type: boolean
-          readOnly: true
-        IsUnmanagedFunctionPointer:
-          type: boolean
-          readOnly: true
-        HasElementType:
-          type: boolean
-          readOnly: true
-        GenericTypeArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Type'
-          readOnly: true
-        GenericParameterPosition:
-          type: integer
-          format: int32
-          readOnly: true
-        GenericParameterAttributes:
-          $ref: '#/components/schemas/GenericParameterAttributes'
         Attributes:
-          $ref: '#/components/schemas/TypeAttributes'
-        IsAbstract:
+          $ref: '#/components/schemas/FieldAttributes'
+        FieldType:
+          $ref: '#/components/schemas/Type'
+        IsInitOnly:
           type: boolean
           readOnly: true
-        IsImport:
+        IsLiteral:
           type: boolean
           readOnly: true
-        IsSealed:
+        IsNotSerialized:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        IsPinvokeImpl:
           type: boolean
           readOnly: true
         IsSpecialName:
           type: boolean
           readOnly: true
-        IsClass:
+        IsStatic:
           type: boolean
           readOnly: true
-        IsNestedAssembly:
+        IsAssembly:
           type: boolean
           readOnly: true
-        IsNestedFamANDAssem:
+        IsFamily:
           type: boolean
           readOnly: true
-        IsNestedFamily:
+        IsFamilyAndAssembly:
           type: boolean
           readOnly: true
-        IsNestedFamORAssem:
+        IsFamilyOrAssembly:
           type: boolean
           readOnly: true
-        IsNestedPrivate:
-          type: boolean
-          readOnly: true
-        IsNestedPublic:
-          type: boolean
-          readOnly: true
-        IsNotPublic:
+        IsPrivate:
           type: boolean
           readOnly: true
         IsPublic:
-          type: boolean
-          readOnly: true
-        IsAutoLayout:
-          type: boolean
-          readOnly: true
-        IsExplicitLayout:
-          type: boolean
-          readOnly: true
-        IsLayoutSequential:
-          type: boolean
-          readOnly: true
-        IsAnsiClass:
-          type: boolean
-          readOnly: true
-        IsAutoClass:
-          type: boolean
-          readOnly: true
-        IsUnicodeClass:
-          type: boolean
-          readOnly: true
-        IsCOMObject:
-          type: boolean
-          readOnly: true
-        IsContextful:
-          type: boolean
-          readOnly: true
-        IsEnum:
-          type: boolean
-          readOnly: true
-        IsMarshalByRef:
-          type: boolean
-          readOnly: true
-        IsPrimitive:
-          type: boolean
-          readOnly: true
-        IsValueType:
-          type: boolean
-          readOnly: true
-        IsSignatureType:
           type: boolean
           readOnly: true
         IsSecurityCritical:
@@ -1566,28 +1431,516 @@ components:
         IsSecurityTransparent:
           type: boolean
           readOnly: true
-        StructLayoutAttribute:
-          $ref: '#/components/schemas/StructLayoutAttribute'
-        TypeInitializer:
-          $ref: '#/components/schemas/ConstructorInfo'
-        TypeHandle:
-          $ref: '#/components/schemas/RuntimeTypeHandle'
-        GUID:
-          type: string
-          format: uuid
+        FieldHandle:
+          $ref: '#/components/schemas/RuntimeFieldHandle'
+      additionalProperties: false
+    ConfigCustomDisplayColumns:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Flow:
+          type:
+          - string
+          - 'null'
+        DisplayType:
+          type:
+          - string
+          - 'null'
+        FieldName:
+          type:
+          - string
+          - 'null'
+        FieldType:
+          type:
+          - string
+          - 'null'
+        FieldLength:
+          type: integer
+          format: int32
+        Scale:
+          type: integer
+          format: int32
+        Label:
+          type:
+          - string
+          - 'null'
+        Sequence:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        IsSortable:
+          type: boolean
+        IsEditable:
+          type: boolean
+        IsCalculated:
+          type: boolean
+        IsPricePoint:
+          type:
+          - boolean
+          - 'null'
+        HeaderStyle:
+          type:
+          - string
+          - 'null'
+        Style:
+          type:
+          - string
+          - 'null'
+        StyleClass:
+          type:
+          - string
+          - 'null'
+        ObjectType:
+          type:
+          - string
+          - 'null'
+        SObjectName:
+          type:
+          - string
+          - 'null'
+        Controller:
+          type:
+          - string
+          - 'null'
+        IsRichTextchText:
+          type: boolean
+      additionalProperties: false
+    IntPtr:
+      type: object
+      additionalProperties: false
+    ViewSort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        Direction:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RevenueException:
+      type: object
+      properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
           readOnly: true
-        BaseType:
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    CustomAttributeData:
+      type: object
+      properties:
+        AttributeType:
           $ref: '#/components/schemas/Type'
-        IsSerializable:
+        Constructor:
+          $ref: '#/components/schemas/ConstructorInfo'
+        ConstructorArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeTypedArgument'
+          readOnly: true
+        NamedArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeNamedArgument'
+          readOnly: true
+      additionalProperties: false
+    MethodInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
           type: boolean
           readOnly: true
-          deprecated: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
         ContainsGenericParameters:
           type: boolean
           readOnly: true
-        IsVisible:
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
           type: boolean
           readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        ReturnParameter:
+          $ref: '#/components/schemas/ParameterInfo'
+        ReturnType:
+          $ref: '#/components/schemas/Type'
+        ReturnTypeCustomAttributes:
+          $ref: '#/components/schemas/ICustomAttributeProvider'
+      additionalProperties: false
+    CustomAttributeTypedArgument:
+      type: object
+      properties:
+        ArgumentType:
+          $ref: '#/components/schemas/Type'
+        Value: {}
+      additionalProperties: false
+    RuntimeTypeHandle:
+      type: object
+      properties:
+        Value:
+          $ref: '#/components/schemas/IntPtr'
+      additionalProperties: false
+    Flow:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+      example:
+        Name: FlowName
+        Description: Flow description
+    ModuleHandle:
+      type: object
+      properties:
+        MDStreamVersion:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    CallingConventions:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 32
+      - 64
+      type: integer
+      format: int32
+    MethodImplAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 4096
+      - 65535
+      type: integer
+      format: int32
+    EventInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Attributes:
+          $ref: '#/components/schemas/EventAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        AddMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RemoveMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        RaiseMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        IsMulticast:
+          type: boolean
+          readOnly: true
+        EventHandlerType:
+          $ref: '#/components/schemas/Type'
+      additionalProperties: false
+    EventAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      type: integer
+      format: int32
+    ViewFilter:
+      type: object
+      properties:
+        Field:
+          type:
+          - string
+          - 'null'
+        Operator:
+          type:
+          - string
+          - 'null'
+        Value:
+          type:
+          - string
+          - 'null'
+        MatchParentLinesOnly:
+          type: boolean
+        SelectAllQualifiedLines:
+          type: boolean
+      additionalProperties: false
+    ConstructorInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        Attributes:
+          $ref: '#/components/schemas/MethodAttributes'
+        MethodImplementationFlags:
+          $ref: '#/components/schemas/MethodImplAttributes'
+        CallingConvention:
+          $ref: '#/components/schemas/CallingConventions'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsConstructor:
+          type: boolean
+          readOnly: true
+        IsFinal:
+          type: boolean
+          readOnly: true
+        IsHideBySig:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsStatic:
+          type: boolean
+          readOnly: true
+        IsVirtual:
+          type: boolean
+          readOnly: true
+        IsAssembly:
+          type: boolean
+          readOnly: true
+        IsFamily:
+          type: boolean
+          readOnly: true
+        IsFamilyAndAssembly:
+          type: boolean
+          readOnly: true
+        IsFamilyOrAssembly:
+          type: boolean
+          readOnly: true
+        IsPrivate:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethod:
+          type: boolean
+          readOnly: true
+        IsGenericMethodDefinition:
+          type: boolean
+          readOnly: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        MethodHandle:
+          $ref: '#/components/schemas/RuntimeMethodHandle'
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+      additionalProperties: false
+    PropertyAttributes:
+      enum:
+      - 0
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 62464
+      type: integer
+      format: int32
+    StructLayoutAttribute:
+      type: object
+      properties:
+        TypeId:
+          readOnly: true
+        Value:
+          $ref: '#/components/schemas/LayoutKind'
       additionalProperties: false
     TypeInfo:
       type: object
@@ -1882,27 +2235,331 @@ components:
             $ref: '#/components/schemas/Type'
           readOnly: true
       additionalProperties: false
-    LayoutKind:
-      enum:
-      - 0
-      - 2
-      - 3
-      type: integer
-      format: int32
-    RuntimeFieldHandle:
+    RuntimeMethodHandle:
       type: object
       properties:
         Value:
           $ref: '#/components/schemas/IntPtr'
       additionalProperties: false
-    ICustomAttributeProvider:
-      type: object
-      additionalProperties: false
-    MemberInfo:
+    MemberTypes:
+      enum:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 191
+      type: integer
+      format: int32
+    Exception:
       type: object
       properties:
+        TargetSite:
+          $ref: '#/components/schemas/MethodBase'
+        Message:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Data:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        InnerException:
+          $ref: '#/components/schemas/Exception'
+        HelpLink:
+          type:
+          - string
+          - 'null'
+        Source:
+          type:
+          - string
+          - 'null'
+        HResult:
+          type: integer
+          format: int32
+        StackTrace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    GenericParameterAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 16
+      - 28
+      type: integer
+      format: int32
+    MethodAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 53248
+      type: integer
+      format: int32
+    Type:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+        IsInterface:
+          type: boolean
+          readOnly: true
         MemberType:
           $ref: '#/components/schemas/MemberTypes'
+        Namespace:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        AssemblyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        Module:
+          $ref: '#/components/schemas/Module'
+        IsNested:
+          type: boolean
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        DeclaringMethod:
+          $ref: '#/components/schemas/MethodBase'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        UnderlyingSystemType:
+          $ref: '#/components/schemas/Type'
+        IsTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsArray:
+          type: boolean
+          readOnly: true
+        IsByRef:
+          type: boolean
+          readOnly: true
+        IsPointer:
+          type: boolean
+          readOnly: true
+        IsConstructedGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericParameter:
+          type: boolean
+          readOnly: true
+        IsGenericTypeParameter:
+          type: boolean
+          readOnly: true
+        IsGenericMethodParameter:
+          type: boolean
+          readOnly: true
+        IsGenericType:
+          type: boolean
+          readOnly: true
+        IsGenericTypeDefinition:
+          type: boolean
+          readOnly: true
+        IsSZArray:
+          type: boolean
+          readOnly: true
+        IsVariableBoundArray:
+          type: boolean
+          readOnly: true
+        IsByRefLike:
+          type: boolean
+          readOnly: true
+        IsFunctionPointer:
+          type: boolean
+          readOnly: true
+        IsUnmanagedFunctionPointer:
+          type: boolean
+          readOnly: true
+        HasElementType:
+          type: boolean
+          readOnly: true
+        GenericTypeArguments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        GenericParameterPosition:
+          type: integer
+          format: int32
+          readOnly: true
+        GenericParameterAttributes:
+          $ref: '#/components/schemas/GenericParameterAttributes'
+        Attributes:
+          $ref: '#/components/schemas/TypeAttributes'
+        IsAbstract:
+          type: boolean
+          readOnly: true
+        IsImport:
+          type: boolean
+          readOnly: true
+        IsSealed:
+          type: boolean
+          readOnly: true
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        IsClass:
+          type: boolean
+          readOnly: true
+        IsNestedAssembly:
+          type: boolean
+          readOnly: true
+        IsNestedFamANDAssem:
+          type: boolean
+          readOnly: true
+        IsNestedFamily:
+          type: boolean
+          readOnly: true
+        IsNestedFamORAssem:
+          type: boolean
+          readOnly: true
+        IsNestedPrivate:
+          type: boolean
+          readOnly: true
+        IsNestedPublic:
+          type: boolean
+          readOnly: true
+        IsNotPublic:
+          type: boolean
+          readOnly: true
+        IsPublic:
+          type: boolean
+          readOnly: true
+        IsAutoLayout:
+          type: boolean
+          readOnly: true
+        IsExplicitLayout:
+          type: boolean
+          readOnly: true
+        IsLayoutSequential:
+          type: boolean
+          readOnly: true
+        IsAnsiClass:
+          type: boolean
+          readOnly: true
+        IsAutoClass:
+          type: boolean
+          readOnly: true
+        IsUnicodeClass:
+          type: boolean
+          readOnly: true
+        IsCOMObject:
+          type: boolean
+          readOnly: true
+        IsContextful:
+          type: boolean
+          readOnly: true
+        IsEnum:
+          type: boolean
+          readOnly: true
+        IsMarshalByRef:
+          type: boolean
+          readOnly: true
+        IsPrimitive:
+          type: boolean
+          readOnly: true
+        IsValueType:
+          type: boolean
+          readOnly: true
+        IsSignatureType:
+          type: boolean
+          readOnly: true
+        IsSecurityCritical:
+          type: boolean
+          readOnly: true
+        IsSecuritySafeCritical:
+          type: boolean
+          readOnly: true
+        IsSecurityTransparent:
+          type: boolean
+          readOnly: true
+        StructLayoutAttribute:
+          $ref: '#/components/schemas/StructLayoutAttribute'
+        TypeInitializer:
+          $ref: '#/components/schemas/ConstructorInfo'
+        TypeHandle:
+          $ref: '#/components/schemas/RuntimeTypeHandle'
+        GUID:
+          type: string
+          format: uuid
+          readOnly: true
+        BaseType:
+          $ref: '#/components/schemas/Type'
+        IsSerializable:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        ContainsGenericParameters:
+          type: boolean
+          readOnly: true
+        IsVisible:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    PropertyInfo:
+      type: object
+      properties:
         Name:
           type:
           - string
@@ -1928,6 +2585,25 @@ components:
           type: integer
           format: int32
           readOnly: true
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        PropertyType:
+          $ref: '#/components/schemas/Type'
+        Attributes:
+          $ref: '#/components/schemas/PropertyAttributes'
+        IsSpecialName:
+          type: boolean
+          readOnly: true
+        CanRead:
+          type: boolean
+          readOnly: true
+        CanWrite:
+          type: boolean
+          readOnly: true
+        GetMethod:
+          $ref: '#/components/schemas/MethodInfo'
+        SetMethod:
+          $ref: '#/components/schemas/MethodInfo'
       additionalProperties: false
     ParameterInfo:
       type: object
@@ -1981,6 +2657,217 @@ components:
           format: int32
           readOnly: true
       additionalProperties: false
+    FieldAttributes:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 4096
+      - 8192
+      - 32768
+      - 38144
+      type: integer
+      format: int32
+    LayoutKind:
+      enum:
+      - 0
+      - 2
+      - 3
+      type: integer
+      format: int32
+    MemberInfo:
+      type: object
+      properties:
+        MemberType:
+          $ref: '#/components/schemas/MemberTypes'
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        DeclaringType:
+          $ref: '#/components/schemas/Type'
+        ReflectedType:
+          $ref: '#/components/schemas/Type'
+        Module:
+          $ref: '#/components/schemas/Module'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    CustomAttributeNamedArgument:
+      type: object
+      properties:
+        MemberInfo:
+          $ref: '#/components/schemas/MemberInfo'
+        TypedValue:
+          $ref: '#/components/schemas/CustomAttributeTypedArgument'
+        MemberName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        IsField:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    Module:
+      type: object
+      properties:
+        Assembly:
+          $ref: '#/components/schemas/Assembly'
+        FullyQualifiedName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        Name:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        MDStreamVersion:
+          type: integer
+          format: int32
+          readOnly: true
+        ModuleVersionId:
+          type: string
+          format: uuid
+          readOnly: true
+        ScopeName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ModuleHandle:
+          $ref: '#/components/schemas/ModuleHandle'
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        MetadataToken:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    Assembly:
+      type: object
+      properties:
+        DefinedTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TypeInfo'
+          readOnly: true
+        ExportedTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Type'
+          readOnly: true
+        CodeBase:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+          deprecated: true
+        EntryPoint:
+          $ref: '#/components/schemas/MethodInfo'
+        FullName:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ImageRuntimeVersion:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        IsDynamic:
+          type: boolean
+          readOnly: true
+        Location:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        ReflectionOnly:
+          type: boolean
+          readOnly: true
+        IsCollectible:
+          type: boolean
+          readOnly: true
+        IsFullyTrusted:
+          type: boolean
+          readOnly: true
+        CustomAttributes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomAttributeData'
+          readOnly: true
+        EscapedCodeBase:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+          deprecated: true
+        ManifestModule:
+          $ref: '#/components/schemas/Module'
+        Modules:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Module'
+          readOnly: true
+        GlobalAssemblyCache:
+          type: boolean
+          readOnly: true
+          deprecated: true
+        HostContext:
+          type: integer
+          format: int64
+          readOnly: true
+        SecurityRuleSet:
+          $ref: '#/components/schemas/SecurityRuleSet'
+      additionalProperties: false
+    SecurityRuleSet:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      format: int32
     View:
       type: object
       properties:
@@ -2114,280 +3001,7 @@ components:
           SObjectName: null
           Controller: null
           IsRichTextchText: null
-    MethodInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        Attributes:
-          $ref: '#/components/schemas/MethodAttributes'
-        MethodImplementationFlags:
-          $ref: '#/components/schemas/MethodImplAttributes'
-        CallingConvention:
-          $ref: '#/components/schemas/CallingConventions'
-        IsAbstract:
-          type: boolean
-          readOnly: true
-        IsConstructor:
-          type: boolean
-          readOnly: true
-        IsFinal:
-          type: boolean
-          readOnly: true
-        IsHideBySig:
-          type: boolean
-          readOnly: true
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        IsStatic:
-          type: boolean
-          readOnly: true
-        IsVirtual:
-          type: boolean
-          readOnly: true
-        IsAssembly:
-          type: boolean
-          readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethodDefinition:
-          type: boolean
-          readOnly: true
-        ContainsGenericParameters:
-          type: boolean
-          readOnly: true
-        MethodHandle:
-          $ref: '#/components/schemas/RuntimeMethodHandle'
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        ReturnParameter:
-          $ref: '#/components/schemas/ParameterInfo'
-        ReturnType:
-          $ref: '#/components/schemas/Type'
-        ReturnTypeCustomAttributes:
-          $ref: '#/components/schemas/ICustomAttributeProvider'
-      additionalProperties: false
-    ViewFilter:
-      type: object
-      properties:
-        Field:
-          type:
-          - string
-          - 'null'
-        Operator:
-          type:
-          - string
-          - 'null'
-        Value:
-          type:
-          - string
-          - 'null'
-        MatchParentLinesOnly:
-          type: boolean
-        SelectAllQualifiedLines:
-          type: boolean
-      additionalProperties: false
-    Assembly:
-      type: object
-      properties:
-        DefinedTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/TypeInfo'
-          readOnly: true
-        ExportedTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Type'
-          readOnly: true
-        CodeBase:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-          deprecated: true
-        EntryPoint:
-          $ref: '#/components/schemas/MethodInfo'
-        FullName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        ImageRuntimeVersion:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        IsDynamic:
-          type: boolean
-          readOnly: true
-        Location:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        ReflectionOnly:
-          type: boolean
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        IsFullyTrusted:
-          type: boolean
-          readOnly: true
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        EscapedCodeBase:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-          deprecated: true
-        ManifestModule:
-          $ref: '#/components/schemas/Module'
-        Modules:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Module'
-          readOnly: true
-        GlobalAssemblyCache:
-          type: boolean
-          readOnly: true
-          deprecated: true
-        HostContext:
-          type: integer
-          format: int64
-          readOnly: true
-        SecurityRuleSet:
-          $ref: '#/components/schemas/SecurityRuleSet'
-      additionalProperties: false
-    RuntimeMethodHandle:
-      type: object
-      properties:
-        Value:
-          $ref: '#/components/schemas/IntPtr'
-      additionalProperties: false
-    RevenueException:
-      type: object
-      properties:
-        TargetSite:
-          $ref: '#/components/schemas/MethodBase'
-        Message:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          readOnly: true
-        InnerException:
-          $ref: '#/components/schemas/Exception'
-        HelpLink:
-          type:
-          - string
-          - 'null'
-        Source:
-          type:
-          - string
-          - 'null'
-        HResult:
-          type: integer
-          format: int32
-        StackTrace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    CustomAttributeData:
-      type: object
-      properties:
-        AttributeType:
-          $ref: '#/components/schemas/Type'
-        Constructor:
-          $ref: '#/components/schemas/ConstructorInfo'
-        ConstructorArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeTypedArgument'
-          readOnly: true
-        NamedArguments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeNamedArgument'
-          readOnly: true
-      additionalProperties: false
-    FieldAttributes:
+    TypeAttributes:
       enum:
       - 0
       - 1
@@ -2397,44 +3011,24 @@ components:
       - 5
       - 6
       - 7
+      - 8
       - 16
+      - 24
       - 32
-      - 64
       - 128
       - 256
-      - 512
       - 1024
+      - 2048
       - 4096
       - 8192
-      - 32768
-      - 38144
-      type: integer
-      format: int32
-    IntPtr:
-      type: object
-      additionalProperties: false
-    Flow:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        Description:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-      example:
-        Name: FlowName
-        Description: Flow description
-    CallingConventions:
-      enum:
-      - 1
-      - 2
-      - 3
-      - 32
-      - 64
+      - 16384
+      - 65536
+      - 131072
+      - 196608
+      - 262144
+      - 264192
+      - 1048576
+      - 12582912
       type: integer
       format: int32
     ParameterAttributes:
@@ -2450,518 +3044,6 @@ components:
       - 16384
       - 32768
       - 61440
-      type: integer
-      format: int32
-    FieldInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        Attributes:
-          $ref: '#/components/schemas/FieldAttributes'
-        FieldType:
-          $ref: '#/components/schemas/Type'
-        IsInitOnly:
-          type: boolean
-          readOnly: true
-        IsLiteral:
-          type: boolean
-          readOnly: true
-        IsNotSerialized:
-          type: boolean
-          readOnly: true
-          deprecated: true
-        IsPinvokeImpl:
-          type: boolean
-          readOnly: true
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        IsStatic:
-          type: boolean
-          readOnly: true
-        IsAssembly:
-          type: boolean
-          readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        FieldHandle:
-          $ref: '#/components/schemas/RuntimeFieldHandle'
-      additionalProperties: false
-    CustomAttributeNamedArgument:
-      type: object
-      properties:
-        MemberInfo:
-          $ref: '#/components/schemas/MemberInfo'
-        TypedValue:
-          $ref: '#/components/schemas/CustomAttributeTypedArgument'
-        MemberName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        IsField:
-          type: boolean
-          readOnly: true
-      additionalProperties: false
-    ViewSort:
-      type: object
-      properties:
-        FieldName:
-          type:
-          - string
-          - 'null'
-        Direction:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    PropertyAttributes:
-      enum:
-      - 0
-      - 512
-      - 1024
-      - 4096
-      - 8192
-      - 16384
-      - 32768
-      - 62464
-      type: integer
-      format: int32
-    ConfigCustomDisplayColumns:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        Flow:
-          type:
-          - string
-          - 'null'
-        DisplayType:
-          type:
-          - string
-          - 'null'
-        FieldName:
-          type:
-          - string
-          - 'null'
-        FieldType:
-          type:
-          - string
-          - 'null'
-        FieldLength:
-          type: integer
-          format: int32
-        Scale:
-          type: integer
-          format: int32
-        Label:
-          type:
-          - string
-          - 'null'
-        Sequence:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        IsSortable:
-          type: boolean
-        IsEditable:
-          type: boolean
-        IsCalculated:
-          type: boolean
-        IsPricePoint:
-          type:
-          - boolean
-          - 'null'
-        HeaderStyle:
-          type:
-          - string
-          - 'null'
-        Style:
-          type:
-          - string
-          - 'null'
-        StyleClass:
-          type:
-          - string
-          - 'null'
-        ObjectType:
-          type:
-          - string
-          - 'null'
-        SObjectName:
-          type:
-          - string
-          - 'null'
-        Controller:
-          type:
-          - string
-          - 'null'
-        IsRichTextchText:
-          type: boolean
-      additionalProperties: false
-    SecurityRuleSet:
-      enum:
-      - 0
-      - 1
-      - 2
-      type: integer
-      format: int32
-    CustomAttributeTypedArgument:
-      type: object
-      properties:
-        ArgumentType:
-          $ref: '#/components/schemas/Type'
-        Value: {}
-      additionalProperties: false
-    Module:
-      type: object
-      properties:
-        Assembly:
-          $ref: '#/components/schemas/Assembly'
-        FullyQualifiedName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        MDStreamVersion:
-          type: integer
-          format: int32
-          readOnly: true
-        ModuleVersionId:
-          type: string
-          format: uuid
-          readOnly: true
-        ScopeName:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        ModuleHandle:
-          $ref: '#/components/schemas/ModuleHandle'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-      additionalProperties: false
-    EventAttributes:
-      enum:
-      - 0
-      - 512
-      - 1024
-      type: integer
-      format: int32
-    Exception:
-      type: object
-      properties:
-        TargetSite:
-          $ref: '#/components/schemas/MethodBase'
-        Message:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        Data:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          readOnly: true
-        InnerException:
-          $ref: '#/components/schemas/Exception'
-        HelpLink:
-          type:
-          - string
-          - 'null'
-        Source:
-          type:
-          - string
-          - 'null'
-        HResult:
-          type: integer
-          format: int32
-        StackTrace:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    ModuleHandle:
-      type: object
-      properties:
-        MDStreamVersion:
-          type: integer
-          format: int32
-          readOnly: true
-      additionalProperties: false
-    RuntimeTypeHandle:
-      type: object
-      properties:
-        Value:
-          $ref: '#/components/schemas/IntPtr'
-      additionalProperties: false
-    ConstructorInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        Attributes:
-          $ref: '#/components/schemas/MethodAttributes'
-        MethodImplementationFlags:
-          $ref: '#/components/schemas/MethodImplAttributes'
-        CallingConvention:
-          $ref: '#/components/schemas/CallingConventions'
-        IsAbstract:
-          type: boolean
-          readOnly: true
-        IsConstructor:
-          type: boolean
-          readOnly: true
-        IsFinal:
-          type: boolean
-          readOnly: true
-        IsHideBySig:
-          type: boolean
-          readOnly: true
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        IsStatic:
-          type: boolean
-          readOnly: true
-        IsVirtual:
-          type: boolean
-          readOnly: true
-        IsAssembly:
-          type: boolean
-          readOnly: true
-        IsFamily:
-          type: boolean
-          readOnly: true
-        IsFamilyAndAssembly:
-          type: boolean
-          readOnly: true
-        IsFamilyOrAssembly:
-          type: boolean
-          readOnly: true
-        IsPrivate:
-          type: boolean
-          readOnly: true
-        IsPublic:
-          type: boolean
-          readOnly: true
-        IsConstructedGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethod:
-          type: boolean
-          readOnly: true
-        IsGenericMethodDefinition:
-          type: boolean
-          readOnly: true
-        ContainsGenericParameters:
-          type: boolean
-          readOnly: true
-        MethodHandle:
-          $ref: '#/components/schemas/RuntimeMethodHandle'
-        IsSecurityCritical:
-          type: boolean
-          readOnly: true
-        IsSecuritySafeCritical:
-          type: boolean
-          readOnly: true
-        IsSecurityTransparent:
-          type: boolean
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-      additionalProperties: false
-    GenericParameterAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 8
-      - 16
-      - 28
-      type: integer
-      format: int32
-    EventInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        Attributes:
-          $ref: '#/components/schemas/EventAttributes'
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        AddMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        RemoveMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        RaiseMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        IsMulticast:
-          type: boolean
-          readOnly: true
-        EventHandlerType:
-          $ref: '#/components/schemas/Type'
-      additionalProperties: false
-    MethodAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 1024
-      - 2048
-      - 4096
-      - 8192
-      - 16384
-      - 32768
-      - 53248
-      type: integer
-      format: int32
-    MethodImplAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 4096
-      - 65535
       type: integer
       format: int32
     MethodBase:
@@ -3063,97 +3145,15 @@ components:
           type: boolean
           readOnly: true
       additionalProperties: false
-    TypeAttributes:
-      enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 16
-      - 24
-      - 32
-      - 128
-      - 256
-      - 1024
-      - 2048
-      - 4096
-      - 8192
-      - 16384
-      - 65536
-      - 131072
-      - 196608
-      - 262144
-      - 264192
-      - 1048576
-      - 12582912
-      type: integer
-      format: int32
-    PropertyInfo:
+    RuntimeFieldHandle:
       type: object
       properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        DeclaringType:
-          $ref: '#/components/schemas/Type'
-        ReflectedType:
-          $ref: '#/components/schemas/Type'
-        Module:
-          $ref: '#/components/schemas/Module'
-        CustomAttributes:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomAttributeData'
-          readOnly: true
-        IsCollectible:
-          type: boolean
-          readOnly: true
-        MetadataToken:
-          type: integer
-          format: int32
-          readOnly: true
-        MemberType:
-          $ref: '#/components/schemas/MemberTypes'
-        PropertyType:
-          $ref: '#/components/schemas/Type'
-        Attributes:
-          $ref: '#/components/schemas/PropertyAttributes'
-        IsSpecialName:
-          type: boolean
-          readOnly: true
-        CanRead:
-          type: boolean
-          readOnly: true
-        CanWrite:
-          type: boolean
-          readOnly: true
-        GetMethod:
-          $ref: '#/components/schemas/MethodInfo'
-        SetMethod:
-          $ref: '#/components/schemas/MethodInfo'
+        Value:
+          $ref: '#/components/schemas/IntPtr'
       additionalProperties: false
-    MemberTypes:
-      enum:
-      - 1
-      - 2
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 191
-      type: integer
-      format: int32
+    ICustomAttributeProvider:
+      type: object
+      additionalProperties: false
   securitySchemes:
     Bearer:
       type: apiKey
