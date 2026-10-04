@@ -28,6 +28,26 @@ paths:
       - JWT: []
 components:
   schemas:
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
     HttpStatusCode:
       type: string
       description: ''
@@ -167,59 +187,6 @@ components:
       - LoopDetected
       - NotExtended
       - NetworkAuthenticationRequired
-    ComposerResponse:
-      type: object
-      description: Represents a result of some operation, with status information and possibly an error.
-      additionalProperties: false
-      properties:
-        errors:
-          type: array
-          description: List of errors
-          items:
-            $ref: '#/components/schemas/Errors'
-        debugInfo:
-          description: Stack trace
-          oneOf:
-          - $ref: '#/components/schemas/DebugInfo'
-        isSuccess:
-          type: boolean
-          description: Gets a value indicating whether the result is a success result.
-        isFailure:
-          type: boolean
-          description: Gets a value indicating whether the result is a failure result.
-    Errors:
-      type: object
-      description: Error response
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique ID
-          format: guid
-        title:
-          type: string
-          description: Error title
-        details:
-          type: string
-          description: Error description
-        status:
-          description: Status code
-          oneOf:
-          - $ref: '#/components/schemas/HttpStatusCode'
-        code:
-          description: Unique Response code. This enum is foreseeably used by UI
-          oneOf:
-          - $ref: '#/components/schemas/ResponseStatusCode'
-    DebugInfo:
-      type: object
-      description: Model to capture stack trace information
-      additionalProperties: false
-      properties:
-        stackTrace:
-          type: array
-          description: Stack trace of code flow
-          items:
-            type: string
     ResponseStatusCode:
       type: string
       description: Application-specific error code identified by Composer UI\
@@ -303,6 +270,39 @@ components:
       - FILE_NOT_FOUND
       - UNSUPPORTED_CUSTOMBRANDINGID
       - INVALID_CUSTOMBRANDINGID
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
+    Errors:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
+          oneOf:
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
   securitySchemes:
     JWT:
       type: apiKey

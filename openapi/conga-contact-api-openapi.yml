@@ -853,6 +853,23 @@ paths:
     - url: https://xauthor-preview-rls09.congacloud.com
 components:
   schemas:
+    Sort:
+      type: object
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
+      additionalProperties: false
+      description: Sort information for records.
+    DeleteByField:
+      enum:
+      - Id
+      - ExternalId
+      type: string
     HttpStatusCode:
       enum:
       - Continue
@@ -917,61 +934,52 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    UpdateByField:
-      enum:
-      - Id
-      - ExternalId
-      type: string
-    StringAPIResponse:
+    Query:
       type: object
       properties:
-        Success:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Name of object on which querying needs to be done.
+        Criteria:
+          type:
+          - string
+          - 'null'
+        Select:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The fields which are to be displayed.
+        Distinct:
           type: boolean
-        RecordCount:
+          description: Select true to get distinct records
+        Limit:
           type:
           - integer
           - 'null'
-          format: int64
-        Data:
+          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
+          format: int32
+        Skip:
           type:
-          - string
+          - integer
           - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
+          description: Number of records to be skipped.
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+        GroupBy:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ErrorDetail'
+            type: string
+          description: List of field names which are to be grouped.
       additionalProperties: false
-    DeleteByField:
-      enum:
-      - Id
-      - ExternalId
-      type: string
-    BooleanNullableAPIResponse:
+      description: Schema Model for Query
+    StringObjectDictionaryAPIResponse:
       type: object
       properties:
         Success:
@@ -983,8 +991,9 @@ components:
           format: int64
         Data:
           type:
-          - boolean
+          - object
           - 'null'
+          additionalProperties: {}
         Errors:
           type:
           - array
@@ -1066,18 +1075,62 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    DeleteBehaviour:
+      enum:
+      - SoftDelete
+      - HardDelete
+      type: string
     OrderBy:
       enum:
       - Ascending
       - Descending
       type: string
-    ErrorDetail:
+    StringObjectDictionaryListAPIResponse:
       type: object
       properties:
-        Message:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     ContactRequestExample:
       type: object
@@ -1286,52 +1339,7 @@ components:
           description: Title
       additionalProperties: false
       description: Contact Request Example
-    Query:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Name of object on which querying needs to be done.
-        Criteria:
-          type:
-          - string
-          - 'null'
-        Select:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The fields which are to be displayed.
-        Distinct:
-          type: boolean
-          description: Select true to get distinct records
-        Limit:
-          type:
-          - integer
-          - 'null'
-          description: 'Limit set for records to be fetched. **For example**: Limit = 100, This will fetch 100 records matching the criteria.'
-          format: int32
-        Skip:
-          type:
-          - integer
-          - 'null'
-          description: Number of records to be skipped.
-          format: int32
-        Sort:
-          $ref: '#/components/schemas/Sort'
-        GroupBy:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: List of field names which are to be grouped.
-      additionalProperties: false
-      description: Schema Model for Query
-    StringObjectDictionaryAPIResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -1343,9 +1351,8 @@ components:
           format: int64
         Data:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: {}
         Errors:
           type:
           - array
@@ -1376,69 +1383,62 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    DeleteBehaviour:
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    UpdateByField:
       enum:
-      - SoftDelete
-      - HardDelete
+      - Id
+      - ExternalId
       type: string
-    Sort:
+    ErrorDetail:
       type: object
       properties:
-        FieldName:
+        Message:
           type:
           - string
           - 'null'
-          description: 'Field name for sort. **For example**: FirstName. <p>**Note**: The sort field (in this case, FirstName) should be indexed or sortable.</p>'
-        OrderBy:
-          $ref: '#/components/schemas/OrderBy'
-      additionalProperties: false
-      description: Sort information for records.
-    StringObjectDictionaryListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
   securitySchemes:
     Bearer:

@@ -3868,12 +3868,93 @@ paths:
     - url: https://rls.congacloud.com/api/ingress
 components:
   schemas:
-    Metadata:
+    FieldValidation:
       type: object
-      description: 'Metadata object for storing custom key-value pairs on documents.
-
-        Internal metadata defined by OneSpan cannot be updated and will be ignored.'
-      additionalProperties: {}
+      description: Field validation object
+      additionalProperties: false
+      properties:
+        enum:
+          type: array
+          items:
+            type: string
+        errorCode:
+          type:
+          - integer
+          - 'null'
+          description: Field validation error code.
+          format: int32
+        errorMessage:
+          type: string
+          description: "Field validation error message.\n            "
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation maximum length.
+          format: int32
+        minLength:
+          type:
+          - integer
+          - 'null'
+          description: Field validation minimum length.
+          format: int32
+        pattern:
+          type: string
+          description: Pattern
+        required:
+          type: boolean
+          description: Determines if field is required
+        group:
+          type: string
+          description: Field validation group.
+        minimumRequired:
+          type:
+          - integer
+          - 'null'
+          description: Minimum Required (Grouped Checkboxes)
+          format: int32
+    DocumentVisibility:
+      type: object
+      description: Object to manage document visibility
+      additionalProperties: false
+      properties:
+        configurations:
+          type: array
+          description: List of DocumentVisibilityConfigurations
+          items:
+            $ref: '#/components/schemas/DocumentVisibilityConfiguration'
+        id:
+          type: string
+          description: The id of the document
+        data:
+          type: object
+          description: Custom data related to document
+          additionalProperties: {}
+        name:
+          type: string
+          description: The name of the document
+    ImprintFieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - INPUT
+      enum:
+      - INPUT
+    Entity:
+      type: object
+      description: Object used to manage entities from Microsoft Dynamics
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom data for the entity
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique id of the entity
+        name:
+          type: string
+          description: Name of the entity
     SignedDocument:
       allOf:
       - $ref: '#/components/schemas/Document'
@@ -3946,77 +4027,46 @@ components:
           handdrawn:
             type: string
             description: Hand drawn signature string (base64)
-    ImprintFieldType:
+    AnchorPointType:
       type: string
       description: ''
       x-enumNames:
-      - INPUT
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
       enum:
-      - INPUT
-    Page:
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
+    Error2:
       type: object
-      description: Object representing a page in a document
+      description: Object representing an error condition
       additionalProperties: false
       properties:
-        height:
-          type:
-          - number
-          - 'null'
-          description: Page height
-          format: double
-        id:
-          type: string
-          description: Unique page id
-        index:
+        code:
           type:
           - integer
           - 'null'
-          description: Index of the page within the document
+          description: The error code
           format: int32
-        left:
-          type:
-          - number
-          - 'null'
-          description: Page left
-          format: double
-        top:
-          type:
-          - number
-          - 'null'
-          description: Page top
-          format: double
-        version:
-          type:
-          - integer
-          - 'null'
-          description: Version
-          format: int32
-        width:
-          type:
-          - number
-          - 'null'
-          description: Page width
-          format: double
-    DocumentVisibility:
-      type: object
-      description: Object to manage document visibility
-      additionalProperties: false
-      properties:
-        configurations:
-          type: array
-          description: List of DocumentVisibilityConfigurations
-          items:
-            $ref: '#/components/schemas/DocumentVisibilityConfiguration'
-        id:
+        entity:
+          description: The Microsoft Dynamics entity
+          oneOf:
+          - $ref: '#/components/schemas/Entity'
+        message:
           type: string
-          description: The id of the document
-        data:
-          type: object
-          description: Custom data related to document
-          additionalProperties: {}
+          description: The error message
+        messageKey:
+          type: string
+          description: The error message key
         name:
           type: string
-          description: The name of the document
+          description: The error name
+        technical:
+          type: string
+          description: Technical information about the error
     FieldType:
       type: string
       description: ''
@@ -4057,40 +4107,60 @@ components:
             If empty array is provided, all editable imprint fields will be deleted.'
           items:
             $ref: '#/components/schemas/ImprintField'
-    ImprintFieldSubType:
-      type: string
-      description: ''
-      x-enumNames:
-      - LABEL
-      enum:
-      - LABEL
-    Error2:
+    ExtractAnchor:
       type: object
-      description: Object representing an error condition
+      description: Text extraction anchor object.
       additionalProperties: false
       properties:
-        code:
-          type:
-          - integer
-          - 'null'
-          description: The error code
-          format: int32
-        entity:
-          description: The Microsoft Dynamics entity
+        anchorPoint:
+          description: Which corner of the specified character to use as the base for calculating position
           oneOf:
-          - $ref: '#/components/schemas/Entity'
-        message:
+          - $ref: '#/components/schemas/AnchorPointType'
+        characterIndex:
+          type: integer
+          description: The index of the character within the Anchor Text that will be used to calculate position
+          format: int32
+        height:
+          type: integer
+          description: The height of the field position to be calculated
+          format: int32
+        index:
+          type: integer
+          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
+          format: int32
+        leftOffset:
+          type: integer
+          description: An absolute offset applied to the final x value
+          format: int32
+        text:
           type: string
-          description: The error message
-        messageKey:
+          description: The exact string that will be searched for in the uploaded document
+        topOffset:
+          type: integer
+          description: An absolute offset applied to the final y value
+          format: int32
+        width:
+          type: integer
+          description: The width of the field position to be calculated
+          format: int32
+    External:
+      type: object
+      description: External integration provider settings.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Provider metadata.
+          additionalProperties: {}
+        id:
           type: string
-          description: The error message key
-        name:
+          description: External integration Id.
+        provider:
           type: string
-          description: The error name
-        technical:
+          description: Provider method.
+        providerName:
           type: string
-          description: Technical information about the error
+          description: Provider name.
     ImprintField:
       type: object
       description: Imprint Field class
@@ -4161,87 +4231,154 @@ components:
         formattedValue:
           type: string
           description: Formatted Value of the Imprint Field
-    ExtractAnchor:
+    Metadata:
       type: object
-      description: Text extraction anchor object.
+      description: 'Metadata object for storing custom key-value pairs on documents.
+
+        Internal metadata defined by OneSpan cannot be updated and will be ignored.'
+      additionalProperties: {}
+    DocumentVisibilityConfiguration:
+      type: object
+      description: Object to manage document visibility
       additionalProperties: false
       properties:
-        anchorPoint:
-          description: Which corner of the specified character to use as the base for calculating position
-          oneOf:
-          - $ref: '#/components/schemas/AnchorPointType'
-        characterIndex:
-          type: integer
-          description: The index of the character within the Anchor Text that will be used to calculate position
-          format: int32
-        height:
-          type: integer
-          description: The height of the field position to be calculated
-          format: int32
-        index:
-          type: integer
-          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
-          format: int32
-        leftOffset:
-          type: integer
-          description: An absolute offset applied to the final x value
-          format: int32
-        text:
+        documentUid:
           type: string
-          description: The exact string that will be searched for in the uploaded document
-        topOffset:
-          type: integer
-          description: An absolute offset applied to the final y value
-          format: int32
-        width:
-          type: integer
-          description: The width of the field position to be calculated
-          format: int32
-    FieldValidation:
-      type: object
-      description: Field validation object
-      additionalProperties: false
-      properties:
-        enum:
+          description: Document Id
+        roleUids:
           type: array
+          description: List of Role Ids that can view the identified Document
           items:
             type: string
-        errorCode:
-          type:
-          - integer
-          - 'null'
-          description: Field validation error code.
-          format: int32
-        errorMessage:
+    SignedDocuments:
+      type: object
+      description: Object to manage signing documents via api
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of documents
+          items:
+            $ref: '#/components/schemas/Document'
+        handdrawn:
           type: string
-          description: "Field validation error message.\n            "
-        maxLength:
+          description: Hand drawn signature string
+    ImprintFieldSubType:
+      type: string
+      description: ''
+      x-enumNames:
+      - LABEL
+      enum:
+      - LABEL
+    Page:
+      type: object
+      description: Object representing a page in a document
+      additionalProperties: false
+      properties:
+        height:
           type:
-          - integer
+          - number
           - 'null'
-          description: Field validation maximum length.
-          format: int32
-        minLength:
-          type:
-          - integer
-          - 'null'
-          description: Field validation minimum length.
-          format: int32
-        pattern:
+          description: Page height
+          format: double
+        id:
           type: string
-          description: Pattern
-        required:
+          description: Unique page id
+        index:
+          type:
+          - integer
+          - 'null'
+          description: Index of the page within the document
+          format: int32
+        left:
+          type:
+          - number
+          - 'null'
+          description: Page left
+          format: double
+        top:
+          type:
+          - number
+          - 'null'
+          description: Page top
+          format: double
+        version:
+          type:
+          - integer
+          - 'null'
+          description: Version
+          format: int32
+        width:
+          type:
+          - number
+          - 'null'
+          description: Page width
+          format: double
+    Field:
+      type: object
+      description: Approval fields object.
+      additionalProperties: false
+      properties:
+        binding:
+          type: string
+          description: Binding
+        data:
+          type: object
+          description: Custom data for the field
+          additionalProperties: {}
+        extract:
           type: boolean
-          description: Determines if field is required
-        group:
+          description: Determines if field is to be extracted
+        extractAnchor:
+          description: Field extraction anchor.
+          oneOf:
+          - $ref: '#/components/schemas/ExtractAnchor'
+        height:
+          type: number
+          description: Field height.
+          format: double
+        id:
           type: string
-          description: Field validation group.
-        minimumRequired:
+          description: Field Id.
+        left:
+          type: number
+          description: X coordinate of the field
+          format: double
+        name:
+          type: string
+          description: Field name.
+        page:
+          type: integer
+          description: The document page where the field is located
+          format: int32
+        subtype:
+          type: string
+          description: Field subtype
+        top:
+          type: number
+          description: Y coordinate of the field
+          format: double
+        type:
+          description: Field type.
+          oneOf:
+          - $ref: '#/components/schemas/FieldType'
+        validation:
+          description: Field validation information
+          oneOf:
+          - $ref: '#/components/schemas/FieldValidation'
+        value:
+          type: string
+          description: The field value
+        fontSize:
           type:
           - integer
           - 'null'
-          description: Minimum Required (Grouped Checkboxes)
+          description: Field font size.
           format: int32
+        width:
+          type: number
+          description: Field width.
+          format: double
     Document:
       type: object
       additionalProperties: false
@@ -4313,112 +4450,6 @@ components:
         signerVerificationToken:
           type: string
           description: "SignerVerificationToken\n "
-    DocumentVisibilityConfiguration:
-      type: object
-      description: Object to manage document visibility
-      additionalProperties: false
-      properties:
-        documentUid:
-          type: string
-          description: Document Id
-        roleUids:
-          type: array
-          description: List of Role Ids that can view the identified Document
-          items:
-            type: string
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
-    AnchorPointType:
-      type: string
-      description: ''
-      x-enumNames:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-      enum:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-    Field:
-      type: object
-      description: Approval fields object.
-      additionalProperties: false
-      properties:
-        binding:
-          type: string
-          description: Binding
-        data:
-          type: object
-          description: Custom data for the field
-          additionalProperties: {}
-        extract:
-          type: boolean
-          description: Determines if field is to be extracted
-        extractAnchor:
-          description: Field extraction anchor.
-          oneOf:
-          - $ref: '#/components/schemas/ExtractAnchor'
-        height:
-          type: number
-          description: Field height.
-          format: double
-        id:
-          type: string
-          description: Field Id.
-        left:
-          type: number
-          description: X coordinate of the field
-          format: double
-        name:
-          type: string
-          description: Field name.
-        page:
-          type: integer
-          description: The document page where the field is located
-          format: int32
-        subtype:
-          type: string
-          description: Field subtype
-        top:
-          type: number
-          description: Y coordinate of the field
-          format: double
-        type:
-          description: Field type.
-          oneOf:
-          - $ref: '#/components/schemas/FieldType'
-        validation:
-          description: Field validation information
-          oneOf:
-          - $ref: '#/components/schemas/FieldValidation'
-        value:
-          type: string
-          description: The field value
-        fontSize:
-          type:
-          - integer
-          - 'null'
-          description: Field font size.
-          format: int32
-        width:
-          type: number
-          description: Field width.
-          format: double
     Approval:
       type: object
       description: Signing Approval object.
@@ -4470,37 +4501,16 @@ components:
           type: object
           description: Additional approval From File data properties.
           additionalProperties: {}
-    External:
+    Sort:
       type: object
-      description: External integration provider settings.
-      additionalProperties: false
       properties:
-        data:
-          type: object
-          description: Provider metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: External integration Id.
-        provider:
-          type: string
-          description: Provider method.
-        providerName:
-          type: string
-          description: Provider name.
-    SignedDocuments:
-      type: object
-      description: Object to manage signing documents via api
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OrderBy:
+          $ref: '#/components/schemas/OrderBy'
       additionalProperties: false
-      properties:
-        documents:
-          type: array
-          description: List of documents
-          items:
-            $ref: '#/components/schemas/Document'
-        handdrawn:
-          type: string
-          description: Hand drawn signature string
     DocumentMetadataAPIResponse:
       type: object
       properties:
@@ -4513,6 +4523,216 @@ components:
           format: int64
         Data:
           $ref: '#/components/schemas/DocumentMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    DocumentMetadataListAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentMetadata'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CompleteMultipartUploadRequest:
+      type: object
+      properties:
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        Key:
+          type:
+          - string
+          - 'null'
+          description: Multipart upload key
+        UploadId:
+          type:
+          - string
+          - 'null'
+          description: Upload request identifier
+        ETags:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+          description: A collection of unique identifiers (entity tags).
+      additionalProperties: false
+      description: Complete multipart upload request
+    InitMultipartUploadResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/InitMultipartUploadResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    DocumentMetadataUpdateRequest:
+      type: object
+      properties:
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+          description: Checkout by
+        CheckoutDate:
+          type:
+          - string
+          - 'null'
+          description: Checkout date
+          format: date-time
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Description for document
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document specific additional properties **For instance :* {Property Name, Property Value}
+        Tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Additional information about document
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
+      additionalProperties: false
+      description: Request to update metadata/schema information of the document
+    UploadPartResponseAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UploadPartResponse'
         Errors:
           type:
           - array
@@ -4563,171 +4783,20 @@ components:
           description: Upload request identifier
       additionalProperties: false
       description: Multipart uplaod request
-    DocumentResponseAPIResponse:
+    UploadPartResponse:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/DocumentResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        ETag:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          description: A unique identifier (entity tag)
+        PartNumber:
+          type: integer
+          description: Part number
+          format: int32
       additionalProperties: false
-    InitMultipartUploadResponse:
-      type: object
-      properties:
-        UploadId:
-          type:
-          - string
-          - 'null'
-          description: A unique identfier used for consecutive request for multipart upload.
-        Key:
-          type:
-          - string
-          - 'null'
-          description: Storage document key
-        Metadata:
-          $ref: '#/components/schemas/DocumentMetadata'
-      additionalProperties: false
-      description: Init multipart upload response
-    UploadPartResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/UploadPartResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    DocumentRequest:
-      type: object
-      properties:
-        DocumentName:
-          type:
-          - string
-          - 'null'
-          description: Document name
-        ObjectType:
-          type:
-          - string
-          - 'null'
-          description: Object type for uploading/storing document **For example :** Agreement
-        ObjectId:
-          type:
-          - string
-          - 'null'
-          description: A unique identifier of the object
-        Tags:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Additioal information about document
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Document description
-        CheckoutBy:
-          type:
-          - string
-          - 'null'
-          description: Checkout by
-        CheckoutDate:
-          type:
-          - string
-          - 'null'
-          description: Checkout Date
-          format: date-time
-        NewVersionId:
-          type:
-          - string
-          - 'null'
-          description: New version Id for document
-        CustomProperties:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          description: Document specific additional properties **For instance :* {Property Name, Property Value}
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: A unique identifier of the document
-        IsSearchable:
-          type:
-          - boolean
-          - 'null'
-          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
-      additionalProperties: false
-      description: Schema for document
+      description: Upload part response
     DocumentResponse:
       type: object
       properties:
@@ -4739,18 +4808,70 @@ components:
           - 'null'
           format: byte
       additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
     DocumentMetadata:
       type: object
       properties:
@@ -4889,28 +5010,77 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    DocumentQuery:
+    DocumentRequest:
       type: object
       properties:
-        Criteria:
+        DocumentName:
           type:
           - string
           - 'null'
-          description: Criteria based on which documents will be fetched
-        Limit:
+          description: Document name
+        ObjectType:
           type:
-          - integer
+          - string
           - 'null'
-          description: Number of documents to be fetched
-          format: int32
-        Skip:
+          description: Object type for uploading/storing document **For example :** Agreement
+        ObjectId:
           type:
-          - integer
+          - string
           - 'null'
-          description: Number of documents to be skipped
-          format: int32
-        Sort:
-          $ref: '#/components/schemas/Sort'
+          description: A unique identifier of the object
+        Tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Additioal information about document
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Document description
+        CheckoutBy:
+          type:
+          - string
+          - 'null'
+          description: Checkout by
+        CheckoutDate:
+          type:
+          - string
+          - 'null'
+          description: Checkout Date
+          format: date-time
+        NewVersionId:
+          type:
+          - string
+          - 'null'
+          description: New version Id for document
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          description: Document specific additional properties **For instance :* {Property Name, Property Value}
+        DocumentId:
+          type:
+          - string
+          - 'null'
+          description: A unique identifier of the document
+        IsSearchable:
+          type:
+          - boolean
+          - 'null'
+          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
+      additionalProperties: false
+      description: Schema for document
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     DocumentResponseListAPIResponse:
       type: object
@@ -4958,7 +5128,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    InitMultipartUploadResponseAPIResponse:
+    DocumentResponseAPIResponse:
       type: object
       properties:
         Success:
@@ -4969,170 +5139,7 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/InitMultipartUploadResponse'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
-    DocumentMetadataUpdateRequest:
-      type: object
-      properties:
-        CheckoutBy:
-          type:
-          - string
-          - 'null'
-          description: Checkout by
-        CheckoutDate:
-          type:
-          - string
-          - 'null'
-          description: Checkout date
-          format: date-time
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Description for document
-        CustomProperties:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-          description: Document specific additional properties **For instance :* {Property Name, Property Value}
-        Tags:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Additional information about document
-        IsSearchable:
-          type:
-          - boolean
-          - 'null'
-          description: Get or set a value indicating whether the document is searchable. If true, the document can be searched; otherwise, it cannot be searched.
-      additionalProperties: false
-      description: Request to update metadata/schema information of the document
-    UploadPartResponse:
-      type: object
-      properties:
-        ETag:
-          type:
-          - string
-          - 'null'
-          description: A unique identifier (entity tag)
-        PartNumber:
-          type: integer
-          description: Part number
-          format: int32
-      additionalProperties: false
-      description: Upload part response
-    DocumentMetadataListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DocumentMetadata'
+          $ref: '#/components/schemas/DocumentResponse'
         Errors:
           type:
           - array
@@ -5168,112 +5175,86 @@ components:
       - Ascending
       - Descending
       type: string
-    ErrorDetail:
+    InitMultipartUploadResponse:
       type: object
       properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    CompleteMultipartUploadRequest:
-      type: object
-      properties:
-        DocumentId:
-          type:
-          - string
-          - 'null'
-          description: A unique identifier of the document
-        Key:
-          type:
-          - string
-          - 'null'
-          description: Multipart upload key
         UploadId:
           type:
           - string
           - 'null'
-          description: Upload request identifier
-        ETags:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type:
-            - string
-            - 'null'
-          description: A collection of unique identifiers (entity tags).
-      additionalProperties: false
-      description: Complete multipart upload request
-    Sort:
-      type: object
-      properties:
-        FieldName:
+          description: A unique identfier used for consecutive request for multipart upload.
+        Key:
           type:
           - string
           - 'null'
-        OrderBy:
-          $ref: '#/components/schemas/OrderBy'
+          description: Storage document key
+        Metadata:
+          $ref: '#/components/schemas/DocumentMetadata'
       additionalProperties: false
-    PdfOutputConfig:
+      description: Init multipart upload response
+    DocumentQuery:
+      type: object
+      properties:
+        Criteria:
+          type:
+          - string
+          - 'null'
+          description: Criteria based on which documents will be fetched
+        Limit:
+          type:
+          - integer
+          - 'null'
+          description: Number of documents to be fetched
+          format: int32
+        Skip:
+          type:
+          - integer
+          - 'null'
+          description: Number of documents to be skipped
+          format: int32
+        Sort:
+          $ref: '#/components/schemas/Sort'
+      additionalProperties: false
+    WorkflowRequesterInfo:
       type: object
       additionalProperties: false
       properties:
-        pdfOutputStandard:
-          oneOf:
-          - $ref: '#/components/schemas/PdfStandard'
-        textCompressionType:
-          oneOf:
-          - $ref: '#/components/schemas/PdfCompressionType'
-        imageCompressionType:
-          oneOf:
-          - $ref: '#/components/schemas/PdfImageCompressionType'
-        protection:
-          oneOf:
-          - $ref: '#/components/schemas/ProtectionOptions2'
-        acceptRevisions:
+        workflowRequesterId:
           type:
-          - boolean
+          - string
           - 'null'
-        removeComments:
+        workflowRequesterName:
           type:
-          - boolean
+          - string
           - 'null'
-    SubQueryType:
+        replyChannel:
+          type:
+          - string
+          - 'null'
+    EditRestrictionType:
       type: string
       description: ''
       x-enumNames:
-      - Collection
-      - Single
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - ReadOnly
+      - NoProtection
       enum:
-      - Collection
-      - Single
-    Metadata_2:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        displayName:
-          type:
-          - string
-          - 'null'
-        description:
-          type:
-          - string
-          - 'null'
-    ConditionJoinType:
-      type: string
-      description: ''
-      x-enumNames:
-      - AND
-      - OR
-      enum:
-      - AND
-      - OR
+      - AllowOnlyRevisions
+      - AllowOnlyComments
+      - AllowOnlyFormFields
+      - ReadOnly
+      - NoProtection
+    DocumentConvertRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
     CommonDataType:
       type: string
       description: ''
@@ -5340,110 +5321,121 @@ components:
           - $ref: '#/components/schemas/ProtectionOptions'
         removeComments:
           type: boolean
-    EditRestrictionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - ReadOnly
-      - NoProtection
-      enum:
-      - AllowOnlyRevisions
-      - AllowOnlyComments
-      - AllowOnlyFormFields
-      - ReadOnly
-      - NoProtection
-    PipeWriter:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        canGetUnflushedBytes:
-          type: boolean
-        unflushedBytes:
-          type: integer
-          format: int64
-    SortDirection:
-      type: string
-      description: ''
-      x-enumNames:
-      - Ascending
-      - Descending
-      enum:
-      - Ascending
-      - Descending
-    ProtectRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          documents:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSpec'
-          documentSources:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSource'
-          wordProtectionConfig:
-            oneOf:
-            - $ref: '#/components/schemas/ProtectionOptions'
-          pdfProtectionConfig:
-            oneOf:
-            - $ref: '#/components/schemas/ProtectionOptions2'
-          documentId:
-            type:
-            - string
-            - 'null'
-          fileName:
-            type:
-            - string
-            - 'null'
-          documentMetadata:
-            type:
-            - object
-            - 'null'
-            additionalProperties: {}
-          hasDocumentSources:
-            type: boolean
-    DocGenWorkflowAsyncResponse:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenResponse'
-      - type: object
-        additionalProperties: false
-        properties:
-          job:
-            oneOf:
-            - $ref: '#/components/schemas/JobEntity'
-    QueryResult:
+    ComplexFieldMetadata:
       type: object
       additionalProperties: false
       properties:
-        queryId:
+        name:
           type:
           - string
           - 'null'
-        objectName:
-          type:
-          - string
-          - 'null'
-        result:
+        fields:
           type:
           - array
           - 'null'
           items:
-            type: object
-            additionalProperties: {}
-        recordCount:
-          type: integer
-          format: int32
+            $ref: '#/components/schemas/FieldMetadata'
+    TemplateSource:
+      type: object
+      additionalProperties: false
+      properties:
+        templates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TemplateSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/TemplateQuery'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentSourceType:
+          type:
+          - string
+          - 'null'
+        contentSourceName:
+          type:
+          - string
+          - 'null'
+        contentSource:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    AttachmentSource:
+      type: object
+      additionalProperties: false
+      properties:
+        attachments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AttachmentSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/AttachmentQuery'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    SaveDocumentsParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        documentSaveType:
+          type:
+          - string
+          - 'null'
+        outputFormat:
+          type:
+          - string
+          - 'null'
+        isUpdate:
+          type: boolean
+        saveAsync:
+          type: boolean
+        linkEntityId:
+          type:
+          - string
+          - 'null'
+        linkEntityName:
+          type:
+          - string
+          - 'null'
+        metadataId:
+          type:
+          - string
+          - 'null'
+        isPreview:
+          type: boolean
+        isNonMergeAction:
+          type: boolean
+        isDocumentVersionEnabled:
+          type: boolean
     HeaderFooterLayout:
       type: object
       additionalProperties: false
@@ -5478,14 +5470,428 @@ components:
           - number
           - 'null'
           format: double
-    SortParams:
+    BaseDataSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+    ProtectionOptions2:
       type: object
       additionalProperties: false
       properties:
-        fieldName:
-          type: string
-        direction:
-          $ref: '#/components/schemas/SortDirection'
+        forbidAll:
+          type:
+          - boolean
+          - 'null'
+        allowAll:
+          type:
+          - boolean
+          - 'null'
+        allowPrinting:
+          type:
+          - boolean
+          - 'null'
+        allowCopying:
+          type:
+          - boolean
+          - 'null'
+        allowCommenting:
+          type:
+          - boolean
+          - 'null'
+        allowFormFilling:
+          type:
+          - boolean
+          - 'null'
+        allowAssembling:
+          type:
+          - boolean
+          - 'null'
+        allowChangingContent:
+          type:
+          - boolean
+          - 'null'
+        allowScreenReaders:
+          type:
+          - boolean
+          - 'null'
+        allowDegradedPrinting:
+          type:
+          - boolean
+          - 'null'
+        ownerPassword:
+          type:
+          - string
+          - 'null'
+    DocumentSource:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DocumentSpec'
+        query:
+          oneOf:
+          - $ref: '#/components/schemas/DocumentQuery_2'
+        sourceType:
+          type:
+          - string
+          - 'null'
+        sourceName:
+          type:
+          - string
+          - 'null'
+        source:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentSourceType:
+          type:
+          - string
+          - 'null'
+        contentSourceName:
+          type:
+          - string
+          - 'null'
+        contentSource:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        cache:
+          type: boolean
+        useCache:
+          type: boolean
+    PicklistMetadata:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        entries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PicklistEntry'
+    HttpResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        bodyWriter:
+          $ref: '#/components/schemas/PipeWriter'
+    DocumentProcessRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+    BaseDocumentSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+    JobStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+      enum:
+      - Created
+      - Queued
+      - Started
+      - Stopped
+      - Hibernating
+      - Failed
+      - Completed
+      - Processing
+    HeaderFooterOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        headerOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/HeaderOptions'
+        footerOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FooterOptions'
+        headerStyle:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        footerStyle:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        headerText:
+          type:
+          - string
+          - 'null'
+        footerText:
+          type:
+          - string
+          - 'null'
+        dateFormat:
+          type:
+          - string
+          - 'null'
+        actionType:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterActionType'
+        wrapInContentControl:
+          type: boolean
+        addPageNoInFooter:
+          type:
+          - boolean
+          - 'null'
+        layout:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterLayout'
+    SubQueryType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Collection
+      - Single
+      enum:
+      - Collection
+      - Single
+    DocumentType:
+      type: string
+      description: ''
+      x-enumNames:
+      - DOCX
+      - PDF
+      - GDOC
+      - DOC
+      - HTML
+      - RTF
+      - TXT
+      enum:
+      - DOCX
+      - PDF
+      - GDOC
+      - DOC
+      - HTML
+      - RTF
+      - TXT
+    DocGenWorkflowAsyncResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          job:
+            oneOf:
+            - $ref: '#/components/schemas/JobEntity'
+    BaseDocGenWorkflowRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenRequest'
+      - type: object
+        x-abstract: true
+        additionalProperties: false
+        properties:
+          documentDestinations:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentDestination'
+          sourceType:
+            type:
+            - string
+            - 'null'
+          sourceName:
+            type:
+            - string
+            - 'null'
+          source:
+            oneOf:
+            - $ref: '#/components/schemas/BaseSourceConfig'
+          sourceConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/BaseSourceConfig'
+          saveDocumentOptions:
+            oneOf:
+            - $ref: '#/components/schemas/SaveDocumentsParameters'
+          workflowRequester:
+            oneOf:
+            - $ref: '#/components/schemas/WorkflowRequesterInfo'
+          additionalProperties:
+            type:
+            - object
+            - 'null'
+            additionalProperties:
+              type: string
+    EntityMetadata:
+      allOf:
+      - $ref: '#/components/schemas/Metadata_2'
+      - type: object
+        additionalProperties: false
+        properties:
+          fields:
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldMetadata'
+          picklists:
+            type: array
+            items:
+              $ref: '#/components/schemas/PicklistMetadata'
+          complexFields:
+            type: array
+            items:
+              $ref: '#/components/schemas/ComplexFieldMetadata'
+          primaryFields:
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldMetadata'
+    HeaderFooterStyle:
+      type: object
+      additionalProperties: false
+      properties:
+        fontFamily:
+          type:
+          - string
+          - 'null'
+        textColor:
+          type:
+          - string
+          - 'null'
+        isBold:
+          type:
+          - boolean
+          - 'null'
+        isItalic:
+          type:
+          - boolean
+          - 'null'
+        fontSize:
+          type:
+          - number
+          - 'null'
+          format: double
+        textAlignment:
+          oneOf:
+          - $ref: '#/components/schemas/TextAlignment'
+        styleId:
+          type:
+          - string
+          - 'null'
+    FooterOptions:
+      allOf:
+      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
+      - type: object
+        additionalProperties: false
+        properties:
+          footerText:
+            type:
+            - string
+            - 'null'
+          addPageNoInFooter:
+            type:
+            - boolean
+            - 'null'
+    JobEntity:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+      - type: object
+        additionalProperties: false
+        properties:
+          status:
+            oneOf:
+            - $ref: '#/components/schemas/JobStatus'
+          startTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          endTime:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          duration:
+            type:
+            - number
+            - 'null'
+            format: double
+          progress:
+            type: number
+            format: double
+          errorReason:
+            type:
+            - string
+            - 'null'
+          result:
+            type:
+            - object
+            - 'null'
+            additionalProperties: {}
+    JoinRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          joinOptions:
+            oneOf:
+            - $ref: '#/components/schemas/JoinOptions'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+    TemplateQuery:
+      allOf:
+      - $ref: '#/components/schemas/ObjectQuery'
+      - type: object
+        additionalProperties: false
     MergeRequest:
       allOf:
       - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
@@ -5547,89 +5953,59 @@ components:
             type: boolean
           hasTemplateSources:
             type: boolean
-    PdfStandard:
-      type: string
-      description: ''
-      x-enumNames:
-      - Pdf17
-      - Pdf20
-      - PdfA1a
-      - PdfA1b
-      - PdfA2a
-      - PdfA2u
-      - PdfA4
-      - PdfUa1
-      enum:
-      - Pdf17
-      - Pdf20
-      - PdfA1a
-      - PdfA1b
-      - PdfA2a
-      - PdfA2u
-      - PdfA4
-      - PdfUa1
-    FieldMetadata:
+    ProtectRequest:
       allOf:
-      - $ref: '#/components/schemas/Metadata_2'
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
       - type: object
         additionalProperties: false
         properties:
-          dataType:
-            $ref: '#/components/schemas/CommonDataType'
-          defaultValue: {}
-          isPrimary:
-            type: boolean
-          isRequired:
-            type: boolean
-          isUnique:
-            type: boolean
-          isSortable:
-            type: boolean
-          isDeprecated:
-            type: boolean
-          isCalculated:
-            type: boolean
-          scale:
-            type: number
-            format: double
-          length:
+          documents:
             type:
-            - integer
+            - array
             - 'null'
-            format: int32
-          lookupObjectName:
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          wordProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions'
+          pdfProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions2'
+          documentId:
             type:
             - string
             - 'null'
-          picklistName:
+          fileName:
             type:
             - string
             - 'null'
-          complexMetadataName:
+          documentMetadata:
             type:
-            - string
+            - object
             - 'null'
-    JoinOptions:
+            additionalProperties: {}
+          hasDocumentSources:
+            type: boolean
+    BaseDocGenRequest:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    PaginationParams:
       type: object
       additionalProperties: false
       properties:
-        actionType:
-          oneOf:
-          - $ref: '#/components/schemas/JoinActionType'
-        headerFooterActionType:
-          oneOf:
-          - $ref: '#/components/schemas/JoinHeaderFooterActionType'
-        watermarkActionType:
-          oneOf:
-          - $ref: '#/components/schemas/JoinWatermarkActionType'
-        preserveRedlines:
-          type:
-          - boolean
-          - 'null'
-        joinMetadata:
-          type:
-          - boolean
-          - 'null'
+        skip:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     TemplateSpec:
       allOf:
       - $ref: '#/components/schemas/BaseTemplateSpec'
@@ -5656,115 +6032,105 @@ components:
             type: boolean
           useCache:
             type: boolean
-    HeaderFooterStyle:
-      type: object
-      additionalProperties: false
-      properties:
-        fontFamily:
-          type:
-          - string
-          - 'null'
-        textColor:
-          type:
-          - string
-          - 'null'
-        isBold:
-          type:
-          - boolean
-          - 'null'
-        isItalic:
-          type:
-          - boolean
-          - 'null'
-        fontSize:
-          type:
-          - number
-          - 'null'
-          format: double
-        textAlignment:
-          oneOf:
-          - $ref: '#/components/schemas/TextAlignment'
-        styleId:
-          type:
-          - string
-          - 'null'
-    BaseAttachmentSpec:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        specId:
-          type:
-          - string
-          - 'null'
-    AttachmentSet:
-      type: object
-      additionalProperties: false
-      properties:
-        setId:
-          type:
-          - string
-          - 'null'
-        attachments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AttachmentInfo'
-    ObjectQuery:
-      type: object
-      additionalProperties: false
-      properties:
-        queryId:
-          type: string
-        objectName:
-          type:
-          - string
-          - 'null'
-        fields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        filters:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/QueryCondition'
-        conditionJoinType:
-          $ref: '#/components/schemas/ConditionJoinType'
-        sortParams:
-          oneOf:
-          - $ref: '#/components/schemas/SortParams'
-        paginationParams:
-          oneOf:
-          - $ref: '#/components/schemas/PaginationParams'
-        subQuery:
-          type: boolean
-        subQueryType:
-          $ref: '#/components/schemas/SubQueryType'
-        parentQuerySource:
-          type:
-          - string
-          - 'null'
-        parentQueryId:
-          type:
-          - string
-          - 'null'
-        referenceColumnName:
-          type: string
-    HeaderOptions:
+    ConditionJoinType:
+      type: string
+      description: ''
+      x-enumNames:
+      - AND
+      - OR
+      enum:
+      - AND
+      - OR
+    DocumentProtectRequest:
       allOf:
-      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
       - type: object
         additionalProperties: false
         properties:
-          headerText:
+          wordProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions'
+          pdfProtectionConfig:
+            oneOf:
+            - $ref: '#/components/schemas/ProtectionOptions2'
+          documentMetadata:
             type:
-            - string
+            - object
             - 'null'
+            additionalProperties: {}
+    ConditionalOperator:
+      type: string
+      description: ''
+      x-enumNames:
+      - Equals
+      - GreaterThan
+      - GreatherThanOrEqual
+      - LessThan
+      - LessThanOrEqual
+      - NotEqual
+      - In
+      - NotIn
+      - Contains
+      - NotContains
+      enum:
+      - Equals
+      - GreaterThan
+      - GreatherThanOrEqual
+      - LessThan
+      - LessThanOrEqual
+      - NotEqual
+      - In
+      - NotIn
+      - Contains
+      - NotContains
+    PdfCompressionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Flate
+      enum:
+      - None
+      - Flate
+    SortParams:
+      type: object
+      additionalProperties: false
+      properties:
+        fieldName:
+          type: string
+        direction:
+          $ref: '#/components/schemas/SortDirection'
+    DocumentDestination:
+      type: object
+      additionalProperties: false
+      properties:
+        destinationType:
+          type:
+          - string
+          - 'null'
+        destinationName:
+          type:
+          - string
+          - 'null'
+        destination:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+        contentDestinationType:
+          type:
+          - string
+          - 'null'
+        contentDestinationName:
+          type:
+          - string
+          - 'null'
+        contentDestination:
+          oneOf:
+          - $ref: '#/components/schemas/BaseSourceConfig'
+    AttachmentQuery:
+      allOf:
+      - $ref: '#/components/schemas/ObjectQuery'
+      - type: object
+        additionalProperties: false
     ConvertRequest:
       allOf:
       - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
@@ -5794,56 +6160,187 @@ components:
               $ref: '#/components/schemas/DocumentOutputConfiguration'
           hasDocumentSources:
             type: boolean
-    DataSpec:
-      allOf:
-      - $ref: '#/components/schemas/BaseDataSpec'
-      - type: object
-        additionalProperties: false
-        properties:
-          entityId:
-            type:
-            - string
-            - 'null'
-          entityName:
-            type:
-            - string
-            - 'null'
-          entityData:
-            oneOf:
-            - $ref: '#/components/schemas/EntityData'
-          data:
-            type:
-            - string
-            - 'null'
-          dataType:
-            type:
-            - string
-            - 'null'
-          referenceKey:
-            type:
-            - string
-            - 'null'
-    JobStatus:
+    WatermarkDirection:
       type: string
       description: ''
       x-enumNames:
-      - Created
-      - Queued
-      - Started
-      - Stopped
-      - Hibernating
-      - Failed
-      - Completed
-      - Processing
+      - Horizontal
+      - Diagonal
       enum:
-      - Created
-      - Queued
-      - Started
-      - Stopped
-      - Hibernating
-      - Failed
-      - Completed
-      - Processing
+      - Horizontal
+      - Diagonal
+    ProcessRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          documents:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSpec'
+          documentSources:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentSource'
+          processOptions:
+            oneOf:
+            - $ref: '#/components/schemas/ProcessOptions'
+          outputConfig:
+            oneOf:
+            - $ref: '#/components/schemas/DocumentOutputConfiguration'
+          outputConfigs:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/DocumentOutputConfiguration'
+          hasDocumentSources:
+            type: boolean
+    WatermarkOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        watermarkText:
+          type:
+          - string
+          - 'null'
+        direction:
+          oneOf:
+          - $ref: '#/components/schemas/WatermarkDirection'
+        textColor:
+          type:
+          - string
+          - 'null'
+        fontFamily:
+          type:
+          - string
+          - 'null'
+        fontSize:
+          type: number
+          format: float
+        isSemiTrasparent:
+          type: boolean
+        image:
+          type:
+          - string
+          - 'null'
+          format: byte
+        imageScale:
+          type: number
+          format: double
+        isWashout:
+          type: boolean
+        removeWatermark:
+          type:
+          - boolean
+          - 'null'
+    BaseTemplateSpec:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        specId:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+    BaseEntity:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        createdDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        modifiedDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    EntityData:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/QueryResult'
+        schemas:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EntityMetadata'
+    PdfImageCompressionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Auto
+      - Jpeg
+      enum:
+      - Auto
+      - Jpeg
+    QueryResult:
+      type: object
+      additionalProperties: false
+      properties:
+        queryId:
+          type:
+          - string
+          - 'null'
+        objectName:
+          type:
+          - string
+          - 'null'
+        result:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        recordCount:
+          type: integer
+          format: int32
+    PdfStandard:
+      type: string
+      description: ''
+      x-enumNames:
+      - Pdf17
+      - Pdf20
+      - PdfA1a
+      - PdfA1b
+      - PdfA2a
+      - PdfA2u
+      - PdfA4
+      - PdfUa1
+      enum:
+      - Pdf17
+      - Pdf20
+      - PdfA1a
+      - PdfA1b
+      - PdfA2a
+      - PdfA2u
+      - PdfA4
+      - PdfUa1
     DataSource:
       type: object
       additionalProperties: false
@@ -5872,416 +6369,20 @@ components:
         order:
           type: integer
           format: int32
-    PicklistEntry:
+    AttachmentSet:
       type: object
       additionalProperties: false
       properties:
-        value:
+        setId:
           type:
           - string
           - 'null'
-        displayText:
-          type:
-          - string
-          - 'null'
-        sequence:
-          type: integer
-          format: int32
-        isDeprecated:
-          type: boolean
-    HeaderFooterOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        headerOptions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/HeaderOptions'
-        footerOptions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FooterOptions'
-        headerStyle:
-          oneOf:
-          - $ref: '#/components/schemas/HeaderFooterStyle'
-        footerStyle:
-          oneOf:
-          - $ref: '#/components/schemas/HeaderFooterStyle'
-        headerText:
-          type:
-          - string
-          - 'null'
-        footerText:
-          type:
-          - string
-          - 'null'
-        dateFormat:
-          type:
-          - string
-          - 'null'
-        actionType:
-          oneOf:
-          - $ref: '#/components/schemas/HeaderFooterActionType'
-        wrapInContentControl:
-          type: boolean
-        addPageNoInFooter:
-          type:
-          - boolean
-          - 'null'
-        layout:
-          oneOf:
-          - $ref: '#/components/schemas/HeaderFooterLayout'
-    BaseDocGenRequest:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-    ComplexFieldMetadata:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        fields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FieldMetadata'
-    ProtectionOptions2:
-      type: object
-      additionalProperties: false
-      properties:
-        forbidAll:
-          type:
-          - boolean
-          - 'null'
-        allowAll:
-          type:
-          - boolean
-          - 'null'
-        allowPrinting:
-          type:
-          - boolean
-          - 'null'
-        allowCopying:
-          type:
-          - boolean
-          - 'null'
-        allowCommenting:
-          type:
-          - boolean
-          - 'null'
-        allowFormFilling:
-          type:
-          - boolean
-          - 'null'
-        allowAssembling:
-          type:
-          - boolean
-          - 'null'
-        allowChangingContent:
-          type:
-          - boolean
-          - 'null'
-        allowScreenReaders:
-          type:
-          - boolean
-          - 'null'
-        allowDegradedPrinting:
-          type:
-          - boolean
-          - 'null'
-        ownerPassword:
-          type:
-          - string
-          - 'null'
-    TemplateQuery:
-      allOf:
-      - $ref: '#/components/schemas/ObjectQuery'
-      - type: object
-        additionalProperties: false
-    HttpResponse:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        bodyWriter:
-          $ref: '#/components/schemas/PipeWriter'
-    QueryCondition:
-      type: object
-      additionalProperties: false
-      properties:
-        parameter:
-          type: string
-        operator:
-          $ref: '#/components/schemas/ConditionalOperator'
-        value:
-          type: string
-    DocumentSpec:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocumentSpec'
-      - type: object
-        additionalProperties: false
-        properties:
-          id:
-            type:
-            - string
-            - 'null'
-          url:
-            type:
-            - string
-            - 'null'
-          documentType:
-            type:
-            - string
-            - 'null'
-          contentLink:
-            type:
-            - string
-            - 'null'
-          storageType:
-            type:
-            - string
-            - 'null'
-          cache:
-            type:
-            - boolean
-            - 'null'
-          useCache:
-            type:
-            - boolean
-            - 'null'
-    DocumentProtectRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          wordProtectionConfig:
-            oneOf:
-            - $ref: '#/components/schemas/ProtectionOptions'
-          pdfProtectionConfig:
-            oneOf:
-            - $ref: '#/components/schemas/ProtectionOptions2'
-          documentMetadata:
-            type:
-            - object
-            - 'null'
-            additionalProperties: {}
-    AttachmentSource:
-      type: object
-      additionalProperties: false
-      properties:
         attachments:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/AttachmentSpec'
-        query:
-          oneOf:
-          - $ref: '#/components/schemas/AttachmentQuery'
-        sourceType:
-          type:
-          - string
-          - 'null'
-        sourceName:
-          type:
-          - string
-          - 'null'
-        source:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        cache:
-          type: boolean
-        useCache:
-          type: boolean
-    JoinWatermarkActionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - Retain
-      - Remove
-      enum:
-      - Retain
-      - Remove
-    WatermarkDirection:
-      type: string
-      description: ''
-      x-enumNames:
-      - Horizontal
-      - Diagonal
-      enum:
-      - Horizontal
-      - Diagonal
-    HeaderFooterActionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - Replace
-      - Append
-      - CarryFirst
-      - Remove
-      enum:
-      - Replace
-      - Append
-      - CarryFirst
-      - Remove
-    PaginationParams:
-      type: object
-      additionalProperties: false
-      properties:
-        skip:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    ConditionalOperator:
-      type: string
-      description: ''
-      x-enumNames:
-      - Equals
-      - GreaterThan
-      - GreatherThanOrEqual
-      - LessThan
-      - LessThanOrEqual
-      - NotEqual
-      - In
-      - NotIn
-      - Contains
-      - NotContains
-      enum:
-      - Equals
-      - GreaterThan
-      - GreatherThanOrEqual
-      - LessThan
-      - LessThanOrEqual
-      - NotEqual
-      - In
-      - NotIn
-      - Contains
-      - NotContains
-    JoinRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          documents:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSpec'
-          documentSources:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSource'
-          joinOptions:
-            oneOf:
-            - $ref: '#/components/schemas/JoinOptions'
-          outputConfig:
-            oneOf:
-            - $ref: '#/components/schemas/DocumentOutputConfiguration'
-          outputConfigs:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentOutputConfiguration'
-    JoinHeaderFooterActionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - Retain
-      - CarryFirst
-      - Remove
-      enum:
-      - Retain
-      - CarryFirst
-      - Remove
-    BaseTemplateSpec:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        specId:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-    DocumentSource:
-      type: object
-      additionalProperties: false
-      properties:
-        documents:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DocumentSpec'
-        query:
-          oneOf:
-          - $ref: '#/components/schemas/DocumentQuery_2'
-        sourceType:
-          type:
-          - string
-          - 'null'
-        sourceName:
-          type:
-          - string
-          - 'null'
-        source:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        contentSourceType:
-          type:
-          - string
-          - 'null'
-        contentSourceName:
-          type:
-          - string
-          - 'null'
-        contentSource:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        cache:
-          type: boolean
-        useCache:
-          type: boolean
-    FooterOptions:
-      allOf:
-      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
-      - type: object
-        additionalProperties: false
-        properties:
-          footerText:
-            type:
-            - string
-            - 'null'
-          addPageNoInFooter:
-            type:
-            - boolean
-            - 'null'
-    JoinActionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - New
-      - Continuous
-      enum:
-      - New
-      - Continuous
+            $ref: '#/components/schemas/AttachmentInfo'
     DocumentOutputConfiguration:
       type: object
       additionalProperties: false
@@ -6344,399 +6445,24 @@ components:
           - $ref: '#/components/schemas/PdfOutputConfig'
         compressClauseBaseValue:
           type: boolean
-    JobEntity:
-      allOf:
-      - $ref: '#/components/schemas/BaseEntity'
-      - type: object
-        additionalProperties: false
-        properties:
-          status:
-            oneOf:
-            - $ref: '#/components/schemas/JobStatus'
-          startTime:
-            type:
-            - string
-            - 'null'
-            format: date-time
-          endTime:
-            type:
-            - string
-            - 'null'
-            format: date-time
-          duration:
-            type:
-            - number
-            - 'null'
-            format: double
-          progress:
-            type: number
-            format: double
-          errorReason:
-            type:
-            - string
-            - 'null'
-          result:
-            type:
-            - object
-            - 'null'
-            additionalProperties: {}
-    DocumentType:
+    HeaderFooterActionType:
       type: string
       description: ''
       x-enumNames:
-      - DOCX
-      - PDF
-      - GDOC
-      - DOC
-      - HTML
-      - RTF
-      - TXT
+      - Replace
+      - Append
+      - CarryFirst
+      - Remove
       enum:
-      - DOCX
-      - PDF
-      - GDOC
-      - DOC
-      - HTML
-      - RTF
-      - TXT
-    PdfImageCompressionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - Auto
-      - Jpeg
-      enum:
-      - Auto
-      - Jpeg
-    SaveDocumentsParameters:
-      type: object
-      additionalProperties: false
-      properties:
-        documentSaveType:
-          type:
-          - string
-          - 'null'
-        outputFormat:
-          type:
-          - string
-          - 'null'
-        isUpdate:
-          type: boolean
-        saveAsync:
-          type: boolean
-        linkEntityId:
-          type:
-          - string
-          - 'null'
-        linkEntityName:
-          type:
-          - string
-          - 'null'
-        metadataId:
-          type:
-          - string
-          - 'null'
-        isPreview:
-          type: boolean
-        isNonMergeAction:
-          type: boolean
-        isDocumentVersionEnabled:
-          type: boolean
-    BaseDocGenResponse:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        actionName:
-          type:
-          - string
-          - 'null'
-        isError:
-          type: boolean
-        success:
-          type: boolean
-          deprecated: true
-        statusCode:
-          type: integer
-          format: int32
-        message:
-          type:
-          - string
-          - 'null'
-    TextAlignment:
-      type: string
-      description: ''
-      x-enumNames:
-      - Left
-      - Center
-      - Right
-      - Justify
-      - Distributed
-      enum:
-      - Left
-      - Center
-      - Right
-      - Justify
-      - Distributed
-    PdfCompressionType:
-      type: string
-      description: ''
-      x-enumNames:
-      - None
-      - Flate
-      enum:
-      - None
-      - Flate
-    ProcessRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          documents:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSpec'
-          documentSources:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentSource'
-          processOptions:
-            oneOf:
-            - $ref: '#/components/schemas/ProcessOptions'
-          outputConfig:
-            oneOf:
-            - $ref: '#/components/schemas/DocumentOutputConfiguration'
-          outputConfigs:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentOutputConfiguration'
-          hasDocumentSources:
-            type: boolean
-    AttachmentQuery:
-      allOf:
-      - $ref: '#/components/schemas/ObjectQuery'
-      - type: object
-        additionalProperties: false
-    ProcessOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        processMetadata:
-          type:
-          - boolean
-          - 'null'
-    BaseEntity:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        createdDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        modifiedDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    BaseDocumentSpec:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        specId:
-          type:
-          - string
-          - 'null'
-    EntityData:
-      type: object
-      additionalProperties: false
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/QueryResult'
-        schemas:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EntityMetadata'
-    PicklistMetadata:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        entries:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PicklistEntry'
-    EntityMetadata:
-      allOf:
-      - $ref: '#/components/schemas/Metadata_2'
-      - type: object
-        additionalProperties: false
-        properties:
-          fields:
-            type: array
-            items:
-              $ref: '#/components/schemas/FieldMetadata'
-          picklists:
-            type: array
-            items:
-              $ref: '#/components/schemas/PicklistMetadata'
-          complexFields:
-            type: array
-            items:
-              $ref: '#/components/schemas/ComplexFieldMetadata'
-          primaryFields:
-            type: array
-            items:
-              $ref: '#/components/schemas/FieldMetadata'
-    DocumentDestination:
-      type: object
-      additionalProperties: false
-      properties:
-        destinationType:
-          type:
-          - string
-          - 'null'
-        destinationName:
-          type:
-          - string
-          - 'null'
-        destination:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        contentDestinationType:
-          type:
-          - string
-          - 'null'
-        contentDestinationName:
-          type:
-          - string
-          - 'null'
-        contentDestination:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-    BaseDocGenWorkflowRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenRequest'
-      - type: object
-        x-abstract: true
-        additionalProperties: false
-        properties:
-          documentDestinations:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/DocumentDestination'
-          sourceType:
-            type:
-            - string
-            - 'null'
-          sourceName:
-            type:
-            - string
-            - 'null'
-          source:
-            oneOf:
-            - $ref: '#/components/schemas/BaseSourceConfig'
-          sourceConfigs:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/BaseSourceConfig'
-          saveDocumentOptions:
-            oneOf:
-            - $ref: '#/components/schemas/SaveDocumentsParameters'
-          workflowRequester:
-            oneOf:
-            - $ref: '#/components/schemas/WorkflowRequesterInfo'
-          additionalProperties:
-            type:
-            - object
-            - 'null'
-            additionalProperties:
-              type: string
+      - Replace
+      - Append
+      - CarryFirst
+      - Remove
     DocumentQuery_2:
       allOf:
       - $ref: '#/components/schemas/ObjectQuery'
       - type: object
         additionalProperties: false
-    TemplateSource:
-      type: object
-      additionalProperties: false
-      properties:
-        templates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/TemplateSpec'
-        query:
-          oneOf:
-          - $ref: '#/components/schemas/TemplateQuery'
-        sourceType:
-          type:
-          - string
-          - 'null'
-        sourceName:
-          type:
-          - string
-          - 'null'
-        source:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        contentSourceType:
-          type:
-          - string
-          - 'null'
-        contentSourceName:
-          type:
-          - string
-          - 'null'
-        contentSource:
-          oneOf:
-          - $ref: '#/components/schemas/BaseSourceConfig'
-        cache:
-          type: boolean
-        useCache:
-          type: boolean
-    DocumentConvertRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          outputConfig:
-            oneOf:
-            - $ref: '#/components/schemas/DocumentOutputConfiguration'
     BaseSourceConfig:
       type: object
       x-abstract: true
@@ -6748,53 +6474,14 @@ components:
           type:
           - string
           - 'null'
-    WatermarkOptions:
+    ProcessOptions:
       type: object
       additionalProperties: false
       properties:
-        watermarkText:
-          type:
-          - string
-          - 'null'
-        direction:
-          oneOf:
-          - $ref: '#/components/schemas/WatermarkDirection'
-        textColor:
-          type:
-          - string
-          - 'null'
-        fontFamily:
-          type:
-          - string
-          - 'null'
-        fontSize:
-          type: number
-          format: float
-        isSemiTrasparent:
-          type: boolean
-        image:
-          type:
-          - string
-          - 'null'
-          format: byte
-        imageScale:
-          type: number
-          format: double
-        isWashout:
-          type: boolean
-        removeWatermark:
+        processMetadata:
           type:
           - boolean
           - 'null'
-    BaseHeaderFooterOptions:
-      type: object
-      additionalProperties: false
-      properties:
-        style:
-          oneOf:
-          - $ref: '#/components/schemas/HeaderFooterStyle'
-        wrapInContentControl:
-          type: boolean
     AttachmentInfo:
       type: object
       additionalProperties: false
@@ -6816,6 +6503,60 @@ components:
           - object
           - 'null'
           additionalProperties: {}
+    BaseHeaderFooterOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        style:
+          oneOf:
+          - $ref: '#/components/schemas/HeaderFooterStyle'
+        wrapInContentControl:
+          type: boolean
+    JoinWatermarkActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Retain
+      - Remove
+      enum:
+      - Retain
+      - Remove
+    TextAlignment:
+      type: string
+      description: ''
+      x-enumNames:
+      - Left
+      - Center
+      - Right
+      - Justify
+      - Distributed
+      enum:
+      - Left
+      - Center
+      - Right
+      - Justify
+      - Distributed
+    BaseDocGenResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        actionName:
+          type:
+          - string
+          - 'null'
+        isError:
+          type: boolean
+        success:
+          type: boolean
+          deprecated: true
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type:
+          - string
+          - 'null'
     ProtectionOptions:
       type: object
       additionalProperties: false
@@ -6835,6 +6576,252 @@ components:
           type:
           - boolean
           - 'null'
+    DocumentSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseDocumentSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type:
+            - string
+            - 'null'
+          url:
+            type:
+            - string
+            - 'null'
+          documentType:
+            type:
+            - string
+            - 'null'
+          contentLink:
+            type:
+            - string
+            - 'null'
+          storageType:
+            type:
+            - string
+            - 'null'
+          cache:
+            type:
+            - boolean
+            - 'null'
+          useCache:
+            type:
+            - boolean
+            - 'null'
+    ObjectQuery:
+      type: object
+      additionalProperties: false
+      properties:
+        queryId:
+          type: string
+        objectName:
+          type:
+          - string
+          - 'null'
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        filters:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/QueryCondition'
+        conditionJoinType:
+          $ref: '#/components/schemas/ConditionJoinType'
+        sortParams:
+          oneOf:
+          - $ref: '#/components/schemas/SortParams'
+        paginationParams:
+          oneOf:
+          - $ref: '#/components/schemas/PaginationParams'
+        subQuery:
+          type: boolean
+        subQueryType:
+          $ref: '#/components/schemas/SubQueryType'
+        parentQuerySource:
+          type:
+          - string
+          - 'null'
+        parentQueryId:
+          type:
+          - string
+          - 'null'
+        referenceColumnName:
+          type: string
+    HeaderOptions:
+      allOf:
+      - $ref: '#/components/schemas/BaseHeaderFooterOptions'
+      - type: object
+        additionalProperties: false
+        properties:
+          headerText:
+            type:
+            - string
+            - 'null'
+    JoinHeaderFooterActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - Retain
+      - CarryFirst
+      - Remove
+      enum:
+      - Retain
+      - CarryFirst
+      - Remove
+    PicklistEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type:
+          - string
+          - 'null'
+        displayText:
+          type:
+          - string
+          - 'null'
+        sequence:
+          type: integer
+          format: int32
+        isDeprecated:
+          type: boolean
+    PdfOutputConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        pdfOutputStandard:
+          oneOf:
+          - $ref: '#/components/schemas/PdfStandard'
+        textCompressionType:
+          oneOf:
+          - $ref: '#/components/schemas/PdfCompressionType'
+        imageCompressionType:
+          oneOf:
+          - $ref: '#/components/schemas/PdfImageCompressionType'
+        protection:
+          oneOf:
+          - $ref: '#/components/schemas/ProtectionOptions2'
+        acceptRevisions:
+          type:
+          - boolean
+          - 'null'
+        removeComments:
+          type:
+          - boolean
+          - 'null'
+    Metadata_2:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+    FieldMetadata:
+      allOf:
+      - $ref: '#/components/schemas/Metadata_2'
+      - type: object
+        additionalProperties: false
+        properties:
+          dataType:
+            $ref: '#/components/schemas/CommonDataType'
+          defaultValue: {}
+          isPrimary:
+            type: boolean
+          isRequired:
+            type: boolean
+          isUnique:
+            type: boolean
+          isSortable:
+            type: boolean
+          isDeprecated:
+            type: boolean
+          isCalculated:
+            type: boolean
+          scale:
+            type: number
+            format: double
+          length:
+            type:
+            - integer
+            - 'null'
+            format: int32
+          lookupObjectName:
+            type:
+            - string
+            - 'null'
+          picklistName:
+            type:
+            - string
+            - 'null'
+          complexMetadataName:
+            type:
+            - string
+            - 'null'
+    DataSpec:
+      allOf:
+      - $ref: '#/components/schemas/BaseDataSpec'
+      - type: object
+        additionalProperties: false
+        properties:
+          entityId:
+            type:
+            - string
+            - 'null'
+          entityName:
+            type:
+            - string
+            - 'null'
+          entityData:
+            oneOf:
+            - $ref: '#/components/schemas/EntityData'
+          data:
+            type:
+            - string
+            - 'null'
+          dataType:
+            type:
+            - string
+            - 'null'
+          referenceKey:
+            type:
+            - string
+            - 'null'
+    JoinActionType:
+      type: string
+      description: ''
+      x-enumNames:
+      - New
+      - Continuous
+      enum:
+      - New
+      - Continuous
+    QueryCondition:
+      type: object
+      additionalProperties: false
+      properties:
+        parameter:
+          type: string
+        operator:
+          $ref: '#/components/schemas/ConditionalOperator'
+        value:
+          type: string
     AttachmentSpec:
       allOf:
       - $ref: '#/components/schemas/BaseAttachmentSpec'
@@ -6853,32 +6840,37 @@ components:
             type:
             - string
             - 'null'
-    WorkflowRequesterInfo:
+    SortDirection:
+      type: string
+      description: ''
+      x-enumNames:
+      - Ascending
+      - Descending
+      enum:
+      - Ascending
+      - Descending
+    JoinOptions:
       type: object
       additionalProperties: false
       properties:
-        workflowRequesterId:
+        actionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinActionType'
+        headerFooterActionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinHeaderFooterActionType'
+        watermarkActionType:
+          oneOf:
+          - $ref: '#/components/schemas/JoinWatermarkActionType'
+        preserveRedlines:
           type:
-          - string
+          - boolean
           - 'null'
-        workflowRequesterName:
+        joinMetadata:
           type:
-          - string
+          - boolean
           - 'null'
-        replyChannel:
-          type:
-          - string
-          - 'null'
-    DocumentProcessRequest:
-      allOf:
-      - $ref: '#/components/schemas/BaseDocGenWorkflowRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          outputConfig:
-            oneOf:
-            - $ref: '#/components/schemas/DocumentOutputConfiguration'
-    BaseDataSpec:
+    BaseAttachmentSpec:
       type: object
       x-abstract: true
       additionalProperties: false
@@ -6887,8 +6879,16 @@ components:
           type:
           - string
           - 'null'
-        type:
-          type: string
+    PipeWriter:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        canGetUnflushedBytes:
+          type: boolean
+        unflushedBytes:
+          type: integer
+          format: int64
   securitySchemes:
     JWT:
       type: apiKey

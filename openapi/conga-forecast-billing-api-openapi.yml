@@ -243,25 +243,36 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ForecastSummaryResponse:
+    CurrencyField:
       type: object
       properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
           type:
           - string
           - 'null'
-        BusinessObjectType:
+          readOnly: true
+        CurrencySymbol:
           type:
           - string
           - 'null'
-          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
-        BusinessObjectId:
+          readOnly: true
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
           type:
-          - string
+          - array
           - 'null'
-          description: Business Object Id for which we need to generate schedules.
+          items:
+            $ref: '#/components/schemas/ApiError'
       additionalProperties: false
     ForecastRequest:
       type: object
@@ -283,6 +294,88 @@ components:
           - string
           - 'null'
           description: Criteria for forecast summary
+      additionalProperties: false
+    ForecastBillingRequest:
+      type: object
+      properties:
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+          description: Business Object Type schedule belongs to (LineItem, OrderLineItem, ProductConfiguration, Order)
+        BusinessObjectId:
+          type:
+          - string
+          - 'null'
+          description: Business Object Id for which we need to generate schedules.
+      additionalProperties: false
+    ForecastBillingSummary:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        Currency:
+          type:
+          - string
+          - 'null'
+        TotalForecastFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalOneTimeFee:
+          $ref: '#/components/schemas/CurrencyField'
+        TotalRecurringFee:
+          $ref: '#/components/schemas/CurrencyField'
+        CriterionName:
+          type:
+          - string
+          - 'null'
+        CriterionValue:
+          type:
+          - string
+          - 'null'
+        ProductConfiguration:
+          $ref: '#/components/schemas/LookupObject'
+        Order:
+          $ref: '#/components/schemas/LookupObject'
+        FBSMNumber:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     ForecastBillingScheduleRecord:
       type: object
@@ -373,101 +466,6 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    ApiError:
-      type: object
-      properties:
-        Source:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    ForecastBillingSummary:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        Currency:
-          type:
-          - string
-          - 'null'
-        TotalForecastFee:
-          $ref: '#/components/schemas/CurrencyField'
-        TotalOneTimeFee:
-          $ref: '#/components/schemas/CurrencyField'
-        TotalRecurringFee:
-          $ref: '#/components/schemas/CurrencyField'
-        CriterionName:
-          type:
-          - string
-          - 'null'
-        CriterionValue:
-          type:
-          - string
-          - 'null'
-        ProductConfiguration:
-          $ref: '#/components/schemas/LookupObject'
-        Order:
-          $ref: '#/components/schemas/LookupObject'
-        FBSMNumber:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
     ForecastScheduleResponse:
       type: object
       properties:
@@ -508,6 +506,26 @@ components:
             $ref: '#/components/schemas/ForecastBillingSummaryRequest'
           description: Forecast billing summary requests
       additionalProperties: false
+    ForecastSummaryResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        BusinessObjectType:
+          type:
+          - string
+          - 'null'
+          description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
+        BusinessObjectId:
+          type:
+          - string
+          - 'null'
+          description: Business Object Id for which we need to generate schedules.
+      additionalProperties: false
     ForecastBillingSummaryRequest:
       type: object
       properties:
@@ -521,27 +539,6 @@ components:
           - string
           - 'null'
           description: Business Object Type schedule belongs to (Product Configuration, Order, Proposal)
-      additionalProperties: false
-    CurrencyField:
-      type: object
-      properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        CurrencySymbol:
-          type:
-          - string
-          - 'null'
-          readOnly: true
       additionalProperties: false
     ForecastResponse:
       type: object
@@ -563,19 +560,22 @@ components:
           - 'null'
           description: Business Object Id for which we need to generate schedules.
       additionalProperties: false
-    ForecastBillingRequest:
+    ApiError:
       type: object
       properties:
-        BusinessObjectType:
+        Source:
           type:
           - string
           - 'null'
-          description: Business Object Type schedule belongs to (LineItem, OrderLineItem, ProductConfiguration, Order)
-        BusinessObjectId:
+        Title:
           type:
           - string
           - 'null'
-          description: Business Object Id for which we need to generate schedules.
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
   securitySchemes:
     Bearer:

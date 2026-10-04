@@ -965,32 +965,31 @@ components:
           - 'null'
           description: Minimum Required (Grouped Checkboxes)
           format: int32
-    ResultOfApproval:
+    FieldType:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+      enum:
+      - SIGNATURE
+      - INPUT
+      - IMAGE
+    FieldCondition:
       type: object
-      description: Object used to manage OneSpan list types
+      description: Object to manage field conditions
       additionalProperties: false
       properties:
-        count:
-          type: integer
-          description: Count
-          format: int32
-        results:
-          type: array
-          description: Results
-          items:
-            $ref: '#/components/schemas/Approval'
-    ConditionalField:
-      allOf:
-      - $ref: '#/components/schemas/Field'
-      - type: object
-        description: Conditional fields
-        additionalProperties: false
-        properties:
-          conditions:
-            type: array
-            description: List of conditions for a field
-            items:
-              $ref: '#/components/schemas/FieldCondition'
+        id:
+          type: string
+          description: The id of the field condition
+        condition:
+          type: string
+          description: The condition that determines if action is needed
+        action:
+          type: string
+          description: The action to take when the condition is true
     Error2:
       type: object
       description: Object representing an error condition
@@ -1018,20 +1017,6 @@ components:
         technical:
           type: string
           description: Technical information about the error
-    FieldCondition:
-      type: object
-      description: Object to manage field conditions
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: The id of the field condition
-        condition:
-          type: string
-          description: The condition that determines if action is needed
-        action:
-          type: string
-          description: The action to take when the condition is true
     Entity:
       type: object
       description: Object used to manage entities from Microsoft Dynamics
@@ -1047,19 +1032,54 @@ components:
         name:
           type: string
           description: Name of the entity
-    AnchorPointType:
-      type: string
-      description: ''
-      x-enumNames:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
-      enum:
-      - TOPLEFT
-      - BOTTOMLEFT
-      - TOPRIGHT
-      - BOTTOMRIGHT
+    ExtractAnchor:
+      type: object
+      description: Text extraction anchor object.
+      additionalProperties: false
+      properties:
+        anchorPoint:
+          description: Which corner of the specified character to use as the base for calculating position
+          oneOf:
+          - $ref: '#/components/schemas/AnchorPointType'
+        characterIndex:
+          type: integer
+          description: The index of the character within the Anchor Text that will be used to calculate position
+          format: int32
+        height:
+          type: integer
+          description: The height of the field position to be calculated
+          format: int32
+        index:
+          type: integer
+          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
+          format: int32
+        leftOffset:
+          type: integer
+          description: An absolute offset applied to the final x value
+          format: int32
+        text:
+          type: string
+          description: The exact string that will be searched for in the uploaded document
+        topOffset:
+          type: integer
+          description: An absolute offset applied to the final y value
+          format: int32
+        width:
+          type: integer
+          description: The width of the field position to be calculated
+          format: int32
+    ConditionalField:
+      allOf:
+      - $ref: '#/components/schemas/Field'
+      - type: object
+        description: Conditional fields
+        additionalProperties: false
+        properties:
+          conditions:
+            type: array
+            description: List of conditions for a field
+            items:
+              $ref: '#/components/schemas/FieldCondition'
     Field:
       type: object
       description: Approval fields object.
@@ -1125,53 +1145,19 @@ components:
           type: number
           description: Field width.
           format: double
-    FieldType:
+    AnchorPointType:
       type: string
       description: ''
       x-enumNames:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
       enum:
-      - SIGNATURE
-      - INPUT
-      - IMAGE
-    ExtractAnchor:
-      type: object
-      description: Text extraction anchor object.
-      additionalProperties: false
-      properties:
-        anchorPoint:
-          description: Which corner of the specified character to use as the base for calculating position
-          oneOf:
-          - $ref: '#/components/schemas/AnchorPointType'
-        characterIndex:
-          type: integer
-          description: The index of the character within the Anchor Text that will be used to calculate position
-          format: int32
-        height:
-          type: integer
-          description: The height of the field position to be calculated
-          format: int32
-        index:
-          type: integer
-          description: The "occurrence" of the string. For example, if index = 2, the software will skip the first two occurrences of Anchor Text, and use the third occurrence to calculate position.
-          format: int32
-        leftOffset:
-          type: integer
-          description: An absolute offset applied to the final x value
-          format: int32
-        text:
-          type: string
-          description: The exact string that will be searched for in the uploaded document
-        topOffset:
-          type: integer
-          description: An absolute offset applied to the final y value
-          format: int32
-        width:
-          type: integer
-          description: The width of the field position to be calculated
-          format: int32
+      - TOPLEFT
+      - BOTTOMLEFT
+      - TOPRIGHT
+      - BOTTOMRIGHT
     Approval:
       type: object
       description: Signing Approval object.
@@ -1223,6 +1209,20 @@ components:
           type: object
           description: Additional approval From File data properties.
           additionalProperties: {}
+    ResultOfApproval:
+      type: object
+      description: Object used to manage OneSpan list types
+      additionalProperties: false
+      properties:
+        count:
+          type: integer
+          description: Count
+          format: int32
+        results:
+          type: array
+          description: Results
+          items:
+            $ref: '#/components/schemas/Approval'
   securitySchemes:
     JWT:
       type: apiKey

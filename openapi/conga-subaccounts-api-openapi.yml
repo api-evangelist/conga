@@ -199,105 +199,95 @@ paths:
       - JWT: []
 components:
   schemas:
-    Cycle:
-      type: string
-      description: ''
-      x-enumNames:
-      - DAY
-      - MONTH
-      - YEAR
-      enum:
-      - DAY
-      - MONTH
-      - YEAR
-    Price:
+    CycleCount:
       type: object
-      description: Object to manage price
       additionalProperties: false
       properties:
-        amount:
+        count:
           type: integer
-          description: Amount
           format: int32
-        currency:
-          description: Currency
-          oneOf:
-          - $ref: '#/components/schemas/Currency'
-    CreditCard:
+        cycle:
+          $ref: '#/components/schemas/CycleCount'
+    Entity:
       type: object
-      additionalProperties: false
-      properties:
-        cvv:
-          type: string
-        expiration:
-          $ref: '#/components/schemas/CcExpiration'
-        name:
-          type: string
-        number:
-          type: string
-        type:
-          type: string
-    Transaction:
-      type: object
-      additionalProperties: false
-      properties:
-        created:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        creditCard:
-          $ref: '#/components/schemas/CreditCard'
-        price:
-          $ref: '#/components/schemas/Price'
-    SubAccountApiKey:
-      type: object
-      description: Object to manage a sub account's api key
-      additionalProperties: false
-      properties:
-        accountUid:
-          type: string
-          description: SubAccount Id
-        accountName:
-          type: string
-          description: SubAccount Name
-        apiKey:
-          type: string
-          description: SubAccount API Key
-    SubAccount:
-      allOf:
-      - $ref: '#/components/schemas/Account'
-      - type: object
-        description: Object to manage a sub account
-        additionalProperties: false
-        properties:
-          parentAccountId:
-            type: string
-            description: The parent account id
-          language:
-            type: string
-            description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
-          timezoneId:
-            type: string
-            description: The timezone of the account
-    Provider:
-      type: object
-      description: Object to manage account providers for documents and users
+      description: Object used to manage entities from Microsoft Dynamics
       additionalProperties: false
       properties:
         data:
           type: object
-          description: Custom meta data
+          description: Custom data for the entity
           additionalProperties: {}
         id:
           type: string
-          description: Id
+          description: Unique id of the entity
         name:
           type: string
-          description: Name
-        provides:
+          description: Name of the entity
+    Quota:
+      type: object
+      additionalProperties: false
+      properties:
+        cycle:
           type: string
-          description: Provides
+        limit:
+          type: integer
+          format: int32
+        scope:
+          type: string
+        target:
+          $ref: '#/components/schemas/Target'
+    Target:
+      type: string
+      description: ''
+      x-enumNames:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+      enum:
+      - SIGNER
+      - SENDER
+      - DOCUMENT
+      - PACKAGE
+      - STORAGE
+    AccountProviders:
+      type: object
+      additionalProperties: false
+      properties:
+        documents:
+          type: array
+          description: List of external sources for documents
+          items:
+            $ref: '#/components/schemas/Provider'
+        users:
+          type: array
+          description: List of external sources for users
+          items:
+            $ref: '#/components/schemas/Provider'
+    Translation:
+      type: object
+      description: Field localization.
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Localization metadata.
+          additionalProperties: {}
+        description:
+          type: string
+          description: Optionally provide a description of the selected language.
+        id:
+          type: string
+          description: Localization Id.
+        language:
+          type: string
+          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+        name:
+          type: string
+          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
+
+            as your users see it in their account profiles and on transactions in which they participate.'
     Error2:
       type: object
       description: Object representing an error condition
@@ -325,14 +315,14 @@ components:
         technical:
           type: string
           description: Technical information about the error
-    Currency:
+    Provider:
       type: object
-      description: The currency used for the Price object
+      description: Object to manage account providers for documents and users
       additionalProperties: false
       properties:
         data:
           type: object
-          description: Data
+          description: Custom meta data
           additionalProperties: {}
         id:
           type: string
@@ -340,76 +330,9 @@ components:
         name:
           type: string
           description: Name
-    CycleCount:
-      type: object
-      additionalProperties: false
-      properties:
-        count:
-          type: integer
-          format: int32
-        cycle:
-          $ref: '#/components/schemas/CycleCount'
-    AccountProviders:
-      type: object
-      additionalProperties: false
-      properties:
-        documents:
-          type: array
-          description: List of external sources for documents
-          items:
-            $ref: '#/components/schemas/Provider'
-        users:
-          type: array
-          description: List of external sources for users
-          items:
-            $ref: '#/components/schemas/Provider'
-    CustomField:
-      type: object
-      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom field metadata.
-          additionalProperties: {}
-        id:
+        provides:
           type: string
-          description: The unique of id of the field
-        name:
-          type: string
-          description: Custom field name.
-        required:
-          type: boolean
-          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
-        translations:
-          type: array
-          description: Custom field localization.
-          items:
-            $ref: '#/components/schemas/Translation'
-        value:
-          type: string
-          description: Custom field default value.
-    LicenseStatus:
-      type: string
-      description: ''
-      x-enumNames:
-      - ACTIVE
-      - PENDING
-      - GRACE
-      enum:
-      - ACTIVE
-      - PENDING
-      - GRACE
-    CcExpiration:
-      type: object
-      additionalProperties: false
-      properties:
-        month:
-          type: integer
-          format: int32
-        year:
-          type: integer
-          format: int32
+          description: Provides
     License:
       type: object
       description: License information.
@@ -440,29 +363,166 @@ components:
           description: Transactions associated with this license
           items:
             $ref: '#/components/schemas/Transaction'
-    Translation:
+    SubAccountApiKey:
       type: object
-      description: Field localization.
+      description: Object to manage a sub account's api key
+      additionalProperties: false
+      properties:
+        accountUid:
+          type: string
+          description: SubAccount Id
+        accountName:
+          type: string
+          description: SubAccount Name
+        apiKey:
+          type: string
+          description: SubAccount API Key
+    CreditCard:
+      type: object
+      additionalProperties: false
+      properties:
+        cvv:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/CcExpiration'
+        name:
+          type: string
+        number:
+          type: string
+        type:
+          type: string
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        address1:
+          type: string
+          description: Address1
+        address2:
+          type: string
+          description: Address2
+        city:
+          type: string
+          description: City
+        country:
+          type: string
+          description: Country
+        state:
+          type: string
+          description: State
+        zipcode:
+          type: string
+          description: Zipcode
+    Currency:
+      type: object
+      description: The currency used for the Price object
       additionalProperties: false
       properties:
         data:
           type: object
-          description: Localization metadata.
+          description: Data
           additionalProperties: {}
-        description:
-          type: string
-          description: Optionally provide a description of the selected language.
         id:
           type: string
-          description: Localization Id.
-        language:
-          type: string
-          description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+          description: Id
         name:
           type: string
-          description: 'Specify a Field Name for the selected language. This is a required field. This is the name of the field
-
-            as your users see it in their account profiles and on transactions in which they participate.'
+          description: Name
+    CcExpiration:
+      type: object
+      additionalProperties: false
+      properties:
+        month:
+          type: integer
+          format: int32
+        year:
+          type: integer
+          format: int32
+    SubAccount:
+      allOf:
+      - $ref: '#/components/schemas/Account'
+      - type: object
+        description: Object to manage a sub account
+        additionalProperties: false
+        properties:
+          parentAccountId:
+            type: string
+            description: The parent account id
+          language:
+            type: string
+            description: 'Available options: en, fr, it, ru, es, pt, de, nl, da, el, zh-CN, zh-TW, ja, ko'
+          timezoneId:
+            type: string
+            description: The timezone of the account
+    CustomField:
+      type: object
+      description: "A custom field is one that, at the time of signing, is automatically populated with data that is specific\nto the signer. For instance, a signer might have an Agent Number, and that number may need to appear in the\nfinal document next to their signature. By using a custom field, the signer can specify their Agent Number,\nand that number will automatically appear in any other field that has been configured to receive it.\n            \nMore info: https://community.onespan.com/documentation/onespan-sign/guides/admin-guides/user/custom-fields"
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          description: Custom field metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: The unique of id of the field
+        name:
+          type: string
+          description: Custom field name.
+        required:
+          type: boolean
+          description: Flag that indicates if the custom field will be required for users when setting up their account profiles.
+        translations:
+          type: array
+          description: Custom field localization.
+          items:
+            $ref: '#/components/schemas/Translation'
+        value:
+          type: string
+          description: Custom field default value.
+    Company:
+      type: object
+      description: Company information.
+      additionalProperties: false
+      properties:
+        address:
+          description: Company address.
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        data:
+          type: object
+          description: Company metadata.
+          additionalProperties: {}
+        id:
+          type: string
+          description: Unique company Id.
+        name:
+          type: string
+          description: Company name.
+    LicenseStatus:
+      type: string
+      description: ''
+      x-enumNames:
+      - ACTIVE
+      - PENDING
+      - GRACE
+      enum:
+      - ACTIVE
+      - PENDING
+      - GRACE
+    Transaction:
+      type: object
+      additionalProperties: false
+      properties:
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+        price:
+          $ref: '#/components/schemas/Price'
     Plan:
       type: object
       additionalProperties: false
@@ -495,40 +555,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Quota'
-    Company:
-      type: object
-      description: Company information.
-      additionalProperties: false
-      properties:
-        address:
-          description: Company address.
-          oneOf:
-          - $ref: '#/components/schemas/Address'
-        data:
-          type: object
-          description: Company metadata.
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique company Id.
-        name:
-          type: string
-          description: Company name.
-    Entity:
-      type: object
-      description: Object used to manage entities from Microsoft Dynamics
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          description: Custom data for the entity
-          additionalProperties: {}
-        id:
-          type: string
-          description: Unique id of the entity
-        name:
-          type: string
-          description: Name of the entity
+    Cycle:
+      type: string
+      description: ''
+      x-enumNames:
+      - DAY
+      - MONTH
+      - YEAR
+      enum:
+      - DAY
+      - MONTH
+      - YEAR
     Account:
       type: object
       description: Account information.
@@ -591,56 +628,19 @@ components:
         accountName:
           type: string
           description: SubAccount Name
-    Address:
+    Price:
       type: object
+      description: Object to manage price
       additionalProperties: false
       properties:
-        address1:
-          type: string
-          description: Address1
-        address2:
-          type: string
-          description: Address2
-        city:
-          type: string
-          description: City
-        country:
-          type: string
-          description: Country
-        state:
-          type: string
-          description: State
-        zipcode:
-          type: string
-          description: Zipcode
-    Target:
-      type: string
-      description: ''
-      x-enumNames:
-      - SIGNER
-      - SENDER
-      - DOCUMENT
-      - PACKAGE
-      - STORAGE
-      enum:
-      - SIGNER
-      - SENDER
-      - DOCUMENT
-      - PACKAGE
-      - STORAGE
-    Quota:
-      type: object
-      additionalProperties: false
-      properties:
-        cycle:
-          type: string
-        limit:
+        amount:
           type: integer
+          description: Amount
           format: int32
-        scope:
-          type: string
-        target:
-          $ref: '#/components/schemas/Target'
+        currency:
+          description: Currency
+          oneOf:
+          - $ref: '#/components/schemas/Currency'
   securitySchemes:
     JWT:
       type: apiKey

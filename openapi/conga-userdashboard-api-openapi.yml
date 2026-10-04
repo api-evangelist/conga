@@ -121,6 +121,25 @@ paths:
       - Bearer: []
 components:
   schemas:
+    Sort:
+      type: object
+      additionalProperties: false
+      properties:
+        FieldName:
+          type:
+          - string
+          - 'null'
+        OrderBy:
+          type:
+          - string
+          - 'null'
+    BaseResponse:
+      type: object
+      x-abstract: true
+      additionalProperties: false
+      properties:
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
     HttpStatusCode:
       type: string
       description: ''
@@ -260,61 +279,6 @@ components:
       - LoopDetected
       - NotExtended
       - NetworkAuthenticationRequired
-    BaseResponse:
-      type: object
-      x-abstract: true
-      additionalProperties: false
-      properties:
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-    DashboardApprovalsCountDTO:
-      type: object
-      additionalProperties: false
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-        ObjectLabel:
-          type:
-          - string
-          - 'null'
-        CountDetails:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: integer
-            format: int32
-        ObjectData:
-          oneOf:
-          - $ref: '#/components/schemas/QueryResponseOfDictionaryOfStringAndObject'
-    QueryResponseOfDictionaryOfStringAndObject:
-      allOf:
-      - $ref: '#/components/schemas/BaseResponse'
-      - type: object
-        additionalProperties: false
-        properties:
-          RecordCount:
-            type:
-            - integer
-            - 'null'
-            format: int64
-          Data:
-            type:
-            - array
-            - 'null'
-            items:
-              type: object
-              additionalProperties: {}
-          HasMoreRecords:
-            type:
-            - boolean
-            - 'null'
-          NextCursor:
-            type:
-            - string
-            - 'null'
     UserDashboardStatusType:
       type: string
       description: ''
@@ -326,6 +290,22 @@ components:
       - Assigned
       - Approved
       - Rejected
+    SearchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        SerializedResultEntities:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            additionalProperties: {}
+        TotalNumberOfRecords:
+          type: integer
+          format: int32
+        MoreRecords:
+          type: boolean
     DashboardApprovalsRequestDTO:
       type: object
       additionalProperties: false
@@ -367,34 +347,54 @@ components:
         Sort:
           oneOf:
           - $ref: '#/components/schemas/Sort'
-    SearchResult:
+    QueryResponseOfDictionaryOfStringAndObject:
+      allOf:
+      - $ref: '#/components/schemas/BaseResponse'
+      - type: object
+        additionalProperties: false
+        properties:
+          RecordCount:
+            type:
+            - integer
+            - 'null'
+            format: int64
+          Data:
+            type:
+            - array
+            - 'null'
+            items:
+              type: object
+              additionalProperties: {}
+          HasMoreRecords:
+            type:
+            - boolean
+            - 'null'
+          NextCursor:
+            type:
+            - string
+            - 'null'
+    DashboardApprovalsCountDTO:
       type: object
       additionalProperties: false
       properties:
-        SerializedResultEntities:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            additionalProperties: {}
-        TotalNumberOfRecords:
-          type: integer
-          format: int32
-        MoreRecords:
-          type: boolean
-    Sort:
-      type: object
-      additionalProperties: false
-      properties:
-        FieldName:
+        ObjectName:
           type:
           - string
           - 'null'
-        OrderBy:
+        ObjectLabel:
           type:
           - string
           - 'null'
+        CountDetails:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: integer
+            format: int32
+        ObjectData:
+          oneOf:
+          - $ref: '#/components/schemas/QueryResponseOfDictionaryOfStringAndObject'
   securitySchemes:
     Bearer:
       type: apiKey

@@ -270,36 +270,27 @@ paths:
       - JWT: []
 components:
   schemas:
-    SalesforceObjectResult:
-      type: object
-      description: Represents the Salesforce object type lookup result.
-      additionalProperties: false
-      properties:
-        recordId:
-          type: string
-        objectName:
-          type: string
-        objectType:
-          type: string
-    RelatedContact:
+    SalesforceAttachment:
       type: object
       additionalProperties: false
       properties:
-        firstName:
-          type: string
-        lastName:
+        id:
           type: string
         name:
           type: string
-        id:
+        type:
           type: string
-        email:
+        createdDate:
           type: string
-        isPrimary:
-          type: boolean
-        contactType:
+          format: date-time
+        mimeType:
           type: string
-        accountName:
+        fileSize:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        fileExtension:
           type: string
     SalesforceTemplateRecord:
       type: object
@@ -350,34 +341,26 @@ components:
         templateType:
           type: string
           description: Logical template type, e.g. "Word", "PDF", "CET".
-    ProblemDetails:
+    RelatedContact:
       type: object
-      additionalProperties: {}
+      additionalProperties: false
       properties:
-        type:
-          type:
-          - string
-          - 'null'
-        title:
-          type:
-          - string
-          - 'null'
-        status:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        detail:
-          type:
-          - string
-          - 'null'
-        instance:
-          type:
-          - string
-          - 'null'
-        extensions:
-          type: object
-          additionalProperties: {}
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        email:
+          type: string
+        isPrimary:
+          type: boolean
+        contactType:
+          type: string
+        accountName:
+          type: string
     ErrorResult:
       type: object
       additionalProperties: false
@@ -386,28 +369,29 @@ components:
           type: string
         message:
           type: string
-    SalesforceAttachment:
+    SalesforceTemplateQueryResponse:
       type: object
+      description: Wrapper object for template query results.
       additionalProperties: false
       properties:
-        id:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        createdDate:
-          type: string
-          format: date-time
-        mimeType:
-          type: string
-        fileSize:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        fileExtension:
-          type: string
+        results:
+          type: array
+          description: 'Array of template items returned.
+
+            Can include multiple types (Word templates, CET email templates, PDFs, etc.).'
+          items:
+            $ref: '#/components/schemas/SalesforceTemplateRecord'
+        totalCount:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        hasMore:
+          type: boolean
     SalesforceAttachmentResponse:
       type: object
       additionalProperties: false
@@ -447,29 +431,45 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RelatedContact'
-    SalesforceTemplateQueryResponse:
+    ProblemDetails:
       type: object
-      description: Wrapper object for template query results.
+      additionalProperties: {}
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+        extensions:
+          type: object
+          additionalProperties: {}
+    SalesforceObjectResult:
+      type: object
+      description: Represents the Salesforce object type lookup result.
       additionalProperties: false
       properties:
-        results:
-          type: array
-          description: 'Array of template items returned.
-
-            Can include multiple types (Word templates, CET email templates, PDFs, etc.).'
-          items:
-            $ref: '#/components/schemas/SalesforceTemplateRecord'
-        totalCount:
-          type: integer
-          format: int32
-        totalPages:
-          type: integer
-          format: int32
-        currentPage:
-          type: integer
-          format: int32
-        hasMore:
-          type: boolean
+        recordId:
+          type: string
+        objectName:
+          type: string
+        objectType:
+          type: string
   securitySchemes:
     JWT:
       type: apiKey

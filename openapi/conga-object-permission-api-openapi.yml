@@ -474,7 +474,12 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ObjectPermissionAPIResponse:
+    ObjectType:
+      enum:
+      - Default
+      - Property
+      type: string
+    ObjectInfoListAPIResponse:
       type: object
       properties:
         Success:
@@ -485,7 +490,11 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/ObjectPermission'
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectInfo'
         Errors:
           type:
           - array
@@ -515,6 +524,134 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    AccountScopeConfig:
+      type: object
+      properties:
+        AccountScopeFieldName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ObjectPermissionCreateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: ID of the object permission
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which an object permission is to be created
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which an object permission is to be created
+        ViewAll:
+          type: boolean
+          description: Provides view access to all the defined resources
+        ModifyAll:
+          type: boolean
+          description: Provides view and modify access to all the defined resources
+        ActionPermissions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActionPermissionConfig'
+          description: Collection of action permissions
+        ScopePermissions:
+          $ref: '#/components/schemas/ScopePermissionConfig'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+        PermissionType:
+          $ref: '#/components/schemas/ObjectPermissionType'
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ContactScopeDependentObjectMapping:
+      type: object
+      properties:
+        PrimaryObjectName:
+          type:
+          - string
+          - 'null'
+          description: Primary object name e.g. Supplier, Account
+        LookupFieldName:
+          type:
+          - string
+          - 'null'
+          description: Lookup/reference field on the dependent object that points to the primary object.
+      additionalProperties: false
+      description: Contact Scope dependent object mapping
+    ObjectPermissionUpdateRequest:
+      type: object
+      properties:
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which object permission is to be updated
+        PermissionGroupName:
+          type:
+          - string
+          - 'null'
+          description: Permission group name for which object permission is to be updated
+        ViewAll:
+          type: boolean
+          description: Provides view access to all the defined resources
+        ModifyAll:
+          type: boolean
+          description: Provides view and modify access to all the defined resources
+        ActionPermissions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActionPermissionConfig'
+          description: Collection of action permissions
+        ScopePermissions:
+          $ref: '#/components/schemas/ScopePermissionConfig'
+        ExternalId:
+          type:
+          - string
+          - 'null'
+          description: ExternalId
+      additionalProperties: false
+    ScopePermissionConfig:
+      type: object
+      properties:
+        GLOBAL:
+          type:
+          - string
+          - 'null'
+        USER:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserScopeConfig'
+        ACCOUNT:
+          $ref: '#/components/schemas/AccountScopeConfig'
+        CONTACT:
+          $ref: '#/components/schemas/ContactScopeConfig'
       additionalProperties: false
     ObjectPermission:
       type: object
@@ -564,60 +701,7 @@ components:
         PermissionType:
           $ref: '#/components/schemas/ObjectPermissionType'
       additionalProperties: {}
-    ObjectPermissionType:
-      enum:
-      - Internal
-      - External
-      type: string
-    UserScopeConfig:
-      type: object
-      properties:
-        RelationshipFieldName:
-          type:
-          - string
-          - 'null'
-        Criteria:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ActionPermissionConfig:
-      type: object
-      properties:
-        ActionName:
-          type:
-          - string
-          - 'null'
-        Enabled:
-          type: boolean
-        Criteria:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ObjectType:
-      enum:
-      - Default
-      - Property
-      type: string
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ObjectInfoListAPIResponse:
+    StringListAPIResponse:
       type: object
       properties:
         Success:
@@ -632,7 +716,7 @@ components:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ObjectInfo'
+            type: string
         Errors:
           type:
           - array
@@ -663,59 +747,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    ScopePermissionConfig:
-      type: object
-      properties:
-        GLOBAL:
-          type:
-          - string
-          - 'null'
-        USER:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/UserScopeConfig'
-        ACCOUNT:
-          $ref: '#/components/schemas/AccountScopeConfig'
-        CONTACT:
-          $ref: '#/components/schemas/ContactScopeConfig'
-      additionalProperties: false
-    ObjectPermissionUpdateRequest:
-      type: object
-      properties:
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object name for which object permission is to be updated
-        PermissionGroupName:
-          type:
-          - string
-          - 'null'
-          description: Permission group name for which object permission is to be updated
-        ViewAll:
-          type: boolean
-          description: Provides view access to all the defined resources
-        ModifyAll:
-          type: boolean
-          description: Provides view and modify access to all the defined resources
-        ActionPermissions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActionPermissionConfig'
-          description: Collection of action permissions
-        ScopePermissions:
-          $ref: '#/components/schemas/ScopePermissionConfig'
-        ExternalId:
-          type:
-          - string
-          - 'null'
-          description: ExternalId
-      additionalProperties: false
-    StringAPIResponse:
+    ObjectPermissionListAPIResponse:
       type: object
       properties:
         Success:
@@ -727,8 +759,52 @@ components:
           format: int64
         Data:
           type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ObjectPermission'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
           - string
           - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectPermissionAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/ObjectPermission'
         Errors:
           type:
           - array
@@ -803,85 +879,19 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    StringListAPIResponse:
+    ActionPermissionConfig:
       type: object
       properties:
-        Success:
+        ActionName:
+          type:
+          - string
+          - 'null'
+        Enabled:
           type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        Criteria:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    AccountScopeConfig:
-      type: object
-      properties:
-        AccountScopeFieldName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ObjectInfo:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        DisplayName:
-          type:
-          - string
-          - 'null'
-        Description:
-          type:
-          - string
-          - 'null'
-        Category:
-          type:
-          - string
-          - 'null'
-        IsProtected:
-          type: boolean
-        IsDeprecated:
-          type: boolean
-        ObjectType:
-          $ref: '#/components/schemas/ObjectType'
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -947,66 +957,14 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    ContactScopeDependentObjectMapping:
+    UserScopeConfig:
       type: object
       properties:
-        PrimaryObjectName:
+        RelationshipFieldName:
           type:
           - string
           - 'null'
-          description: Primary object name e.g. Supplier, Account
-        LookupFieldName:
-          type:
-          - string
-          - 'null'
-          description: Lookup/reference field on the dependent object that points to the primary object.
-      additionalProperties: false
-      description: Contact Scope dependent object mapping
-    ObjectPermissionCreateRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: ID of the object permission
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object name for which an object permission is to be created
-        PermissionGroupName:
-          type:
-          - string
-          - 'null'
-          description: Permission group name for which an object permission is to be created
-        ViewAll:
-          type: boolean
-          description: Provides view access to all the defined resources
-        ModifyAll:
-          type: boolean
-          description: Provides view and modify access to all the defined resources
-        ActionPermissions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActionPermissionConfig'
-          description: Collection of action permissions
-        ScopePermissions:
-          $ref: '#/components/schemas/ScopePermissionConfig'
-        ExternalId:
-          type:
-          - string
-          - 'null'
-          description: ExternalId
-        PermissionType:
-          $ref: '#/components/schemas/ObjectPermissionType'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
+        Criteria:
           type:
           - string
           - 'null'
@@ -1030,7 +988,7 @@ components:
             Shows dependency of the primary object and dependent objects with lookup field name in dependent object.'
       additionalProperties: false
       description: Contact Scope configuration
-    ObjectPermissionListAPIResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -1042,10 +1000,8 @@ components:
           format: int64
         Data:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ObjectPermission'
         Errors:
           type:
           - array
@@ -1075,6 +1031,50 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ObjectPermissionType:
+      enum:
+      - Internal
+      - External
+      type: string
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ObjectInfo:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+        DisplayName:
+          type:
+          - string
+          - 'null'
+        Description:
+          type:
+          - string
+          - 'null'
+        Category:
+          type:
+          - string
+          - 'null'
+        IsProtected:
+          type: boolean
+        IsDeprecated:
+          type: boolean
+        ObjectType:
+          $ref: '#/components/schemas/ObjectType'
       additionalProperties: false
   securitySchemes:
     Bearer:

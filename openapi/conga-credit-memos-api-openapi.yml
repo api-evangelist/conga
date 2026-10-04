@@ -217,6 +217,48 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    CreditMemoResponse:
+      type: object
+      properties:
+        CreditMemo:
+          $ref: '#/components/schemas/CreditMemo'
+        CreditMemoLineItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CreditMemoLineItem'
+          description: Gets or sets the list of credit memo line items.
+        ARTransactions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RelatedARTransaction'
+          description: Gets or sets the list of related accounts receivable transactions.
+      additionalProperties: false
+      description: Represents the response for a credit memo, containing the credit memo details, associated line items, and accounts receivable transactions.
+    CurrencyField:
+      type: object
+      properties:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        CurrencySymbol:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
     ApprovalResponseBatchResponse:
       type: object
       properties:
@@ -231,7 +273,29 @@ components:
           items:
             $ref: '#/components/schemas/ApprovalResponse'
       additionalProperties: false
-    CreditMemoLineItem:
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    CreditMemoApprovalRequest:
+      type: object
+      properties:
+        Ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of invoice IDs to approve.
+      additionalProperties: false
+      description: Represents a request to approve one or more credit memos.
+    RelatedARTransaction:
       type: object
       properties:
         Id:
@@ -260,148 +324,42 @@ components:
           type:
           - string
           - 'null'
-        CreditMemoLineItemName:
+        TransactionDate:
+          type: string
+          format: date-time
+        SystemGenerated:
+          type: boolean
+        TransactionType:
           type:
           - string
           - 'null'
-        Category:
+        Description:
           type:
           - string
           - 'null'
-        PriceType:
-          type:
-          - string
-          - 'null'
+        Invoice:
+          $ref: '#/components/schemas/LookupObject'
         CreditMemo:
           $ref: '#/components/schemas/LookupObject'
-        BillingScheduleRecord:
+        SourceCreditMemo:
           $ref: '#/components/schemas/LookupObject'
-        AppliedInvoiceLineItem:
+        SourceInvoice:
           $ref: '#/components/schemas/LookupObject'
-        BillTo:
-          $ref: '#/components/schemas/LookupObject'
-        ShipTo:
-          $ref: '#/components/schemas/LookupObject'
-        SoldTo:
-          $ref: '#/components/schemas/LookupObject'
-        BillToLocation:
-          $ref: '#/components/schemas/LookupObject'
-        ShipToLocation:
-          $ref: '#/components/schemas/LookupObject'
-        SoldToLocation:
-          $ref: '#/components/schemas/LookupObject'
-        AssetLineItem:
-          $ref: '#/components/schemas/LookupObject'
-        OrderLineItem:
-          $ref: '#/components/schemas/LookupObject'
-        Contracted:
-          type: boolean
-        CreditedQuantity:
-          type: number
-          format: double
-        Product:
-          $ref: '#/components/schemas/LookupObject'
-        StartDate:
-          type: string
-          format: date-time
-        EndDate:
-          type: string
-          format: date-time
-        CreditAmount:
+        StartingBalance:
           $ref: '#/components/schemas/CurrencyField'
-        SubTotal:
+        ARAmount:
           $ref: '#/components/schemas/CurrencyField'
-        Tax:
+        EndingBalance:
           $ref: '#/components/schemas/CurrencyField'
-        TotalAmount:
-          $ref: '#/components/schemas/CurrencyField'
-        ApprovalStatus:
-          type:
-          - string
-          - 'null'
         Currency:
           type:
           - string
           - 'null'
+        ARTransactionAutoNumber:
+          type:
+          - string
+          - 'null'
       additionalProperties: {}
-    ApiError:
-      type: object
-      properties:
-        Source:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    CancellationResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-      additionalProperties: false
-      description: 'Represents the result of cancelling a single entity (e.g., invoice or credit memo).
-
-        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    CreditMemoApprovalRequest:
-      type: object
-      properties:
-        Ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Gets or sets the list of invoice IDs to approve.
-      additionalProperties: false
-      description: Represents a request to approve one or more credit memos.
     ApprovalResponse:
       type: object
       properties:
@@ -429,6 +387,57 @@ components:
       description: 'Represents the result of approving a single entity (e.g., invoice or credit memo) within a batch approval operation.
 
         Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
+    CancellationResponse:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        RecordIndex:
+          type: integer
+          format: int32
+        IsSuccess:
+          type: boolean
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+      additionalProperties: false
+      description: 'Represents the result of cancelling a single entity (e.g., invoice or credit memo).
+
+        Inherits from Conga.MAF.Entities.Responses.BaseResponse to support standardized batch response handling.'
+    CreditMemoCancellationRequest:
+      type: object
+      properties:
+        Ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the list of credit memo IDs to cancel.
+      additionalProperties: false
+      description: Represents a request to cancel one or more credit memos.
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     CreditMemo:
       type: object
       properties:
@@ -538,28 +547,38 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    CurrencyField:
+    CancellationResponseBatchResponse:
       type: object
       properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
+        Summary:
           type:
           - string
           - 'null'
-          readOnly: true
-        CurrencySymbol:
+        Results:
           type:
-          - string
+          - array
           - 'null'
-          readOnly: true
+          items:
+            $ref: '#/components/schemas/CancellationResponse'
       additionalProperties: false
-    RelatedARTransaction:
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CreditMemoLineItem:
       type: object
       properties:
         Id:
@@ -588,89 +607,70 @@ components:
           type:
           - string
           - 'null'
-        TransactionDate:
-          type: string
-          format: date-time
-        SystemGenerated:
-          type: boolean
-        TransactionType:
+        CreditMemoLineItemName:
           type:
           - string
           - 'null'
-        Description:
+        Category:
           type:
           - string
           - 'null'
-        Invoice:
-          $ref: '#/components/schemas/LookupObject'
+        PriceType:
+          type:
+          - string
+          - 'null'
         CreditMemo:
           $ref: '#/components/schemas/LookupObject'
-        SourceCreditMemo:
+        BillingScheduleRecord:
           $ref: '#/components/schemas/LookupObject'
-        SourceInvoice:
+        AppliedInvoiceLineItem:
           $ref: '#/components/schemas/LookupObject'
-        StartingBalance:
+        BillTo:
+          $ref: '#/components/schemas/LookupObject'
+        ShipTo:
+          $ref: '#/components/schemas/LookupObject'
+        SoldTo:
+          $ref: '#/components/schemas/LookupObject'
+        BillToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        ShipToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        SoldToLocation:
+          $ref: '#/components/schemas/LookupObject'
+        AssetLineItem:
+          $ref: '#/components/schemas/LookupObject'
+        OrderLineItem:
+          $ref: '#/components/schemas/LookupObject'
+        Contracted:
+          type: boolean
+        CreditedQuantity:
+          type: number
+          format: double
+        Product:
+          $ref: '#/components/schemas/LookupObject'
+        StartDate:
+          type: string
+          format: date-time
+        EndDate:
+          type: string
+          format: date-time
+        CreditAmount:
           $ref: '#/components/schemas/CurrencyField'
-        ARAmount:
+        SubTotal:
           $ref: '#/components/schemas/CurrencyField'
-        EndingBalance:
+        Tax:
           $ref: '#/components/schemas/CurrencyField'
+        TotalAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        ApprovalStatus:
+          type:
+          - string
+          - 'null'
         Currency:
           type:
           - string
           - 'null'
-        ARTransactionAutoNumber:
-          type:
-          - string
-          - 'null'
       additionalProperties: {}
-    CreditMemoResponse:
-      type: object
-      properties:
-        CreditMemo:
-          $ref: '#/components/schemas/CreditMemo'
-        CreditMemoLineItems:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CreditMemoLineItem'
-          description: Gets or sets the list of credit memo line items.
-        ARTransactions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RelatedARTransaction'
-          description: Gets or sets the list of related accounts receivable transactions.
-      additionalProperties: false
-      description: Represents the response for a credit memo, containing the credit memo details, associated line items, and accounts receivable transactions.
-    CancellationResponseBatchResponse:
-      type: object
-      properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CancellationResponse'
-      additionalProperties: false
-    CreditMemoCancellationRequest:
-      type: object
-      properties:
-        Ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Gets or sets the list of credit memo IDs to cancel.
-      additionalProperties: false
-      description: Represents a request to cancel one or more credit memos.
   securitySchemes:
     Bearer:
       type: apiKey

@@ -197,47 +197,25 @@ paths:
       - Bearer: []
 components:
   schemas:
-    FieldDTO:
-      type: object
-      description: FieldDTO encapsulates the field level information like label, value, datatype
-      additionalProperties: false
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-          description: Name for the field
-        label:
-          type:
-          - string
-          - 'null'
-          description: Display Name for the field
-        value:
-          description: Value for the field
-        type:
-          type:
-          - string
-          - 'null'
-          description: Data type for the field
-    AdhocApprovalProcessInfo:
+    AdhocApprovalGroup:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
       - type: object
         additionalProperties: {}
         properties:
-          AttachmentIds:
+          AdhocApprovalProcessInfoId:
+            oneOf:
+            - $ref: '#/components/schemas/LookupObject'
+          GroupName:
             type:
             - string
             - 'null'
-          DisplayFields:
+          GroupSequence:
             type:
-            - string
+            - integer
             - 'null'
-          DisplayHeaderFields:
-            type:
-            - string
-            - 'null'
-          ProcessComments:
+            format: int32
+          DependsOn:
             type:
             - string
             - 'null'
@@ -249,16 +227,25 @@ components:
             type:
             - string
             - 'null'
+          ApproverList:
+            type:
+            - array
+            - 'null'
+            items:
+              $ref: '#/components/schemas/AdhocApprover'
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
           ModifiedPropertyNames:
             type:
             - array
             - 'null'
             items:
               type: string
-          Persist:
-            type: boolean
-          Delete:
-            type: boolean
+          Sequence:
+            type: integer
+            format: int32
     AdhocProcessDefnPayloadDTO:
       type: object
       description: AdhocProcessDefinition Payload DTO encapsulates the information for the generated approval requests, analogous to ad hoc process payloads.
@@ -331,6 +318,192 @@ components:
           description: Date the submission occurred
           format: date-time
           example: '2023-04-10T22:08:42.756215Z'
+    AdhocSubmitApprovalRequest:
+      type: object
+      description: SubmitApprovalRequest
+      additionalProperties: false
+      required:
+      - ObjectId
+      - ObjectType
+      properties:
+        ObjectId:
+          type: string
+          description: Object Id
+          minLength: 1
+          example: 8655C092-0AAA-423C-AF98-32D8246E494C
+        ObjectType:
+          type: string
+          description: Object Type
+          minLength: 1
+          example: Opportunity
+        Comments:
+          type:
+          - string
+          - 'null'
+          description: Comments
+          example: Example submit approval request comments
+        AttachmentIds:
+          type:
+          - string
+          - 'null'
+          description: A list of attachments separated by a comma
+          example: attachmentId1,attachmentId2
+    GroupPayloadDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalGroup'
+      - type: object
+        additionalProperties: {}
+        properties:
+          RequestId:
+            type:
+            - string
+            - 'null'
+          Status:
+            type:
+            - string
+            - 'null'
+    AdhocApprovalProcessInfo:
+      allOf:
+      - $ref: '#/components/schemas/BaseObject'
+      - type: object
+        additionalProperties: {}
+        properties:
+          AttachmentIds:
+            type:
+            - string
+            - 'null'
+          DisplayFields:
+            type:
+            - string
+            - 'null'
+          DisplayHeaderFields:
+            type:
+            - string
+            - 'null'
+          ProcessComments:
+            type:
+            - string
+            - 'null'
+          BusinessObjectId:
+            type:
+            - string
+            - 'null'
+          BusinessObjectType:
+            type:
+            - string
+            - 'null'
+          ModifiedPropertyNames:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          Persist:
+            type: boolean
+          Delete:
+            type: boolean
+    AdhocApprovalProcessInfoDTO:
+      allOf:
+      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
+      - type: object
+        description: AdhocApprovalProcessInfoDTO for response payload
+        additionalProperties: {}
+        properties:
+          DisplayFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayFieldsInfo have more information about each field in DisplayFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          DisplayHeaderFieldsInfo:
+            type:
+            - array
+            - 'null'
+            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
+            items:
+              $ref: '#/components/schemas/FieldDTO'
+          ApprovalProcessId:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessId
+          ApprovalProcessName:
+            type:
+            - string
+            - 'null'
+            description: ApprovalProcessName
+    LookupObject:
+      type: object
+      additionalProperties: false
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+    BaseObject:
+      type: object
+      additionalProperties: {}
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          oneOf:
+          - $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        CustomProperties:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+    FieldDTO:
+      type: object
+      description: FieldDTO encapsulates the field level information like label, value, datatype
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name for the field
+        label:
+          type:
+          - string
+          - 'null'
+          description: Display Name for the field
+        value:
+          description: Value for the field
+        type:
+          type:
+          - string
+          - 'null'
+          description: Data type for the field
     AdhocApprover:
       allOf:
       - $ref: '#/components/schemas/BaseObject'
@@ -385,179 +558,6 @@ components:
             type: boolean
           Delete:
             type: boolean
-          Sequence:
-            type: integer
-            format: int32
-    AdhocApprovalProcessInfoDTO:
-      allOf:
-      - $ref: '#/components/schemas/AdhocApprovalProcessInfo'
-      - type: object
-        description: AdhocApprovalProcessInfoDTO for response payload
-        additionalProperties: {}
-        properties:
-          DisplayFieldsInfo:
-            type:
-            - array
-            - 'null'
-            description: DisplayFieldsInfo have more information about each field in DisplayFields
-            items:
-              $ref: '#/components/schemas/FieldDTO'
-          DisplayHeaderFieldsInfo:
-            type:
-            - array
-            - 'null'
-            description: DisplayHeaderFieldsInfo have more information about each field in DisplayHeaderFields
-            items:
-              $ref: '#/components/schemas/FieldDTO'
-          ApprovalProcessId:
-            type:
-            - string
-            - 'null'
-            description: ApprovalProcessId
-          ApprovalProcessName:
-            type:
-            - string
-            - 'null'
-            description: ApprovalProcessName
-    LookupObject:
-      type: object
-      additionalProperties: false
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-    AdhocSubmitApprovalRequest:
-      type: object
-      description: SubmitApprovalRequest
-      additionalProperties: false
-      required:
-      - ObjectId
-      - ObjectType
-      properties:
-        ObjectId:
-          type: string
-          description: Object Id
-          minLength: 1
-          example: 8655C092-0AAA-423C-AF98-32D8246E494C
-        ObjectType:
-          type: string
-          description: Object Type
-          minLength: 1
-          example: Opportunity
-        Comments:
-          type:
-          - string
-          - 'null'
-          description: Comments
-          example: Example submit approval request comments
-        AttachmentIds:
-          type:
-          - string
-          - 'null'
-          description: A list of attachments separated by a comma
-          example: attachmentId1,attachmentId2
-    BaseObject:
-      type: object
-      additionalProperties: {}
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          oneOf:
-          - $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        CustomProperties:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-    GroupPayloadDTO:
-      allOf:
-      - $ref: '#/components/schemas/AdhocApprovalGroup'
-      - type: object
-        additionalProperties: {}
-        properties:
-          RequestId:
-            type:
-            - string
-            - 'null'
-          Status:
-            type:
-            - string
-            - 'null'
-    AdhocApprovalGroup:
-      allOf:
-      - $ref: '#/components/schemas/BaseObject'
-      - type: object
-        additionalProperties: {}
-        properties:
-          AdhocApprovalProcessInfoId:
-            oneOf:
-            - $ref: '#/components/schemas/LookupObject'
-          GroupName:
-            type:
-            - string
-            - 'null'
-          GroupSequence:
-            type:
-            - integer
-            - 'null'
-            format: int32
-          DependsOn:
-            type:
-            - string
-            - 'null'
-          BusinessObjectId:
-            type:
-            - string
-            - 'null'
-          BusinessObjectType:
-            type:
-            - string
-            - 'null'
-          ApproverList:
-            type:
-            - array
-            - 'null'
-            items:
-              $ref: '#/components/schemas/AdhocApprover'
-          Persist:
-            type: boolean
-          Delete:
-            type: boolean
-          ModifiedPropertyNames:
-            type:
-            - array
-            - 'null'
-            items:
-              type: string
           Sequence:
             type: integer
             format: int32

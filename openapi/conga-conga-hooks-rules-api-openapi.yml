@@ -454,19 +454,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ScheduleDetail:
-      type: object
-      properties:
-        JobType:
-          $ref: '#/components/schemas/ScheduledJobType'
-        Frequency:
-          $ref: '#/components/schemas/SchedulerFrequency'
-        ExecutionTimeUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
     SchedulerFrequency:
       enum:
       - Daily
@@ -475,7 +462,74 @@ components:
       - Yearly
       - Hourly
       type: string
-    ServiceHooksRuleCreateResponse:
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ScheduleDetailModel:
+      type: object
+      properties:
+        JobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        Frequency:
+          $ref: '#/components/schemas/Frequency'
+        ExecutionTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+    ScheduledJobType:
+      enum:
+      - Cron
+      - OneTime
+      type: string
+    ServiceHooksRuleUpdateResponse:
       type: object
       properties:
         Name:
@@ -513,14 +567,32 @@ components:
           type: string
           format: date-time
       additionalProperties: false
-    CallbackCustomCodeSettingsResponse:
+    CustomCodeDetail:
       type: object
       properties:
-        ExecutionAbortTimeout:
-          type: integer
-          format: int32
+        Id:
+          type:
+          - string
+          - 'null'
+        Parameters:
+          type:
+          - array
+          - 'null'
+          items: {}
+        MethodName:
+          type:
+          - string
+          - 'null'
+        ClassName:
+          type:
+          - string
+          - 'null'
+        ProjectName:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
-    BadRequestErrorResponseExampleAPIResponse:
+    StringListAPIResponse:
       type: object
       properties:
         Success:
@@ -531,7 +603,11 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/BadRequestErrorResponseExample'
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
         Errors:
           type:
           - array
@@ -604,60 +680,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    ServiceHooksRuleType:
-      enum:
-      - DataChange
-      - Schedule
-      type: string
-    CustomCodeDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Parameters:
-          type:
-          - array
-          - 'null'
-          items: {}
-        MethodName:
-          type:
-          - string
-          - 'null'
-        ClassName:
-          type:
-          - string
-          - 'null'
-        ProjectName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ScheduleDetailModel:
-      type: object
-      properties:
-        JobType:
-          $ref: '#/components/schemas/ScheduledJobType'
-        Frequency:
-          $ref: '#/components/schemas/Frequency'
-        ExecutionTimeUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-    ScheduledJobType:
-      enum:
-      - Cron
-      - OneTime
-      type: string
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    ServiceHooksRuleGetResponse:
+    ServiceHooksRuleCreateRequest:
       type: object
       properties:
         Name:
@@ -688,103 +711,9 @@ components:
         CustomCodeDetails:
           $ref: '#/components/schemas/CustomCodeDetail'
         ScheduleDetails:
-          $ref: '#/components/schemas/ScheduleDetailModel'
+          $ref: '#/components/schemas/ScheduleDetail'
         RuleType:
           $ref: '#/components/schemas/ServiceHooksRuleType'
-        ModifiedOn:
-          type: string
-          format: date-time
-      additionalProperties: false
-    Frequency:
-      enum:
-      - Daily
-      - Weekly
-      - Monthly
-      - Yearly
-      - EveryMinute
-      - Hourly
-      type: string
-    ServiceHooksRuleUpdateResponse:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Data change custom code rule name
-        EventTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object name for which rule should be evaluated.
-        IsActive:
-          type: boolean
-          description: Indicates whether the rule is active.
-        Condition:
-          type:
-          - string
-          - 'null'
-          description: The rule expression or condition that will be evaluated.
-        CustomCodeDetails:
-          $ref: '#/components/schemas/CustomCodeDetail'
-        ScheduleDetails:
-          $ref: '#/components/schemas/ScheduleDetailModel'
-        RuleType:
-          $ref: '#/components/schemas/ServiceHooksRuleType'
-        ModifiedOn:
-          type: string
-          format: date-time
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     BooleanNullableAPIResponse:
       type: object
@@ -830,87 +759,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    StringListAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ServiceHooksRuleCreateRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Data change custom code rule name
-        EventTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object name for which rule should be evaluated.
-        IsActive:
-          type: boolean
-          description: Indicates whether the rule is active.
-        Condition:
-          type:
-          - string
-          - 'null'
-          description: The rule expression or condition that will be evaluated.
-        CustomCodeDetails:
-          $ref: '#/components/schemas/CustomCodeDetail'
-        ScheduleDetails:
-          $ref: '#/components/schemas/ScheduleDetail'
-        RuleType:
-          $ref: '#/components/schemas/ServiceHooksRuleType'
-      additionalProperties: false
     CustomCodeSettingsRequest:
       type: object
       properties:
@@ -920,8 +768,18 @@ components:
           format: int32
       additionalProperties: false
       description: Request model for custom code settings
-    BadRequestErrorResponseExample:
+    ScheduleDetail:
       type: object
+      properties:
+        JobType:
+          $ref: '#/components/schemas/ScheduledJobType'
+        Frequency:
+          $ref: '#/components/schemas/SchedulerFrequency'
+        ExecutionTimeUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -987,13 +845,109 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    ErrorDetail:
+    StringAPIResponse:
       type: object
       properties:
-        Message:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
           type:
           - string
           - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ServiceHooksRuleType:
+      enum:
+      - DataChange
+      - Schedule
+      type: string
+    Frequency:
+      enum:
+      - Daily
+      - Weekly
+      - Monthly
+      - Yearly
+      - EveryMinute
+      - Hourly
+      type: string
+    BadRequestErrorResponseExample:
+      type: object
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    ServiceHooksRuleGetResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetailModel'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+        ModifiedOn:
+          type: string
+          format: date-time
       additionalProperties: false
     ServiceHooksRuleUpdateRequest:
       type: object
@@ -1020,6 +974,52 @@ components:
           $ref: '#/components/schemas/CustomCodeDetail'
         ScheduleDetails:
           $ref: '#/components/schemas/ScheduleDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ServiceHooksRuleCreateResponse:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetails:
+          $ref: '#/components/schemas/CustomCodeDetail'
+        ScheduleDetails:
+          $ref: '#/components/schemas/ScheduleDetailModel'
+        RuleType:
+          $ref: '#/components/schemas/ServiceHooksRuleType'
+        ModifiedOn:
+          type: string
+          format: date-time
       additionalProperties: false
   securitySchemes:
     bearerAuth:

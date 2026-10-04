@@ -572,59 +572,65 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    FromEmailOption:
-      enum:
-      - OrgWideEmail
-      - LoggedInUser
-      - EmailProfile
-      type: string
-    EmailTrackingOptions:
+    BulkEmailV2ResponseAPIResponse:
       type: object
       properties:
-        ShouldTrackDeliveryStatus:
+        Success:
           type: boolean
-        ClientEventName:
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BulkEmailV2Response'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    EmailAddress:
+    EmailMessage:
       type: object
       properties:
-        Address:
+        EmailTemplateId:
           type:
           - string
           - 'null'
-        DisplayName:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    BulkEmailV2ResponseItem:
-      type: object
-      properties:
-        ClientReferenceId:
-          type:
-          - string
-          - 'null'
-        EmailSendId:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    BulkEmailV2RequestItem:
-      type: object
-      properties:
-        ClientReferenceId:
-          type:
-          - string
-          - 'null'
+        From:
+          $ref: '#/components/schemas/EmailAddress'
         FromEmailOption:
           $ref: '#/components/schemas/FromEmailOption'
-        EmailTemplateParameters:
-          $ref: '#/components/schemas/EmailTemplateParameters'
-        EmailParameters:
-          $ref: '#/components/schemas/EmailParameters'
+        EmailRequestWrappers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/EmailRequestWrapper'
         Priority:
           $ref: '#/components/schemas/MailPriority'
         Headers:
@@ -647,26 +653,77 @@ components:
           type:
           - string
           - 'null'
-        TrackingOptions:
-          $ref: '#/components/schemas/EmailTrackingOptions'
       additionalProperties: false
-    BulkEmailV2Request:
+    SmtpStatusCode:
+      enum:
+      - SystemStatus
+      - HelpMessage
+      - ServiceReady
+      - ServiceClosingTransmissionChannel
+      - Ok
+      - UserNotLocalWillForward
+      - CannotVerifyUserWillAttemptDelivery
+      - StartMailInput
+      - ServiceNotAvailable
+      - MailboxBusy
+      - LocalErrorInProcessing
+      - InsufficientStorage
+      - ClientNotPermitted
+      - CommandUnrecognized
+      - SyntaxError
+      - CommandNotImplemented
+      - BadCommandSequence
+      - CommandParameterNotImplemented
+      - MustIssueStartTlsFirst
+      - MailboxUnavailable
+      - UserNotLocalTryAlternatePath
+      - ExceededStorageAllocation
+      - MailboxNameNotAllowed
+      - TransactionFailed
+      - GeneralFailure
+      type: string
+    EmailResponse:
       type: object
       properties:
-        EmailRequests:
+        Success:
+          type: boolean
+        EmailStatusCode:
+          $ref: '#/components/schemas/SmtpStatusCode'
+        Message:
+          type:
+          - string
+          - 'null'
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      additionalProperties: false
+    MailPriority:
+      enum:
+      - Normal
+      - Low
+      - High
+      type: string
+    EmailTrackingOptions:
+      type: object
+      properties:
+        ShouldTrackDeliveryStatus:
+          type: boolean
+        ClientEventName:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    BulkEmailV2Response:
+      type: object
+      properties:
+        EmailResults:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/BulkEmailV2RequestItem'
-      additionalProperties: false
-    EmailRequestWrapper:
-      type: object
-      properties:
-        EmailTemplateParameters:
-          $ref: '#/components/schemas/EmailTemplateParameters'
-        EmailParameters:
-          $ref: '#/components/schemas/EmailParameters'
+            $ref: '#/components/schemas/BulkEmailV2ResponseItem'
       additionalProperties: false
     EmailResponseAPIResponse:
       type: object
@@ -710,77 +767,70 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    StringAPIResponse:
+    EmailAttachment:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
+        Name:
           type:
           - string
           - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        MimeType:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
+        FileData:
           type:
           - string
           - 'null'
-        Warnings:
+          deprecated: true
+        FileContent:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
+          format: byte
+        File:
+          type:
+          - string
+          - 'null'
+          format: binary
       additionalProperties: false
-    EmailParameters:
+    BulkEmailV2RequestItem:
       type: object
       properties:
-        To:
+        ClientReferenceId:
+          type:
+          - string
+          - 'null'
+        FromEmailOption:
+          $ref: '#/components/schemas/FromEmailOption'
+        EmailTemplateParameters:
+          $ref: '#/components/schemas/EmailTemplateParameters'
+        EmailParameters:
+          $ref: '#/components/schemas/EmailParameters'
+        Priority:
+          $ref: '#/components/schemas/MailPriority'
+        Headers:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+        ShouldProcessInbound:
+          type: boolean
+        Attachments:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/EmailAddress'
-        Cc:
+            $ref: '#/components/schemas/EmailAttachment'
+        EmailProfileName:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/EmailAddress'
-        Bcc:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailAddress'
-        ReplyTo:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/EmailAddress'
+        TrackingOptions:
+          $ref: '#/components/schemas/EmailTrackingOptions'
       additionalProperties: false
     BooleanNullableAPIResponse:
       type: object
@@ -826,91 +876,17 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    SmtpStatusCode:
-      enum:
-      - SystemStatus
-      - HelpMessage
-      - ServiceReady
-      - ServiceClosingTransmissionChannel
-      - Ok
-      - UserNotLocalWillForward
-      - CannotVerifyUserWillAttemptDelivery
-      - StartMailInput
-      - ServiceNotAvailable
-      - MailboxBusy
-      - LocalErrorInProcessing
-      - InsufficientStorage
-      - ClientNotPermitted
-      - CommandUnrecognized
-      - SyntaxError
-      - CommandNotImplemented
-      - BadCommandSequence
-      - CommandParameterNotImplemented
-      - MustIssueStartTlsFirst
-      - MailboxUnavailable
-      - UserNotLocalTryAlternatePath
-      - ExceededStorageAllocation
-      - MailboxNameNotAllowed
-      - TransactionFailed
-      - GeneralFailure
-      type: string
-    MailPriority:
-      enum:
-      - Normal
-      - Low
-      - High
-      type: string
-    BulkEmailV2Response:
+    EmailAddress:
       type: object
       properties:
-        EmailResults:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BulkEmailV2ResponseItem'
-      additionalProperties: false
-    BulkEmailV2ResponseAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/BulkEmailV2Response'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        Address:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
+        DisplayName:
           type:
           - string
           - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     HttpStatusCode:
       enum:
@@ -976,97 +952,101 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    EmailMessage:
+    BulkEmailV2Request:
+      type: object
+      properties:
+        EmailRequests:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BulkEmailV2RequestItem'
+      additionalProperties: false
+    EmailRequestWrapper:
+      type: object
+      properties:
+        EmailTemplateParameters:
+          $ref: '#/components/schemas/EmailTemplateParameters'
+        EmailParameters:
+          $ref: '#/components/schemas/EmailParameters'
+      additionalProperties: false
+    EmailTemplateParameters:
       type: object
       properties:
         EmailTemplateId:
           type:
           - string
           - 'null'
-        From:
-          $ref: '#/components/schemas/EmailAddress'
-        FromEmailOption:
-          $ref: '#/components/schemas/FromEmailOption'
-        EmailRequestWrappers:
+        RecipientType:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/EmailRequestWrapper'
-        Priority:
-          $ref: '#/components/schemas/MailPriority'
-        Headers:
+        RecipientId:
+          type:
+          - string
+          - 'null'
+        ObjectName:
+          type:
+          - string
+          - 'null'
+        RecordId:
+          type:
+          - string
+          - 'null'
+        TemplateData:
           type:
           - object
           - 'null'
-          additionalProperties:
-            type:
-            - string
-            - 'null'
-        ShouldProcessInbound:
-          type: boolean
-        Attachments:
+          additionalProperties: {}
+        RecordDetails:
           type:
-          - array
+          - object
           - 'null'
-          items:
-            $ref: '#/components/schemas/EmailAttachment'
-        EmailProfileName:
-          type:
-          - string
-          - 'null'
+          additionalProperties: {}
       additionalProperties: false
-    EmailAttachment:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-        MimeType:
-          type:
-          - string
-          - 'null'
-        FileData:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        FileContent:
-          type:
-          - string
-          - 'null'
-          format: byte
-        File:
-          type:
-          - string
-          - 'null'
-          format: binary
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    EmailResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
           type: boolean
-        EmailStatusCode:
-          $ref: '#/components/schemas/SmtpStatusCode'
-        Message:
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
           type:
           - string
           - 'null'
-        EmailSendId:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
           type:
           - string
           - 'null'
-          readOnly: true
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
     EmailRequest:
       type: object
@@ -1141,40 +1121,60 @@ components:
         TrackingOptions:
           $ref: '#/components/schemas/EmailTrackingOptions'
       additionalProperties: false
-    EmailTemplateParameters:
+    EmailParameters:
       type: object
       properties:
-        EmailTemplateId:
+        To:
           type:
-          - string
+          - array
           - 'null'
-        RecipientType:
+          items:
+            $ref: '#/components/schemas/EmailAddress'
+        Cc:
           type:
-          - string
+          - array
           - 'null'
-        RecipientId:
+          items:
+            $ref: '#/components/schemas/EmailAddress'
+        Bcc:
           type:
-          - string
+          - array
           - 'null'
-        ObjectName:
+          items:
+            $ref: '#/components/schemas/EmailAddress'
+        ReplyTo:
           type:
-          - string
+          - array
           - 'null'
-        RecordId:
-          type:
-          - string
-          - 'null'
-        TemplateData:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
-        RecordDetails:
-          type:
-          - object
-          - 'null'
-          additionalProperties: {}
+          items:
+            $ref: '#/components/schemas/EmailAddress'
       additionalProperties: false
+    BulkEmailV2ResponseItem:
+      type: object
+      properties:
+        ClientReferenceId:
+          type:
+          - string
+          - 'null'
+        EmailSendId:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    FromEmailOption:
+      enum:
+      - OrgWideEmail
+      - LoggedInUser
+      - EmailProfile
+      type: string
   securitySchemes:
     Bearer:
       type: apiKey

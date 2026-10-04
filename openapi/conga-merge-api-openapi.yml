@@ -224,133 +224,53 @@ paths:
       - JWT: []
 components:
   schemas:
-    StatusMessage:
+    ComposerMergeBaseRequest:
       type: object
       additionalProperties: false
       properties:
-        code:
-          type: string
-        description:
-          type: string
-    Adaptation:
-      type: object
-      additionalProperties: false
-      properties:
-        pdfCommands:
-          type: boolean
-        convertToPDF:
-          type: boolean
-    ComposerMergeRequest:
-      allOf:
-      - $ref: '#/components/schemas/ComposerMergeBaseRequest'
-      - type: object
-        additionalProperties: false
-        properties:
-          jsonData:
+        salesforceRequest:
+          $ref: '#/components/schemas/SalesforceRequest'
+        activity:
+          $ref: '#/components/schemas/Activity'
+        adaptation:
+          $ref: '#/components/schemas/Adaptation'
+        signCommands:
+          $ref: '#/components/schemas/SignCommands'
+        saveCopy:
+          $ref: '#/components/schemas/SaveCopy'
+        legacyOptions:
+          type: object
+          description: Control the behavior of document generation by including parameter name and value. For more information on supported parameters for API, click [here](https://documentation.conga.com/composer/latest/conga-platform/supported-parameters-for-composer-api-195691044.html).
+          additionalProperties:
             type: string
-            description: JSON payload. For more information on JSON payload use case, click [here](https://documentation.conga.com/composer/latest/generate-document-using-json-data-203491745.html)
-          dataSources:
-            type: array
-            description: Array of objects containing metadata on the payload source
-            items:
-              $ref: '#/components/schemas/DataSource2'
-    DestinationRequest:
+        templateSources:
+          type: array
+          description: Template source details to get the template from your cloud storage provider.
+          items:
+            $ref: '#/components/schemas/TemplateSourceRequest'
+        destinations:
+          type: array
+          description: Destination details to send the generated document to your cloud storage provider.
+          items:
+            $ref: '#/components/schemas/DestinationRequest'
+        output:
+          $ref: '#/components/schemas/OutputRequest'
+        locale:
+          type: string
+    SignTransaction:
       type: object
       additionalProperties: false
       properties:
-        integrationName:
+        packageId:
           type: string
-          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
-        folderId:
+        tagUrl:
           type: string
-          description: Folder ID that correspond to the cloud service provider's actual folder ID. For more information on how to get the folder ID, click [here](https://documentation.conga.com/composer/latest/how-to-get-file-id-for-composer-api-request-193698978.html)
-    Activity:
-      type: object
-      additionalProperties: false
-      properties:
-        attachOperation:
+        esignTransactionId:
           type: string
-        enabled:
-          type: boolean
-        followUpDate:
-          type: string
-          format: date-time
-        saveText:
-          type: string
-        subject:
-          type: string
-    MergedPreviewDocument:
-      type: object
-      additionalProperties: false
-      properties:
-        mergedFileName:
+        status:
           type:
-          - string
+          - boolean
           - 'null'
-        mergedFileUri:
-          type:
-          - string
-          - 'null'
-        mergedFileSize:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        previewFileName:
-          type:
-          - string
-          - 'null'
-        previewFileUri:
-          type:
-          - string
-          - 'null'
-        previewFileSize:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    IntegrationOption:
-      type: string
-      description: ''
-      x-enumNames:
-      - None
-      - Salesforce
-      - GoogleDrive
-      - CongaDrive
-      - Dropbox
-      - Box
-      - SharePoint
-      - OneDrive
-      - S3
-      - SFTP
-      enum:
-      - None
-      - Salesforce
-      - GoogleDrive
-      - CongaDrive
-      - Dropbox
-      - Box
-      - SharePoint
-      - OneDrive
-      - S3
-      - SFTP
-    OutputRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        generateDocumentDownload:
-          type: boolean
-          description: Set this to **true** to enable document download for the merged document.
-    SignCommands:
-      type: object
-      additionalProperties: false
-      properties:
-        provider:
-          type: string
-          description: 'Providers: Conga Sign Powered by OneSpan.'
-        payload:
-          type: string
-          description: For information on structuring the JSON payload click [here](https://developer.conga.com/doc-automation/reference/package_createpackage).
     SalesforceRequest:
       type: object
       additionalProperties: false
@@ -393,38 +313,69 @@ components:
           type: string
         relatedContactId:
           type: string
-    ComposerMergeBaseRequest:
+    DataSource2:
+      type: object
+      description: 'Array of objects containing metadata on the payload source
+
+        ps: usecase identified for webhooks in the request. Further data sources discovered will be introduced here.'
+      additionalProperties: false
+      properties:
+        type:
+          description: 'Type of data source used. Ex: Webhooks'
+          oneOf:
+          - $ref: '#/components/schemas/DataSourceType'
+        dataSourceId:
+          type: string
+          description: 'Unique source Id. Ex: WebHook Id'
+        integrationName:
+          description: Data source info
+          oneOf:
+          - $ref: '#/components/schemas/IntegrationOption'
+        parameters:
+          type: object
+          description: Key-value pair parameter collection
+          additionalProperties:
+            type: string
+    MergeInfo:
+      type: object
+      description: Merge Information
+      additionalProperties: false
+      properties:
+        correlationId:
+          type: string
+          description: Correlation id
+        infoObject:
+          description: Info Object
+          oneOf:
+          - $ref: '#/components/schemas/InfoObject'
+        congaOrgId:
+          type: string
+          description: Conga Org id
+          format: guid
+    ComposerMergeResponseModel:
       type: object
       additionalProperties: false
       properties:
-        salesforceRequest:
-          $ref: '#/components/schemas/SalesforceRequest'
-        activity:
-          $ref: '#/components/schemas/Activity'
-        adaptation:
-          $ref: '#/components/schemas/Adaptation'
-        signCommands:
-          $ref: '#/components/schemas/SignCommands'
-        saveCopy:
-          $ref: '#/components/schemas/SaveCopy'
-        legacyOptions:
-          type: object
-          description: Control the behavior of document generation by including parameter name and value. For more information on supported parameters for API, click [here](https://documentation.conga.com/composer/latest/conga-platform/supported-parameters-for-composer-api-195691044.html).
-          additionalProperties:
-            type: string
-        templateSources:
-          type: array
-          description: Template source details to get the template from your cloud storage provider.
-          items:
-            $ref: '#/components/schemas/TemplateSourceRequest'
-        destinations:
-          type: array
-          description: Destination details to send the generated document to your cloud storage provider.
-          items:
-            $ref: '#/components/schemas/DestinationRequest'
-        output:
-          $ref: '#/components/schemas/OutputRequest'
-        locale:
+        correlationId:
+          type: string
+        status:
+          type: string
+        result:
+          $ref: '#/components/schemas/Result'
+    Activity:
+      type: object
+      additionalProperties: false
+      properties:
+        attachOperation:
+          type: string
+        enabled:
+          type: boolean
+        followUpDate:
+          type: string
+          format: date-time
+        saveText:
+          type: string
+        subject:
           type: string
     SaveCopy:
       type: object
@@ -436,16 +387,27 @@ components:
           - 'null'
         saveTo:
           type: string
-    Result:
-      type: object
-      additionalProperties: false
-      properties:
-        statusCode:
-          $ref: '#/components/schemas/StatusCodes'
-        statusMessage:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatusMessage'
+    StatusCodes:
+      type: string
+      description: ''
+      x-enumNames:
+      - Success
+      - InternalHostError
+      - NotFound
+      - BusinessRuleViolation
+      - FailedValidation
+      - SecurityException
+      - InvalidRequestdata
+      - ServiceUnavailable
+      enum:
+      - Success
+      - InternalHostError
+      - NotFound
+      - BusinessRuleViolation
+      - FailedValidation
+      - SecurityException
+      - InvalidRequestdata
+      - ServiceUnavailable
     DataSourceType:
       type: string
       description: Type of data source used
@@ -455,20 +417,89 @@ components:
       enum:
       - None
       - Webhook
-    SignTransaction:
+    MergedPreviewDocument:
       type: object
       additionalProperties: false
       properties:
-        packageId:
-          type: string
-        tagUrl:
-          type: string
-        esignTransactionId:
-          type: string
-        status:
+        mergedFileName:
           type:
-          - boolean
+          - string
           - 'null'
+        mergedFileUri:
+          type:
+          - string
+          - 'null'
+        mergedFileSize:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        previewFileName:
+          type:
+          - string
+          - 'null'
+        previewFileUri:
+          type:
+          - string
+          - 'null'
+        previewFileSize:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    TemplateSourceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        integrationName:
+          type: string
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        fileId:
+          type: string
+          description: File ID that correspond to the cloud service provider's actual File ID. For more information on how to get the File ID, click [here](https://documentation.conga.com/composer/latest/conga-platform/how-to-get-file-id-for-composer-api-request-222431618.html)
+    Adaptation:
+      type: object
+      additionalProperties: false
+      properties:
+        pdfCommands:
+          type: boolean
+        convertToPDF:
+          type: boolean
+    DestinationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        integrationName:
+          type: string
+          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
+        folderId:
+          type: string
+          description: Folder ID that correspond to the cloud service provider's actual folder ID. For more information on how to get the folder ID, click [here](https://documentation.conga.com/composer/latest/how-to-get-file-id-for-composer-api-request-193698978.html)
+    IntegrationOption:
+      type: string
+      description: ''
+      x-enumNames:
+      - None
+      - Salesforce
+      - GoogleDrive
+      - CongaDrive
+      - Dropbox
+      - Box
+      - SharePoint
+      - OneDrive
+      - S3
+      - SFTP
+      enum:
+      - None
+      - Salesforce
+      - GoogleDrive
+      - CongaDrive
+      - Dropbox
+      - Box
+      - SharePoint
+      - OneDrive
+      - S3
+      - SFTP
     ProblemDetails:
       type: object
       additionalProperties: {}
@@ -497,66 +528,6 @@ components:
         extensions:
           type: object
           additionalProperties: {}
-    MergeInfo:
-      type: object
-      description: Merge Information
-      additionalProperties: false
-      properties:
-        correlationId:
-          type: string
-          description: Correlation id
-        infoObject:
-          description: Info Object
-          oneOf:
-          - $ref: '#/components/schemas/InfoObject'
-        congaOrgId:
-          type: string
-          description: Conga Org id
-          format: guid
-    StatusCodes:
-      type: string
-      description: ''
-      x-enumNames:
-      - Success
-      - InternalHostError
-      - NotFound
-      - BusinessRuleViolation
-      - FailedValidation
-      - SecurityException
-      - InvalidRequestdata
-      - ServiceUnavailable
-      enum:
-      - Success
-      - InternalHostError
-      - NotFound
-      - BusinessRuleViolation
-      - FailedValidation
-      - SecurityException
-      - InvalidRequestdata
-      - ServiceUnavailable
-    DataSource2:
-      type: object
-      description: 'Array of objects containing metadata on the payload source
-
-        ps: usecase identified for webhooks in the request. Further data sources discovered will be introduced here.'
-      additionalProperties: false
-      properties:
-        type:
-          description: 'Type of data source used. Ex: Webhooks'
-          oneOf:
-          - $ref: '#/components/schemas/DataSourceType'
-        dataSourceId:
-          type: string
-          description: 'Unique source Id. Ex: WebHook Id'
-        integrationName:
-          description: Data source info
-          oneOf:
-          - $ref: '#/components/schemas/IntegrationOption'
-        parameters:
-          type: object
-          description: Key-value pair parameter collection
-          additionalProperties:
-            type: string
     InfoObject:
       type: object
       description: Info Object
@@ -566,26 +537,55 @@ components:
           description: Sign transaction
           oneOf:
           - $ref: '#/components/schemas/SignTransaction'
-    TemplateSourceRequest:
+    SignCommands:
       type: object
       additionalProperties: false
       properties:
-        integrationName:
+        provider:
           type: string
-          description: googledrive, dropbox, box, sharepoint, onedrive, s3, sftp, or salesforce.
-        fileId:
+          description: 'Providers: Conga Sign Powered by OneSpan.'
+        payload:
           type: string
-          description: File ID that correspond to the cloud service provider's actual File ID. For more information on how to get the File ID, click [here](https://documentation.conga.com/composer/latest/conga-platform/how-to-get-file-id-for-composer-api-request-222431618.html)
-    ComposerMergeResponseModel:
+          description: For information on structuring the JSON payload click [here](https://developer.conga.com/doc-automation/reference/package_createpackage).
+    ComposerMergeRequest:
+      allOf:
+      - $ref: '#/components/schemas/ComposerMergeBaseRequest'
+      - type: object
+        additionalProperties: false
+        properties:
+          jsonData:
+            type: string
+            description: JSON payload. For more information on JSON payload use case, click [here](https://documentation.conga.com/composer/latest/generate-document-using-json-data-203491745.html)
+          dataSources:
+            type: array
+            description: Array of objects containing metadata on the payload source
+            items:
+              $ref: '#/components/schemas/DataSource2'
+    Result:
       type: object
       additionalProperties: false
       properties:
-        correlationId:
+        statusCode:
+          $ref: '#/components/schemas/StatusCodes'
+        statusMessage:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusMessage'
+    StatusMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
           type: string
-        status:
+        description:
           type: string
-        result:
-          $ref: '#/components/schemas/Result'
+    OutputRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        generateDocumentDownload:
+          type: boolean
+          description: Set this to **true** to enable document download for the merged document.
   securitySchemes:
     JWT:
       type: apiKey
