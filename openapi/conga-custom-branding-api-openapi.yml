@@ -279,26 +279,33 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ComposerResponse:
+    MarshalByRefObject:
       type: object
-      description: Represents a result of some operation, with status information and possibly an error.
+      x-abstract: true
+      additionalProperties: false
+    Errors:
+      type: object
+      description: Error response
       additionalProperties: false
       properties:
-        errors:
-          type: array
-          description: List of errors
-          items:
-            $ref: '#/components/schemas/Errors'
-        debugInfo:
-          description: Stack trace
+        id:
+          type: string
+          description: Unique ID
+          format: guid
+        title:
+          type: string
+          description: Error title
+        details:
+          type: string
+          description: Error description
+        status:
+          description: Status code
           oneOf:
-          - $ref: '#/components/schemas/DebugInfo'
-        isSuccess:
-          type: boolean
-          description: Gets a value indicating whether the result is a success result.
-        isFailure:
-          type: boolean
-          description: Gets a value indicating whether the result is a failure result.
+          - $ref: '#/components/schemas/HttpStatusCode'
+        code:
+          description: Unique Response code. This enum is foreseeably used by UI
+          oneOf:
+          - $ref: '#/components/schemas/ResponseStatusCode'
     CustomBrandingEntity:
       type: object
       additionalProperties: false
@@ -326,6 +333,68 @@ components:
           - string
           - 'null'
           format: byte
+    CustomBrandingListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        isSuccess:
+          type: boolean
+        statusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomBrandingEntity'
+        recordCount:
+          type: integer
+          format: int32
+        totalRecords:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        currentPage:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    ComposerResponse:
+      type: object
+      description: Represents a result of some operation, with status information and possibly an error.
+      additionalProperties: false
+      properties:
+        errors:
+          type: array
+          description: List of errors
+          items:
+            $ref: '#/components/schemas/Errors'
+        debugInfo:
+          description: Stack trace
+          oneOf:
+          - $ref: '#/components/schemas/DebugInfo'
+        isSuccess:
+          type: boolean
+          description: Gets a value indicating whether the result is a success result.
+        isFailure:
+          type: boolean
+          description: Gets a value indicating whether the result is a failure result.
+    ComposerResponseOfCustomBrandingEntity:
+      allOf:
+      - $ref: '#/components/schemas/ComposerResponse'
+      - type: object
+        description: Represents the result of some operation, with status information and possibly a value and an error.
+        additionalProperties: false
+        properties:
+          data:
+            description: 'A safe version of Data that returns null if the result is a failure.
+
+              This is used for serialization only.'
+            oneOf:
+            - $ref: '#/components/schemas/CustomBrandingEntity'
     HttpStatusCode:
       type: string
       description: ''
@@ -548,62 +617,6 @@ components:
       - FILE_NOT_FOUND
       - UNSUPPORTED_CUSTOMBRANDINGID
       - INVALID_CUSTOMBRANDINGID
-    DebugInfo:
-      type: object
-      description: Model to capture stack trace information
-      additionalProperties: false
-      properties:
-        stackTrace:
-          type: array
-          description: Stack trace of code flow
-          items:
-            type: string
-    ComposerResponseOfCustomBrandingEntity:
-      allOf:
-      - $ref: '#/components/schemas/ComposerResponse'
-      - type: object
-        description: Represents the result of some operation, with status information and possibly a value and an error.
-        additionalProperties: false
-        properties:
-          data:
-            description: 'A safe version of Data that returns null if the result is a failure.
-
-              This is used for serialization only.'
-            oneOf:
-            - $ref: '#/components/schemas/CustomBrandingEntity'
-    CustomBrandingListResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        isSuccess:
-          type: boolean
-        statusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        message:
-          type: string
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomBrandingEntity'
-        recordCount:
-          type: integer
-          format: int32
-        totalRecords:
-          type: integer
-          format: int32
-        totalPages:
-          type: integer
-          format: int32
-        currentPage:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
-    MarshalByRefObject:
-      type: object
-      x-abstract: true
-      additionalProperties: false
     ProblemDetails:
       type: object
       additionalProperties: {}
@@ -632,6 +645,16 @@ components:
         extensions:
           type: object
           additionalProperties: {}
+    DebugInfo:
+      type: object
+      description: Model to capture stack trace information
+      additionalProperties: false
+      properties:
+        stackTrace:
+          type: array
+          description: Stack trace of code flow
+          items:
+            type: string
     Stream:
       allOf:
       - $ref: '#/components/schemas/MarshalByRefObject'
@@ -647,29 +670,6 @@ components:
           writeTimeout:
             type: integer
             format: int32
-    Errors:
-      type: object
-      description: Error response
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique ID
-          format: guid
-        title:
-          type: string
-          description: Error title
-        details:
-          type: string
-          description: Error description
-        status:
-          description: Status code
-          oneOf:
-          - $ref: '#/components/schemas/HttpStatusCode'
-        code:
-          description: Unique Response code. This enum is foreseeably used by UI
-          oneOf:
-          - $ref: '#/components/schemas/ResponseStatusCode'
   securitySchemes:
     JWT:
       type: apiKey

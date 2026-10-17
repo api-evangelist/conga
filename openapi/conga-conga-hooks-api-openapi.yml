@@ -341,9 +341,125 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    ServiceHooksDataChangeRuleRequest:
+      type: object
+      properties:
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Data change custom code rule name
+        EventTypes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
+        ObjectName:
+          type:
+          - string
+          - 'null'
+          description: Object name for which rule should be evaluated.
+        IsActive:
+          type: boolean
+          description: Indicates whether the rule is active.
+        Condition:
+          type:
+          - string
+          - 'null'
+          description: The rule expression or condition that will be evaluated.
+        CustomCodeDetail:
+          $ref: '#/components/schemas/CustomCodeDetailRequest'
+      additionalProperties: false
+      description: Data change custom code rule request
     BadRequestErrorResponseExample:
       type: object
       additionalProperties: false
+    CallbackCustomCodeSettingsResponse:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          format: int32
+      additionalProperties: false
+    BooleanNullableAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
+    CustomCodeDetailRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Custom code detail id
+        ClassName:
+          type:
+          - string
+          - 'null'
+          description: Fully qualified class name
+        ProjectName:
+          type:
+          - string
+          - 'null'
+          description: Project name
+      additionalProperties: false
+      description: Custom code detail request
     HttpStatusCode:
       enum:
       - Continue
@@ -408,18 +524,50 @@ components:
       - NotExtended
       - NetworkAuthenticationRequired
       type: string
-    CallbackCustomCodeSettingsResponse:
+    StringAPIResponse:
       type: object
       properties:
-        ExecutionAbortTimeout:
-          type: integer
-          format: int32
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          type:
+          - string
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
     CallbackCustomCodeSettingsResponseAPIResponse:
       type: object
       properties:
@@ -432,6 +580,57 @@ components:
           format: int64
         Data:
           $ref: '#/components/schemas/CallbackCustomCodeSettingsResponse'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    CustomCodeSettingsRequest:
+      type: object
+      properties:
+        ExecutionAbortTimeout:
+          type: integer
+          description: Time interval, in milliseconds, to abort the custom code's execution
+          format: int32
+      additionalProperties: false
+      description: Request model for custom code settings
+    BadRequestErrorResponseExampleAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/BadRequestErrorResponseExample'
         Errors:
           type:
           - array
@@ -508,205 +707,6 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    BadRequestErrorResponseExampleAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          $ref: '#/components/schemas/BadRequestErrorResponseExample'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    ErrorDetail:
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    StringAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - string
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    BooleanNullableAPIResponse:
-      type: object
-      properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
-          type:
-          - boolean
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
-          type:
-          - string
-          - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-      additionalProperties: false
-    CustomCodeSettingsRequest:
-      type: object
-      properties:
-        ExecutionAbortTimeout:
-          type: integer
-          description: Time interval, in milliseconds, to abort the custom code's execution
-          format: int32
-      additionalProperties: false
-      description: Request model for custom code settings
-    ServiceHooksDataChangeRuleRequest:
-      type: object
-      properties:
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Data change custom code rule name
-        EventTypes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: "List of action types for which rule should be evaluated. \nSupported Action Types: Create, Update, and Delete."
-        ObjectName:
-          type:
-          - string
-          - 'null'
-          description: Object name for which rule should be evaluated.
-        IsActive:
-          type: boolean
-          description: Indicates whether the rule is active.
-        Condition:
-          type:
-          - string
-          - 'null'
-          description: The rule expression or condition that will be evaluated.
-        CustomCodeDetail:
-          $ref: '#/components/schemas/CustomCodeDetailRequest'
-      additionalProperties: false
-      description: Data change custom code rule request
-    CustomCodeDetailRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Custom code detail id
-        ClassName:
-          type:
-          - string
-          - 'null'
-          description: Fully qualified class name
-        ProjectName:
-          type:
-          - string
-          - 'null'
-          description: Project name
-      additionalProperties: false
-      description: Custom code detail request
   securitySchemes:
     bearerAuth:
       type: http

@@ -634,19 +634,126 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    BaseResponseBatchResponse:
+    UsageInputsRequest:
       type: object
       properties:
-        Summary:
+        Id:
           type:
           - string
           - 'null'
-        Results:
+          description: The unique identifier of the usage input record.
+        Type:
+          type:
+          - string
+          - 'null'
+          description: Indicates whether the input is a regular entry vs. an overage entry.
+        PeriodStartDate:
+          type:
+          - string
+          - 'null'
+          description: The start date of the usage in a usage period.
+          format: date-time
+        PeriodEndDate:
+          type:
+          - string
+          - 'null'
+          description: The end date of the usage in a usage period.
+          format: date-time
+        SubmissionDate:
+          type:
+          - string
+          - 'null'
+          description: The ‘date’ by which the usage is accumulated within a period for tracking/forecast/rating purposes.
+          format: date-time
+        SubscriptionIdentifierObject:
+          type:
+          - string
+          - 'null'
+          description: The identifier to reference a subscription.
+        SubscriptionIdentifierField:
+          type:
+          - string
+          - 'null'
+          description: Indicates the unique field to identify the subscription record (E.g., AssetNumber).
+        SubscriptionIdentifierValue:
+          type:
+          - string
+          - 'null'
+          description: The record ID of the subscription identifier chosen.
+        UnitofMeasure:
+          type:
+          - string
+          - 'null'
+          description: Indicates the unit of measure (UOM) of the quantity.
+        Quantity:
+          type:
+          - number
+          - 'null'
+          description: The quantity to be rated for this usage input record.
+          format: double
+        DraftQuantity:
+          type:
+          - number
+          - 'null'
+          description: The ‘expected’ quantity for this usage input record.
+          format: double
+        RatingStatus:
+          type:
+          - string
+          - 'null'
+          description: Indicates the status of the rating process.
+      additionalProperties: false
+      description: Represents a request to create or update usage input records
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/BaseResponse'
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UsageInputBaseRequest:
+      type: object
+      properties:
+        UsageInputIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Gets or sets the identifiers of usage input records to process.
+      additionalProperties: false
+      description: Represents a request to rate, unrate, or estimate usage input records.
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
     BaseResponse:
       type: object
@@ -671,84 +778,6 @@ components:
           - string
           - 'null'
           deprecated: true
-      additionalProperties: false
-    CurrencyField:
-      type: object
-      properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        CurrencySymbol:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    ErrorApiResponse:
-      type: object
-      properties:
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ApiError'
-      additionalProperties: false
-    UsageInputRatingRequest:
-      type: object
-      properties:
-        UsageInputIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Gets or sets the identifiers of usage input records to process.
-        ProcessAllUsageInputs:
-          type: boolean
-          description: Gets or sets a value indicating whether all usage input records should be processed.
-      additionalProperties: false
-      description: Represents a request to rate, unrate, or estimate usage input records.
-    UsageInputBaseRequest:
-      type: object
-      properties:
-        UsageInputIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Gets or sets the identifiers of usage input records to process.
-      additionalProperties: false
-      description: Represents a request to rate, unrate, or estimate usage input records.
-    BatchOperationResponse:
-      type: object
-      properties:
-        JobId:
-          type:
-          - string
-          - 'null'
-        BatchResults:
-          $ref: '#/components/schemas/BaseResponseBatchResponse'
-        IsSuccess:
-          type:
-          - boolean
-          - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
       additionalProperties: false
     UsageInputs:
       type: object
@@ -853,104 +882,75 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    UsageInputsRequest:
+    UsageInputRatingRequest:
       type: object
       properties:
-        Id:
+        UsageInputIds:
           type:
-          - string
+          - array
           - 'null'
-          description: The unique identifier of the usage input record.
-        Type:
-          type:
-          - string
-          - 'null'
-          description: Indicates whether the input is a regular entry vs. an overage entry.
-        PeriodStartDate:
-          type:
-          - string
-          - 'null'
-          description: The start date of the usage in a usage period.
-          format: date-time
-        PeriodEndDate:
-          type:
-          - string
-          - 'null'
-          description: The end date of the usage in a usage period.
-          format: date-time
-        SubmissionDate:
-          type:
-          - string
-          - 'null'
-          description: The ‘date’ by which the usage is accumulated within a period for tracking/forecast/rating purposes.
-          format: date-time
-        SubscriptionIdentifierObject:
-          type:
-          - string
-          - 'null'
-          description: The identifier to reference a subscription.
-        SubscriptionIdentifierField:
-          type:
-          - string
-          - 'null'
-          description: Indicates the unique field to identify the subscription record (E.g., AssetNumber).
-        SubscriptionIdentifierValue:
-          type:
-          - string
-          - 'null'
-          description: The record ID of the subscription identifier chosen.
-        UnitofMeasure:
-          type:
-          - string
-          - 'null'
-          description: Indicates the unit of measure (UOM) of the quantity.
-        Quantity:
-          type:
-          - number
-          - 'null'
-          description: The quantity to be rated for this usage input record.
-          format: double
-        DraftQuantity:
-          type:
-          - number
-          - 'null'
-          description: The ‘expected’ quantity for this usage input record.
-          format: double
-        RatingStatus:
-          type:
-          - string
-          - 'null'
-          description: Indicates the status of the rating process.
+          items:
+            type: string
+          description: Gets or sets the identifiers of usage input records to process.
+        ProcessAllUsageInputs:
+          type: boolean
+          description: Gets or sets a value indicating whether all usage input records should be processed.
       additionalProperties: false
-      description: Represents a request to create or update usage input records
-    LookupObject:
+      description: Represents a request to rate, unrate, or estimate usage input records.
+    CurrencyField:
       type: object
       properties:
-        Id:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
           type:
           - string
           - 'null'
-        Name:
+          readOnly: true
+        CurrencySymbol:
           type:
           - string
           - 'null'
+          readOnly: true
       additionalProperties: false
-    ApiError:
+    BatchOperationResponse:
       type: object
       properties:
-        Source:
+        JobId:
           type:
           - string
           - 'null'
-        Title:
+        BatchResults:
+          $ref: '#/components/schemas/BaseResponseBatchResponse'
+        IsSuccess:
+          type:
+          - boolean
+          - 'null'
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      additionalProperties: false
+    BaseResponseBatchResponse:
+      type: object
+      properties:
+        Summary:
           type:
           - string
           - 'null'
-        Detail: {}
-        Help:
+        Results:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/BaseResponse'
       additionalProperties: false
   securitySchemes:
     Bearer:

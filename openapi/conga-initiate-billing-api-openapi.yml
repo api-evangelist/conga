@@ -1138,41 +1138,89 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ErrorApiResponse:
+    AdjustmentBSDRequest:
       type: object
       properties:
-        Errors:
+        BillingScheduleDetailId:
+          type:
+          - string
+          - 'null'
+          description: Billing Schedule Detail Id
+        ApprovalStage:
+          type:
+          - string
+          - 'null'
+          description: Indicates the approval stage for the record.
+      additionalProperties: false
+    BillingScheduleAdjustmentResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        BillingScheduleRecordId:
+          type:
+          - string
+          - 'null'
+          description: Billing schedule record Id
+        BillingScheduleDetailIds:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/ApiError'
+            type: string
+          description: Billing schedule detail Ids
       additionalProperties: false
-    BillingScheduleResponse:
+    CurrencyField:
       type: object
       properties:
-        BillingHeader:
-          $ref: '#/components/schemas/BillingHeader'
-        BillingScheduleRecords:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BillingScheduleRecordDto'
-          description: Associated Billing Schedule Records
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
+        Value:
+          type: number
+          format: double
+        DisplayValue:
+          type: number
+          format: double
+          readOnly: true
+        CurrencyCode:
           type:
           - string
           - 'null'
-        Name:
+          readOnly: true
+        CurrencySymbol:
           type:
           - string
           - 'null'
+          readOnly: true
       additionalProperties: false
+    ScheduleResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        OrderLineItemId:
+          type:
+          - string
+          - 'null'
+          description: OrderLineItem Id mentioned to initiate billing
+        BillingHeaderId:
+          type:
+          - string
+          - 'null'
+          description: Billing Header Id generated/Updated on Order Line Item Activation
+        JobId:
+          type:
+          - string
+          - 'null'
+          description: Job Id generated for asynchronous Order Line Item billing request
+      additionalProperties: false
+      description: Represents the response for a schedule request.
     BillingScheduleDetails:
       type: object
       properties:
@@ -1258,146 +1306,6 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    AdjustmentDetails:
-      type: object
-      properties:
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Billing schedule record Id
-        ActualFeeAmount:
-          type: number
-          description: Adjusted actual fee amount
-          format: double
-      additionalProperties: false
-    RenewEvergreenBillingRequests:
-      type: object
-      properties:
-        BillingHeaderId:
-          type:
-          - string
-          - 'null'
-          description: The Id of billing header record to renew.
-      additionalProperties: false
-    ApiError:
-      type: object
-      properties:
-        Source:
-          type:
-          - string
-          - 'null'
-        Title:
-          type:
-          - string
-          - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    ScheduleResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        OrderLineItemId:
-          type:
-          - string
-          - 'null'
-          description: OrderLineItem Id mentioned to initiate billing
-        BillingHeaderId:
-          type:
-          - string
-          - 'null'
-          description: Billing Header Id generated/Updated on Order Line Item Activation
-        JobId:
-          type:
-          - string
-          - 'null'
-          description: Job Id generated for asynchronous Order Line Item billing request
-      additionalProperties: false
-      description: Represents the response for a schedule request.
-    AdjustmentBSDRequest:
-      type: object
-      properties:
-        BillingScheduleDetailId:
-          type:
-          - string
-          - 'null'
-          description: Billing Schedule Detail Id
-        ApprovalStage:
-          type:
-          - string
-          - 'null'
-          description: Indicates the approval stage for the record.
-      additionalProperties: false
-    ReadyForBillingRequest:
-      type: object
-      properties:
-        ReadyForBillingDate:
-          type: string
-          description: Indicate the date when an activated order or order line items are ready to initiate or amend billing.
-          format: date-time
-      additionalProperties: false
-      description: Represents a request to initiate billing for an activated order or order line items.
-    CurrencyField:
-      type: object
-      properties:
-        Value:
-          type: number
-          format: double
-        DisplayValue:
-          type: number
-          format: double
-          readOnly: true
-        CurrencyCode:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        CurrencySymbol:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-      additionalProperties: false
-    BillingScheduleAdjustmentRequest:
-      type: object
-      properties:
-        BillingScheduleRecordId:
-          type:
-          - string
-          - 'null'
-          description: Billing schedule record Id
-        AdjustmentDetails:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AdjustmentDetails'
-          description: Associated adjustment details
-      additionalProperties: false
-    RenewEvergreenBillingResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        BillingHeaderId:
-          type:
-          - string
-          - 'null'
-          description: The Id of billing header record to renew.
-      additionalProperties: false
     OrderScheduleResponse:
       type: object
       properties:
@@ -1419,20 +1327,197 @@ components:
           description: Job Id associated with the order schedule
       additionalProperties: false
       description: Represents the response for an order schedule request.
-    BillingRequest:
+    BillingScheduleAdjustmentRequest:
       type: object
       properties:
-        OrderLineItemIds:
+        BillingScheduleRecordId:
+          type:
+          - string
+          - 'null'
+          description: Billing schedule record Id
+        AdjustmentDetails:
           type:
           - array
           - 'null'
           items:
-            type: string
-          description: List of Activated OrderLineItemIds to Initiate/Amend Billing
+            $ref: '#/components/schemas/AdjustmentDetails'
+          description: Associated adjustment details
+      additionalProperties: false
+    BillingScheduleResponse:
+      type: object
+      properties:
+        BillingHeader:
+          $ref: '#/components/schemas/BillingHeader'
+        BillingScheduleRecords:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BillingScheduleRecordDto'
+          description: Associated Billing Schedule Records
+      additionalProperties: false
+    BillingScheduleRecord:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+        CreatedBy:
+          $ref: '#/components/schemas/LookupObject'
+        CreatedDate:
+          type: string
+          format: date-time
+        ModifiedBy:
+          $ref: '#/components/schemas/LookupObject'
+        ModifiedDate:
+          type: string
+          format: date-time
+        ExternalId:
+          type:
+          - string
+          - 'null'
+        ETag:
+          type:
+          - string
+          - 'null'
+        BillingHeader:
+          $ref: '#/components/schemas/LookupObject'
+        PeriodStartDate:
+          type: string
+          format: date-time
+        PeriodEndDate:
+          type: string
+          format: date-time
+        Currency:
+          type:
+          - string
+          - 'null'
+        ActualFeeAmount:
+          $ref: '#/components/schemas/CurrencyField'
+        InvoiceStatus:
+          type:
+          - string
+          - 'null'
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
+        ReadyForInvoiceDate:
+          type: string
+          format: date-time
+        BillingDayOfMonth:
+          type: integer
+          format: int32
+        BSRNumber:
+          type:
+          - string
+          - 'null'
+        TotalUsageQuantity:
+          type: number
+          format: double
+      additionalProperties: {}
+    ReadyForBillingRequest:
+      type: object
+      properties:
         ReadyForBillingDate:
           type: string
-          description: Indicate the Date when an Activated OrderLineItem(s) is ready to Initiate/Amend Billing
+          description: Indicate the date when an activated order or order line items are ready to initiate or amend billing.
           format: date-time
+      additionalProperties: false
+      description: Represents a request to initiate billing for an activated order or order line items.
+    AdjustmentBSDResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        BillingScheduleDetailId:
+          type:
+          - string
+          - 'null'
+          description: Billing Schedule Detail Id
+      additionalProperties: false
+    ErrorApiResponse:
+      type: object
+      properties:
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ApiError'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    RenewEvergreenBillingResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        BillingHeaderId:
+          type:
+          - string
+          - 'null'
+          description: The Id of billing header record to renew.
+      additionalProperties: false
+    LookupObject:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    AdjustmentDetails:
+      type: object
+      properties:
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Billing schedule record Id
+        ActualFeeAmount:
+          type: number
+          description: Adjusted actual fee amount
+          format: double
+      additionalProperties: false
+    RenewEvergreenBillingRequests:
+      type: object
+      properties:
+        BillingHeaderId:
+          type:
+          - string
+          - 'null'
+          description: The Id of billing header record to renew.
       additionalProperties: false
     BillingHeader:
       type: object
@@ -1565,6 +1650,21 @@ components:
         TCVUsage:
           $ref: '#/components/schemas/CurrencyField'
       additionalProperties: {}
+    BillingRequest:
+      type: object
+      properties:
+        OrderLineItemIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: List of Activated OrderLineItemIds to Initiate/Amend Billing
+        ReadyForBillingDate:
+          type: string
+          description: Indicate the Date when an Activated OrderLineItem(s) is ready to Initiate/Amend Billing
+          format: date-time
+      additionalProperties: false
     BillingScheduleRecordDto:
       type: object
       properties:
@@ -1578,106 +1678,6 @@ components:
             $ref: '#/components/schemas/BillingScheduleDetails'
           description: Associated Billing Schedule Details
       additionalProperties: false
-    BillingScheduleAdjustmentResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        BillingScheduleRecordId:
-          type:
-          - string
-          - 'null'
-          description: Billing schedule record Id
-        BillingScheduleDetailIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Billing schedule detail Ids
-      additionalProperties: false
-    AdjustmentBSDResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        BillingScheduleDetailId:
-          type:
-          - string
-          - 'null'
-          description: Billing Schedule Detail Id
-      additionalProperties: false
-    BillingScheduleRecord:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-        CreatedBy:
-          $ref: '#/components/schemas/LookupObject'
-        CreatedDate:
-          type: string
-          format: date-time
-        ModifiedBy:
-          $ref: '#/components/schemas/LookupObject'
-        ModifiedDate:
-          type: string
-          format: date-time
-        ExternalId:
-          type:
-          - string
-          - 'null'
-        ETag:
-          type:
-          - string
-          - 'null'
-        BillingHeader:
-          $ref: '#/components/schemas/LookupObject'
-        PeriodStartDate:
-          type: string
-          format: date-time
-        PeriodEndDate:
-          type: string
-          format: date-time
-        Currency:
-          type:
-          - string
-          - 'null'
-        ActualFeeAmount:
-          $ref: '#/components/schemas/CurrencyField'
-        InvoiceStatus:
-          type:
-          - string
-          - 'null'
-        PaymentTerm:
-          $ref: '#/components/schemas/LookupObject'
-        ReadyForInvoiceDate:
-          type: string
-          format: date-time
-        BillingDayOfMonth:
-          type: integer
-          format: int32
-        BSRNumber:
-          type:
-          - string
-          - 'null'
-        TotalUsageQuantity:
-          type: number
-          format: double
-      additionalProperties: {}
   securitySchemes:
     Bearer:
       type: apiKey

@@ -503,35 +503,21 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    WarningDetail:
+    ErrorDetail:
       type: object
       properties:
-        Code:
+        Id:
           type:
           - string
           - 'null'
-          description: Warning code
+          description: Error ID
         Message:
           type:
           - string
           - 'null'
-          description: Warning message
+          description: Error message
       additionalProperties: false
-      description: Warning detail class for non-blocking issues
-    ContractTeamMembersRequest:
-      type: object
-      properties:
-        TeamMemberType:
-          $ref: '#/components/schemas/TeamMemberType'
-        TeamMember:
-          type:
-          - string
-          - 'null'
-          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
-        TeamRole:
-          $ref: '#/components/schemas/LookupObject'
-      additionalProperties: false
-      description: Model for Contract Team Members Request
+      description: Error detail class
     BooleanAPIResponse:
       type: object
       properties:
@@ -557,7 +543,7 @@ components:
           description: Error detail list in case of failure
       additionalProperties: false
       description: API Response Class
-    APIResponseError:
+    ContractTeamMembersListAPIResponse:
       type: object
       properties:
         Success:
@@ -565,8 +551,10 @@ components:
           description: The state of the API response
         Data:
           type:
-          - string
+          - array
           - 'null'
+          items:
+            $ref: '#/components/schemas/ContractTeamMembers'
           description: Generic data to return
         Warnings:
           type:
@@ -583,7 +571,7 @@ components:
             $ref: '#/components/schemas/ErrorDetail'
           description: Error detail list in case of failure
       additionalProperties: false
-      description: API Response Error Class
+      description: API Response Class
     LookupObject:
       type: object
       properties:
@@ -596,6 +584,28 @@ components:
           - string
           - 'null'
       additionalProperties: false
+    TeamMemberType:
+      enum:
+      - User
+      - UserGroup
+      - Contact
+      - ExternalMember
+      type: string
+      description: Defines types of Contract Team member
+    ContractTeamMembersRequest:
+      type: object
+      properties:
+        TeamMemberType:
+          $ref: '#/components/schemas/TeamMemberType'
+        TeamMember:
+          type:
+          - string
+          - 'null'
+          description: Id of User or UserGroup or Contact or External Email Id based on TeamMemberType
+        TeamRole:
+          $ref: '#/components/schemas/LookupObject'
+      additionalProperties: false
+      description: Model for Contract Team Members Request
     ContractTeamMembers:
       type: object
       properties:
@@ -645,30 +655,7 @@ components:
           description: Contract for which the user or user group is assigned
       additionalProperties: {}
       description: Model for Contract Team Members
-    TeamMemberType:
-      enum:
-      - User
-      - UserGroup
-      - Contact
-      - ExternalMember
-      type: string
-      description: Defines types of Contract Team member
-    ErrorDetail:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Error ID
-        Message:
-          type:
-          - string
-          - 'null'
-          description: Error message
-      additionalProperties: false
-      description: Error detail class
-    ContractTeamMembersListAPIResponse:
+    APIResponseError:
       type: object
       properties:
         Success:
@@ -676,10 +663,8 @@ components:
           description: The state of the API response
         Data:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/ContractTeamMembers'
           description: Generic data to return
         Warnings:
           type:
@@ -696,7 +681,22 @@ components:
             $ref: '#/components/schemas/ErrorDetail'
           description: Error detail list in case of failure
       additionalProperties: false
-      description: API Response Class
+      description: API Response Error Class
+    WarningDetail:
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Warning code
+        Message:
+          type:
+          - string
+          - 'null'
+          description: Warning message
+      additionalProperties: false
+      description: Warning detail class for non-blocking issues
     CustomQueryTeamMember:
       type: object
       properties:

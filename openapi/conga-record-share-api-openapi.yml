@@ -443,70 +443,6 @@ components:
       - User
       - UserGroup
       type: string
-    HttpStatusCode:
-      enum:
-      - Continue
-      - SwitchingProtocols
-      - Processing
-      - EarlyHints
-      - OK
-      - Created
-      - Accepted
-      - NonAuthoritativeInformation
-      - NoContent
-      - ResetContent
-      - PartialContent
-      - MultiStatus
-      - AlreadyReported
-      - IMUsed
-      - MultipleChoices
-      - MovedPermanently
-      - Found
-      - SeeOther
-      - NotModified
-      - UseProxy
-      - Unused
-      - TemporaryRedirect
-      - PermanentRedirect
-      - BadRequest
-      - Unauthorized
-      - PaymentRequired
-      - Forbidden
-      - NotFound
-      - MethodNotAllowed
-      - NotAcceptable
-      - ProxyAuthenticationRequired
-      - RequestTimeout
-      - Conflict
-      - Gone
-      - LengthRequired
-      - PreconditionFailed
-      - RequestEntityTooLarge
-      - RequestUriTooLong
-      - UnsupportedMediaType
-      - RequestedRangeNotSatisfiable
-      - ExpectationFailed
-      - MisdirectedRequest
-      - UnprocessableEntity
-      - Locked
-      - FailedDependency
-      - UpgradeRequired
-      - PreconditionRequired
-      - TooManyRequests
-      - RequestHeaderFieldsTooLarge
-      - UnavailableForLegalReasons
-      - InternalServerError
-      - NotImplemented
-      - BadGateway
-      - ServiceUnavailable
-      - GatewayTimeout
-      - HttpVersionNotSupported
-      - VariantAlsoNegotiates
-      - InsufficientStorage
-      - LoopDetected
-      - NotExtended
-      - NetworkAuthenticationRequired
-      type: string
     StringObjectDictionaryAPIResponse:
       type: object
       properties:
@@ -522,6 +458,56 @@ components:
           - object
           - 'null'
           additionalProperties: {}
+        Errors:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        Profile:
+          type:
+          - string
+          - 'null'
+        TotalTime:
+          type: number
+          format: float
+        StatusCode:
+          $ref: '#/components/schemas/HttpStatusCode'
+        HasMoreRecords:
+          type:
+          - boolean
+          - 'null'
+        NextCursor:
+          type:
+          - string
+          - 'null'
+        Warnings:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    ErrorDetail:
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    UserAccessDetailsOnRecordAPIResponse:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        RecordCount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+        Data:
+          $ref: '#/components/schemas/UserAccessDetailsOnRecord'
         Errors:
           type:
           - array
@@ -612,50 +598,23 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    StringAPIResponse:
+    LookupObject:
       type: object
       properties:
-        Success:
-          type: boolean
-        RecordCount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-        Data:
+        Id:
           type:
           - string
           - 'null'
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-        Profile:
+        Name:
           type:
           - string
           - 'null'
-        TotalTime:
-          type: number
-          format: float
-        StatusCode:
-          $ref: '#/components/schemas/HttpStatusCode'
-        HasMoreRecords:
-          type:
-          - boolean
-          - 'null'
-        NextCursor:
-          type:
-          - string
-          - 'null'
-        Warnings:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    SortDirection:
+      enum:
+      - Ascending
+      - Descending
+      type: string
     RecordShareInfo:
       type: object
       properties:
@@ -672,64 +631,11 @@ components:
         AccessLevel:
           $ref: '#/components/schemas/SharedObjectAccessLevel'
       additionalProperties: false
-    UnShareRecordRequest:
-      type: object
-      properties:
-        RecordShareType:
-          $ref: '#/components/schemas/OwnerType'
-        UserId:
-          type:
-          - string
-          - 'null'
-          description: User to whom the record is shared with. Should be provided when RecordShareType is User.
-        UserGroupId:
-          type:
-          - string
-          - 'null'
-          description: User Group to which the record is shared with. Should be provided when RecordShareType is UserGroup.
-      additionalProperties: false
-    SortDirection:
-      enum:
-      - Ascending
-      - Descending
-      type: string
-    UserAccessDetailsOnRecord:
-      type: object
-      properties:
-        IsSharingEnabled:
-          type: boolean
-        IsRecordShared:
-          type:
-          - boolean
-          - 'null'
-        RecordAccessDetail:
-          $ref: '#/components/schemas/RecordAccessDetail'
-      additionalProperties: false
     SharedObjectAccessLevel:
       enum:
       - View
       - Edit
       type: string
-    RecordAccessDetail:
-      type: object
-      properties:
-        View:
-          type: boolean
-        Edit:
-          type: boolean
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     StringObjectDictionaryListAPIResponse:
       type: object
       properties:
@@ -777,6 +683,82 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
+    UserAccessDetailsOnRecord:
+      type: object
+      properties:
+        IsSharingEnabled:
+          type: boolean
+        IsRecordShared:
+          type:
+          - boolean
+          - 'null'
+        RecordAccessDetail:
+          $ref: '#/components/schemas/RecordAccessDetail'
+      additionalProperties: false
+    HttpStatusCode:
+      enum:
+      - Continue
+      - SwitchingProtocols
+      - Processing
+      - EarlyHints
+      - OK
+      - Created
+      - Accepted
+      - NonAuthoritativeInformation
+      - NoContent
+      - ResetContent
+      - PartialContent
+      - MultiStatus
+      - AlreadyReported
+      - IMUsed
+      - MultipleChoices
+      - MovedPermanently
+      - Found
+      - SeeOther
+      - NotModified
+      - UseProxy
+      - Unused
+      - TemporaryRedirect
+      - PermanentRedirect
+      - BadRequest
+      - Unauthorized
+      - PaymentRequired
+      - Forbidden
+      - NotFound
+      - MethodNotAllowed
+      - NotAcceptable
+      - ProxyAuthenticationRequired
+      - RequestTimeout
+      - Conflict
+      - Gone
+      - LengthRequired
+      - PreconditionFailed
+      - RequestEntityTooLarge
+      - RequestUriTooLong
+      - UnsupportedMediaType
+      - RequestedRangeNotSatisfiable
+      - ExpectationFailed
+      - MisdirectedRequest
+      - UnprocessableEntity
+      - Locked
+      - FailedDependency
+      - UpgradeRequired
+      - PreconditionRequired
+      - TooManyRequests
+      - RequestHeaderFieldsTooLarge
+      - UnavailableForLegalReasons
+      - InternalServerError
+      - NotImplemented
+      - BadGateway
+      - ServiceUnavailable
+      - GatewayTimeout
+      - HttpVersionNotSupported
+      - VariantAlsoNegotiates
+      - InsufficientStorage
+      - LoopDetected
+      - NotExtended
+      - NetworkAuthenticationRequired
+      type: string
     RecordShareTrackingInfoAPIResponse:
       type: object
       properties:
@@ -819,7 +801,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    UserAccessDetailsOnRecordAPIResponse:
+    StringAPIResponse:
       type: object
       properties:
         Success:
@@ -830,7 +812,9 @@ components:
           - 'null'
           format: int64
         Data:
-          $ref: '#/components/schemas/UserAccessDetailsOnRecord'
+          type:
+          - string
+          - 'null'
         Errors:
           type:
           - array
@@ -861,13 +845,21 @@ components:
           items:
             $ref: '#/components/schemas/ErrorDetail'
       additionalProperties: false
-    ErrorDetail:
+    UnShareRecordRequest:
       type: object
       properties:
-        Message:
+        RecordShareType:
+          $ref: '#/components/schemas/OwnerType'
+        UserId:
           type:
           - string
           - 'null'
+          description: User to whom the record is shared with. Should be provided when RecordShareType is User.
+        UserGroupId:
+          type:
+          - string
+          - 'null'
+          description: User Group to which the record is shared with. Should be provided when RecordShareType is UserGroup.
       additionalProperties: false
     RecordShareTrackingInfoListAPIResponse:
       type: object
@@ -914,6 +906,14 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/ErrorDetail'
+      additionalProperties: false
+    RecordAccessDetail:
+      type: object
+      properties:
+        View:
+          type: boolean
+        Edit:
+          type: boolean
       additionalProperties: false
     ShareRecordRequest:
       type: object

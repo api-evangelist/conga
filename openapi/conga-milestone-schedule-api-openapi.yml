@@ -545,6 +545,50 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    OrderLineItemMilestoneResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+        OrderLineItem:
+          $ref: '#/components/schemas/LookupObject'
+        Summary:
+          $ref: '#/components/schemas/MilestoneScheduleHeaderDTO'
+      additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    MilestoneScheduleRecordDTO:
+      type: object
+      properties:
+        ScheduleRecord:
+          $ref: '#/components/schemas/LookupObject'
+        ScheduleDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MilestoneScheduleDetailsDTO'
+          description: Associated list of billing schedule details of milestone type.
+      additionalProperties: false
     BillingScheduleRecordMilestoneResponse:
       type: object
       properties:
@@ -564,18 +608,35 @@ components:
             $ref: '#/components/schemas/MilestoneScheduleDetailsDTO'
           description: Associated list of billing schedule details of milestone type.
       additionalProperties: false
-    MilestoneScheduleHeaderDTO:
+    LookupObject:
       type: object
       properties:
-        BillingHeader:
-          $ref: '#/components/schemas/LookupObject'
-        MilestoneScheduleRecords:
+        Id:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            $ref: '#/components/schemas/MilestoneScheduleRecordDTO'
-          description: Associated list of schedule records for the milestone type billing schedule details.
+        Name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    CompleteMilestoneRequest:
+      type: object
+      properties:
+        BillingScheduleDetailId:
+          type:
+          - string
+          - 'null'
+          description: Billing schedule detail id to complete milestone.
+        MilestoneCompletionDate:
+          type: string
+          description: The “Actual Date” by when the milestone is completed.
+          format: date-time
+        MilestoneCompletedBy:
+          type:
+          - string
+          - 'null'
+          description: The user ID who marked this milestone as “Completed.”
       additionalProperties: false
     CompleteMilestoneResponse:
       type: object
@@ -596,123 +657,6 @@ components:
           - string
           - 'null'
           description: Updated billing schedule detail Id
-      additionalProperties: false
-    OrderLineItemMilestoneResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        OrderLineItem:
-          $ref: '#/components/schemas/LookupObject'
-        Summary:
-          $ref: '#/components/schemas/MilestoneScheduleHeaderDTO'
-      additionalProperties: false
-    CompleteMilestoneRequest:
-      type: object
-      properties:
-        BillingScheduleDetailId:
-          type:
-          - string
-          - 'null'
-          description: Billing schedule detail id to complete milestone.
-        MilestoneCompletionDate:
-          type: string
-          description: The “Actual Date” by when the milestone is completed.
-          format: date-time
-        MilestoneCompletedBy:
-          type:
-          - string
-          - 'null'
-          description: The user ID who marked this milestone as “Completed.”
-      additionalProperties: false
-    MilestoneScheduleRequest:
-      type: object
-      properties:
-        MilestoneExpectedFromDate:
-          type: string
-          description: The beginning date for retrieving the milestone type billing schedule information.
-          format: date-time
-        MilestoneExpectedToDate:
-          type: string
-          description: The end date for retrieving milestone-type billing schedule information.
-          format: date-time
-        ShowDataFor:
-          type:
-          - string
-          - 'null'
-          description: Choose whether to display the whole billing schedule with all milestone pending and completed records, or just the pending ones.
-        ObjectIds:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Indicates the object id for fetching milestone type records.
-      additionalProperties: false
-    MilestoneScheduleRecordDTO:
-      type: object
-      properties:
-        ScheduleRecord:
-          $ref: '#/components/schemas/LookupObject'
-        ScheduleDetails:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/MilestoneScheduleDetailsDTO'
-          description: Associated list of billing schedule details of milestone type.
-      additionalProperties: false
-    BillingHeaderMilestoneResponse:
-      type: object
-      properties:
-        IsSuccess:
-          type: boolean
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-        BillingHeader:
-          $ref: '#/components/schemas/LookupObject'
-        MilestoneScheduleRecords:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/MilestoneScheduleRecordDTO'
-          description: Associated list of schedule records for the milestone type billing schedule details.
-      additionalProperties: false
-    LookupObject:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        Name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-    MilestoneScheduleFilter:
-      type: object
-      properties:
-        MilestoneExpectedFromDate:
-          type: string
-          description: The beginning date for retrieving the milestone type billing schedule information.
-          format: date-time
-        MilestoneExpectedToDate:
-          type: string
-          description: The end date for retrieving milestone-type billing schedule information.
-          format: date-time
-        ShowDataFor:
-          type:
-          - string
-          - 'null'
-          description: Choose whether to display the whole billing schedule with all milestone pending and completed records, or just the pending ones.
       additionalProperties: false
     MilestoneScheduleDetailsDTO:
       type: object
@@ -746,22 +690,78 @@ components:
           - 'null'
           description: The status of this milestone.
       additionalProperties: false
-    ApiError:
+    MilestoneScheduleRequest:
       type: object
       properties:
-        Source:
+        MilestoneExpectedFromDate:
+          type: string
+          description: The beginning date for retrieving the milestone type billing schedule information.
+          format: date-time
+        MilestoneExpectedToDate:
+          type: string
+          description: The end date for retrieving milestone-type billing schedule information.
+          format: date-time
+        ShowDataFor:
           type:
           - string
           - 'null'
-        Title:
+          description: Choose whether to display the whole billing schedule with all milestone pending and completed records, or just the pending ones.
+        ObjectIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Indicates the object id for fetching milestone type records.
+      additionalProperties: false
+    BillingHeaderMilestoneResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+        ErrorMessage:
           type:
           - string
           - 'null'
-        Detail: {}
-        Help:
+        BillingHeader:
+          $ref: '#/components/schemas/LookupObject'
+        MilestoneScheduleRecords:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MilestoneScheduleRecordDTO'
+          description: Associated list of schedule records for the milestone type billing schedule details.
+      additionalProperties: false
+    MilestoneScheduleHeaderDTO:
+      type: object
+      properties:
+        BillingHeader:
+          $ref: '#/components/schemas/LookupObject'
+        MilestoneScheduleRecords:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MilestoneScheduleRecordDTO'
+          description: Associated list of schedule records for the milestone type billing schedule details.
+      additionalProperties: false
+    MilestoneScheduleFilter:
+      type: object
+      properties:
+        MilestoneExpectedFromDate:
+          type: string
+          description: The beginning date for retrieving the milestone type billing schedule information.
+          format: date-time
+        MilestoneExpectedToDate:
+          type: string
+          description: The end date for retrieving milestone-type billing schedule information.
+          format: date-time
+        ShowDataFor:
           type:
           - string
           - 'null'
+          description: Choose whether to display the whole billing schedule with all milestone pending and completed records, or just the pending ones.
       additionalProperties: false
   securitySchemes:
     Bearer:

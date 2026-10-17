@@ -336,44 +336,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    BaseResponseBatchResponse:
-      type: object
-      properties:
-        Summary:
-          type:
-          - string
-          - 'null'
-        Results:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BaseResponse'
-      additionalProperties: false
-    BaseResponse:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-        RecordIndex:
-          type: integer
-          format: int32
-        IsSuccess:
-          type: boolean
-        Errors:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        ErrorMessage:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-      additionalProperties: false
     ErrorApiResponse:
       type: object
       properties:
@@ -384,19 +346,57 @@ components:
           items:
             $ref: '#/components/schemas/ApiError'
       additionalProperties: false
-    CustomPlanToggleActiveRequest:
+    CustomPlanTemplateLineItemRequest:
       type: object
       properties:
-        Active:
-          type: boolean
-          description: The flag contains whether the transaction has been successful or failed
         Id:
           type:
           - string
           - 'null'
-          description: Created/Updated record Id on processed in a transaction
+          description: Indicates Id for Plan Template line item to be updated.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Indicates name for Plan Template Line Item to be created/updated.
+        OffsetType:
+          type:
+          - string
+          - 'null'
+          description: Indicates the value based on which the offset to be calculated.
+        OffsetNumber:
+          type:
+          - integer
+          - 'null'
+          description: Indicates the time to be elapsed between the billing periods.
+          format: int32
+        Percent:
+          type:
+          - number
+          - 'null'
+          description: Indicates the percentage of the total price to be computed for the installment.
+          format: double
+        PaymentTerm:
+          $ref: '#/components/schemas/LookupObject'
       additionalProperties: false
-      description: CustomPlanToggleActiveRequest
+      description: CustomPlanTemplateLineItemRequest
+    ApiError:
+      type: object
+      properties:
+        Source:
+          type:
+          - string
+          - 'null'
+        Title:
+          type:
+          - string
+          - 'null'
+        Detail: {}
+        Help:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
     PlanTemplateLineItem:
       type: object
       properties:
@@ -461,114 +461,57 @@ components:
           - string
           - 'null'
       additionalProperties: false
-    CustomPlanTemplateLineItemRequest:
+    BaseResponse:
       type: object
       properties:
         Id:
           type:
           - string
           - 'null'
-          description: Indicates Id for Plan Template line item to be updated.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Indicates name for Plan Template Line Item to be created/updated.
-        OffsetType:
-          type:
-          - string
-          - 'null'
-          description: Indicates the value based on which the offset to be calculated.
-        OffsetNumber:
-          type:
-          - integer
-          - 'null'
-          description: Indicates the time to be elapsed between the billing periods.
-          format: int32
-        Percent:
-          type:
-          - number
-          - 'null'
-          description: Indicates the percentage of the total price to be computed for the installment.
-          format: double
-        PaymentTerm:
-          $ref: '#/components/schemas/LookupObject'
-      additionalProperties: false
-      description: CustomPlanTemplateLineItemRequest
-    CustomPlanTemplateRequest:
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Indicates Id for Plan Template.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Indicates Name for Plan Template to be created/updated.
-        PeriodsNeeded:
-          type:
-          - boolean
-          - 'null'
-          description: If True, Billing is “Period specific” hence the line items must have non-overlapping Period Start Date and Period End Dates.If False, Billing is not dependent on periods so there’s no need for the user to enter the Periods at the line item level.
-        NumberOfInstallments:
+        RecordIndex:
           type: integer
-          description: The number of installments (i.e., the number of milestones/intended billing events.)
           format: int32
-        ComputationMethod:
-          type:
-          - string
-          - 'null'
-          description: Indicates whether the user wants to define the custom or even distribution of the percentages/amounts across the installments.
-        StartDateBasedOn:
-          type:
-          - string
-          - 'null'
-          description: Indicates the source from where the “Start Date” must be picked from.
-        Description:
-          type:
-          - string
-          - 'null'
-        PlanType:
-          type:
-          - string
-          - 'null'
-          description: Indicates whether the intended billing plan should be a “Milestone” or “Term based” plan.
-        BasedOn:
-          type:
-          - string
-          - 'null'
-          description: Indicates whether the user wants to enter the Fee directly (“Amount”) or as a “Percentage” of the ”Total Price”
-        Items:
+        IsSuccess:
+          type: boolean
+        Errors:
           type:
           - array
           - 'null'
           items:
-            $ref: '#/components/schemas/CustomPlanTemplateLineItemRequest'
-          description: List of billing plan template line items associated with a billing plan template.
+            type: string
+        ErrorMessage:
+          type:
+          - string
+          - 'null'
+          deprecated: true
       additionalProperties: false
-      description: 'Represents a request to create or update a custom billing plan template, including its configuration,
-
-        computation method, and associated line items.'
-    ApiError:
+    BaseResponseBatchResponse:
       type: object
       properties:
-        Source:
+        Summary:
           type:
           - string
           - 'null'
-        Title:
+        Results:
           type:
-          - string
+          - array
           - 'null'
-        Detail: {}
-        Help:
-          type:
-          - string
-          - 'null'
+          items:
+            $ref: '#/components/schemas/BaseResponse'
       additionalProperties: false
+    CustomPlanToggleActiveRequest:
+      type: object
+      properties:
+        Active:
+          type: boolean
+          description: The flag contains whether the transaction has been successful or failed
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Created/Updated record Id on processed in a transaction
+      additionalProperties: false
+      description: CustomPlanToggleActiveRequest
     PlanTemplate:
       type: object
       properties:
@@ -631,6 +574,63 @@ components:
             $ref: '#/components/schemas/PlanTemplateLineItem'
           description: Child collection of PlanTemplateLineItem (included when 'Items' is requested via the includes parameter).
       additionalProperties: {}
+    CustomPlanTemplateRequest:
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Indicates Id for Plan Template.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Indicates Name for Plan Template to be created/updated.
+        PeriodsNeeded:
+          type:
+          - boolean
+          - 'null'
+          description: If True, Billing is “Period specific” hence the line items must have non-overlapping Period Start Date and Period End Dates.If False, Billing is not dependent on periods so there’s no need for the user to enter the Periods at the line item level.
+        NumberOfInstallments:
+          type: integer
+          description: The number of installments (i.e., the number of milestones/intended billing events.)
+          format: int32
+        ComputationMethod:
+          type:
+          - string
+          - 'null'
+          description: Indicates whether the user wants to define the custom or even distribution of the percentages/amounts across the installments.
+        StartDateBasedOn:
+          type:
+          - string
+          - 'null'
+          description: Indicates the source from where the “Start Date” must be picked from.
+        Description:
+          type:
+          - string
+          - 'null'
+        PlanType:
+          type:
+          - string
+          - 'null'
+          description: Indicates whether the intended billing plan should be a “Milestone” or “Term based” plan.
+        BasedOn:
+          type:
+          - string
+          - 'null'
+          description: Indicates whether the user wants to enter the Fee directly (“Amount”) or as a “Percentage” of the ”Total Price”
+        Items:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomPlanTemplateLineItemRequest'
+          description: List of billing plan template line items associated with a billing plan template.
+      additionalProperties: false
+      description: 'Represents a request to create or update a custom billing plan template, including its configuration,
+
+        computation method, and associated line items.'
   securitySchemes:
     Bearer:
       type: apiKey
